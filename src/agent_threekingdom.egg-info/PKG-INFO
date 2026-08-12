@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: agent-threekingdom
+Version: 0.1.0
+Summary: San Guo AI Travel Agent backend
+Requires-Python: >=3.12
