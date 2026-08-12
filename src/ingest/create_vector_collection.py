@@ -12,7 +12,7 @@ def main() -> None:
     store = MilvusVectorStore()
     store.create_collection(drop_existing=False)
     print(f"Milvus collection ready: {settings.milvus_collection}")
-    print(f"Milvus uri: {settings.milvus_uri}")
+    print(f"Milvus uri: {settings.milvus_lite_uri}")
     print(f"Embedding dimension: {settings.embedding_dimension}")
 
 

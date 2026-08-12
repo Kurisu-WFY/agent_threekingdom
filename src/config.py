@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-large-zh-v1.5"
     embedding_dimension: int = Field(default=384, ge=1)
     vector_store_path: Path = Path("data/processed/vector_store.json")
-    milvus_uri: Path = Path("data/processed/milvus_lite.db")
+    milvus_lite_uri: Path = Path("data/processed/milvus_lite.db")
     milvus_collection: str = "san_guo_culture_chunks"
     business_db_path: Path = Path("data/processed/business.sqlite3")
     source_doc_path: Path = Path(r"C:/Users/18496/Desktop/三国文化 AI 旅游智能体 Demo 开发需求文档.md")

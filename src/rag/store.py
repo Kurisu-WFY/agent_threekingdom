@@ -41,7 +41,7 @@ class LocalVectorStore:
 class MilvusVectorStore:
     def __init__(self):
         self.settings = get_settings()
-        self.uri = str(self.settings.milvus_uri)
+        self.uri = str(self.settings.milvus_lite_uri)
         Path(self.uri).parent.mkdir(parents=True, exist_ok=True)
         self.collection_name = self.settings.milvus_collection
         self.embedding_model = HashEmbeddingModel(dimension=self.settings.embedding_dimension)
