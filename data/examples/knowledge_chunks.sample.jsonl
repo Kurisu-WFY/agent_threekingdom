@@ -1,0 +1,3 @@
+{"id":"sample_chen_shou_001","title":"陈寿作为叙事入口","content":"此处仅为结构样例。正式内容需要填入经核实的陈寿生平、著史背景和南充关系资料。","knowledge_type":"person","entities":["陈寿","三国志","南充"],"location":"南充","period":"西晋","narrative_stage":"寻源","audience":["亲子","大众","学术"],"source":"待补充：原典/论文/地方志/展陈资料","source_level":"B","risk_note":"样例内容不能作为事实依据。"}
+{"id":"sample_history_vs_romance_001","title":"正史与演义差异说明模板","content":"此处仅为结构样例。正式内容应分别列出正史依据、演义情节和差异说明。","knowledge_type":"comparison","entities":["三国志","三国演义"],"location":"","period":"三国","narrative_stage":"读史","audience":["大众","学术"],"source":"待补充：三国志/三国演义/研究资料","source_level":"B","risk_note":"不能将文学情节直接写成历史事实。"}
+

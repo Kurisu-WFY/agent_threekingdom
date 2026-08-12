@@ -1,0 +1,17 @@
+[
+  {
+    "spot_id": "wanjuanlou",
+    "name": "万卷楼",
+    "city": "南充",
+    "address": "待核实",
+    "theme": ["陈寿", "三国志", "寻源"],
+    "story_role": "认识记录三国的人",
+    "narrative_stage": "寻源",
+    "recommended_duration_min": 60,
+    "suitable_users": ["亲子研学", "文化深度游", "商务游客"],
+    "ticket_policy": "待核实",
+    "open_time": "待核实",
+    "data_status": "manual_pending"
+  }
+]
+

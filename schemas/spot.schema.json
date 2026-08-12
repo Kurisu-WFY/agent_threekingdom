@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Spot",
+  "type": "object",
+  "required": ["spot_id", "name", "theme", "story_role", "recommended_duration_min"],
+  "properties": {
+    "spot_id": {"type": "string"},
+    "name": {"type": "string"},
+    "city": {"type": "string"},
+    "address": {"type": "string"},
+    "theme": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "story_role": {"type": "string"},
+    "narrative_stage": {
+      "type": "string",
+      "enum": ["寻源", "读史", "探迹", "传承", "未分类"]
+    },
+    "recommended_duration_min": {"type": "integer", "minimum": 0},
+    "suitable_users": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "ticket_policy": {"type": "string"},
+    "open_time": {"type": "string"},
+    "data_status": {
+      "type": "string",
+      "enum": ["verified", "manual_pending", "simulated"]
+    }
+  },
+  "additionalProperties": false
+}
+

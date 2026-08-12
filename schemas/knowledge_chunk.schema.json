@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KnowledgeChunk",
+  "type": "object",
+  "required": ["id", "title", "content", "source", "source_level", "knowledge_type"],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "content": {"type": "string"},
+    "knowledge_type": {
+      "type": "string",
+      "enum": ["person", "event", "place", "text", "comparison", "route", "service"]
+    },
+    "entities": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "location": {"type": "string"},
+    "period": {"type": "string"},
+    "narrative_stage": {
+      "type": "string",
+      "enum": ["寻源", "读史", "探迹", "传承", "未分类"]
+    },
+    "audience": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["亲子", "大众", "学术", "商务", "年轻游客"]
+      }
+    },
+    "source": {"type": "string"},
+    "source_level": {
+      "type": "string",
+      "enum": ["A", "B", "C"]
+    },
+    "risk_note": {"type": "string"}
+  },
+  "additionalProperties": false
+}
+

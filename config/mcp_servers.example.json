@@ -1,0 +1,63 @@
+{
+  "mcpServers": {
+    "12306-mcp": {
+      "command": "npx",
+      "args": ["-y", "12306-mcp"],
+      "enabled_for": ["train_ticket_search", "train_route_planning"],
+      "risk_level": "external_realtime_service",
+      "notes": "Used for 12306 ticket availability, station code lookup, route station lookup, and transfer search. Requires Node.js 18+."
+    },
+    "amap-mcp-server": {
+      "command": "uvx",
+      "args": ["amap-mcp-server"],
+      "env": {
+        "AMAP_MAPS_API_KEY": "YOUR_AMAP_KEY"
+      },
+      "enabled_for": ["weather", "geocode", "poi_search", "route_planning"],
+      "risk_level": "external_realtime_service",
+      "github": "https://github.com/sugarforever/amap-mcp-server",
+      "stars_checked": "122 stars on 2026-08-09",
+      "notes": "China-friendly map/weather/route/POI MCP. Supports stdio, SSE, and streamable HTTP."
+    },
+    "baidu-maps-mcp": {
+      "command": "npx",
+      "args": ["-y", "@baidumap/mcp-server-baidu-map"],
+      "env": {
+        "BAIDU_MAP_API_KEY": "YOUR_BAIDU_MAP_KEY"
+      },
+      "enabled_for": ["weather", "geocode", "poi_search", "route_planning", "traffic"],
+      "risk_level": "external_realtime_service",
+      "github": "https://github.com/baidu-maps/mcp",
+      "stars_checked": "434 stars on 2026-08-09",
+      "notes": "Official Baidu Maps MCP. Useful for China LBS, weather, traffic, and POI search."
+    },
+    "mapbox-mcp": {
+      "url": "https://mcp.mapbox.com/mcp",
+      "env": {
+        "MAPBOX_ACCESS_TOKEN": "YOUR_MAPBOX_TOKEN"
+      },
+      "enabled_for": ["global_geocode", "poi_search", "route_planning", "route_optimization", "static_map"],
+      "risk_level": "external_realtime_service",
+      "github": "https://github.com/mapbox/mcp-server",
+      "stars_checked": "351 stars on 2026-08-09",
+      "notes": "Official Mapbox MCP. Strong global geospatial capability; for China travel prefer Baidu/AMap first."
+    },
+    "serpapi-mcp": {
+      "url": "https://mcp.serpapi.com/YOUR_SERPAPI_KEY/mcp",
+      "enabled_for": ["web_search_price_fallback", "official_page_search"],
+      "risk_level": "paid_external_search_service",
+      "github": "https://github.com/serpapi/serpapi-mcp",
+      "stars_checked": "162 stars on 2026-08-09",
+      "notes": "Search fallback for finding official ticket pages or recent notices. Do not treat search snippets as authoritative ticket prices."
+    },
+    "official-fetch-mcp": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "enabled_for": ["official_page_fetch_only"],
+      "risk_level": "network_access_whitelist_required",
+      "github": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch",
+      "stars_checked": "modelcontextprotocol/servers has 86k+ stars on 2026-08-09",
+      "notes": "Use only with an allowlist of official scenic-spot or government URLs. Fetch is powerful but not ticket-specific."
+    }
+  }
+}

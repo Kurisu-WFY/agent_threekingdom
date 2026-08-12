@@ -1,0 +1,48 @@
+[
+  {
+    "spot_id": "nanchong_xishan_wanjuanlou",
+    "name": "西山风景区·万卷楼",
+    "city": "南充",
+    "theme": ["陈寿", "三国志", "三国文化溯源"],
+    "relation_level": "core",
+    "ticket_source_status": "needs_official_verification",
+    "notes": "PPT 和公开宣传材料均将其作为陈寿与三国文化主入口。"
+  },
+  {
+    "spot_id": "nanchong_langzhong_huanhouci",
+    "name": "阆中古城·汉桓侯祠（张飞庙）",
+    "city": "南充阆中",
+    "theme": ["张飞", "蜀汉", "阆中古城"],
+    "relation_level": "core",
+    "ticket_source_status": "needs_official_verification",
+    "notes": "南充宣传材料明确提到阆中汉桓侯祠与三国文化。"
+  },
+  {
+    "spot_id": "nanchong_hemingshan_wangpingmu",
+    "name": "鹤鸣山景区·王平墓",
+    "city": "南充",
+    "theme": ["王平", "蜀汉", "三国遗迹"],
+    "relation_level": "candidate",
+    "ticket_source_status": "needs_official_verification",
+    "notes": "南充宣传材料提到蜀道三国文化游可到鹤鸣山景区看汉将军王平墓。"
+  },
+  {
+    "spot_id": "guangyuan_jianmen_shudao",
+    "name": "剑门蜀道剑门关旅游景区",
+    "city": "广元剑阁",
+    "theme": ["剑门关", "蜀道", "三国文化"],
+    "relation_level": "core_regional",
+    "ticket_source_status": "official_catalog_available",
+    "notes": "广元市文广旅局 A 级景区名录列出门票价格，并称其为蜀道三国文化精品旅游线路支撑中心。"
+  },
+  {
+    "spot_id": "guangyuan_zhaohua_ancient_city",
+    "name": "昭化古城",
+    "city": "广元昭化",
+    "theme": ["葭萌关", "张飞夜战马超", "蜀汉"],
+    "relation_level": "core_regional",
+    "ticket_source_status": "needs_official_verification",
+    "notes": "昭化区政府材料称其保存有三国故事和古城遗址。"
+  }
+]
+

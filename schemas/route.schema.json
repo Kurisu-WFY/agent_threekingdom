@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Route",
+  "type": "object",
+  "required": ["route_id", "name", "duration_hours", "target_users", "stops"],
+  "properties": {
+    "route_id": {"type": "string"},
+    "name": {"type": "string"},
+    "duration_hours": {"type": "number", "minimum": 0},
+    "target_users": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "transport": {"type": "string"},
+    "budget_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "unknown"]
+    },
+    "stops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["spot_id", "order", "duration_min", "narrative_stage"],
+        "properties": {
+          "spot_id": {"type": "string"},
+          "order": {"type": "integer"},
+          "duration_min": {"type": "integer"},
+          "narrative_stage": {"type": "string"},
+          "reason": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "data_status": {
+      "type": "string",
+      "enum": ["verified", "manual_pending", "simulated"]
+    }
+  },
+  "additionalProperties": false
+}
+
