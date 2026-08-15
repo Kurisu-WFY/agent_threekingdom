@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="0c778335-c2b2-49f8-ba7d-10fa95b9549e" name="更改" comment="修改bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/agent/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cache/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cache/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/planning/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rag/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/rag/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tools/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tools/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786600304491</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="修改bug">
+      <option name="closed" value="true" />
+      <created>1786634668733</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1786634668733</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

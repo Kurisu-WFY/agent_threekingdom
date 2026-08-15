@@ -12,6 +12,8 @@ service = TravelAgentService()
 
 class ChatRequest(BaseModel):
     message: str
+    mode: str = "大众"
+    history: list[dict[str, str]] = []
 
 
 @app.get("/health")
@@ -27,4 +29,4 @@ def health() -> dict:
 
 @app.post("/chat")
 def chat(request: ChatRequest) -> dict:
-    return service.answer(request.message)
+    return service.answer(request.message, mode=request.mode, history=request.history or None)

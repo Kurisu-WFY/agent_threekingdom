@@ -1,5 +1,5 @@
+from agent.chain import AnswerChain
 from agent.intent_router import route_intent
-from agent.response_policy import build_guarded_answer
 from planning.route_planner import plan_route
 from rag.retriever import HybridRetriever, format_context
 
@@ -7,14 +7,15 @@ from rag.retriever import HybridRetriever, format_context
 class TravelAgentService:
     def __init__(self):
         self.retriever = HybridRetriever()
+        self.chain = AnswerChain()
 
-    def answer(self, message: str) -> dict:
+    def answer(self, message: str, *, mode: str = "大众", history: list[dict[str, str]] | None = None) -> dict:
         intent = route_intent(message)
         if intent.intent == "route_planning":
             return {"intent": intent.intent, "answer": plan_route(message), "sources": [], "recall_report": None}
 
         hits, report = self.retriever.retrieve(message, intent.intent)
-        answer = build_guarded_answer(message=message, intent=intent, hits=hits, recall_report=report)
+        answer = self.chain.run(message, intent, hits, report, mode=mode, history=history)
         return {
             "intent": intent.intent,
             "answer": answer,
@@ -24,7 +25,5 @@ class TravelAgentService:
         }
 
 
-def handle_user_message(message: str) -> str:
-    result = TravelAgentService().answer(message)
-    return result["answer"]
-
+def handle_user_message(message: str, mode: str = "大众") -> str:
+    return TravelAgentService().answer(message, mode=mode)["answer"]
