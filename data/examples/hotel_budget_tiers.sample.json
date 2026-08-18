@@ -4,21 +4,21 @@
     "tier": "经济型",
     "price_min": 120,
     "price_max": 200,
-    "notes": "Demo 档位，淡旺季会波动。"
+    "notes": "样例预算档位，淡旺季会波动。"
   },
   {
     "city": "南充",
     "tier": "舒适型",
     "price_min": 200,
     "price_max": 380,
-    "notes": "Demo 档位，淡旺季会波动。"
+    "notes": "样例预算档位，淡旺季会波动。"
   },
   {
     "city": "南充",
     "tier": "品质型",
     "price_min": 380,
     "price_max": 650,
-    "notes": "Demo 档位，淡旺季会波动。"
+    "notes": "样例预算档位，淡旺季会波动。"
   },
   {
     "city": "阆中",
@@ -46,20 +46,20 @@
     "tier": "经济型",
     "price_min": 110,
     "price_max": 200,
-    "notes": "Demo 档位，需接 OTA 校准。"
+    "notes": "样例预算档位，需接 OTA 校准。"
   },
   {
     "city": "广元",
     "tier": "舒适型",
     "price_min": 200,
     "price_max": 360,
-    "notes": "Demo 档位，需接 OTA 校准。"
+    "notes": "样例预算档位，需接 OTA 校准。"
   },
   {
     "city": "广元",
     "tier": "品质型",
     "price_min": 360,
     "price_max": 650,
-    "notes": "Demo 档位，需接 OTA 校准。"
+    "notes": "样例预算档位，需接 OTA 校准。"
   }
 ]

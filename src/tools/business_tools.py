@@ -41,11 +41,11 @@ def get_spot_ticket(spot_name_or_id: str) -> dict:
             (spot_name_or_id, pattern),
         ).fetchone()
     if not row:
-        return {"found": False, "message": "未找到该景区，请先在 scenic_spots 表维护。"}
+        return {"found": False, "message": "未找到该景区，需在 scenic_spots 表维护基础信息。"}
     data = row_to_dict(row)
     data["found"] = True
     if data.get("price_min") is None:
-        data["warning"] = "当前只有景区记录，没有已核实票价。Demo 可以先写死；上线前必须补官方或 OTA 来源。"
+        data["warning"] = "当前只有景区记录，没有已核实票价；正式展示前需补充官方或 OTA 来源。"
     return data
 
 
@@ -67,7 +67,7 @@ def estimate_hotel_budget(city: str, tier: str = "舒适型", nights: int = 1, r
         "rooms": rooms,
         "total_min": data["price_min"] * nights * rooms,
         "total_max": data["price_max"] * nights * rooms,
-        "warning": "这是人工预算档位估算，不是实时锁价；实际价格以酒店或 OTA 下单页为准。",
+        "warning": "该结果为人工预算档位估算，不是实时锁价；实际价格以酒店或 OTA 下单页为准。",
     })
     return data
 
@@ -121,7 +121,7 @@ def get_route_detail(route_id: str) -> dict:
 def recommend_route(city: str = "南充", hours: float | None = None, target_user: str | None = None) -> dict:
     routes = list_route_templates(city=city, target_user=target_user)
     if not routes:
-        return {"found": False, "message": "未找到匹配路线；可以先补 route_templates 和 route_stops。"}
+        return {"found": False, "message": "未找到匹配路线，需维护 route_templates 和 route_stops。"}
     if hours:
         routes = sorted(routes, key=lambda r: abs(float(r["duration_hours"]) - float(hours)))
     detail = get_route_detail(routes[0]["route_id"])

@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     milvus_lite_uri: Path = Path("data/processed/milvus_lite.db")
     milvus_collection: str = "san_guo_culture_chunks"
     business_db_path: Path = Path("data/processed/business.sqlite3")
-    source_doc_path: Path = Path(r"C:/Users/18496/Desktop/三国文化 AI 旅游智能体 Demo 开发需求文档.md")
+    source_doc_path: Path = Path("data/raw/source.md")
     redis_url: str = "redis://localhost:6379/0"
 
     llm_backend: str = "mock"

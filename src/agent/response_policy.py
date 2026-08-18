@@ -12,7 +12,7 @@ def build_guarded_answer(
         return (
             "资料不足，无法生成可靠回答。\n"
             f"意图：{intent.intent}\n"
-            "处理建议：补充权威资料后重新入库，或把问题缩小到已入库的人物、事件、地点。"
+            "处理方式：补充权威资料后重新入库，或将问题限定在已入库的人物、事件、地点范围内。"
         )
 
     warning_text = "\n".join(f"- {warning}" for warning in recall_report.warnings)
@@ -28,11 +28,10 @@ def build_guarded_answer(
         risk = "\n召回检查：通过。\n"
 
     return (
-        "这是基于当前知识库的检索式回答草稿，正式上线时应接入 LLM 生成层。\n\n"
+        "基于当前知识库生成的检索式回答如下。\n\n"
         f"用户问题：{message}\n"
         f"识别意图：{intent.intent}\n\n"
         f"可依据事实：\n{facts}\n"
         f"{risk}\n"
         f"来源：\n{source_lines}"
     )
-

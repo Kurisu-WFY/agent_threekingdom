@@ -47,7 +47,7 @@ class TravelAgentService:
         lines = [f"{city}{tier}酒店预算：{budget.get('estimated_total_min')} - {budget.get('estimated_total_max')} CNY/晚/间。"]
         if ticket_lines:
             lines.append("景区票价：" + "；".join(ticket_lines))
-        lines.append("说明：Demo 阶段景区票价可写死；酒店和交通波动大，上线应接 OTA/地图/12306 等实时工具。")
+        lines.append("说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。")
         return "\n".join(lines)
 
 
