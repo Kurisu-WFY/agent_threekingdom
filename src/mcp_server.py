@@ -60,7 +60,7 @@ async def list_tools():
         ),
         Tool(
             name="get_spot_ticket",
-            description="查询景区门票维护数据。Demo 阶段可能只有待核实记录。",
+            description="查询景区门票维护数据，返回价格区间、来源和数据状态。",
             inputSchema={
                 "type": "object",
                 "properties": {"spot_name_or_id": {"type": "string", "description": "景区名称或 spot_id"}},
@@ -170,4 +170,3 @@ app = Starlette(routes=[Route("/sse", endpoint=handle_sse), Mount("/messages", a
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

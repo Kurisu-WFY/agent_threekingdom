@@ -20,7 +20,7 @@
     ],
     "open_time": "以景区当日公告为准",
     "ticket_source_status": "manual_demo",
-    "notes": "Demo 票价为人工维护，正式上线前需核验官方/OTA。",
+    "notes": "票价为人工维护数据，正式展示前需核验官方/OTA。",
     "source_url": "",
     "demo_ticket": {
       "ticket_name": "成人票",
@@ -58,7 +58,7 @@
       "price_min": 50,
       "price_max": 120,
       "data_status": "manual_demo",
-      "notes": "Demo 预算区间，非实时票价。"
+      "notes": "样例预算区间，非实时票价。"
     }
   },
   {
@@ -81,14 +81,14 @@
     ],
     "open_time": "以当地公告为准",
     "ticket_source_status": "manual_demo",
-    "notes": "文化关联和开放状态需后续核验。",
+    "notes": "文化关联和开放状态需进一步核验。",
     "source_url": "",
     "demo_ticket": {
       "ticket_name": "参考票价",
       "price_min": 0,
       "price_max": 30,
       "data_status": "manual_demo",
-      "notes": "Demo 区间，需实地/官方核验。"
+      "notes": "样例价格区间，需实地/官方核验。"
     }
   },
   {
@@ -119,7 +119,7 @@
       "price_min": 90,
       "price_max": 120,
       "data_status": "manual_demo",
-      "notes": "Demo 区间，非实时票价。"
+      "notes": "样例价格区间，非实时票价。"
     }
   },
   {
@@ -150,7 +150,7 @@
       "price_min": 0,
       "price_max": 60,
       "data_status": "manual_demo",
-      "notes": "Demo 区间，非实时票价。"
+      "notes": "样例价格区间，非实时票价。"
     }
   }
 ]

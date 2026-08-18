@@ -46,7 +46,7 @@ def seed_spots(conn):
                     spot["spot_id"], ticket.get("ticket_name", "成人票"), ticket.get("price_min"), ticket.get("price_max"),
                     ticket.get("currency", "CNY"), ticket.get("booking_url", ""), ticket.get("source_type", "manual_demo_table"),
                     ticket.get("source_url", ""), ticket.get("updated_at", TODAY), ticket.get("data_status", "manual_fixed"),
-                    ticket.get("notes", "Demo 写死票价，上线前核验。"),
+                    ticket.get("notes", "样例票价，正式展示前需核验。"),
                 ),
             )
 
@@ -59,7 +59,7 @@ def seed_hotels(conn):
             (city, tier, price_min, price_max, currency, source_type, updated_at, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (row["city"], row["tier"], row["price_min"], row["price_max"], row.get("currency", "CNY"), row.get("source_type", "manual_demo_table"), row.get("updated_at", TODAY), row.get("notes", "Demo 预算档位。")),
+            (row["city"], row["tier"], row["price_min"], row["price_max"], row.get("currency", "CNY"), row.get("source_type", "manual_demo_table"), row.get("updated_at", TODAY), row.get("notes", "样例预算档位。")),
         )
 
 
