@@ -1,32 +1,65 @@
 [
   {
     "city": "南充",
-    "budget_tiers": [
-      {"tier": "经济型", "price_min": 120, "price_max": 200, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "舒适型", "price_min": 200, "price_max": 380, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "品质型", "price_min": 380, "price_max": 650, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"}
-    ],
-    "source_type": "manual_demo_table",
-    "updated_at": "2026-08-09"
+    "tier": "经济型",
+    "price_min": 120,
+    "price_max": 200,
+    "notes": "Demo 档位，淡旺季会波动。"
+  },
+  {
+    "city": "南充",
+    "tier": "舒适型",
+    "price_min": 200,
+    "price_max": 380,
+    "notes": "Demo 档位，淡旺季会波动。"
+  },
+  {
+    "city": "南充",
+    "tier": "品质型",
+    "price_min": 380,
+    "price_max": 650,
+    "notes": "Demo 档位，淡旺季会波动。"
   },
   {
     "city": "阆中",
-    "budget_tiers": [
-      {"tier": "经济型", "price_min": 120, "price_max": 220, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "舒适型", "price_min": 220, "price_max": 420, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "品质型", "price_min": 420, "price_max": 800, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"}
-    ],
-    "source_type": "manual_demo_table",
-    "updated_at": "2026-08-09"
+    "tier": "经济型",
+    "price_min": 120,
+    "price_max": 220,
+    "notes": "古城节假日波动更大。"
+  },
+  {
+    "city": "阆中",
+    "tier": "舒适型",
+    "price_min": 220,
+    "price_max": 420,
+    "notes": "古城节假日波动更大。"
+  },
+  {
+    "city": "阆中",
+    "tier": "品质型",
+    "price_min": 420,
+    "price_max": 800,
+    "notes": "古城节假日波动更大。"
   },
   {
     "city": "广元",
-    "budget_tiers": [
-      {"tier": "经济型", "price_min": 110, "price_max": 200, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "舒适型", "price_min": 200, "price_max": 360, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"},
-      {"tier": "品质型", "price_min": 360, "price_max": 650, "currency": "CNY", "notes": "Demo 估算档位，需人工核实。"}
-    ],
-    "source_type": "manual_demo_table",
-    "updated_at": "2026-08-09"
+    "tier": "经济型",
+    "price_min": 110,
+    "price_max": 200,
+    "notes": "Demo 档位，需接 OTA 校准。"
+  },
+  {
+    "city": "广元",
+    "tier": "舒适型",
+    "price_min": 200,
+    "price_max": 360,
+    "notes": "Demo 档位，需接 OTA 校准。"
+  },
+  {
+    "city": "广元",
+    "tier": "品质型",
+    "price_min": 360,
+    "price_max": 650,
+    "notes": "Demo 档位，需接 OTA 校准。"
   }
 ]

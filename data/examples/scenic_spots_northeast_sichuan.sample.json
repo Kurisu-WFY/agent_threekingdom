@@ -3,46 +3,154 @@
     "spot_id": "nanchong_xishan_wanjuanlou",
     "name": "西山风景区·万卷楼",
     "city": "南充",
-    "theme": ["陈寿", "三国志", "三国文化溯源"],
+    "address": "四川省南充市顺庆区西山风景区",
+    "lat": 30.792,
+    "lng": 106.067,
+    "theme": [
+      "陈寿",
+      "三国志",
+      "蜀汉记忆"
+    ],
     "relation_level": "core",
-    "ticket_source_status": "needs_official_verification",
-    "notes": "PPT 和公开宣传材料均将其作为陈寿与三国文化主入口。"
+    "recommended_duration_min": 90,
+    "suitable_users": [
+      "大众",
+      "亲子",
+      "学术"
+    ],
+    "open_time": "以景区当日公告为准",
+    "ticket_source_status": "manual_demo",
+    "notes": "Demo 票价为人工维护，正式上线前需核验官方/OTA。",
+    "source_url": "",
+    "demo_ticket": {
+      "ticket_name": "成人票",
+      "price_min": 0,
+      "price_max": 0,
+      "data_status": "manual_demo",
+      "notes": "示例：部分城市公园/楼阁票价可能包含于景区政策，需上线前核验。"
+    }
   },
   {
     "spot_id": "nanchong_langzhong_huanhouci",
     "name": "阆中古城·汉桓侯祠（张飞庙）",
-    "city": "南充阆中",
-    "theme": ["张飞", "蜀汉", "阆中古城"],
+    "city": "阆中",
+    "address": "四川省南充市阆中市古城景区内",
+    "lat": 31.577,
+    "lng": 105.965,
+    "theme": [
+      "张飞",
+      "蜀汉人物",
+      "古城"
+    ],
     "relation_level": "core",
-    "ticket_source_status": "needs_official_verification",
-    "notes": "南充宣传材料明确提到阆中汉桓侯祠与三国文化。"
+    "recommended_duration_min": 90,
+    "suitable_users": [
+      "大众",
+      "亲子",
+      "学术"
+    ],
+    "open_time": "以景区当日公告为准",
+    "ticket_source_status": "manual_demo",
+    "notes": "票价可能与阆中古城联票/单点票相关。",
+    "source_url": "",
+    "demo_ticket": {
+      "ticket_name": "成人票",
+      "price_min": 50,
+      "price_max": 120,
+      "data_status": "manual_demo",
+      "notes": "Demo 预算区间，非实时票价。"
+    }
   },
   {
     "spot_id": "nanchong_hemingshan_wangpingmu",
     "name": "鹤鸣山景区·王平墓",
     "city": "南充",
-    "theme": ["王平", "蜀汉", "三国遗迹"],
+    "address": "四川省南充市高坪区鹤鸣山片区",
+    "lat": 30.78,
+    "lng": 106.11,
+    "theme": [
+      "王平",
+      "蜀汉将领",
+      "地方遗迹"
+    ],
     "relation_level": "candidate",
-    "ticket_source_status": "needs_official_verification",
-    "notes": "南充宣传材料提到蜀道三国文化游可到鹤鸣山景区看汉将军王平墓。"
+    "recommended_duration_min": 60,
+    "suitable_users": [
+      "学术",
+      "文化深度游"
+    ],
+    "open_time": "以当地公告为准",
+    "ticket_source_status": "manual_demo",
+    "notes": "文化关联和开放状态需后续核验。",
+    "source_url": "",
+    "demo_ticket": {
+      "ticket_name": "参考票价",
+      "price_min": 0,
+      "price_max": 30,
+      "data_status": "manual_demo",
+      "notes": "Demo 区间，需实地/官方核验。"
+    }
   },
   {
     "spot_id": "guangyuan_jianmen_shudao",
     "name": "剑门蜀道剑门关旅游景区",
-    "city": "广元剑阁",
-    "theme": ["剑门关", "蜀道", "三国文化"],
-    "relation_level": "core_regional",
-    "ticket_source_status": "official_catalog_available",
-    "notes": "广元市文广旅局 A 级景区名录列出门票价格，并称其为蜀道三国文化精品旅游线路支撑中心。"
+    "city": "广元",
+    "address": "四川省广元市剑阁县剑门关镇",
+    "lat": 32.214,
+    "lng": 105.57,
+    "theme": [
+      "蜀道",
+      "姜维",
+      "三国军事地理"
+    ],
+    "relation_level": "core",
+    "recommended_duration_min": 240,
+    "suitable_users": [
+      "大众",
+      "年轻游客",
+      "文化深度游"
+    ],
+    "open_time": "以景区当日公告为准",
+    "ticket_source_status": "manual_demo",
+    "notes": "大型山地景区，天气和体力成本是规划关键。",
+    "source_url": "",
+    "demo_ticket": {
+      "ticket_name": "成人票",
+      "price_min": 90,
+      "price_max": 120,
+      "data_status": "manual_demo",
+      "notes": "Demo 区间，非实时票价。"
+    }
   },
   {
     "spot_id": "guangyuan_zhaohua_ancient_city",
     "name": "昭化古城",
-    "city": "广元昭化",
-    "theme": ["葭萌关", "张飞夜战马超", "蜀汉"],
-    "relation_level": "core_regional",
-    "ticket_source_status": "needs_official_verification",
-    "notes": "昭化区政府材料称其保存有三国故事和古城遗址。"
+    "city": "广元",
+    "address": "四川省广元市昭化区昭化镇",
+    "lat": 32.322,
+    "lng": 105.966,
+    "theme": [
+      "葭萌关",
+      "蜀汉北伐通道",
+      "古城"
+    ],
+    "relation_level": "core",
+    "recommended_duration_min": 180,
+    "suitable_users": [
+      "大众",
+      "亲子",
+      "文化深度游"
+    ],
+    "open_time": "以景区当日公告为准",
+    "ticket_source_status": "manual_demo",
+    "notes": "部分点位可能免费或联票，正式上线需拆分票项。",
+    "source_url": "",
+    "demo_ticket": {
+      "ticket_name": "参考票价",
+      "price_min": 0,
+      "price_max": 60,
+      "data_status": "manual_demo",
+      "notes": "Demo 区间，非实时票价。"
+    }
   }
 ]
-

@@ -1,21 +1,68 @@
 [
   {
-    "route_id": "one_day_story_route_sample",
-    "name": "陈寿笔下的蜀汉记忆一日路线样例",
-    "duration_hours": 6,
-    "target_users": ["大众", "亲子", "文化深度游"],
-    "transport": "待确认",
-    "budget_level": "unknown",
+    "route_id": "nanchong_one_day_story_route",
+    "name": "陈寿笔下的蜀汉记忆·南充一日线",
+    "city": "南充",
+    "target_user": "大众",
+    "duration_hours": 8,
+    "transport_mode": "打车/公交",
+    "summary": "以陈寿和地方蜀汉遗迹为主线，适合 Demo 展示“文化解释 + 路线 + 预算”。",
+    "risk_note": "王平墓开放状态和讲解资料需核验。",
     "stops": [
       {
-        "spot_id": "wanjuanlou",
-        "order": 1,
-        "duration_min": 60,
-        "narrative_stage": "寻源",
-        "reason": "作为叙事起点，先认识陈寿与《三国志》。"
+        "stop_order": 1,
+        "spot_id": "nanchong_xishan_wanjuanlou",
+        "stay_minutes": 120,
+        "reason": "用陈寿与《三国志》建立核心叙事。"
+      },
+      {
+        "stop_order": 2,
+        "spot_id": "nanchong_hemingshan_wangpingmu",
+        "stay_minutes": 60,
+        "reason": "补充蜀汉人物在川东北的地方记忆。"
       }
-    ],
-    "data_status": "simulated"
+    ]
+  },
+  {
+    "route_id": "langzhong_shuhan_half_day_route",
+    "name": "阆中蜀汉人物半日线",
+    "city": "阆中",
+    "target_user": "亲子",
+    "duration_hours": 4,
+    "transport_mode": "步行/短途打车",
+    "summary": "围绕张飞庙和阆中古城做低强度文化游。",
+    "risk_note": "节假日古城住宿和停车成本显著上升。",
+    "stops": [
+      {
+        "stop_order": 1,
+        "spot_id": "nanchong_langzhong_huanhouci",
+        "stay_minutes": 90,
+        "reason": "张飞相关故事辨识度高，适合作为亲子入口。"
+      }
+    ]
+  },
+  {
+    "route_id": "guangyuan_shudao_two_day_route",
+    "name": "广元蜀道三国两日线",
+    "city": "广元",
+    "target_user": "大众",
+    "duration_hours": 16,
+    "transport_mode": "包车/自驾/打车",
+    "summary": "把剑门关军事地理和昭化古城的蜀道节点串起来。",
+    "risk_note": "剑门关受天气、体力和索道/交通安排影响较大。",
+    "stops": [
+      {
+        "stop_order": 1,
+        "spot_id": "guangyuan_jianmen_shudao",
+        "stay_minutes": 240,
+        "reason": "蜀道与三国军事地理的主场景。"
+      },
+      {
+        "stop_order": 2,
+        "spot_id": "guangyuan_zhaohua_ancient_city",
+        "stay_minutes": 180,
+        "reason": "补充古城、关隘与交通节点叙事。"
+      }
+    ]
   }
 ]
-
