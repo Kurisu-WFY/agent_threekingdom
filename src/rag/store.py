@@ -23,8 +23,8 @@ class LocalVectorStore:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.records, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def upsert(self, chunks: list[KnowledgeChunk]) -> None:
-        existing = {record["chunk"]["id"]: record for record in self.records}
+    def upsert(self, chunks: list[KnowledgeChunk], drop_existing: bool = False) -> None:
+        existing = {} if drop_existing else {record["chunk"]["id"]: record for record in self.records}
         for chunk in chunks:
             embedding_text = chunk.title + "\n" + chunk.content + "\n" + " ".join(chunk.entities)
             existing[chunk.id] = {

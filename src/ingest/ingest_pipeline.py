@@ -2,7 +2,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from config import get_settings
 from domain import KnowledgeChunk
@@ -60,7 +60,7 @@ def build_index() -> int:
             sample = Path("data/examples/knowledge_chunks.sample.jsonl")
             chunks = load_jsonl(sample)
     store = get_vector_store()
-    store.upsert(chunks, drop_existing=True) if hasattr(store, "create_collection") else store.upsert(chunks)
+    store.upsert(chunks, drop_existing=True)
     return len(chunks)
 
 
