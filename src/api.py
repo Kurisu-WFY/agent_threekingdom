@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from agent.orchestrator import TravelAgentService
 from cache.redis_cache import redis_health
@@ -13,7 +13,7 @@ service = TravelAgentService()
 class ChatRequest(BaseModel):
     message: str
     mode: str = "大众"
-    history: list[dict[str, str]] = []
+    history: list[dict[str, str]] = Field(default_factory=list)
 
 
 @app.get("/health")

@@ -50,7 +50,7 @@ class AnswerChain:
         messages = list(history or []) + [{"role": "user", "content": message}]
         messages = [{"role": "system", "content": system}] + messages
 
-        if not self.llm.available():
+        if not self.llm.available() or not report.passed:
             return build_guarded_answer(message, intent, hits, report)
         try:
             return self.llm.chat(messages)

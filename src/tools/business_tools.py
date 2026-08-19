@@ -10,8 +10,19 @@ def row_to_dict(row: Any) -> dict:
     return dict(row) if row else {}
 
 
-def list_scenic_spots(city: str | None = None) -> list[dict]:
+def ensure_demo_data() -> None:
     init_db()
+    with connect() as conn:
+        row = conn.execute("SELECT 1 FROM scenic_spots LIMIT 1").fetchone()
+    if row:
+        return
+    from ingest.seed_business_db import main as seed_business_db
+
+    seed_business_db()
+
+
+def list_scenic_spots(city: str | None = None) -> list[dict]:
+    ensure_demo_data()
     with connect() as conn:
         if city:
             rows = conn.execute(
@@ -24,7 +35,7 @@ def list_scenic_spots(city: str | None = None) -> list[dict]:
 
 
 def get_spot_ticket(spot_name_or_id: str) -> dict:
-    init_db()
+    ensure_demo_data()
     pattern = f"%{spot_name_or_id}%"
     with connect() as conn:
         row = conn.execute(
@@ -50,7 +61,7 @@ def get_spot_ticket(spot_name_or_id: str) -> dict:
 
 
 def estimate_hotel_budget(city: str, tier: str = "舒适型", nights: int = 1, rooms: int = 1) -> dict:
-    init_db()
+    ensure_demo_data()
     nights = max(int(nights or 1), 1)
     rooms = max(int(rooms or 1), 1)
     with connect() as conn:
@@ -83,7 +94,7 @@ def search_hotel_poi_request(city: str, near_spot: str | None = None, keyword: s
 
 
 def list_route_templates(city: str | None = None, target_user: str | None = None) -> list[dict]:
-    init_db()
+    ensure_demo_data()
     sql = "SELECT * FROM route_templates WHERE 1=1"
     params: list[Any] = []
     if city:
@@ -99,7 +110,7 @@ def list_route_templates(city: str | None = None, target_user: str | None = None
 
 
 def get_route_detail(route_id: str) -> dict:
-    init_db()
+    ensure_demo_data()
     with connect() as conn:
         route = conn.execute("SELECT * FROM route_templates WHERE route_id = ?", (route_id,)).fetchone()
         stops = conn.execute(
@@ -134,6 +145,7 @@ def plan_budget(city: str, hotel_tier: str = "舒适型", nights: int = 1, rooms
     if not hotel.get("found"):
         return hotel
     return {
+        "found": True,
         "city": city,
         "hotel": hotel,
         "train_budget": train_budget,
