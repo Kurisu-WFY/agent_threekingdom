@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-from agent.chain import AnswerChain
-from agent.intent_router import route_intent
+try:
+    from .chain import AnswerChain
+    from .intent_router import route_intent
+except ImportError:
+    from chain import AnswerChain
+    from intent_router import route_intent
 from planning.route_planner import plan_route
 from rag.retriever import HybridRetriever
 from tools.business_tools import get_spot_ticket, plan_budget

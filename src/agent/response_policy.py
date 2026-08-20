@@ -1,4 +1,7 @@
-from agent.intent_router import IntentResult
+try:
+    from .intent_router import IntentResult
+except ImportError:
+    from intent_router import IntentResult
 from domain import RecallReport, RetrievalHit
 
 

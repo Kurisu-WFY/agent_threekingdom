@@ -1,4 +1,22 @@
-from rag.retriever import HybridRetriever, format_context
-from rag.store import get_vector_store
+from __future__ import annotations
+
+from importlib import import_module
+from typing import Any
+
 
 __all__ = ["HybridRetriever", "format_context", "get_vector_store"]
+
+_EXPORTS = {
+    "HybridRetriever": ("rag.retriever", "HybridRetriever"),
+    "format_context": ("rag.retriever", "format_context"),
+    "get_vector_store": ("rag.store", "get_vector_store"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name not in _EXPORTS:
+        raise AttributeError(f"module 'rag' has no attribute {name!r}")
+    module_name, attribute_name = _EXPORTS[name]
+    value = getattr(import_module(module_name), attribute_name)
+    globals()[name] = value
+    return value
