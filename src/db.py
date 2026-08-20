@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from config import get_settings
+from san_guo_core.settings import get_settings
 
 
 SCHEMA_SQL = """

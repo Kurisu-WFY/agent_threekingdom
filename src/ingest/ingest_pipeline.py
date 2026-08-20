@@ -4,11 +4,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from config import get_settings
-from domain import KnowledgeChunk
+from san_guo_core.settings import get_settings
+from san_guo_core.models import KnowledgeChunk
 from ingest.validate_sources import classify_source
 from rag.chunking import chunk_by_knowledge_unit
-from rag.store import get_vector_store
+from rag.vector_store import get_vector_store
 
 
 def load_jsonl(path: Path) -> list[KnowledgeChunk]:

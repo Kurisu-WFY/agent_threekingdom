@@ -2,7 +2,10 @@ import hashlib
 import math
 from collections import Counter
 
-from rag.tokenizer import tokenize
+try:
+    from .tokenizer import tokenize
+except ImportError:
+    from tokenizer import tokenize
 
 
 class HashEmbeddingModel:
@@ -25,4 +28,3 @@ def cosine(a: list[float], b: list[float]) -> float:
     if not a or not b:
         return 0.0
     return sum(x * y for x, y in zip(a, b))
-

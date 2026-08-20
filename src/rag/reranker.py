@@ -1,5 +1,8 @@
-from domain import RetrievalHit
-from rag.tokenizer import tokenize
+from san_guo_core.models import RetrievalHit
+try:
+    from .tokenizer import tokenize
+except ImportError:
+    from tokenizer import tokenize
 
 
 SOURCE_WEIGHT = {"A": 1.0, "B": 0.75, "C": 0.35}
@@ -19,4 +22,3 @@ def rerank(query: str, hits: list[RetrievalHit], top_n: int) -> list[RetrievalHi
             + 0.05 * (1.0 if hit.chunk.risk_note == "" else 0.7)
         )
     return sorted(hits, key=lambda item: item.rerank_score, reverse=True)[:top_n]
-

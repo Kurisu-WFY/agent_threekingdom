@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import httpx
 
-from config import get_settings
+from san_guo_core.settings import get_settings
 
 
 class LLMClient:
