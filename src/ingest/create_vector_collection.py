@@ -3,8 +3,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from config import get_settings
-from rag.store import MilvusVectorStore
+from san_guo_core.settings import get_settings
+from rag.vector_store import MilvusVectorStore
 
 
 def main() -> None:

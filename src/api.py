@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 from agent.orchestrator import TravelAgentService
 from cache.redis_cache import redis_health
-from config import get_settings
+from san_guo_core.settings import get_settings
 
 
 app = FastAPI(title="San Guo AI Travel Agent", version="0.2.0")

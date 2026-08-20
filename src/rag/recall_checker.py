@@ -1,5 +1,5 @@
-from config import get_settings
-from domain import RecallReport, RetrievalHit
+from san_guo_core.settings import get_settings
+from san_guo_core.models import RecallReport, RetrievalHit
 
 def inspect_recall(query: str, candidates: list[RetrievalHit], final_hits: list[RetrievalHit]) -> RecallReport:
     settings = get_settings()

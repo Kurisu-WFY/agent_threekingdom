@@ -2,7 +2,7 @@ try:
     from .intent_router import IntentResult
 except ImportError:
     from intent_router import IntentResult
-from domain import RecallReport, RetrievalHit
+from san_guo_core.models import RecallReport, RetrievalHit
 
 
 def build_guarded_answer(

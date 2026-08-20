@@ -1,7 +1,7 @@
 import json
 from typing import Any
 
-from config import get_settings
+from san_guo_core.settings import get_settings
 
 
 class RedisCache:

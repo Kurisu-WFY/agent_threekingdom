@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from rag.retriever import HybridRetriever
+from rag.hybrid_retriever import HybridRetriever
 
 
 DEFAULT_CASES = [

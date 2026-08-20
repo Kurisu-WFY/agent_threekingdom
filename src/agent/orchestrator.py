@@ -1,39 +1,43 @@
 from __future__ import annotations
 
 try:
-    from .chain import AnswerChain
+    from .answer_chain import AnswerChain
     from .intent_router import route_intent
 except ImportError:
     from chain import AnswerChain
     from intent_router import route_intent
 from planning.route_planner import plan_route
-from rag.retriever import HybridRetriever
-from tools.business_tools import get_spot_ticket, plan_budget
+from rag.hybrid_retriever import HybridRetriever
+from tools.travel_business_tools import get_spot_ticket, plan_budget
 
 
 class TravelAgentService:
     def __init__(self) -> None:
-        self.retriever = HybridRetriever()
+        self.hybrid_retriever = HybridRetriever()
         self.answer_chain = AnswerChain()
 
     def answer(self, message: str, mode: str = "大众", history: list[dict] | None = None) -> dict:
         intent = route_intent(message)
         if intent.intent == "route_planning":
-            result = plan_route(message, mode=mode)
-            return {"intent": intent.__dict__, **result}
+            route_result = plan_route(message, mode=mode)
+            return {"intent": intent.__dict__, **route_result}
         if intent.intent == "budget_ticket":
             return {"intent": intent.__dict__, "answer": self._answer_budget(message), "route": None}
 
-        hits, report = self.retriever.retrieve(message, intent=intent.intent)
-        answer = self.answer_chain.run(
+        retrieval_hits, recall_report = self.hybrid_retriever.retrieve(message, intent=intent.intent)
+        answer_text = self.answer_chain.run(
             message=message,
             intent=intent,
-            hits=hits,
-            report=report,
+            hits=retrieval_hits,
+            report=recall_report,
             mode=mode,
             history=history or [],
         )
-        return {"intent": intent.__dict__, "answer": answer, "retrieval": report.model_dump()}
+        return {
+            "intent": intent.__dict__,
+            "answer": answer_text,
+            "retrieval": recall_report.model_dump(),
+        }
 
     def _answer_budget(self, message: str) -> str:
         city = "阆中" if "阆中" in message else "广元" if ("广元" in message or "剑门" in message or "昭化" in message) else "南充"
