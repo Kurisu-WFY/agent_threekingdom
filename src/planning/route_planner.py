@@ -6,7 +6,14 @@ from tools.travel_business_tools import recommend_route, search_hotel_poi_reques
 
 
 CITY_ALIASES = {
+    "南充": "南充",
+    "万卷楼": "南充",
+    "西山": "南充",
+    "陈寿": "南充",
     "成都": "成都",
+    "阆中": "阆中",
+    "张飞庙": "阆中",
+    "汉桓侯祠": "阆中",
     "襄阳": "襄阳",
     "广元": "广元",
     "剑阁": "广元",
@@ -19,7 +26,7 @@ def _guess_city(user_message: str) -> str:
     for city_alias, city_name in CITY_ALIASES.items():
         if city_alias in user_message:
             return city_name
-    return "成都"
+    return "南充"
 
 
 def _guess_duration_hours(user_message: str) -> float | None:
@@ -40,7 +47,7 @@ def _guess_target_user(user_message: str) -> str:
         return "学生"
     if "老人" in user_message or "长辈" in user_message:
         return "老年游客"
-    return "普通游客"
+    return "大众"
 
 
 def plan_route(user_message: str, mode: str = "轻松") -> dict:
