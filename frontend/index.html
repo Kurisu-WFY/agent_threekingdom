@@ -60,7 +60,8 @@
   </div>
 
   <script>
-    const API = "http://localhost:8001/chat";
+    // 前端由后端挂载在 / 根路径(同源)，用相对路径，任何部署地址下都能正确调用 /chat
+    const API = "/chat";
     const chat = document.getElementById("chat");
     const form = document.getElementById("form");
     const input = document.getElementById("input");
