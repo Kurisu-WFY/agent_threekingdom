@@ -1,10 +1,13 @@
 from __future__ import annotations
-
+from rag.hybrid_retriever import HybridRetriever, format_context
+from rag.vector_store import get_vector_store
 from importlib import import_module
 from typing import Any
 
 
 __all__ = ["HybridRetriever", "format_context", "get_vector_store"]
+
+from rag.vector_store import get_vector_store
 
 _EXPORTS = {
     "HybridRetriever": (".hybrid_retriever", "HybridRetriever"),
