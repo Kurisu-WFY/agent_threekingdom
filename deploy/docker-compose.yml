@@ -1,0 +1,24 @@
+services:
+  threekingdom-api:
+    build:
+      # 构建上下文 = 仓库根目录，Dockerfile 位于 deploy/
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: agent-threekingdom
+    ports:
+      # 本机 8000 常被 Docker 后台占用，故映射到 8001（容器内仍为 8000）
+      - "8001:8000"
+    environment:
+      - APP_ENV=dev
+      - LLM_BACKEND=mock
+      - EMBEDDING_BACKEND=hash
+      - EMBEDDING_DIMENSION=384
+      - MILVUS_LITE_URI=/app/data/processed/milvus_lite.db
+      - MILVUS_COLLECTION=san_guo_culture_chunks
+      - BUSINESS_DB_PATH=/app/data/processed/business.sqlite3
+      - SOURCE_DOC_PATH=/app/data/raw/source.md
+      - REDIS_ENABLED=false
+    volumes:
+      # 数据目录挂载到宿主机，容器重建不丢库
+      - ./data:/app/data
+    restart: unless-stopped
