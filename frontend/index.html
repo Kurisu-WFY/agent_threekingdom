@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三国文化旅游助手</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand"><span class="brand-mark">蜀</span>三国文化旅游助手</span>
+    <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">主界面</span></span>
+    <span class="status" data-service-status role="status">正在检查服务…</span>
+  </header>
+
+  <main class="workspace">
+    <section class="content" aria-label="主内容区">
+      <div class="content-heading">
+        <span>陈寿笔下的蜀汉记忆</span>
+        <span class="eyebrow">川东北三国文化旅游</span>
+      </div>
+
+      <div class="welcome">
+        <p class="welcome-kicker">循陈寿的笔，读一部蜀汉记忆</p>
+        <h1>走一趟三国故地，从南充到剑门</h1>
+        <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。回答基于已入库资料，并区分正史、演义与地方传说。</p>
+
+        <div class="cards">
+          <article class="card">
+            <span class="card-icon">📜</span>
+            <h2>文化问答</h2>
+            <p>陈寿、《三国志》、蜀汉人物与川东北地方史迹</p>
+          </article>
+          <article class="card">
+            <span class="card-icon">🗺️</span>
+            <h2>路线规划</h2>
+            <p>按城市、时长与人群给出游览顺序和风险提示</p>
+          </article>
+          <article class="card">
+            <span class="card-icon">🎫</span>
+            <h2>预算票价</h2>
+            <p>景区票价与酒店预算区间估算</p>
+          </article>
+        </div>
+
+        <div class="starters">
+          <span class="starters-title">试试这样问</span>
+          <div class="chips" id="starters">
+            <button class="chip" data-q="南充一天三国文化路线">南充一天三国文化路线</button>
+            <button class="chip" data-q="广元两天三国文化路线推荐">广元两天三国文化路线推荐</button>
+            <button class="chip" data-q="南充舒适型酒店预算和万卷楼票价多少钱">南充预算与万卷楼票价</button>
+            <button class="chip" data-q="三国志和三国演义有什么区别">三国志与演义的区别</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="content-footer">
+        <span>陈寿笔下的蜀汉记忆</span>
+        <span class="note">票价为维护数据 · 动态信息以官方为准</span>
+      </footer>
+    </section>
+  </main>
+
+  <button class="launcher" id="launcher" aria-label="打开对话，可拖动调整位置" aria-expanded="false" aria-controls="chat-panel">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11 10h26a5 5 0 0 1 5 5v17a5 5 0 0 1-5 5H23l-10 7v-7h-2a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5Z"/><circle cx="16" cy="24" r="1.6"/><circle cx="24" cy="24" r="1.6"/><circle cx="32" cy="24" r="1.6"/></svg>
+    <span>对话助手</span>
+  </button>
+
+  <aside class="chat-panel" id="chat-panel" aria-label="对话面板" hidden>
+    <nav class="history" aria-label="历史对话">
+      <button id="new-chat" class="new-chat" aria-label="新建对话">＋</button>
+      <span class="history-title">本页对话</span>
+      <div id="history-list"></div>
+    </nav>
+    <section class="conversation">
+      <header class="chat-heading">
+        <div>
+          <strong>对话助手</strong>
+          <span class="sub" data-service-status>正在检查服务…</span>
+        </div>
+        <button id="close-chat" class="close" aria-label="关闭对话">×</button>
+      </header>
+      <div id="messages" class="messages" role="log" aria-live="polite"></div>
+      <form id="chat-form" class="composer">
+        <label class="sr-only" for="message">输入消息</label>
+        <textarea id="message" placeholder="输入消息，或点上方示例问题…" rows="2" maxlength="2000"></textarea>
+        <div class="composer-bottom">
+          <span>Enter 发送 · Shift + Enter 换行</span>
+          <button type="submit" aria-label="发送消息">↑</button>
+        </div>
+      </form>
+      <p class="demo-note">回答由三国文化旅游智能服务生成 · 票价为维护数据</p>
+    </section>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

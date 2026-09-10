@@ -1,0 +1,314 @@
+const launcher = document.querySelector('#launcher');
+const panel = document.querySelector('#chat-panel');
+const input = document.querySelector('#message');
+const messages = document.querySelector('#messages');
+const historyList = document.querySelector('#history-list');
+const form = document.querySelector('#chat-form');
+const submitButton = form.querySelector('button[type="submit"]');
+const viewLabel = document.querySelector('#view-label');
+
+const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
+const WELCOME = '你好，我是三国文化旅游助手。可以问我三国文化，南充 / 阆中 / 广元的路线，或门票与住宿预算。';
+const INTENT_LABELS = {
+  culture_qa: '文化问答',
+  history_vs_romance: '正史 / 演义',
+  route_planning: '路线规划',
+  budget_ticket: '预算票价'
+};
+
+let chats = [{ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] }];
+let active = 0;
+function updateComposer() {
+  submitButton.disabled = !!chats[active].pending || !input.value.trim();
+  submitButton.setAttribute('aria-label', chats[active].pending ? '正在生成回答' : '发送消息');
+}
+
+function saveDraft() {
+  chats[active].draft = input.value;
+}
+
+/* ---------------- 渲染 ---------------- */
+function tag(text, variant) {
+  const span = document.createElement('span');
+  span.className = 'tag' + (variant ? ' ' + variant : '');
+  span.textContent = text;
+  return span;
+}
+
+function routeCard(route, stops) {
+  const card = document.createElement('div');
+  card.className = 'route-card';
+  const name = document.createElement('div');
+  name.className = 'route-name';
+  name.textContent = route.name + (route.duration_hours ? ' · ' + route.duration_hours + ' 小时' : '');
+  card.append(name);
+  if (Array.isArray(stops) && stops.length) {
+    const list = document.createElement('ol');
+    list.className = 'route-stops';
+    stops.forEach(stop => {
+      const li = document.createElement('li');
+      li.textContent = stop.name + (stop.stay_minutes ? '（约 ' + stop.stay_minutes + ' 分钟）' : '');
+      list.append(li);
+    });
+    card.append(list);
+  }
+  return card;
+}
+
+function metaNode(data) {
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const intent = data && data.intent && data.intent.intent;
+  if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
+  const route = data && data.route && data.route.route;
+  if (route) meta.append(routeCard(route, data.route.stops));
+  const retrieval = data && data.retrieval;
+  if (retrieval) {
+    meta.append(tag('召回覆盖 ' + Math.round((retrieval.coverage || 0) * 100) + '%'));
+    if (Array.isArray(retrieval.missing_entities) && retrieval.missing_entities.length) {
+      meta.append(tag('未覆盖：' + retrieval.missing_entities.join('、')));
+    }
+  }
+  return meta;
+}
+
+function bubbleNode(message) {
+  const bubble = document.createElement('div');
+  if (message.pending) {
+    bubble.className = 'bubble typing';
+    bubble.setAttribute('aria-label', '正在整理回答，请稍候');
+    for (let i = 0; i < 3; i += 1) {
+      const dot = document.createElement('span');
+      dot.className = 'typing-dot';
+      bubble.append(dot);
+    }
+  } else {
+    bubble.className = 'bubble';
+    bubble.textContent = message.text;
+  }
+  return bubble;
+}
+
+function messageNode(message) {
+  const row = document.createElement('div');
+  row.className = 'message ' + (message.role === 'user' ? 'user' : 'assistant');
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = message.role === 'user' ? '你' : '蜀';
+  const body = document.createElement('div');
+  body.className = 'body';
+  body.append(bubbleNode(message));
+  if (message.error) {
+    const retry = document.createElement('button');
+    retry.className = 'retry';
+    retry.textContent = '重新请求';
+    retry.disabled = !!chats[active].pending;
+    retry.onclick = () => requestReply(chats[active], message);
+    body.append(retry);
+  }
+  if (message.data) body.append(metaNode(message.data));
+  row.append(avatar, body);
+  return row;
+}
+
+function render() {
+  historyList.replaceChildren();
+  chats.forEach((chat, index) => {
+    const button = document.createElement('button');
+    button.className = 'history-item' + (index === active ? ' active' : '');
+    button.textContent = chat.title;
+    button.title = chat.title;
+    button.setAttribute('aria-pressed', String(index === active));
+    button.onclick = () => {
+      saveDraft();
+      active = index;
+      input.value = chats[active].draft || '';
+      render();
+    };
+    historyList.append(button);
+  });
+  messages.replaceChildren();
+  chats[active].messages.forEach(message => messages.append(messageNode(message)));
+  messages.scrollTop = messages.scrollHeight;
+  updateComposer();
+}
+
+/* ---------------- 展开 / 收起 ---------------- */
+function toggleChat(open) {
+  panel.hidden = !open;
+  document.body.classList.toggle('chat-open', open);
+  launcher.setAttribute('aria-expanded', String(open));
+  launcher.setAttribute('aria-label', open ? '关闭对话，可拖动调整位置' : '打开对话，可拖动调整位置');
+  launcher.style.left = launcher.style.top = launcher.style.bottom = launcher.style.right = '';
+  viewLabel.textContent = open ? '对话界面' : '主界面';
+  if (open) input.focus(); else launcher.focus();
+}
+
+/* ---------------- 拖动入口 ---------------- */
+let drag = null;
+let suppressClick = false;
+
+launcher.addEventListener('pointerdown', event => {
+  if (event.button !== 0) return;
+  const rect = launcher.getBoundingClientRect();
+  drag = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
+  suppressClick = false;
+  launcher.setPointerCapture(event.pointerId);
+});
+
+launcher.addEventListener('pointermove', event => {
+  if (!drag) return;
+  const dx = event.clientX - drag.x;
+  const dy = event.clientY - drag.y;
+  if (Math.hypot(dx, dy) > 5) drag.moved = true;
+  if (!drag.moved) return;
+  launcher.classList.add('dragging');
+  const availableWidth = window.innerWidth - (panel.hidden ? 0 : panel.offsetWidth);
+  launcher.style.left = Math.max(0, Math.min(availableWidth - launcher.offsetWidth, drag.left + dx)) + 'px';
+  launcher.style.top = Math.max(30, Math.min(window.innerHeight - launcher.offsetHeight, drag.top + dy)) + 'px';
+  launcher.style.right = launcher.style.bottom = 'auto';
+});
+
+launcher.addEventListener('pointerup', () => {
+  suppressClick = !!drag?.moved;
+  drag = null;
+  launcher.classList.remove('dragging');
+});
+
+launcher.addEventListener('pointercancel', () => {
+  drag = null;
+  suppressClick = true;
+  launcher.classList.remove('dragging');
+});
+
+launcher.addEventListener('click', event => {
+  if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
+  toggleChat(panel.hidden);
+});
+
+document.querySelector('#close-chat').onclick = () => toggleChat(false);
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !panel.hidden) toggleChat(false);
+});
+
+document.querySelector('#new-chat').onclick = () => {
+  saveDraft();
+  chats.unshift({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });
+  active = 0;
+  input.value = '';
+  render();
+  input.focus();
+};
+
+/* ---------------- 调用后端 ---------------- */
+function ask(text, history) {
+  return fetch(API, {
+    signal: AbortSignal.timeout(60000),
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: text, mode: '大众', history })
+  }).then(response => {
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.json();
+  });
+}
+
+function send(text) {
+  const trimmed = (text || '').trim();
+  if (!trimmed || chats[active].pending) return;
+
+  const chat = chats[active];
+  const history = chat.messages
+    .filter(item => item.text && !item.error && !item.pending)
+    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: item.text }));
+
+  if (chat.messages.length === 1) chat.title = trimmed.slice(0, 10);
+  chat.messages.push({ role: 'user', text: trimmed });
+  const reply = { role: 'assistant', text: '', question: trimmed, history };
+  chat.messages.push(reply);
+
+  input.value = '';
+  chat.draft = '';
+  requestReply(chat, reply);
+}
+
+function requestReply(chat, reply) {
+  if (chat.pending) return;
+  chat.pending = true;
+  reply.pending = true;
+  reply.error = false;
+  render();
+
+  ask(reply.question, reply.history)
+    .then(data => {
+      if (!data || typeof data.answer !== 'string' || !data.answer.trim()) {
+        throw new Error('服务未返回有效回答');
+      }
+      reply.pending = false;
+      reply.text = data.answer;
+      reply.data = data;
+    })
+    .catch(error => {
+      reply.pending = false;
+      reply.error = true;
+      reply.text = error.name === 'TimeoutError'
+        ? '等待回答超时，请稍后重试。'
+        : '暂时无法获取回答，请检查连接后重试。';
+    })
+    .finally(() => {
+      chat.pending = false;
+      if (chats[active] === chat) render();
+    });
+}
+
+form.onsubmit = event => {
+  event.preventDefault();
+  send(input.value);
+};
+
+input.addEventListener('input', () => {
+  saveDraft();
+  updateComposer();
+});
+
+input.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    form.requestSubmit();
+  }
+});
+
+/* ---------------- 主内容区的示例问题 ---------------- */
+document.querySelectorAll('#starters .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const question = chip.dataset.q;
+    if (!question) return;
+    if (panel.hidden) toggleChat(true);
+    if (chats[active].pending) {
+      input.value = question;
+      saveDraft();
+      updateComposer();
+    } else send(question);
+  });
+});
+
+window.addEventListener('resize', () => {
+  launcher.style.left = launcher.style.top = launcher.style.bottom = launcher.style.right = '';
+});
+
+render();
+
+async function checkHealth() {
+  let connected = false;
+  try {
+    const response = await fetch('/health', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+    connected = response.ok && (await response.json()).status === 'ok';
+  } catch { /* 将不可达状态显示在界面中 */ }
+  document.querySelectorAll('[data-service-status]').forEach(node => {
+    node.textContent = connected ? '服务可用' : '服务暂不可达';
+    node.dataset.state = connected ? 'online' : 'offline';
+  });
+}
+checkHealth();
+window.addEventListener('online', checkHealth);
