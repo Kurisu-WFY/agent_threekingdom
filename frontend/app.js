@@ -134,12 +134,36 @@ function render() {
 }
 
 /* ---------------- 展开 / 收起 ---------------- */
+let launcherRestLeft = null;
+
+function updateChatLayout() {
+  const content = document.querySelector('.content');
+  const workspace = document.querySelector('.workspace');
+  const inset = parseFloat(getComputedStyle(workspace).paddingLeft);
+  const available = window.innerWidth - panel.offsetWidth - inset * 2;
+  content.style.setProperty('--content-scale', String(Math.min(1, Math.max(0, available / content.offsetWidth))));
+  content.style.setProperty('--content-shift-x', (inset - content.offsetLeft) + 'px');
+  if (!panel.hidden && window.innerWidth > 760) {
+    launcher.style.left = Math.max(12, Math.min(launcherRestLeft ?? window.innerWidth, window.innerWidth - panel.offsetWidth - launcher.offsetWidth - 24)) + 'px';
+  }
+}
+
 function toggleChat(open) {
+  if (open === !panel.hidden) return;
+  if (open) {
+    const rect = launcher.getBoundingClientRect();
+    launcherRestLeft = rect.left;
+    launcher.style.left = rect.left + 'px';
+    launcher.style.right = 'auto';
+    // 固定起点后再设置终点，拖动过的入口也能从当前位置平移。
+    void launcher.offsetWidth;
+  }
   panel.hidden = !open;
+  if (open) updateChatLayout();
+  else launcher.style.left = launcherRestLeft + 'px';
   document.body.classList.toggle('chat-open', open);
   launcher.setAttribute('aria-expanded', String(open));
-  launcher.setAttribute('aria-label', open ? '关闭对话，可拖动调整位置' : '打开对话，可拖动调整位置');
-  launcher.style.left = launcher.style.top = launcher.style.bottom = launcher.style.right = '';
+  launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');
   viewLabel.textContent = open ? '对话界面' : '主界面';
   if (open) input.focus(); else launcher.focus();
 }
@@ -149,7 +173,7 @@ let drag = null;
 let suppressClick = false;
 
 launcher.addEventListener('pointerdown', event => {
-  if (event.button !== 0) return;
+  if (event.button !== 0 || !panel.hidden) return;
   const rect = launcher.getBoundingClientRect();
   drag = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
   suppressClick = false;
@@ -295,6 +319,8 @@ document.querySelectorAll('#starters .chip').forEach(chip => {
 
 window.addEventListener('resize', () => {
   launcher.style.left = launcher.style.top = launcher.style.bottom = launcher.style.right = '';
+  launcherRestLeft = launcher.getBoundingClientRect().left;
+  if (!panel.hidden) updateChatLayout();
 });
 
 render();
