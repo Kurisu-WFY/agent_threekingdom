@@ -175,12 +175,6 @@ function render() {
 let launcherRestLeft = null;
 
 function updateChatLayout() {
-  const content = document.querySelector('.content');
-  const workspace = document.querySelector('.workspace');
-  const inset = parseFloat(getComputedStyle(workspace).paddingLeft);
-  const available = window.innerWidth - panel.offsetWidth - inset * 2;
-  content.style.setProperty('--content-scale', String(Math.min(1, Math.max(0, available / content.offsetWidth))));
-  content.style.setProperty('--content-shift-x', (inset - content.offsetLeft) + 'px');
   if (!panel.hidden && window.innerWidth > 760) {
     launcher.style.left = Math.max(12, Math.min(launcherRestLeft ?? window.innerWidth, window.innerWidth - panel.offsetWidth - launcher.offsetWidth - 24)) + 'px';
   }
