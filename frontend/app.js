@@ -22,12 +22,11 @@ let deletedChat = null;
 
 function deleteChat(chat) {
   const index = chats.indexOf(chat);
-  if (index < 0) return;
+  if (index < 0 || chats.length <= 1) return;
   saveDraft();
   const current = chats[active];
   deletedChat = { chat, index };
   chats.splice(index, 1);
-  if (!chats.length) chats.push({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });
   active = current === chat ? Math.min(index, chats.length - 1) : chats.indexOf(current);
   input.value = chats[active].draft || '';
   document.querySelector('#delete-notice').hidden = false;
@@ -158,16 +157,18 @@ function render() {
     };
     const remove = document.createElement('button');
     remove.className = 'delete-chat';
-    remove.textContent = '×';
+    remove.textContent = '删除';
     remove.title = '删除此对话';
     remove.setAttribute('aria-label', '删除对话：' + chat.title);
     remove.onclick = () => deleteChat(chat);
-    item.append(button, remove);
+    item.append(button);
+    if (chats.length > 1) item.append(remove);
     historyList.append(item);
   });
   messages.replaceChildren();
   chats[active].messages.forEach(message => messages.append(messageNode(message)));
   messages.scrollTop = messages.scrollHeight;
+  document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
 }
 
@@ -250,9 +251,13 @@ document.addEventListener('keydown', event => {
 
 document.querySelector('#new-chat').onclick = () => {
   saveDraft();
-  chats.unshift({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });
-  active = 0;
-  input.value = '';
+  const empty = chats.findIndex(chat => chat.messages.length === 1 && !chat.draft?.trim() && !chat.pending);
+  if (empty >= 0) active = empty;
+  else {
+    chats.unshift({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });
+    active = 0;
+  }
+  input.value = chats[active].draft || '';
   render();
   input.focus();
 };
