@@ -18,6 +18,35 @@ const INTENT_LABELS = {
 
 let chats = [{ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] }];
 let active = 0;
+let deletedChat = null;
+
+function deleteChat(chat) {
+  const index = chats.indexOf(chat);
+  if (index < 0) return;
+  saveDraft();
+  const current = chats[active];
+  deletedChat = { chat, index };
+  chats.splice(index, 1);
+  if (!chats.length) chats.push({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });
+  active = current === chat ? Math.min(index, chats.length - 1) : chats.indexOf(current);
+  input.value = chats[active].draft || '';
+  document.querySelector('#delete-notice').hidden = false;
+  render();
+  document.querySelector('#undo-delete').focus();
+}
+
+document.querySelector('#undo-delete').onclick = () => {
+  if (!deletedChat) return;
+  saveDraft();
+  const { chat, index } = deletedChat;
+  active = Math.min(index, chats.length);
+  chats.splice(active, 0, chat);
+  deletedChat = null;
+  document.querySelector('#delete-notice').hidden = true;
+  input.value = chat.draft || '';
+  render();
+  input.focus();
+};
 function updateComposer() {
   submitButton.disabled = !!chats[active].pending || !input.value.trim();
   submitButton.setAttribute('aria-label', chats[active].pending ? '正在生成回答' : '发送消息');
@@ -114,6 +143,8 @@ function messageNode(message) {
 function render() {
   historyList.replaceChildren();
   chats.forEach((chat, index) => {
+    const item = document.createElement('div');
+    item.className = 'history-row';
     const button = document.createElement('button');
     button.className = 'history-item' + (index === active ? ' active' : '');
     button.textContent = chat.title;
@@ -125,7 +156,14 @@ function render() {
       input.value = chats[active].draft || '';
       render();
     };
-    historyList.append(button);
+    const remove = document.createElement('button');
+    remove.className = 'delete-chat';
+    remove.textContent = '×';
+    remove.title = '删除此对话';
+    remove.setAttribute('aria-label', '删除对话：' + chat.title);
+    remove.onclick = () => deleteChat(chat);
+    item.append(button, remove);
+    historyList.append(item);
   });
   messages.replaceChildren();
   chats[active].messages.forEach(message => messages.append(messageNode(message)));
@@ -338,3 +376,16 @@ async function checkHealth() {
 }
 checkHealth();
 window.addEventListener('online', checkHealth);
+
+/* ---------------- 主框内容切换 ---------------- */
+document.querySelectorAll('[data-content-view]').forEach(button => {
+  button.addEventListener('click', () => {
+    const showMap = button.dataset.contentView === 'map';
+    document.querySelector('#welcome-view').hidden = showMap;
+    document.querySelector('#map-view').hidden = !showMap;
+    document.querySelectorAll('[data-content-view]').forEach(option => {
+      option.setAttribute('aria-pressed', String(option === button));
+    });
+    if (!panel.hidden) updateChatLayout();
+  });
+});

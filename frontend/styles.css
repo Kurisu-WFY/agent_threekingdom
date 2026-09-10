@@ -22,7 +22,7 @@
   --panel-width: min(780px, 66vw);
   --layout-duration: .42s;
   --layout-easing: cubic-bezier(.22, 1, .36, 1);
-  --history-width: 84px;
+  --history-width: 124px;
   --header-height: 36px;
 }
 
@@ -220,6 +220,26 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 }
 .history-item:hover { background: #fff; border-color: var(--line); }
 .history-item.active { background: #fff; border-color: var(--shu-2); color: var(--shu); font-weight: 600; }
+.history-row { display: flex; align-items: center; width: 100%; gap: 2px; }
+.history-row .history-item { flex: 1; min-width: 0; }
+.delete-chat { flex: none; width: 28px; height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); font-size: 20px; }
+.delete-chat:hover { color: var(--shu); background: #f8e6e2; }
+.delete-notice { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; font-size: 13px; background: var(--surface-2); border-top: 1px solid var(--line); }
+.delete-notice button { border: 0; background: transparent; color: var(--shu); padding: 8px 12px; text-decoration: underline; }
+
+/* 主框视图与离线地图 */
+.content-switch { display: flex; gap: 4px; flex-shrink: 0; }
+.content-switch button { min-height: 36px; padding: 7px 12px; border: 1px solid transparent; border-radius: 8px; background: transparent; font-size: 13px; color: var(--ink-soft); }
+.content-switch button[aria-pressed="true"] { color: var(--shu); background: #fff4ee; border-color: #dfc5b9; }
+.content-switch button:hover { background: var(--surface-2); }
+.map-view { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 28px; }
+.map-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.map-heading h2 { margin: 0; font-size: 23px; font-weight: 600; }
+.map-heading > span, .map-note { font-size: 12px; line-height: 1.7; color: var(--ink-soft); }
+.map-scroll { overflow-x: auto; }
+.sichuan-map { display: block; width: min(100%, 900px); min-width: 650px; height: auto; margin: 0 auto; }
+.map-note { margin: 8px 0 0; }
+.map-note a { color: var(--shu); }
 
 /* 会话区 */
 .conversation { flex: 1; min-width: 0; display: flex; flex-direction: column; }
@@ -342,6 +362,10 @@ body.chat-open .content { transform: translate(var(--content-shift-x, 0px), -16p
   .new-chat { flex: none; width: 44px; height: 44px; }
   #history-list { flex-direction: row; overflow-x: auto; }
   .history-item { width: 110px; flex: none; min-height: 44px; }
+  .history-row { width: 152px; flex: none; }
+  .history-row .delete-chat { width: 36px; height: 44px; }
+  .map-view { padding: 18px; }
+  .map-heading { flex-wrap: wrap; }
   .conversation { min-height: 0; }
   .close { width: 44px; height: 44px; }
   .composer textarea { font-size: 16px; }

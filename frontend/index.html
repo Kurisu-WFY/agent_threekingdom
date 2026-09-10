@@ -17,10 +17,13 @@
     <section class="content" aria-label="主内容区">
       <div class="content-heading">
         <span>陈寿笔下的蜀汉记忆</span>
-        <span class="eyebrow">川东北三国文化旅游</span>
+        <nav class="content-switch" aria-label="主内容视图">
+          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">蜀汉记忆</button>
+          <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">四川地图</button>
+        </nav>
       </div>
 
-      <div class="welcome">
+      <div class="welcome" id="welcome-view">
         <p class="welcome-kicker">循陈寿的笔，读一部蜀汉记忆</p>
         <h1>走一趟三国故地，从南充到剑门</h1>
         <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。回答基于已入库资料，并区分正史、演义与地方传说。</p>
@@ -54,6 +57,18 @@
         </div>
       </div>
 
+      <section class="map-view" id="map-view" aria-label="四川地图" hidden>
+        <div class="map-heading">
+          <div><p class="welcome-kicker">一览蜀地</p><h2>四川 · 市州位置</h2></div>
+          <span>18 个地级市 · 3 个自治州</span>
+        </div>
+        <div class="map-scroll" tabindex="0" aria-label="四川地图，窄屏可横向滚动查看">
+          <img class="sichuan-map" src="sichuan-map.svg" width="900" height="680" alt="四川省轮廓及21个市州驻地点位：成都、自贡、攀枝花、泸州、德阳、绵阳、广元、遂宁、内江、乐山、南充、眉山、宜宾、广安、达州、雅安、巴中、资阳、阿坝州、甘孜州、凉山州。南充和广元以朱红色突出。">
+        </div>
+        <p class="map-note">圆点表示市州驻地，文字偏移处用引线连接。阿坝州驻马尔康、甘孜州驻康定、凉山州驻西昌。轮廓为地理位置示意。</p>
+        <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
+      </section>
+
       <footer class="content-footer">
         <span>陈寿笔下的蜀汉记忆</span>
         <span class="note">票价为维护数据 · 动态信息以官方为准</span>
@@ -81,6 +96,7 @@
         <button id="close-chat" class="close" aria-label="关闭对话">×</button>
       </header>
       <div id="messages" class="messages" role="log" aria-live="polite"></div>
+      <div class="delete-notice" id="delete-notice" role="status" hidden>已删除对话 <button type="button" id="undo-delete">撤销</button></div>
       <form id="chat-form" class="composer">
         <label class="sr-only" for="message">输入消息</label>
         <textarea id="message" placeholder="输入消息，或点上方示例问题…" rows="2" maxlength="2000"></textarea>
