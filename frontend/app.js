@@ -170,6 +170,7 @@ function render() {
   messages.scrollTop = messages.scrollHeight;
   document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
+  window.TravelMap?.syncChat(chats[active]);
 }
 
 /* ---------------- 展开 / 收起 ---------------- */
@@ -288,6 +289,7 @@ function send(text) {
   chat.messages.push({ role: 'user', text: trimmed });
   const reply = { role: 'assistant', text: '', question: trimmed, history };
   chat.messages.push(reply);
+  window.TravelMap?.fromMessage(chat, trimmed);
 
   input.value = '';
   chat.draft = '';
@@ -309,6 +311,7 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.text = data.answer;
       reply.data = data;
+      window.TravelMap?.fromResponse(chat, reply.question, data);
     })
     .catch(error => {
       reply.pending = false;

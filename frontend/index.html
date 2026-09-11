@@ -68,12 +68,24 @@
       <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
         <div class="map-heading">
           <div><p class="welcome-kicker">一览蜀地</p><h2>四川 · 市州位置</h2></div>
-          <span>18 个地级市 · 3 个自治州</span>
+          <span>21 个市州 · 183 个县级地点</span>
         </div>
-        <div class="map-scroll" tabindex="0" aria-label="四川地图，窄屏可横向滚动查看">
-          <img class="sichuan-map" src="sichuan-map.svg" width="900" height="680" alt="四川省轮廓及21个市州驻地点位：成都、自贡、攀枝花、泸州、德阳、绵阳、广元、遂宁、内江、乐山、南充、眉山、宜宾、广安、达州、雅安、巴中、资阳、阿坝州、甘孜州、凉山州。南充和广元以朱红色突出。">
+        <p class="map-note">试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。地点会自动标到地图上。</p>
+        <div class="county-controls">
+          <label>市州筛选<select id="map-prefecture"><option value="">全省</option></select></label>
+          <label>县城 / 区<select id="map-county"><option value="">选择地点</option></select></label>
+          <button type="button" class="module-button" id="map-add-stop" disabled>加入路线</button>
         </div>
-        <p class="map-note">圆点表示市州驻地，文字偏移处用引线连接。阿坝州驻马尔康、甘孜州驻康定、凉山州驻西昌。轮廓为地理位置示意。</p>
+        <div class="module-actions map-tools"><button class="module-button" id="map-zoom-in" aria-label="放大地图">＋</button><button class="module-button" id="map-zoom-out" aria-label="缩小地图">−</button><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit">查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
+        <div class="interactive-map">
+          <svg id="route-map" viewBox="0 0 900 680" role="img" aria-label="四川市州县城与当前路线，可拖动地图或使用上方缩放按钮">
+            <image href="sichuan-map.svg" x="0" y="0" width="900" height="680"/>
+            <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
+          </svg>
+        </div>
+        <p id="map-route-status" role="status">正在加载县级地点…</p>
+        <ol id="map-route-list" class="map-route-list"></ol>
+        <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移，选定市州后显示县级名称。</p>
         <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
         <div class="module-actions"><button type="button" class="module-button" data-destination="南充">规划南充行程</button><button type="button" class="module-button" data-destination="阆中">规划阆中行程</button><button type="button" class="module-button" data-destination="广元">规划广元行程</button></div>
       </section>
@@ -170,6 +182,8 @@
   <script src="app.js"></script>
   <script src="travel-api.js"></script>
   <script src="travel-modules.js"></script>
+  <script src="map-route-core.js"></script>
+  <script src="travel-map.js"></script>
 </body>
 </html>
 
