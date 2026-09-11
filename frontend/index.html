@@ -20,29 +20,37 @@
         <nav class="content-switch" aria-label="主内容视图">
           <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">蜀汉记忆</button>
           <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">四川地图</button>
+          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
+          <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">规划行程</button>
+          <button type="button" data-content-view="plan" aria-pressed="false" aria-controls="plan-view">我的行程</button>
+          <button type="button" data-content-view="budget" aria-pressed="false" aria-controls="budget-view">预算</button>
+          <button type="button" data-content-view="travel" aria-pressed="false" aria-controls="travel-view">出行信息</button>
         </nav>
       </div>
 
-      <div class="welcome" id="welcome-view">
+      <div class="welcome" id="welcome-view" data-view-panel="welcome">
         <p class="welcome-kicker">循陈寿的笔，读一部蜀汉记忆</p>
         <h1>走一趟三国故地，从南充到剑门</h1>
-        <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。回答基于已入库资料，并区分正史、演义与地方传说。</p>
+        <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。先整理出行需求，保存行程草稿；景区、路线与价格资料待接入。</p>
 
         <div class="cards">
           <article class="card">
             <span class="card-icon">📜</span>
             <h2>文化问答</h2>
             <p>陈寿、《三国志》、蜀汉人物与川东北地方史迹</p>
+            <button type="button" class="module-button" id="open-culture">打开文化问答</button>
           </article>
           <article class="card">
             <span class="card-icon">🗺️</span>
             <h2>路线规划</h2>
             <p>按城市、时长与人群给出游览顺序和风险提示</p>
+            <button type="button" class="module-button" data-content-view="planner">开始规划</button>
           </article>
           <article class="card">
             <span class="card-icon">🎫</span>
             <h2>预算票价</h2>
             <p>景区票价与酒店预算区间估算</p>
+            <button type="button" class="module-button" data-content-view="budget">查看预算</button>
           </article>
         </div>
 
@@ -57,7 +65,7 @@
         </div>
       </div>
 
-      <section class="map-view" id="map-view" aria-label="四川地图" hidden>
+      <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
         <div class="map-heading">
           <div><p class="welcome-kicker">一览蜀地</p><h2>四川 · 市州位置</h2></div>
           <span>18 个地级市 · 3 个自治州</span>
@@ -67,11 +75,61 @@
         </div>
         <p class="map-note">圆点表示市州驻地，文字偏移处用引线连接。阿坝州驻马尔康、甘孜州驻康定、凉山州驻西昌。轮廓为地理位置示意。</p>
         <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
+        <div class="module-actions"><button type="button" class="module-button" data-destination="南充">规划南充行程</button><button type="button" class="module-button" data-destination="阆中">规划阆中行程</button><button type="button" class="module-button" data-destination="广元">规划广元行程</button></div>
+      </section>
+
+      <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
+        <p class="welcome-kicker">从目的地开始</p><h2>探索川东北</h2>
+        <p>选择目的地，查看景区资料或带入行程规划。</p>
+        <div class="module-actions"><button class="module-button" data-city="南充" aria-pressed="true">南充</button><button class="module-button" data-city="阆中" aria-pressed="false">阆中</button><button class="module-button" data-city="广元" aria-pressed="false">广元</button></div>
+        <div id="destination-results" aria-live="polite" class="module-results"></div>
+        <button class="module-button" id="plan-destination">规划南充行程</button>
+      </section>
+
+      <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
+        <p class="welcome-kicker">把想法整理成行程</p><h2>规划你的蜀地之旅</h2>
+        <p>目前可预览并保存出行草稿，具体站点将在路线服务接入后提供。</p>
+        <form id="trip-form" class="module-form">
+          <label>目的地<select name="city"><option>南充</option><option>阆中</option><option>广元</option></select></label>
+          <label>出发日期<input name="date" type="date" required></label>
+          <label>游玩天数<input name="days" type="number" value="2" min="1" max="14" required></label>
+          <label>人数<input name="people" type="number" value="2" min="1" max="50" required></label>
+          <label>同行人群<select name="group"><option>朋友同行</option><option>独自出行</option><option>亲子家庭</option><option>长辈同行</option></select></label>
+          <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
+          <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option>高档型</option></select></label>
+          <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
+          <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
+          <button class="module-button primary" type="submit">生成行程草稿</button>
+        </form>
+        <p id="planner-status" role="status"></p>
+      </section>
+
+      <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
+        <p class="welcome-kicker">我的行程</p><h2>出行方案</h2>
+        <div id="plan-results" class="module-results"></div>
+        <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
+        <p id="plan-status" role="status"></p>
+        <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
+        <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
+      </section>
+
+      <section class="module-view" id="budget-view" data-view-panel="budget" hidden>
+        <p class="welcome-kicker">费用分开看</p><h2>预算明细</h2>
+        <p>根据当前行程的人数、住宿晚数和房间数估算。没有数据的费用不会按零元计入。</p>
+        <button id="load-budget" class="module-button">查询当前行程预算</button>
+        <div id="budget-results" class="module-results" aria-live="polite"></div>
+      </section>
+
+      <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
+        <p class="welcome-kicker">出发前再确认</p><h2>天气与交通</h2>
+        <p>按当前行程目的地和出发日期查询。接入后显示来源与查询时间。</p>
+        <button id="load-travel" class="module-button">查询出行信息</button>
+        <div id="travel-results" class="module-results" aria-live="polite"></div>
       </section>
 
       <footer class="content-footer">
         <span>陈寿笔下的蜀汉记忆</span>
-        <span class="note">票价为维护数据 · 动态信息以官方为准</span>
+        <span class="note">旅游资料待接入 · 动态信息以官方为准</span>
       </footer>
     </section>
   </main>
@@ -110,6 +168,8 @@
   </aside>
 
   <script src="app.js"></script>
+  <script src="travel-api.js"></script>
+  <script src="travel-modules.js"></script>
 </body>
 </html>
 

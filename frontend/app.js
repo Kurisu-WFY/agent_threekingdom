@@ -377,14 +377,15 @@ checkHealth();
 window.addEventListener('online', checkHealth);
 
 /* ---------------- 主框内容切换 ---------------- */
-document.querySelectorAll('[data-content-view]').forEach(button => {
-  button.addEventListener('click', () => {
-    const showMap = button.dataset.contentView === 'map';
-    document.querySelector('#welcome-view').hidden = showMap;
-    document.querySelector('#map-view').hidden = !showMap;
+function showContentView(view) {
+    document.querySelectorAll('[data-view-panel]').forEach(section => {
+      section.hidden = section.dataset.viewPanel !== view;
+    });
     document.querySelectorAll('[data-content-view]').forEach(option => {
-      option.setAttribute('aria-pressed', String(option === button));
+      option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
     if (!panel.hidden) updateChatLayout();
-  });
+}
+document.querySelectorAll('[data-content-view]').forEach(button => {
+  button.addEventListener('click', () => showContentView(button.dataset.contentView));
 });
