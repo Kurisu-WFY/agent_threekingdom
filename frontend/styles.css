@@ -411,7 +411,15 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 .county-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 16px; }
 .county-controls label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; min-width: 0; flex: 1 1 170px; }
 .county-controls select { width: 100%; padding: 9px; font: inherit; border: 1px solid var(--line); border-radius: 8px; background: white; }
-.interactive-map { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: #fffdf9; overflow: hidden; }
+.interactive-map { position: relative; width: 100%; border: 1px solid var(--line); border-radius: 12px; background: #fffdf9; overflow: hidden; }
+.map-zoom-control { position: absolute; right: 12px; bottom: 12px; width: min(220px, calc(100% - 24px)); padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 253, 249, .96); box-shadow: var(--shadow-sm); }
+.map-zoom-heading { display: flex; justify-content: space-between; align-items: center; margin: 0 4px 4px; font-size: 12px; color: var(--ink-soft); }
+#map-zoom-value { font-variant-numeric: tabular-nums; color: var(--shu); }
+.map-zoom-inputs { display: flex; align-items: center; gap: 8px; }
+.map-zoom-inputs button { flex: none; width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: white; font-size: 18px; }
+.map-zoom-inputs button:disabled { opacity: .4; cursor: not-allowed; }
+#map-zoom-range { min-width: 0; flex: 1; height: 36px; margin: 0; accent-color: var(--shu); cursor: pointer; touch-action: none; }
+#map-zoom-range:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 #route-map { display: block; width: 100%; height: clamp(310px, 52vh, 600px); touch-action: none; cursor: grab; }
 #route-map:active { cursor: grabbing; }
 body.chat-open #route-map { height: 260px; }

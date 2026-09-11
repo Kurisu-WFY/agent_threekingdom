@@ -22,6 +22,12 @@
     const height = width * 680 / 900;
     view = [Math.max(0, Math.min(900 - width, next[0])), Math.max(0, Math.min(680 - height, next[1])), width, height];
     svg.setAttribute('viewBox', view.join(' '));
+    const percent = Math.round(900 / width * 100);
+    $('#map-zoom-range').value = String(percent);
+    $('#map-zoom-range').setAttribute('aria-valuetext', percent + '%');
+    $('#map-zoom-value').textContent = percent + '%';
+    $('#map-zoom-out').disabled = width >= 900;
+    $('#map-zoom-in').disabled = width <= 90;
   }
   function fit(points) {
     const projected = points.filter(Boolean).map(p => core.project(p.center));
@@ -139,8 +145,13 @@
     route.points.push(selected); route.kind = '手动选择的地点顺序'; activeChat.mapRoute = route;
     drawRoute(); fit(route.points);
   };
-  $('#map-zoom-in').onclick = () => setView([view[0] + view[2] * .1, view[1] + view[3] * .1, view[2] * .8]);
-  $('#map-zoom-out').onclick = () => setView([view[0] - view[2] * .125, view[1] - view[3] * .125, view[2] * 1.25]);
+  function zoomTo(percent) {
+    const width = 900 / Math.max(1, Math.min(10, percent / 100));
+    setView([view[0] + (view[2] - width) / 2, view[1] + (view[3] - width * 680 / 900) / 2, width]);
+  }
+  $('#map-zoom-range').addEventListener('input', event => zoomTo(Number(event.target.value)));
+  $('#map-zoom-in').onclick = () => zoomTo(900 / view[2] * 125);
+  $('#map-zoom-out').onclick = () => zoomTo(900 / view[2] * 80);
   $('#map-reset').onclick = () => setView([0, 0, 900, 680]);
   $('#map-fit').onclick = () => fit(activeChat?.mapRoute?.points || []);
   $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); setView([0, 0, 900, 680]); };

@@ -76,12 +76,20 @@
           <label>县城 / 区<select id="map-county"><option value="">选择地点</option></select></label>
           <button type="button" class="module-button" id="map-add-stop" disabled>加入路线</button>
         </div>
-        <div class="module-actions map-tools"><button class="module-button" id="map-zoom-in" aria-label="放大地图">＋</button><button class="module-button" id="map-zoom-out" aria-label="缩小地图">−</button><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit">查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
+        <div class="module-actions map-tools"><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit">查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
         <div class="interactive-map">
           <svg id="route-map" viewBox="0 0 900 680" role="img" aria-label="四川市州县城与当前路线，可拖动地图或使用上方缩放按钮">
             <image href="sichuan-map.svg" x="0" y="0" width="900" height="680"/>
             <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
           </svg>
+          <div class="map-zoom-control" role="group" aria-label="地图缩放">
+            <div class="map-zoom-heading"><label for="map-zoom-range">缩放</label><output id="map-zoom-value" for="map-zoom-range">100%</output></div>
+            <div class="map-zoom-inputs">
+              <button type="button" id="map-zoom-out" aria-label="缩小地图" disabled>−</button>
+              <input id="map-zoom-range" type="range" min="100" max="1000" step="1" value="100" aria-valuetext="100%">
+              <button type="button" id="map-zoom-in" aria-label="放大地图">＋</button>
+            </div>
+          </div>
         </div>
         <p id="map-route-status" role="status">正在加载县级地点…</p>
         <ol id="map-route-list" class="map-route-list"></ol>
