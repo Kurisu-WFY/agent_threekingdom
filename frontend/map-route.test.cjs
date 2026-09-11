@@ -19,4 +19,11 @@ assert.equal(core.structured({ map_route: { stops: [{ name: '景点', coordinate
 assert.deepEqual(core.structured({ map_route: { stops: [{ name: '景点', coordinates: [105, 31], coordinate_system: 'GCJ-02' }] } }, places).points[0].center, [105, 31]);
 assert.equal(core.structured({}, places), null);
 assert.ok(core.project([105, 31]).every(Number.isFinite));
+const same = [{ name: '重叠甲', center: [105, 31] }, { name: '重叠乙', center: [105, 31] }, { name: '远点', center: [107, 33] }];
+const [x, y] = core.project([105, 31]);
+assert.equal(core.nearby(same, x, y, .4).length, 2);
+assert.equal(core.nearby(same, x + 19 / .4, y, .4).length, 2);
+assert.equal(core.nearby(same, x + 21 / .4, y, .4).length, 0);
+assert.equal(core.nearby(same, x + 19 / 4, y, 4).length, 2);
+console.log('PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels');
 console.log('PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation');

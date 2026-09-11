@@ -424,6 +424,12 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 #route-map:active { cursor: grabbing; }
 body.chat-open #route-map { height: 260px; }
 .county-point { cursor: pointer; }
+.county-label, #route-lines, #route-points { pointer-events: none; }
+.map-place-picker { position: absolute; top: 10px; left: 10px; width: min(285px, calc(100% - 20px)); padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: #fffdf9; box-shadow: var(--shadow-lg); }
+.picker-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; }
+.picker-heading button { width: 32px; height: 32px; flex: none; border: 0; border-radius: 6px; background: var(--surface-2); }
+#map-picker-list { max-height: 110px; overflow-y: auto; overscroll-behavior: contain; }
+#map-picker-list button { display: block; width: 100%; min-height: 44px; text-align: left; margin: 3px 0; }
 .county-dot { fill: #587668; stroke: white; stroke-width: .6; }
 .county-selected { fill: var(--shu); stroke: white; stroke-width: 1; }
 .county-point:focus { outline: none; }

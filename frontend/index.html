@@ -82,6 +82,10 @@
             <image href="sichuan-map.svg" x="0" y="0" width="900" height="680"/>
             <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
           </svg>
+          <div id="map-place-picker" class="map-place-picker" role="region" aria-label="选择附近地点" hidden>
+            <div class="picker-heading"><strong id="map-picker-title">选择地点</strong><button id="map-picker-close" type="button" aria-label="关闭地点列表">×</button></div>
+            <div id="map-picker-list"></div>
+          </div>
           <div class="map-zoom-control" role="group" aria-label="地图缩放">
             <div class="map-zoom-heading"><label for="map-zoom-range">缩放</label><output id="map-zoom-value" for="map-zoom-range">100%</output></div>
             <div class="map-zoom-inputs">

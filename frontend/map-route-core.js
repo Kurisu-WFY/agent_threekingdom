@@ -50,7 +50,13 @@
     });
     return { points, missing };
   }
-  const api = { project, aliases, mentions, structured };
+  function nearby(places, x, y, scale, radius = 20) {
+    return places.map(place => {
+      const [px, py] = project(place.center);
+      return { place, distance: Math.hypot(px - x, py - y) * scale };
+    }).filter(item => item.distance <= radius).sort((a, b) => a.distance - b.distance).map(item => item.place);
+  }
+  const api = { project, aliases, mentions, structured, nearby };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.MapRouteCore = api;
 })();

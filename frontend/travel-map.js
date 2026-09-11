@@ -18,6 +18,7 @@
     return result;
   }
   function setView(next) {
+    $('#map-place-picker').hidden = true;
     const width = Math.max(90, Math.min(900, next[2]));
     const height = width * 680 / 900;
     view = [Math.max(0, Math.min(900 - width, next[0])), Math.max(0, Math.min(680 - height, next[1])), width, height];
@@ -47,12 +48,37 @@
       point.append(element('circle', { cx: x, cy: y, r: selected === place ? 3.5 : 2, class: selected === place ? 'county-selected' : 'county-dot' }));
       point.append(element('title', {}, `${place.name} · ${place.parent}`));
       if (parent || selected === place) point.append(element('text', { x: x + 5, y: y - 5, class: 'county-label' }, place.name));
-      const select = () => { selected = place; $('#map-county').value = place.id; $('#map-add-stop').disabled = false; drawCounties(); };
-      point.onclick = select;
-      point.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } };
+      point.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectPlace(place); } };
       group.append(point);
     }
   }
+  function selectPlace(place) {
+    selected = place; $('#map-county').value = place.id; $('#map-add-stop').disabled = false;
+    drawCounties();
+    $('#map-picker-title').textContent = place.name + ' · ' + place.parent;
+    $('#map-picker-list').replaceChildren(button('加入当前路线', () => { $('#map-add-stop').click(); $('#map-place-picker').hidden = true; }));
+    $('#map-place-picker').hidden = false;
+    $('#map-place-picker').scrollIntoView({ block: 'nearest' });
+    $('#map-picker-list').firstElementChild.focus({ preventScroll: true });
+  }
+  function pickNearby(event) {
+    if (suppressMapClick) { suppressMapClick = false; return; }
+    if (!loaded) return;
+    const matrix = svg.getScreenCTM();
+    if (!matrix) return;
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const visible = counties.filter(p => !$('#map-prefecture').value || p.parent === $('#map-prefecture').value);
+    const matches = core.nearby(visible, point.x, point.y, Math.hypot(matrix.a, matrix.b));
+    if (!matches.length) { $('#map-place-picker').hidden = true; return; }
+    if (matches.length === 1) return selectPlace(matches[0]);
+    $('#map-picker-title').textContent = `附近 ${matches.length} 个地点，请选择`;
+    $('#map-picker-list').replaceChildren(...matches.map(place => button(`${place.name} · ${place.parent}`, () => selectPlace(place))));
+    $('#map-place-picker').hidden = false;
+    $('#map-place-picker').scrollIntoView({ block: 'nearest' });
+    $('#map-picker-list').firstElementChild.focus({ preventScroll: true });
+  }
+  $('#map-picker-close').onclick = () => { $('#map-place-picker').hidden = true; $('#map-county').focus({ preventScroll: true }); };
+  $('#map-place-picker').onkeydown = event => { if (event.key === 'Escape') { event.stopPropagation(); $('#map-picker-close').click(); } };
   function populateCounties() {
     const select = $('#map-county'); select.replaceChildren(new Option('选择地点', ''));
     const filtered = counties.filter(p => !$('#map-prefecture').value || p.parent === $('#map-prefecture').value);
@@ -156,12 +182,17 @@
   $('#map-fit').onclick = () => fit(activeChat?.mapRoute?.points || []);
   $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); setView([0, 0, 900, 680]); };
   let drag = null;
+  let suppressMapClick = false;
+  svg.addEventListener('click', pickNearby);
   svg.addEventListener('pointerdown', event => {
+    suppressMapClick = false;
     if (event.button !== 0 || event.target.closest('.county-point')) return;
     drag = { x: event.clientX, y: event.clientY, view: [...view] }; svg.setPointerCapture(event.pointerId);
   });
   svg.addEventListener('pointermove', event => {
     if (!drag) return;
+    if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 5 && !suppressMapClick) return;
+    suppressMapClick = true;
     const rect = svg.getBoundingClientRect();
     const ratio = Math.min(rect.width / drag.view[2], rect.height / drag.view[3]);
     setView([drag.view[0] - (event.clientX - drag.x) / ratio, drag.view[1] - (event.clientY - drag.y) / ratio, drag.view[2]]);
