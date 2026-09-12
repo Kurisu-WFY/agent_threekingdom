@@ -107,12 +107,15 @@
       }
       const item = document.createElement('li');
       const label = document.createElement('span'); label.textContent = place ? `${place.name}${place.parent ? ' · ' + place.parent : ''}` : '待定位站点（此处不连接）';
-      const remove = button('移除', () => { points.splice(index, 1); route.kind = '手动调整的地点顺序'; route.missing = []; drawRoute(); });
+      const remove = button('移除', () => { points.splice(index, 1); route.kind = '手动调整的地点顺序'; route.missing = []; route.backendStopsPending = []; drawRoute(); });
       const up = button('上移', () => { [points[index - 1], points[index]] = [points[index], points[index - 1]]; route.kind = '手动调整的地点顺序'; drawRoute(); });
       up.disabled = index === 0;
       item.append(label, up, remove); $('#map-route-list').append(item);
     });
-    const missing = route?.missing?.length ? ` 未能定位：${route.missing.join('、')}。请从县级列表补充，景区入口坐标待接入。` : '';
+    const notes = [];
+    if (route?.missing?.length) notes.push(`未能唯一定位：${route.missing.join('、')}。请从县级列表补充。`);
+    if (route?.backendStopsPending?.length) notes.push(`后端返回的 ${route.backendStopsPending.length} 个站点（${route.backendStopsPending.join('、')}）暂无 GCJ-02 坐标，落不到景区入口；已保留按地名识别的点位，坐标接入后自动对齐。`);
+    const missing = notes.length ? ' ' + notes.join('') : '';
     $('#map-route-status').textContent = points.length
       ? `${route.kind} · ${points.filter(Boolean).length} 个已定位地点。${points.filter(Boolean).length < 2 ? '至少两个地点才显示连线。' : '虚线仅作地点顺序示意，可在下方调整。'}${missing}`
       : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后自动标点；也可选择县城加入路线。');
@@ -153,8 +156,9 @@
         if (!ok || chat.mapQuestion !== question) return;
         const parsed = core.structured(data, places);
         if (!parsed) return;
-        chat.mapRoute = { ...parsed, kind: '后端返回的站点顺序' };
-        if (activeChat === chat) { drawRoute(); fit(parsed.points); }
+        const next = core.resolveRoute(chat.mapRoute, parsed);
+        chat.mapRoute = next;
+        if (activeChat === chat) { drawRoute(); fit(next.points); }
       });
     }
   };

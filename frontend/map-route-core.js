@@ -56,7 +56,19 @@
       return { place, distance: Math.hypot(px - x, py - y) * scale };
     }).filter(item => item.distance <= radius).sort((a, b) => a.distance - b.distance).map(item => item.place);
   }
-  const api = { project, aliases, mentions, structured, nearby };
+  function located(route) { return (route?.points || []).filter(Boolean).length; }
+  /* 后端站点顺序优先，但只有「能落到位」的后端站点才允许替换已识别点位。
+     当前后端 stops 既没有 coordinates、名称又是景区，全都匹配不上驻地，
+     无条件替换会把用户已经看到的地名路线清空（真实联调缺陷）。 */
+  function resolveRoute(existing, parsed) {
+    if (!parsed) return existing || null;
+    const known = existing?.missing || [];
+    const backendStopsPending = [...new Set(parsed.missing || [])].filter(name => !known.includes(name));
+    if (located(parsed)) return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
+    if (located(existing)) return { points: existing.points, missing: known, kind: existing.kind, backendStopsPending };
+    return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
+  }
+  const api = { project, aliases, mentions, structured, resolveRoute, nearby };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.MapRouteCore = api;
 })();

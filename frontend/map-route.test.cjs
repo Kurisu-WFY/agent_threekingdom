@@ -25,5 +25,34 @@ assert.equal(core.nearby(same, x, y, .4).length, 2);
 assert.equal(core.nearby(same, x + 19 / .4, y, .4).length, 2);
 assert.equal(core.nearby(same, x + 21 / .4, y, .4).length, 0);
 assert.equal(core.nearby(same, x + 19 / 4, y, 4).length, 2);
+/* 真实联调回放：2026-09-12 实测 POST /chat「南充一天三国文化路线」的 route.stops
+   —— 两个站点既没有 coordinates，名称又是景区（匹配不到县级驻地）。 */
+const backendStops = { route: { stops: [
+  { stop_order: 1, spot_id: 'nanchong_xishan_wanjuanlou', name: '西山风景区·万卷楼', city: '南充', address: '四川省南充市顺庆区西山风景区' },
+  { stop_order: 2, spot_id: 'nanchong_hemingshan_wangpingmu', name: '鹤鸣山景区·王平墓', city: '南充', address: '四川省南充市高坪区鹤鸣山片区' }
+] } };
+const backendParsed = core.structured(backendStops, places);
+assert.deepEqual(backendParsed.points, [null, null]);
+assert.deepEqual(backendParsed.missing, ['西山风景区·万卷楼', '鹤鸣山景区·王平墓']);
+const mentioned = { points: core.mentions('南充一天三国文化路线', places).points, missing: [], kind: '按你的地名提及顺序' };
+assert.deepEqual(mentioned.points.map(p => p.name), ['南充市']);
+// 1) 落不到位的后端站点不得清空已识别的地名路线，只补记缺口
+const kept = core.resolveRoute(mentioned, backendParsed);
+assert.deepEqual(kept.points.map(p => p.name), ['南充市']);
+assert.equal(kept.kind, '按你的地名提及顺序');
+assert.deepEqual(kept.backendStopsPending, ['西山风景区·万卷楼', '鹤鸣山景区·王平墓']);
+// 2) 后端补上 GCJ-02 坐标后，后端站点顺序优先并替换本地点位
+const located = core.structured({ route: { stops: [
+  { name: '西山风景区·万卷楼', coordinates: [106.0842, 30.8163], coordinate_system: 'GCJ-02' },
+  { name: '鹤鸣山景区·王平墓', coordinates: [106.1163, 30.7839], coordinate_system: 'GCJ-02' }
+] } }, places);
+const replaced = core.resolveRoute(mentioned, located);
+assert.equal(replaced.kind, '后端返回的站点顺序');
+assert.deepEqual(replaced.points.map(p => p.center), [[106.0842, 30.8163], [106.1163, 30.7839]]);
+assert.deepEqual(replaced.backendStopsPending, []);
+// 3) 双方都落不到位时保留后端顺序与缺口，不伪造点位
+assert.deepEqual(core.resolveRoute(null, backendParsed).points, [null, null]);
+assert.equal(core.resolveRoute(null, null), null);
+console.log('PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map');
 console.log('PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels');
 console.log('PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation');
