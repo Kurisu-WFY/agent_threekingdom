@@ -1,133 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>三国文化旅游助手</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: linear-gradient(160deg, #10243b, #183a56 60%, #1e4d6b);
-      color: #e8f0f7;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 24px;
-    }
-    .app {
-      width: 100%; max-width: 720px; display: flex; flex-direction: column;
-      background: rgba(255,255,255,0.06); border-radius: 16px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35); overflow: hidden;
-      backdrop-filter: blur(4px); height: 92vh;
-    }
-    header {
-      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.12);
-    }
-    header h1 { font-size: 18px; font-weight: 600; }
-    header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
-    #chat { flex: 1; overflow-y: auto; padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; }
-    .msg { max-width: 82%; padding: 10px 14px; border-radius: 12px; line-height: 1.55; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
-    .user { align-self: flex-end; background: #2f7bbf; border-bottom-right-radius: 0; }
-    .bot { align-self: flex-start; background: rgba(255,255,255,0.12); border-bottom-left-radius: 0; }
-    .meta { font-size: 11px; opacity: 0.85; margin-top: 8px; color: #bcd7ea; }
-    .meta .tag { display:inline-block; background:#254a66; padding:2px 8px; border-radius:6px; margin-right:6px; }
-    .loading { opacity: 0.7; font-style: italic; }
-    form { display: flex; gap: 10px; padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.12); }
-    input {
-      flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1); color: #fff; font-size: 14px; outline: none;
-    }
-    input::placeholder { color: rgba(255,255,255,0.5); }
-    button {
-      padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer;
-      background: #f0b53c; color: #3a2a00; font-size: 14px; font-weight: 600;
-    }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1>🏯 三国文化旅游助手</h1>
-      <p>南充 / 阆中 / 广元 · 文化问答 · 路线规划 · 预算票价</p>
-    </header>
-    <div id="chat"></div>
-    <form id="form">
-      <input id="input" placeholder="例如：南充一天三国文化路线" autocomplete="off" />
-      <button id="send" type="submit">发送</button>
-    </form>
-  </div>
+  <header class="topbar">
+    <span class="brand"><span class="brand-mark">蜀</span>三国文化旅游助手</span>
+    <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">主界面</span></span>
+    <span class="status" data-service-status role="status">正在检查服务…</span>
+  </header>
 
-  <script>
-    // 前端由后端挂载在 / 根路径(同源)，用相对路径，任何部署地址下都能正确调用 /chat
-    const API = "/chat";
-    const chat = document.getElementById("chat");
-    const form = document.getElementById("form");
-    const input = document.getElementById("input");
-    const sendBtn = document.getElementById("send");
+  <main class="workspace">
+    <section class="content" aria-label="主内容区">
+      <div class="content-heading">
+        <span>陈寿笔下的蜀汉记忆</span>
+        <nav class="content-switch" aria-label="主内容视图">
+          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">蜀汉记忆</button>
+          <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">四川地图</button>
+          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
+          <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">规划行程</button>
+          <button type="button" data-content-view="plan" aria-pressed="false" aria-controls="plan-view">我的行程</button>
+          <button type="button" data-content-view="budget" aria-pressed="false" aria-controls="budget-view">预算</button>
+          <button type="button" data-content-view="travel" aria-pressed="false" aria-controls="travel-view">出行信息</button>
+        </nav>
+      </div>
 
-    function add(text, who) {
-      const div = document.createElement("div");
-      div.className = "msg " + who;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-      return div;
-    }
+      <div class="welcome" id="welcome-view" data-view-panel="welcome">
+        <p class="welcome-kicker">循陈寿的笔，读一部蜀汉记忆</p>
+        <h1>走一趟三国故地，从南充到剑门</h1>
+        <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。先整理出行需求，保存行程草稿；景区、路线与价格资料待接入。</p>
 
-    function renderStructured(data) {
-      // 意图 + 附带的结构化信息
-      let meta = "";
-      if (data && data.intent && data.intent.intent) {
-        meta += '<span class="tag">意图：' + data.intent.intent + '</span>';
-      }
-      if (data && data.route && data.route.found) {
-        const r = data.route.route;
-        if (r && r.name) meta += '<span class="tag">路线：' + r.name + '</span>';
-      }
-      if (data && data.retrieval) {
-        meta += '<span class="tag">召回覆盖：' + Math.round((data.retrieval.coverage||0)*100) + '%</span>';
-      }
-      return meta;
-    }
+        <div class="cards">
+          <article class="card">
+            <span class="card-icon">📜</span>
+            <h2>文化问答</h2>
+            <p>陈寿、《三国志》、蜀汉人物与川东北地方史迹</p>
+            <button type="button" class="module-button" id="open-culture">打开文化问答</button>
+          </article>
+          <article class="card">
+            <span class="card-icon">🗺️</span>
+            <h2>路线规划</h2>
+            <p>按城市、时长与人群给出游览顺序和风险提示</p>
+            <button type="button" class="module-button" data-content-view="planner">开始规划</button>
+          </article>
+          <article class="card">
+            <span class="card-icon">🎫</span>
+            <h2>预算票价</h2>
+            <p>景区票价与酒店预算区间估算</p>
+            <button type="button" class="module-button" data-content-view="budget">查看预算</button>
+          </article>
+        </div>
 
-    async function run(message) {
-      add(message, "user");
-      const bot = add("思考中…", "bot loading");
-      sendBtn.disabled = true;
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: message })
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        bot.classList.remove("loading");
-        bot.textContent = data.answer || "(无回答)";
-        const meta = renderStructured(data);
-        if (meta) {
-          const m = document.createElement("div");
-          m.className = "meta";
-          m.innerHTML = meta;
-          bot.appendChild(m);
-        }
-      } catch (e) {
-        bot.classList.remove("loading");
-        bot.textContent = "请求失败：" + e.message + "（请确认后端在 http://localhost:8001 运行且已开启 CORS）";
-      } finally {
-        sendBtn.disabled = false;
-      }
-    }
+        <div class="starters">
+          <span class="starters-title">试试这样问</span>
+          <div class="chips" id="starters">
+            <button class="chip" data-q="南充一天三国文化路线">南充一天三国文化路线</button>
+            <button class="chip" data-q="广元两天三国文化路线推荐">广元两天三国文化路线推荐</button>
+            <button class="chip" data-q="南充舒适型酒店预算和万卷楼票价多少钱">南充预算与万卷楼票价</button>
+            <button class="chip" data-q="三国志和三国演义有什么区别">三国志与演义的区别</button>
+          </div>
+        </div>
+      </div>
 
-    form.addEventListener("submit", (ev) => {
-      ev.preventDefault();
-      const msg = input.value.trim();
-      if (!msg) return;
-      input.value = "";
-      run(msg);
-    });
-  </script>
+      <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
+        <div class="map-heading">
+          <div><p class="welcome-kicker">一览蜀地</p><h2>四川 · 市州位置</h2></div>
+          <span>21 个市州 · 183 个县级地点</span>
+        </div>
+        <p class="map-note">试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。地点会自动标到地图上。</p>
+        <div class="county-controls">
+          <label>市州筛选<select id="map-prefecture"><option value="">全省</option></select></label>
+          <label>县城 / 区<select id="map-county"><option value="">选择地点</option></select></label>
+          <button type="button" class="module-button" id="map-add-stop" disabled>加入路线</button>
+        </div>
+        <div class="module-actions map-tools"><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit">查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
+        <div class="interactive-map">
+          <svg id="route-map" viewBox="0 0 900 680" role="img" aria-label="四川市州县城与当前路线，可拖动地图或使用上方缩放按钮">
+            <image href="sichuan-map.svg" x="0" y="0" width="900" height="680"/>
+            <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
+          </svg>
+          <div id="map-place-picker" class="map-place-picker" role="region" aria-label="选择附近地点" hidden>
+            <div class="picker-heading"><strong id="map-picker-title">选择地点</strong><button id="map-picker-close" type="button" aria-label="关闭地点列表">×</button></div>
+            <div id="map-picker-list"></div>
+          </div>
+          <div class="map-zoom-control" role="group" aria-label="地图缩放">
+            <div class="map-zoom-heading"><label for="map-zoom-range">缩放</label><output id="map-zoom-value" for="map-zoom-range">100%</output></div>
+            <div class="map-zoom-inputs">
+              <button type="button" id="map-zoom-out" aria-label="缩小地图" disabled>−</button>
+              <input id="map-zoom-range" type="range" min="100" max="1000" step="1" value="100" aria-valuetext="100%">
+              <button type="button" id="map-zoom-in" aria-label="放大地图">＋</button>
+            </div>
+          </div>
+        </div>
+        <p id="map-route-status" role="status">正在加载县级地点…</p>
+        <ol id="map-route-list" class="map-route-list"></ol>
+        <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移，选定市州后显示县级名称。</p>
+        <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
+        <div class="module-actions"><button type="button" class="module-button" data-destination="南充">规划南充行程</button><button type="button" class="module-button" data-destination="阆中">规划阆中行程</button><button type="button" class="module-button" data-destination="广元">规划广元行程</button></div>
+      </section>
+
+      <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
+        <p class="welcome-kicker">从目的地开始</p><h2>探索川东北</h2>
+        <p>选择目的地，查看景区资料或带入行程规划。</p>
+        <div class="module-actions"><button class="module-button" data-city="南充" aria-pressed="true">南充</button><button class="module-button" data-city="阆中" aria-pressed="false">阆中</button><button class="module-button" data-city="广元" aria-pressed="false">广元</button></div>
+        <div id="destination-results" aria-live="polite" class="module-results"></div>
+        <button class="module-button" id="plan-destination">规划南充行程</button>
+      </section>
+
+      <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
+        <p class="welcome-kicker">把想法整理成行程</p><h2>规划你的蜀地之旅</h2>
+        <p>目前可预览并保存出行草稿，具体站点将在路线服务接入后提供。</p>
+        <form id="trip-form" class="module-form">
+          <label>目的地<select name="city"><option>南充</option><option>阆中</option><option>广元</option></select></label>
+          <label>出发日期<input name="date" type="date" required></label>
+          <label>游玩天数<input name="days" type="number" value="2" min="1" max="14" required></label>
+          <label>人数<input name="people" type="number" value="2" min="1" max="50" required></label>
+          <label>同行人群<select name="group"><option>朋友同行</option><option>独自出行</option><option>亲子家庭</option><option>长辈同行</option></select></label>
+          <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
+          <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option>高档型</option></select></label>
+          <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
+          <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
+          <button class="module-button primary" type="submit">生成行程草稿</button>
+        </form>
+        <p id="planner-status" role="status"></p>
+      </section>
+
+      <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
+        <p class="welcome-kicker">我的行程</p><h2>出行方案</h2>
+        <div id="plan-results" class="module-results"></div>
+        <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
+        <p id="plan-status" role="status"></p>
+        <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
+        <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
+      </section>
+
+      <section class="module-view" id="budget-view" data-view-panel="budget" hidden>
+        <p class="welcome-kicker">费用分开看</p><h2>预算明细</h2>
+        <p>根据当前行程的人数、住宿晚数和房间数估算。没有数据的费用不会按零元计入。</p>
+        <button id="load-budget" class="module-button">查询当前行程预算</button>
+        <div id="budget-results" class="module-results" aria-live="polite"></div>
+      </section>
+
+      <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
+        <p class="welcome-kicker">出发前再确认</p><h2>天气与交通</h2>
+        <p>按当前行程目的地和出发日期查询。接入后显示来源与查询时间。</p>
+        <button id="load-travel" class="module-button">查询出行信息</button>
+        <div id="travel-results" class="module-results" aria-live="polite"></div>
+      </section>
+
+      <footer class="content-footer">
+        <span>陈寿笔下的蜀汉记忆</span>
+        <span class="note">旅游资料待接入 · 动态信息以官方为准</span>
+      </footer>
+    </section>
+  </main>
+
+  <button class="launcher" id="launcher" aria-label="打开对话，可拖动调整位置" aria-expanded="false" aria-controls="chat-panel">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11 10h26a5 5 0 0 1 5 5v17a5 5 0 0 1-5 5H23l-10 7v-7h-2a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5Z"/><circle cx="16" cy="24" r="1.6"/><circle cx="24" cy="24" r="1.6"/><circle cx="32" cy="24" r="1.6"/></svg>
+    <span>对话助手</span>
+  </button>
+
+  <aside class="chat-panel" id="chat-panel" aria-label="对话面板" hidden>
+    <nav class="history" aria-label="历史对话">
+      <button id="new-chat" class="new-chat" aria-label="新建对话">＋ 新对话</button>
+      <span class="history-title">最近对话 · 本页保留</span>
+      <div id="history-list"></div>
+    </nav>
+    <section class="conversation">
+      <header class="chat-heading">
+        <div>
+          <strong id="conversation-title">新对话</strong>
+          <span class="sub" data-service-status>正在检查服务…</span>
+        </div>
+        <button id="close-chat" class="close" aria-label="关闭对话">×</button>
+      </header>
+      <div id="messages" class="messages" role="log" aria-live="polite"></div>
+      <div class="delete-notice" id="delete-notice" role="status" hidden>已删除对话 <button type="button" id="undo-delete">撤销</button></div>
+      <form id="chat-form" class="composer">
+        <label class="sr-only" for="message">输入消息</label>
+        <textarea id="message" placeholder="输入消息，或点上方示例问题…" rows="2" maxlength="2000"></textarea>
+        <div class="composer-bottom">
+          <span>Enter 发送 · Shift + Enter 换行</span>
+          <button type="submit" aria-label="发送消息">↑</button>
+        </div>
+      </form>
+      <p class="demo-note">回答由三国文化旅游智能服务生成 · 票价为维护数据</p>
+    </section>
+  </aside>
+
+  <script src="app.js"></script>
+  <script src="travel-api.js"></script>
+  <script src="travel-modules.js"></script>
+  <script src="map-route-core.js"></script>
+  <script src="travel-map.js"></script>
 </body>
 </html>
+
