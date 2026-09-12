@@ -16,7 +16,7 @@ function get(id) { if (!nodes.has(id)) nodes.set(id, new Element()); return node
 const requests = [];
 const context = vm.createContext({
   document: { querySelector: get, querySelectorAll: () => [], createElement: () => new Element(), body: new Element(), addEventListener() {} },
-  window: { addEventListener() {} }, AbortSignal,
+  window: { addEventListener() {} }, AbortSignal, URL,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
 vm.runInContext(fs.readFileSync(__dirname + '/app.js', 'utf8'), context);
@@ -82,6 +82,41 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   get('#undo-delete').onclick();
   assert.equal(run('chats[active].messages[2].text'), '迟到的回答');
   assert.equal(run('chats.length'), 3);
+  for (const failure of [
+    {ok:false,status:422,json:async()=>({detail:'missing message'})},
+    {ok:true,json:async()=>{throw new SyntaxError('invalid JSON')}},
+    {ok:true,json:async()=>({route:null})},
+    Object.assign(new Error('timeout'),{name:'TimeoutError'})
+  ]) {
+    run("send('错误态回归')");
+    const request = requests[requests.length-1];
+    if(failure instanceof Error) request.reject(failure); else request.resolve(failure);
+    await flush();
+    assert.equal(run('chats[active].messages.at(-1).error'),true);
+    assert.equal(run('chats[active].pending'),false);
+    const errorMessage = run('chats[active].messages.at(-1)');
+    assert.match(textTree(run('messageNode(chats[active].messages.at(-1))')),/重新请求/);
+    run('requestReply(chats[active],chats[active].messages.at(-1))');
+    requests.at(-1).resolve({ok:true,json:async()=>({answer:'重试成功',intent:{intent:'culture_qa'}})});
+    await flush();
+    assert.equal(errorMessage.error,false);
+  }
+  console.log('PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover');
   console.log('PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation');
   console.log('PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery');
 })().catch(error => { console.error(error); process.exitCode = 1; });
+
+function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
+assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /待核验/);
+assert.match(textTree(run('metaNode({intent:{intent:"budget_ticket"},route:null})')), /不能认定为免费/);
+assert.match(textTree(run('trustNode({data_status:"live",updated_at:"2026-09-12T10:00:00+08:00",sources:[{title:"来源",source_url:"https://example.com",source_level:"C"}]})')), /不能支撑史实结论/);
+assert.match(textTree(run('trustNode({updated_at:"2026-09-12",sources:[{title:"不安全",source_url:"javascript:alert(1)",source_level:"A"}]})')), /来源链接待核验/);
+assert.doesNotThrow(() => run('routeCard({name:"路线"},[null,{}, {name:"站点"}])'));
+console.log('PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops');
+
+const trusted = run('trustNode({data_status:"maintained",updated_at:"2026-09-12T10:00:00Z",sources:[{title:"官方",source_url:"https://example.com/info",source_level:"A"}]})');
+assert.match(textTree(trusted), /维护数据/);
+assert.match(textTree(trusted), /2026-09-12T10:00:00Z/);
+assert.equal(trusted.children[2].children[0].href, 'https://example.com/info');
+assert.equal(trusted.children[2].children[0].rel, 'noopener noreferrer');
+assert.match(textTree(run('trustNode({data_status:"constructor"})')), /待核验/);

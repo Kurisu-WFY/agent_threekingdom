@@ -120,3 +120,22 @@
 - 回退：把 compose 里那行挂载注释掉 → 回到封版前端 `827adc8`；改回主工作树路径 → 回到旧挂载源。
 - 接手提示词（给下一个前端会话，自包含可直接粘）：
   `D:\DSH Workspace\agent_threekingdom\docs\HANDOFF-TO-CODEX.md`。
+
+
+## 2026-09-12 · Codex 第三迭代：浏览器验收与回答核验标识
+
+- 工作树：D:/DSH Workspace/sgt-frontend-iter3，分支 feat/frontend-iteration-3；基于 bccae1f。未改后端、部署、数据、提示词；未 push、未合并。
+- 完成：app.js 为回答和路线展示 data_status、带时区 updated_at、sources；缺失或非法值显示待核验。来源只允许 HTTP/HTTPS，链接带 noopener noreferrer；C 级明确不能支撑史实结论。预算原文保留，另提示未知金额不能认定为免费。styles.css 补核验信息换行与字号。
+- 容错补充：路线卡片忽略 null / 缺名称的站点，避免脏数据导致整条回答渲染失败。app.test.cjs 覆盖多态响应、缺元数据、合法与非法来源、时间戳、异常站点，以及 422 / 非法 JSON / 缺 answer / 超时后的重试恢复。
+- 浏览器：Codex 内置浏览器成功访问 http://127.0.0.1:8001。1280×800 首页默认收起；展开后主框右缘 468px、面板左缘 500px，不重叠。375×812 首页默认收起、无横向溢出；展开为全屏对话，可关闭；空输入发送禁用。未发现需要改动布局的视觉缺陷。
+- 真实联调步骤：依次发送“三国志与演义的区别”“南充舒适型酒店预算和万卷楼票价多少钱”“南充一天三国文化路线”。文化回答显示召回覆盖，预算 route:null 正常，路线卡片正常，浏览器无 JS error。预算依然返回 0.0 - 0.0 CNY（manual_demo），前端未改写且明确待核验。
+- 地图步骤：发送“从南充出发，去阆中、剑阁，再到广元旅游”，地图保留 4 个地点及虚线顺序示意；但后端实际识别为 culture_qa，属于意图识别缺口，交人处理。另发南充一天路线，后端两个景区均无坐标，地图仍保留南充市并提示两个未定位站点；真实响应回放也通过。驻地点不冒充景区入口。
+- 错误态浏览器验收：打开 /tests/chat-error.html，点击“南充一天三国文化路线”；独立测试页仅首次将请求体换成 {}，真实后端回 422，出现错误气泡与“重新请求”；点击后正常返回路线且重试按钮消失。正式首页不加载该测试逻辑。真实断网/改端口未操作；网络拒绝、超时、非法 JSON 由自动测试注入覆盖。
+- 验证：6 个 frontend/*.js 的 node --check 全通过；app.test.cjs、travel-api.test.cjs、map-route.test.cjs 全 PASS；D:/DSH Workspace/.tmp-e2e/replay-map.cjs 回放通过；/health=ok，缺 message=422，HTTP app.js 与本地 SHA256 一致。
+- 截图目录（本机绝对路径）：C:/Users/Rocket/.codex/visualizations/2026/09/10/01a08c5d-b8c1-7301-a48c-fa4514c75077/
+  - frontend-desktop-1280.png：桌面路线卡片、核验提示与地图缺坐标降级。
+  - frontend-mobile-home-375.png：手机首页默认收起。
+  - frontend-mobile-chat-375.png：手机全屏对话。
+  - frontend-mobile-map-375.png：手机地图、四个地名点。
+  - frontend-error-422.png / frontend-retry-recovered.png：真实 422 与重试恢复。
+- 下一步 / 卡点：#33 仍需后端提供景区 GCJ-02 坐标及价格元数据，修正未知金额为 null；多地旅游问句意图识别需人协调后端。#36 等四个旅游接口落地，travel-api.js 保持 enabled=false。本轮未扩展景区数据或导航能力。

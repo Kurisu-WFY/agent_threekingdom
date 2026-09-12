@@ -470,3 +470,8 @@ body.chat-open #route-map { height: 260px; }
   .module-view { padding: 20px; }
   .module-form input, .module-form select, .module-form textarea { font-size: 16px; }
 }
+
+/* 回答核验信息保持正文可读性，长来源链接允许换行。 */
+.trust-info { width:100%; display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
+.trust-info > div { width:100%; display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.trust-info a { color:var(--shu, #426345); text-decoration:underline; }

@@ -73,7 +73,7 @@ function routeCard(route, stops) {
   if (Array.isArray(stops) && stops.length) {
     const list = document.createElement('ol');
     list.className = 'route-stops';
-    stops.forEach(stop => {
+    stops.filter(stop => stop && typeof stop.name === 'string').forEach(stop => {
       const li = document.createElement('li');
       li.textContent = stop.name + (stop.stay_minutes ? '（约 ' + stop.stay_minutes + ' 分钟）' : '');
       list.append(li);
@@ -83,13 +83,47 @@ function routeCard(route, stops) {
   return card;
 }
 
+function trustNode(record, label = '回答') {
+  const box = document.createElement('div');
+  box.className = 'trust-info';
+  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'待接入', stale:'已过期'};
+  const status = record && Object.hasOwn(statuses, record.data_status) ? statuses[record.data_status] : null;
+  box.append(tag(label + ' · ' + (status || '待核验')));
+  const date = record && record.updated_at;
+  const validDate = typeof date === 'string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(date) && Number.isFinite(Date.parse(date));
+  box.append(tag(validDate ? '更新时间 · ' + date : '更新时间 · 待核验'));
+  const sources = record && Array.isArray(record.sources) ? record.sources : [];
+  let count = 0;
+  sources.forEach(source => {
+    if (!source || typeof source.title !== 'string' || !source.title.trim()) return;
+    const line = document.createElement('div');
+    let url;
+    try { url = new URL(source.source_url); } catch (_) {}
+    const safe = url && ['http:', 'https:'].includes(url.protocol);
+    const link = document.createElement(safe ? 'a' : 'span');
+    link.textContent = source.title;
+    if (safe) { link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+    const level = ['A','B','C'].includes(source.source_level) ? source.source_level : '待核验';
+    line.append(link, tag('来源等级 · ' + level));
+    if (!safe) line.append(tag('来源链接待核验'));
+    if (level === 'C') line.append(tag('仅供参考，不能支撑史实结论'));
+    box.append(line); count += 1;
+  });
+  if (!count) box.append(tag('来源 · 待核验'));
+  return box;
+}
+
 function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
   const intent = data && data.intent && data.intent.intent;
   if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
+  meta.append(trustNode(data));
+  if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = data && data.route && data.route.route;
-  if (route) meta.append(routeCard(route, data.route.stops));
+  if (route) {
+    meta.append(routeCard(route, data.route.stops), trustNode(route, '路线'));
+  }
   const retrieval = data && data.retrieval;
   if (retrieval) {
     meta.append(tag('召回覆盖 ' + Math.round((retrieval.coverage || 0) * 100) + '%'));
