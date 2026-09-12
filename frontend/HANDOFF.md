@@ -108,3 +108,15 @@
   （`Browser exited before DevTools became ready`；本机有用户 Edge 实例在跑，按工具契约**未杀任何进程**、未再重试），
   所以**本轮没有视觉验收结论**，只有逻辑回放 + 字节级校验。建议人在自己浏览器打开 http://localhost:8001 目视确认。
 - 未 push、未合并 master；主工作树 `frontend/**` **一行未改**（所有代码改动都在隔离 worktree 的分支上）。
+
+## 2026-09-12 补充 · 联调环境已对准本分支（DSH）
+
+- 快照 `docker-compose.backend.yml` 的前端挂载源已从主工作树（冻结 `827adc8`）改为
+  **`D:\DSH Workspace\sgt-frontend-iter3\frontend`**（= 本分支），容器已重建。
+  → **改 `frontend/**` 后浏览器刷新即生效**（`Ctrl+F5` 兜底），看到的就是本分支的内容；
+  不需要重建镜像，也不需要本地 Python / venv。
+- 实测：`/health` = `ok`；服务端 9 个文件（`/`、`styles.css`、5 个 JS、`sichuan-counties.json`、`HANDOFF.md`）
+  SHA256 与本分支**逐字节一致**；`map-route-core.js` 里 `resolveRoute` 已在线。
+- 回退：把 compose 里那行挂载注释掉 → 回到封版前端 `827adc8`；改回主工作树路径 → 回到旧挂载源。
+- 接手提示词（给下一个前端会话，自包含可直接粘）：
+  `D:\DSH Workspace\agent_threekingdom\docs\HANDOFF-TO-CODEX.md`。
