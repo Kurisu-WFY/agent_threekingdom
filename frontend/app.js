@@ -8,7 +8,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 const viewLabel = document.querySelector('#view-label');
 
 const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
-const WELCOME = '你好，我是三国文化旅游助手。可以问我三国文化，南充 / 阆中 / 广元的路线，或门票与住宿预算。';
+const WELCOME = '你好，我是川东北三国文化旅游助手。重点为你介绍南充、阆中、广元与剑阁的三国文化，规划游览顺序，并提供门票和住宿预算参考。';
 const INTENT_LABELS = {
   culture_qa: '文化问答',
   history_vs_romance: '正史 / 演义',

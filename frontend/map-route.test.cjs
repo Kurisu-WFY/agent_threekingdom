@@ -56,3 +56,24 @@ assert.equal(core.resolveRoute(null, null), null);
 console.log('PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map');
 console.log('PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels');
 console.log('PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation');
+
+// Dense labels must never overlap in screen space at any tested map zoom.
+const viewCore=require('./map-route-core.js');
+for(const zoom of [1,2.5,5,10]){
+ const labels=Array.from({length:30},(_,i)=>({id:i,x:450+i*.4,y:340+i*.3,name:'密集县区'+i,size:11}));
+ const visible=viewCore.labelLayout(labels,[450-450/zoom,340-340/zoom,900/zoom,680/zoom],375,310);
+ assert.ok(visible.length>0&&visible.length<labels.length);
+ for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++){
+   const a=visible[i].box,b=visible[j].box;
+   assert.ok(!(a[0]<b[2]&&a[2]>b[0]&&a[1]<b[3]&&a[3]>b[1]));
+ }
+}
+const geometry=JSON.parse(require('node:fs').readFileSync(__dirname+'/sichuan-map-geometry.json','utf8'));
+assert.equal(geometry.cities.length,21);assert.equal(geometry.counties.length,183);
+assert.equal(new Set(geometry.counties.map(c=>c.adcode)).size,183);
+for(const city of geometry.cities){
+ const [x,y,w]=viewCore.fitBounds(city.bounds),h=w*680/900;
+ assert.ok(x<=city.bounds[0]&&y<=city.bounds[1]&&x+w>=city.bounds[2]&&y+h>=city.bounds[3]);
+ assert.ok(city.d.startsWith('M'));
+}
+console.log('PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1000%');

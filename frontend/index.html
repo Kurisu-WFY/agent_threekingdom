@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>三国文化旅游助手</title>
+  <title>川东北三国文化旅游助手</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <span class="brand"><span class="brand-mark">蜀</span>三国文化旅游助手</span>
+    <span class="brand"><span class="brand-mark">蜀</span>川东北三国文化旅游助手</span>
     <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">主界面</span></span>
     <span class="status" data-service-status role="status">正在检查服务…</span>
   </header>
@@ -29,9 +29,9 @@
       </div>
 
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
-        <p class="welcome-kicker">循陈寿的笔，读一部蜀汉记忆</p>
+        <p class="welcome-kicker">循陈寿的笔，探访川东北三国故地</p>
         <h1>走一趟三国故地，从南充到剑门</h1>
-        <p class="welcome-sub">文化知识问答 · 主题路线规划 · 门票与住宿预算。先整理出行需求，保存行程草稿；景区、路线与价格资料待接入。</p>
+        <p class="welcome-sub">聚焦南充、阆中、广元与剑阁，串联陈寿故里与蜀汉遗迹。询问文化典故、规划游览顺序、了解门票与住宿预算；动态信息请以官方确认为准。</p>
 
         <div class="cards">
           <article class="card">
@@ -67,10 +67,11 @@
 
       <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
         <div class="map-heading">
-          <div><p class="welcome-kicker">一览蜀地</p><h2>四川 · 市州位置</h2></div>
+          <div><p class="welcome-kicker">立足川东北 · 放眼四川</p><h2>川东北三国文化地图</h2></div>
           <span>21 个市州 · 183 个县级地点</span>
         </div>
-        <p class="map-note">试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。地点会自动标到地图上。</p>
+        <p class="map-note">朱红色标注省会成都；重点游览南充—阆中—剑阁—广元。试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。地点会自动标到地图上。</p>
+        <p class="map-note" id="map-layer-status">100%–249% 显示市州边界；250% 起叠加县级边界。标注自动避让，全部县区均可从列表选择。</p>
         <div class="county-controls">
           <label>市州筛选<select id="map-prefecture"><option value="">全省</option></select></label>
           <label>县城 / 区<select id="map-county"><option value="">选择地点</option></select></label>
@@ -78,8 +79,8 @@
         </div>
         <div class="module-actions map-tools"><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit">查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
         <div class="interactive-map">
-          <svg id="route-map" viewBox="0 0 900 680" role="img" aria-label="四川市州县城与当前路线，可拖动地图或使用上方缩放按钮">
-            <image href="sichuan-map.svg" x="0" y="0" width="900" height="680"/>
+          <svg id="route-map" viewBox="0 0 900 680" role="img" aria-label="四川市州县城与当前路线，可拖动、双指缩放或使用右下角缩放控件">
+            <g id="city-boundaries"></g><g id="county-boundaries"></g><g id="city-points"></g>
             <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
           </svg>
           <div id="map-place-picker" class="map-place-picker" role="region" aria-label="选择附近地点" hidden>
@@ -97,7 +98,7 @@
         </div>
         <p id="map-route-status" role="status">正在加载县级地点…</p>
         <ol id="map-route-list" class="map-route-list"></ol>
-        <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移，选定市州后显示县级名称。</p>
+        <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部即可选中；县名自动避让，未显示的县区也可从列表选择。</p>
         <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
         <div class="module-actions"><button type="button" class="module-button" data-destination="南充">规划南充行程</button><button type="button" class="module-button" data-destination="阆中">规划阆中行程</button><button type="button" class="module-button" data-destination="广元">规划广元行程</button></div>
       </section>
@@ -111,7 +112,7 @@
       </section>
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
-        <p class="welcome-kicker">把想法整理成行程</p><h2>规划你的蜀地之旅</h2>
+        <p class="welcome-kicker">把想法整理成行程</p><h2>规划你的川东北之旅</h2>
         <p>目前可预览并保存出行草稿，具体站点将在路线服务接入后提供。</p>
         <form id="trip-form" class="module-form">
           <label>目的地<select name="city"><option>南充</option><option>阆中</option><option>广元</option></select></label>
@@ -187,7 +188,7 @@
           <button type="submit" aria-label="发送消息">↑</button>
         </div>
       </form>
-      <p class="demo-note">回答由三国文化旅游智能服务生成 · 票价为维护数据</p>
+      <p class="demo-note">川东北三国文化旅游智能服务 · 动态信息请核验</p>
     </section>
   </aside>
 

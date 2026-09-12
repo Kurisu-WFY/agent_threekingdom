@@ -68,7 +68,30 @@
     if (located(existing)) return { points: existing.points, missing: known, kind: existing.kind, backendStopsPending };
     return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
   }
-  const api = { project, aliases, mentions, structured, resolveRoute, nearby };
+  // Viewport helpers operate in projected map units; text collision uses screen pixels.
+  function fitBounds(bounds, aspect = 900 / 680) {
+    const [left,top,right,bottom] = bounds;
+    const width = Math.min(900,Math.max(110,(right-left)*1.3,(bottom-top)*1.3*aspect));
+    return [(left+right-width)/2,(top+bottom-width/aspect)/2,width];
+  }
+  function labelLayout(items, view, width, height) {
+    const scale = Math.min(width/view[2],height/view[3]);
+    const ox=(width-view[2]*scale)/2,oy=(height-view[3]*scale)/2;
+    const occupied=[],visible=[];
+    for(const item of items) {
+      const x=(item.x-view[0])*scale+ox,y=(item.y-view[1])*scale+oy;
+      const w=item.name.length*item.size;
+      if(x<0||x>width||y<0||y>height) continue;
+      for(const [dx,dy] of [[8,-8],[-w-8,-8],[8,18],[-w-8,18]]) {
+        const box=[x+dx-3,y+dy-item.size-3,x+dx+w+3,y+dy+3];
+        if(box[0]<0||box[1]<0||box[2]>width||box[3]>height) continue;
+        if(occupied.some(b=>box[0]<b[2]&&box[2]>b[0]&&box[1]<b[3]&&box[3]>b[1])) continue;
+        occupied.push(box);visible.push({id:item.id,dx,dy,box});break;
+      }
+    }
+    return visible;
+  }
+  const api = { fitBounds, labelLayout, project, aliases, mentions, structured, resolveRoute, nearby };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.MapRouteCore = api;
 })();

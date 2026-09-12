@@ -139,3 +139,17 @@
   - frontend-mobile-map-375.png：手机地图、四个地名点。
   - frontend-error-422.png / frontend-retry-recovered.png：真实 422 与重试恢复。
 - 下一步 / 卡点：#33 仍需后端提供景区 GCJ-02 坐标及价格元数据，修正未知金额为 null；多地旅游问句意图识别需人协调后端。#36 等四个旅游接口落地，travel-api.js 保持 enabled=false。本轮未扩展景区数据或导航能力。
+
+
+## 2026-09-13 · 市县分级地图、县域点击与川东北定位
+
+- 完成用户本轮五项要求及补充：真实 21 市州 / 183 县区轮廓；100%–249% 仅市州边界，250% 起叠加县级边界；屏幕固定字号、标签避让；按市域完整边界适配筛选视野；成都朱红色并标省会；首页和助手说明聚焦南充、阆中、广元、剑阁的川东北三国文化旅游。
+- 县域可直接点击内部选中并高亮，文字和驻地点仍可选。拖动超过阈值才捕获指针，防止拖动误选；双指缩放、滚轮锚点缩放、右下角滑条与百分比同步。
+- 性能：requestAnimationFrame 合并输入；缩放按钮平滑收敛；按视野裁剪边界和点位；低缩放跳过县级图层布局；重用边界节点并清理旧标注引用。尊重 prefers-reduced-motion。不承诺所有设备恒定 60fps。
+- 地图来源：2026-09-12 下载 DataV areas_v3/bound/510000_full.json 及 21 个市州的 *_full.json；保留原始 GeoJSON 于 frontend/sichuan-city-boundaries.json、sichuan-county-boundaries.json。build-map.cjs 以 .22 投影单位简化轮廓，生成 sichuan-map-geometry.json 和静态 SVG。运行页面无需构建或外部地图网络。行政区示意边界不用于精确测绘，驻地仍不代表景区入口。
+- 代码：travel-map.js、map-route-core.js、styles.css、index.html、app.js、build-map.cjs 及地图资源；新增 travel-map.test.cjs、tests/map-performance.html / .js。正式首页不加载性能测试脚本。
+- 自动验证（2026-09-13 恢复后）：全部 frontend/*.js 语法通过；app.test.cjs、travel-api.test.cjs、map-route.test.cjs、travel-map.test.cjs 全通过。覆盖 21/183 边界唯一性、完整市域 fit、100–1000% 密集标签无交叠、真实地图事件的县域选择/拖动隔离/双指缩放。中断前真实响应回放通过：后端无坐标站点仍保留南充市。
+- 浏览器实测（中断前）：1280 桌面成都筛选 450% 显示 17 个市县标签，实际 DOM 矩形无交叠；375 手机南充地图可读。点击仪陇县轮廓内部，selected=county-511324、标题=仪陇县 · 南充市、高亮=511324。
+- 性能实测：隐藏页受限帧影响，不作为流畅度结论。可见页优化前五秒 224 帧，p95=42.4ms、5 次超过 50ms；裁剪与轮廓简化后五秒 244 帧，p95=30.3ms、最大 42.4ms、0 次超过 50ms，SVG 节点数稳定。之后又补充视野外点位裁剪与标注引用清理；最终版本的在线帧率未重新获得：2026-09-13 恢复时 http://127.0.0.1:8001 连接拒绝。没有改后端、容器或部署。
+- 截图位于 C:/Users/Rocket/.codex/visualizations/2026/09/10/01a08c5d-b8c1-7301-a48c-fa4514c75077/：map-chengdu-counties.png、map-mobile-nanchong.png、map-county-area-selected.png。
+- 下一步：服务恢复后打开 /tests/map-performance.html 可复测当前设备帧间隔，手机双指交互已由事件回归覆盖，仍建议在实际手机上体验。后端缺坐标和价格元数据的问题不变，旅游四接口保持关闭。仅前端提交，未 push、未合并。

@@ -475,3 +475,26 @@ body.chat-open #route-map { height: 260px; }
 .trust-info { width:100%; display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
 .trust-info > div { width:100%; display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
 .trust-info a { color:var(--shu, #426345); text-decoration:underline; }
+
+/* Geography stays in map units; labels and markers retain their screen size. */
+.city-boundary { fill:#eeeade; stroke:#a59c88; stroke-width:1; vector-effect:non-scaling-stroke; }
+.city-boundary.boundary-selected { fill:#e5ebdf; stroke:#526e5c; stroke-width:1.5; }
+.county-boundary { fill:none; stroke:#bbb4a5; stroke-width:.65; vector-effect:non-scaling-stroke; pointer-events:none; }
+#city-points { pointer-events:none; }
+.city-label { font:500 calc(13px * var(--map-unit, 1)) 'Microsoft YaHei',sans-serif; fill:#394a48; paint-order:stroke; stroke:#fffdf9; stroke-width:calc(3px * var(--map-unit, 1)); }
+.city-label.capital-label { fill:#9c2b25; font-weight:700; }
+.city-dot { r:calc(3px * var(--map-unit, 1)); fill:#526e5c; stroke:white; stroke-width:1; vector-effect:non-scaling-stroke; }
+.city-dot.capital-dot { fill:#9c2b25; r:calc(4px * var(--map-unit, 1)); }
+.county-label { font-size:calc(11px * var(--map-unit, 1)); stroke-width:calc(2px * var(--map-unit, 1)); }
+.county-dot,.county-selected { r:calc(2.5px * var(--map-unit, 1)); vector-effect:non-scaling-stroke; }
+.route-marker { r:calc(8px * var(--map-unit, 1)); vector-effect:non-scaling-stroke; }
+.route-number { font-size:calc(10px * var(--map-unit, 1)); dominant-baseline:middle; }
+.route-segment { vector-effect:non-scaling-stroke; stroke-width:2; }
+.route-place-label { display:none; }
+.map-note { font-size:13px; }
+@media(max-width:760px){.brand{font-size:13px;} .map-heading h2{font-size:21px;}}
+
+.county-boundary { fill:transparent; pointer-events:all; cursor:pointer; }
+.county-boundary:hover { fill:rgba(82,110,92,.10); }
+.county-boundary.county-area-selected { fill:rgba(82,110,92,.20); stroke:#526e5c; stroke-width:1.4; }
+.county-label { pointer-events:auto; }
