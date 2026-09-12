@@ -75,3 +75,36 @@
 - 协调者告知权威后端已到 `origin/master` 的 `4fcccad`；本轮未拉取、合并或验证该版本。当前分支仍基于旧历史，不能把本分支直接当作已含最新后端的完整镜像基线。
 - 下一步建议：由协调者用冻结前端与最新后端制作快照、重建 Docker 并验收首页、静态资源、/health、/chat 与地图联动；真实旅游接口按 API-CONTRACT.md 对齐后再启用。后续合并与 `frontend/index.html` 冲突处理等待协调者另行安排，本轮不执行。
 - 本轮只补充此交接记录；未修改 src、deploy 或共享文档，未解冲突、未合并、未 push。交接提交后保持冻结。
+
+## 2026-09-12 · 前端组（DSH）接手 · 合并候选 + 真实联调修复
+
+- 状态：完成并已提交验证。分支 `feat/frontend-iteration-3` @ `aff0c37`，基于合并候选 `9623be1`。
+- **先解冻再合并**：在隔离 worktree `D:\DSH Workspace\sgt-merge-frontend` 把本分支并进 `origin/master@4fcccad`，
+  产出 `chore/merge-frontend-into-master` @ `9623be1`。**实测只有 `frontend/index.html` 一处 add/add 冲突**，
+  解冲突取本分支版本：`origin/master` 侧那份是早期「单文件版」（内联 `<style>`/`<script>`、133 行），
+  本分支是第二迭代「多文件版」（`styles.css` + `app.js` + `travel-*` + 地图，201 行）。
+  `styles.css` 里的 `[hidden] { display: none !important; }` 保留 → **任务 #1 的修复没有丢**。
+  验证：合并结果的 `frontend` 树哈希与 `827adc8` **完全相同**、17 个文件 0 差异、改动面只有 `frontend/**`。
+- **本轮修复的真实缺陷**（`frontend/map-route-core.js`、`travel-map.js`、`map-route.test.cjs`）：
+  实测 `POST /chat`「南充一天三国文化路线」的 `route.stops` = 西山风景区·万卷楼、鹤鸣山景区·王平墓，
+  **既无 `coordinates`、名称又是景区**，匹配不到 183 个县级驻地 → `structured()` 两点全 `null`；
+  而 `fromResponse` **无条件用后端站点覆盖 `mapRoute`** → 地图从「南充市」被清成「0 个已定位地点」，视口还被重置。
+  新增纯函数 `MapRouteCore.resolveRoute(existing, parsed)`：只有「能落到位」（GCJ-02 坐标或唯一地名命中）的
+  后端站点才替换已识别点位；否则保留地名路线，并把落不到位的站点记入 `backendStopsPending`，
+  状态栏说明「后端返回的 N 个站点暂无 GCJ-02 坐标，落不到景区入口」。手动移除站点时一并清空该字段。
+- 怎么验证：`node --check` 6/6 通过；`app.test.cjs`、`travel-api.test.cjs`、`map-route.test.cjs` 全 PASS
+  （后者新增真实响应回放断言）。另有最小 DOM 桩脚本 `D:\DSH Workspace\.tmp-e2e\replay-map.cjs`
+  **直接加载真实 `travel-map.js`** 回放实测响应：冻结版回答后 0 个已定位点、修复版保留 1 个「南充市」；
+  给两个站点补 `GCJ-02` 坐标后，修复版与冻结版行为**完全一致**（后端顺序优先、2 点）
+  → 证明修复只在退化场景生效，不影响将来后端补坐标。容器侧：`GET /` 与 7 个静态资源
+  SHA256 **与挂载源逐字节一致（8/8）**；`/health`、三条意图、空串 →200、缺 `message` →422 全部符合协议。
+- 仍然成立的限制（未变）：`travel-api.js` 默认 `enabled=false`，四个旅游接口后端仍未实现；
+  地图虚线仅为地点顺序示意、不提供导航；县级点为驻地、**不等于景区入口**；
+  `/chat` 至今**不返回坐标**，景区级点位仍需后端补 `coordinates` + `coordinate_system: "GCJ-02"`；
+  价格类信息仍无 `data_status`/`sources`/`updated_at`，且**未知金额仍被写成 `0`**
+  （实测「景区票价：西山风景区·万卷楼：0.0 - 0.0 CNY（manual_demo）」）——
+  前端**不擅自改写后端文案、不伪造数据状态**，按协议保留「待核验 / 待接入」表达。
+- **未做**：浏览器渲染验收。受管浏览器 Edge 与 Chrome 两次启动均失败
+  （`Browser exited before DevTools became ready`；本机有用户 Edge 实例在跑，按工具契约**未杀任何进程**、未再重试），
+  所以**本轮没有视觉验收结论**，只有逻辑回放 + 字节级校验。建议人在自己浏览器打开 http://localhost:8001 目视确认。
+- 未 push、未合并 master；主工作树 `frontend/**` **一行未改**（所有代码改动都在隔离 worktree 的分支上）。
