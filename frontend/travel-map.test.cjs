@@ -67,7 +67,7 @@ const assert=require('node:assert/strict');
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'visible');
  const county=registry.get('#county-boundaries').children.find(n=>n.attributes['data-county-code']==='511324');
  assert.ok(county);
- const event={button:0,pointerId:1,clientX:0,clientY:0,target:county};
+ const event={preventDefault(){this.prevented=true;},button:0,pointerId:1,clientX:0,clientY:0,target:county};
  svg.listeners.pointerdown(event);assert.equal(svg.captured,undefined);svg.listeners.pointerup(event);svg.listeners.click(event);
  assert.equal(registry.get('#map-county').value,'county-511324');
  assert.equal(registry.get('#map-picker-title').textContent,'仪陇县 · 南充市');

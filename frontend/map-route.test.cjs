@@ -77,3 +77,19 @@ for(const city of geometry.cities){
  assert.ok(city.d.startsWith('M'));
 }
 console.log('PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1000%');
+
+// Letterboxed SVG exposes more geography than the nominal viewBox on wide/tall panels.
+assert.deepEqual(core.visibleBounds([400,300,90,68],900,340),[355,300,535,368]);
+assert.deepEqual(core.visibleBounds([400,300,90,68],450,680),[400,266,490,402]);
+// City geometry must use exactly the same county paths rather than a second simplification.
+for(const city of geometry.cities){assert.equal(city.d,geometry.counties.filter(c=>c.parent===city.name).map(c=>c.d).join(''));assert.ok(city.outline);}
+console.log('PASS: wide/tall visible bounds and shared city/county geometry');
+
+for(const city of geometry.cities){
+ const edges=new Map();for(const ring of city.d.split('M').filter(Boolean)){
+ const vertices=ring.replace(/Z$/,'').split('L');for(let i=1;i<vertices.length;i++){
+ if(vertices[i-1]===vertices[i])continue;const key=[vertices[i-1],vertices[i]].sort().join('|');edges.set(key,(edges.get(key)||0)+1);
+ }}
+ for(const line of city.outline.split('M').filter(Boolean)){const key=line.split('L').sort().join('|');assert.equal(edges.get(key)%2,1,'city outline must not stroke shared internal county edge');}
+}
+console.log('PASS: shared internal county edges removed from city outline');

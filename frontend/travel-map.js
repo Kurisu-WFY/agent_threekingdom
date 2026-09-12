@@ -14,17 +14,18 @@
     if (!rect.width || !rect.height) return;
     const scale = Math.min(rect.width / view[2], rect.height / view[3]);
     svg.style.setProperty?.('--map-unit', String(1 / scale));
+    const extent=core.visibleBounds(view,rect.width,rect.height);
     const detailed = 900 / view[2] >= 2.5;
     for(const boundary of boundaryNodes){
       const b=boundary.bounds;
-      const visible=(!boundary.county||detailed)&&b[0]<=view[0]+view[2]&&b[2]>=view[0]&&b[1]<=view[1]+view[3]&&b[3]>=view[1];
+      const visible=(!boundary.county||detailed)&&b[0]<=extent[2]&&b[2]>=extent[0]&&b[1]<=extent[3]&&b[3]>=extent[1];
       if(visible!==boundary.visible){boundary.node.setAttribute('display',visible?'inline':'none');boundary.visible=visible;}
     }
     $('#county-boundaries').setAttribute('visibility', detailed ? 'visible' : 'hidden');
     $('#county-boundaries').setAttribute('display',detailed?'inline':'none');
     $('#county-points').setAttribute('visibility', detailed ? 'visible' : 'hidden');
     $('#county-points').setAttribute('display',detailed?'inline':'none');
-    labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=view[0]-20/scale&&l.x<=view[0]+view[2]+20/scale&&l.y>=view[1]-20/scale&&l.y<=view[1]+view[3]+20/scale;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
+    labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-20/scale&&l.x<=extent[2]+20/scale&&l.y>=extent[1]-20/scale&&l.y<=extent[3]+20/scale;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
     const candidates = labels.filter(l => l.city || detailed).sort((a,b) => (b.selected?100: b.capital?90:b.city?50:0)-(a.selected?100:a.capital?90:a.city?50:0));
     const positions = new Map(core.labelLayout(candidates, view, rect.width, rect.height).map(l => [l.id,l]));
     labels.forEach(l => {
@@ -55,7 +56,7 @@
     const parent=$('#map-prefecture').value;
     boundaryNodes=[];
     function path(c,county){const node=element('path',{d:c.d,class:county?'county-boundary':'city-boundary'+(c.name===parent?' boundary-selected':''),'fill-rule':'evenodd',...(county?{'data-county-code':c.adcode}: {})});boundaryNodes.push({node,bounds:c.bounds,county,adcode:c.adcode});return node;}
-    $('#city-boundaries').replaceChildren(...geometry.cities.map(c=>path(c,false)));
+    $('#city-boundaries').replaceChildren(...geometry.cities.flatMap(c=>{const fill=path(c,false);fill.setAttribute('stroke','none');const outline=element('path',{d:c.outline||c.d,class:'city-outline'+(c.name===parent?' boundary-selected':'' )});boundaryNodes.push({node:outline,bounds:c.bounds,county:false});return [fill,outline];}));
     $('#county-boundaries').replaceChildren(...geometry.counties.filter(c=>!parent||c.parent===parent).map(c=>path(c,true)));
   }
   function drawCities() {
@@ -64,7 +65,7 @@
     const parent=$('#map-prefecture').value;
     cityPlaces.filter(p=>!parent||p.name===parent).forEach(p=>{
       const [x,y]=core.project(p.center),capital=p.name==='成都市';
-      const name=capital?'成都 · 省会':p.name.replace('藏族羌族自治州','州').replace('藏族自治州','州').replace('彝族自治州','州');
+      const name=capital?'成都':p.name.replace('藏族羌族自治州','州').replace('藏族自治州','州').replace('彝族自治州','州');
       const node=element('text',{x,y,class:'city-label'+(capital?' capital-label':'')},name);
       group.append(element('circle',{cx:x,cy:y,class:'city-dot'+(capital?' capital-dot':'')}),node);
       labels.push({id:'city-'+p.name,x,y,name,size:13,node,city:true,capital});
@@ -192,7 +193,7 @@
   const ready = Promise.all([
     fetch('sichuan-counties.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     fetch('sichuan-cities.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
-    fetch('sichuan-map-geometry.json').then(r => { if(!r.ok) throw new Error(); return r.json(); })
+    fetch('sichuan-map-geometry.json', { cache: 'no-store' }).then(r => { if(!r.ok) throw new Error(); return r.json(); })
   ]).then(([countyData, cityData, boundaryData]) => {
     geometry=boundaryData; cityPlaces=cityData;
     counties = countyData.map(p => ({ ...p, id: 'county-' + p.adcode, level: 'county' }));
@@ -272,6 +273,7 @@
   svg.addEventListener('click', pickNearby);
   svg.addEventListener('pointerdown', event => {
     if (event.button !== 0) return;
+    event.preventDefault();
     pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if(pointers.size===2){
       const [a,b]=[...pointers.values()],matrix=svg.getScreenCTM();

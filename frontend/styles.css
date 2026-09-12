@@ -498,3 +498,9 @@ body.chat-open #route-map { height: 260px; }
 .county-boundary:hover { fill:rgba(82,110,92,.10); }
 .county-boundary.county-area-selected { fill:rgba(82,110,92,.20); stroke:#526e5c; stroke-width:1.4; }
 .county-label { pointer-events:auto; }
+
+/* Prevent native text selection during map gestures; map labels remain clickable. */
+#route-map, #route-map * { user-select:none; -webkit-user-select:none; }
+.city-boundary { stroke:none; }
+.city-outline { fill:none; stroke:#a59c88; stroke-width:1; vector-effect:non-scaling-stroke; pointer-events:none; }
+.city-outline.boundary-selected { stroke:#526e5c; stroke-width:1.5; }

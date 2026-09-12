@@ -91,7 +91,12 @@
     }
     return visible;
   }
-  const api = { fitBounds, labelLayout, project, aliases, mentions, structured, resolveRoute, nearby };
+  function visibleBounds(view, width, height) {
+    const scale=Math.min(width/view[2],height/view[3]);
+    const extraX=(width/scale-view[2])/2,extraY=(height/scale-view[3])/2;
+    return [view[0]-extraX,view[1]-extraY,view[0]+view[2]+extraX,view[1]+view[3]+extraY];
+  }
+  const api = { visibleBounds, fitBounds, labelLayout, project, aliases, mentions, structured, resolveRoute, nearby };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.MapRouteCore = api;
 })();
