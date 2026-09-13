@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>川东北三国文化旅游助手</title>
-  <link rel="stylesheet" href="styles.css?v=map-seams-2">
+  <link rel="stylesheet" href="styles.css?v=agent-home-1">
 </head>
 <body>
   <header class="topbar">
@@ -18,51 +18,40 @@
       <div class="content-heading">
         <span>陈寿笔下的蜀汉记忆</span>
         <nav class="content-switch" aria-label="主内容视图">
-          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">蜀汉记忆</button>
-          <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">四川地图</button>
-          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
-          <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">规划行程</button>
-          <button type="button" data-content-view="plan" aria-pressed="false" aria-controls="plan-view">我的行程</button>
-          <button type="button" data-content-view="budget" aria-pressed="false" aria-controls="budget-view">预算</button>
-          <button type="button" data-content-view="travel" aria-pressed="false" aria-controls="travel-view">出行信息</button>
+          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">与蜀汉对话</button>
+          <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
         </nav>
       </div>
 
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
-        <p class="welcome-kicker">循陈寿的笔，探访川东北三国故地</p>
-        <h1>走一趟三国故地，从南充到剑门</h1>
-        <p class="welcome-sub">聚焦南充、阆中、广元与剑阁，串联陈寿故里与蜀汉遗迹。询问文化典故、规划游览顺序、了解门票与住宿预算；动态信息请以官方确认为准。</p>
-
-        <div class="cards">
-          <article class="card">
-            <span class="card-icon">📜</span>
-            <h2>文化问答</h2>
-            <p>陈寿、《三国志》、蜀汉人物与川东北地方史迹</p>
-            <button type="button" class="module-button" id="open-culture">打开文化问答</button>
-          </article>
-          <article class="card">
-            <span class="card-icon">🗺️</span>
-            <h2>路线规划</h2>
-            <p>按城市、时长与人群给出游览顺序和风险提示</p>
-            <button type="button" class="module-button" data-content-view="planner">开始规划</button>
-          </article>
-          <article class="card">
-            <span class="card-icon">🎫</span>
-            <h2>预算票价</h2>
-            <p>景区票价与酒店预算区间估算</p>
-            <button type="button" class="module-button" data-content-view="budget">查看预算</button>
-          </article>
-        </div>
-
-        <div class="starters">
-          <span class="starters-title">试试这样问</span>
-          <div class="chips" id="starters">
-            <button class="chip" data-q="南充一天三国文化路线">南充一天三国文化路线</button>
-            <button class="chip" data-q="广元两天三国文化路线推荐">广元两天三国文化路线推荐</button>
-            <button class="chip" data-q="南充舒适型酒店预算和万卷楼票价多少钱">南充预算与万卷楼票价</button>
-            <button class="chip" data-q="三国志和三国演义有什么区别">三国志与演义的区别</button>
+        <div class="agent-hero">
+          <div class="hero-copy">
+            <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 川东北 · 三国文化智能向导</p>
+            <h1>读懂三国，<br>再出发<span class="title-stop">。</span></h1>
+            <p class="welcome-sub">从陈寿笔下的蜀汉记忆，走进南充、阆中与剑门。<br class="desktop-break">关于故事、路线与花费，把想法告诉你的向导。</p>
+            <form id="hero-form" class="hero-composer">
+              <label for="hero-message">这一程，你想了解什么？</label>
+              <textarea id="hero-message" rows="2" maxlength="2000" placeholder="例如：两天时间，从南充出发，想看看三国遗迹…"></textarea>
+              <div class="hero-composer-bottom"><span>一句话，开启你的蜀地之旅</span><button id="hero-send" type="submit" disabled>与向导对话 <span aria-hidden="true">↗</span></button></div>
+            </form>
+            <div class="starters" id="starters"><span class="starters-title">也可以从这里聊起</span><div class="chips">
+              <button class="chip" data-q="陈寿和南充有什么关系？">陈寿与南充 <span aria-hidden="true">↗</span></button>
+              <button class="chip" data-q="南充一天三国文化路线">一天怎么游 <span aria-hidden="true">↗</span></button>
+              <button class="chip" data-q="南充舒适型酒店预算和万卷楼票价多少钱">大概要花多少 <span aria-hidden="true">↗</span></button>
+            </div></div>
           </div>
+          <figure class="hero-photo">
+            <img src="assets/jianmen-pass.jpg" alt="剑门关关楼与两侧山崖，石阶通向关门" width="1170" height="1671" fetchpriority="high" decoding="async">
+            <div class="photo-inscription" aria-hidden="true">剑门天下雄</div>
+            <figcaption><span>蜀道之上</span><strong>剑门关 · 广元剑阁</strong></figcaption>
+          </figure>
         </div>
+        <div class="story-strip">
+          <img src="assets/langzhong-town.jpg" alt="嘉陵江环绕阆中古城的远景" width="1280" height="835" loading="lazy" decoding="async">
+          <div><span class="story-eyebrow">山河有迹 · 故事有源</span><p>从一段蜀汉故事，走向一座城。</p></div>
+          <button type="button" data-agent-question="阆中有哪些与张飞有关的三国文化故事？">聊聊阆中 <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="welcome-bottom"><span>陈寿笔下的蜀汉记忆</span><button type="button" id="open-culture">先聊聊，再决定去哪 <span aria-hidden="true">→</span></button></div>
       </div>
 
       <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
@@ -100,7 +89,7 @@
         <ol id="map-route-list" class="map-route-list"></ol>
         <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部即可选中；县名自动避让，未显示的县区也可从列表选择。</p>
         <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
-        <div class="module-actions"><button type="button" class="module-button" data-destination="南充">规划南充行程</button><button type="button" class="module-button" data-destination="阆中">规划阆中行程</button><button type="button" class="module-button" data-destination="广元">规划广元行程</button></div>
+        <div class="module-actions"><button type="button" class="module-button" data-agent-question="帮我规划南充、阆中和广元的三国文化旅游路线">让向导帮我规划这趟旅程 ↗</button></div>
       </section>
 
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
@@ -153,8 +142,12 @@
       </section>
 
       <footer class="content-footer">
-        <span>陈寿笔下的蜀汉记忆</span>
-        <span class="note">旅游资料待接入 · 动态信息以官方为准</span>
+        <span class="note">AI 伴你读史行旅 · 动态信息请核验</span>
+        <details class="image-credits"><summary>影像来源</summary><div>
+          <p>剑门关：<a href="https://commons.wikimedia.org/wiki/File:Jianmen_Pass.jpg" target="_blank" rel="noopener noreferrer">Chensiyu2004 / Wikimedia Commons</a></p>
+          <p>阆中古城：<a href="https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg" target="_blank" rel="noopener noreferrer">Panzer VI-II / Wikimedia Commons</a></p>
+          <p>两图均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>。网页以 CSS 裁切展示；裁切展示部分沿用相同许可。</p>
+        </div></details>
       </footer>
     </section>
   </main>
@@ -192,11 +185,12 @@
     </section>
   </aside>
 
-  <script src="app.js?v=map-seams-2"></script>
-  <script src="travel-api.js?v=map-seams-2"></script>
-  <script src="travel-modules.js?v=map-seams-2"></script>
-  <script src="map-route-core.js?v=map-seams-2"></script>
-  <script src="travel-map.js?v=map-seams-2"></script>
+  <script src="app.js?v=agent-home-1"></script>
+  <script src="landing.js?v=agent-home-1"></script>
+  <script src="travel-api.js?v=agent-home-1"></script>
+  <script src="travel-modules.js?v=agent-home-1"></script>
+  <script src="map-route-core.js?v=agent-home-1"></script>
+  <script src="travel-map.js?v=agent-home-1"></script>
 </body>
 </html>
 
