@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>川东北三国文化旅游助手</title>
-  <link rel="stylesheet" href="styles.css?v=agent-home-1">
+  <link rel="stylesheet" href="styles.css?v=agent-home-2">
 </head>
 <body>
   <header class="topbar">
@@ -28,10 +28,10 @@
           <div class="hero-copy">
             <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 川东北 · 三国文化智能向导</p>
             <h1>读懂三国，<br>再出发<span class="title-stop">。</span></h1>
-            <p class="welcome-sub">从陈寿笔下的蜀汉记忆，走进南充、阆中与剑门。<br class="desktop-break">关于故事、路线与花费，把想法告诉你的向导。</p>
+            <p class="welcome-sub">告诉向导你和谁同行、何时出发、兴趣与预算。它会先理解需求，再串联三国遗迹、讲清人物与史实，并随你的追问继续调整。</p>
             <form id="hero-form" class="hero-composer">
               <label for="hero-message">这一程，你想了解什么？</label>
-              <textarea id="hero-message" rows="2" maxlength="2000" placeholder="例如：两天时间，从南充出发，想看看三国遗迹…"></textarea>
+              <textarea id="hero-message" rows="2" maxlength="2000" placeholder="例如：亲子出行，两天时间，从南充到剑门关，想边走边听三国故事…"></textarea>
               <div class="hero-composer-bottom"><span>一句话，开启你的蜀地之旅</span><button id="hero-send" type="submit" disabled>与向导对话 <span aria-hidden="true">↗</span></button></div>
             </form>
             <div class="starters" id="starters"><span class="starters-title">也可以从这里聊起</span><div class="chips">
@@ -46,6 +46,28 @@
             <figcaption><span>蜀道之上</span><strong>剑门关 · 广元剑阁</strong></figcaption>
           </figure>
         </div>
+        <section class="agent-journey" aria-labelledby="agent-journey-title">
+          <div class="journey-heading">
+            <div><span class="story-eyebrow">一段旅程 · 四重智能协作</span><h2 id="agent-journey-title">从听懂你，到陪你走完</h2></div>
+            <p>不必先研究功能，把真实想法说出来就好。</p>
+          </div>
+          <ol class="journey-stages">
+            <li><span class="stage-number">01</span><div><strong>先懂你的旅程</strong><p>理解时间、同行人、兴趣、节奏与预算，也记住你偏爱的讲解方式。</p></div></li>
+            <li><span class="stage-number">02</span><div><strong>再串联三国遗迹</strong><p>组合南充、阆中、剑阁与广元的文化点位，说明顺序与取舍。</p></div></li>
+            <li><span class="stage-number">03</span><div><strong>边走边讲人物</strong><p>联系人物、事件与地点，区分正史和演义，并标明可核验依据。</p></div></li>
+            <li><span class="stage-number">04</span><div><strong>一路追问调整</strong><p>少走路、换主题或调整预算，都可以在同一段对话里继续完善。</p></div></li>
+          </ol>
+          <div class="traveler-presets">
+            <span>按同行方式开启对话</span>
+            <div>
+              <button type="button" data-agent-question="第一次来川东北，两天时间，帮我安排一条经典三国文化路线，并说明每站为什么值得去。">普通初访</button>
+              <button type="button" data-agent-question="带孩子游川东北三国文化景点，想轻松少走路，故事讲得生动一些，请帮我规划两天行程。">亲子同行</button>
+              <button type="button" data-agent-question="我们是研学师生，想围绕陈寿、《三国志》和正史演义之别设计川东北研学路线。">研学寻史</button>
+              <button type="button" data-agent-question="我对张飞很感兴趣，请沿人物、事件和地点的关系，推荐川东北值得走访的地方。">人物追踪</button>
+            </div>
+          </div>
+          <p class="journey-trust"><span aria-hidden="true">✓</span> 文化回答标注资料可信度；票价、天气与班次等动态信息仍需出发前核验。</p>
+        </section>
         <div class="story-strip">
           <img src="assets/langzhong-town.jpg" alt="嘉陵江环绕阆中古城的远景" width="1280" height="835" loading="lazy" decoding="async">
           <div><span class="story-eyebrow">山河有迹 · 故事有源</span><p>从一段蜀汉故事，走向一座城。</p></div>
@@ -186,11 +208,10 @@
   </aside>
 
   <script src="app.js?v=agent-home-1"></script>
-  <script src="landing.js?v=agent-home-1"></script>
+  <script src="landing.js?v=agent-home-2"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
   <script src="travel-modules.js?v=agent-home-1"></script>
   <script src="map-route-core.js?v=agent-home-1"></script>
   <script src="travel-map.js?v=agent-home-1"></script>
 </body>
 </html>
-

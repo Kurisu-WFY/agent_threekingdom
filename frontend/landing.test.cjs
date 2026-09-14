@@ -10,5 +10,8 @@ field.value='  南充一天路线  ';field.handlers.input();assert.equal(submit.
 assert.deepEqual(calls,['open','南充一天路线']);assert.equal(field.value,'');assert.equal(submit.disabled,true);
 chat.pending=true;question.handlers.click();assert.equal(input.value,'阆中的故事');assert.equal(calls.at(-1),'draft');assert.equal(calls.filter(c=>c==='阆中的故事').length,0);
 const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(/<nav class="content-switch"[\s\S]*?<\/nav>/)[0];assert.equal((nav.match(/data-content-view=/g)||[]).length,2);
+for(const stage of ['先懂你的旅程','再串联三国遗迹','边走边讲人物','一路追问调整'])assert.ok(html.includes(stage));
+for(const profile of ['普通初访','亲子同行','研学寻史','人物追踪'])assert.ok(html.includes(profile));
+assert.ok(html.includes('id="map-view"'));assert.ok(html.includes('id="route-map"'));
 for(const asset of ['jianmen-pass.jpg','langzhong-town.jpg'])assert.ok(fs.statSync(__dirname+'/assets/'+asset).size>10000);
-console.log('PASS: homepage empty guard, same-chat submission, pending request draft, two-item navigation and local images');
+console.log('PASS: homepage chat flow, four-stage agent journey, traveler prompts, two-item navigation, preserved map and local images');
