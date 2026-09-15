@@ -1,5 +1,6 @@
 import json
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -7,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import uvicorn
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
+from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 from mcp.types import TextContent, Tool
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -158,6 +160,10 @@ async def call_tool(name: str, arguments: dict):
 
 
 sse = SseServerTransport("/messages")
+# Streamable HTTP is the current MCP HTTP transport. Stateless JSON responses
+# suit this tool-only server and avoid requiring the client to maintain a
+# separate SSE channel.
+streamable_http = StreamableHTTPSessionManager(server, stateless=True, json_response=True)
 
 
 async def handle_sse(request: Request):
@@ -165,7 +171,20 @@ async def handle_sse(request: Request):
         await server.run(streams[0], streams[1], server.create_initialization_options())
 
 
-app = Starlette(routes=[Route("/sse", endpoint=handle_sse), Mount("/messages", app=sse.handle_post_message)])
+@asynccontextmanager
+async def lifespan(_: Starlette):
+    async with streamable_http.run():
+        yield
+
+
+app = Starlette(
+    routes=[
+        Route("/mcp", endpoint=streamable_http.handle_request, methods=["GET", "POST", "DELETE"]),
+        Route("/sse", endpoint=handle_sse),
+        Mount("/messages", app=sse.handle_post_message),
+    ],
+    lifespan=lifespan,
+)
 
 
 if __name__ == "__main__":

@@ -201,6 +201,18 @@ $env:MILVUS_URI=''
 http://localhost:8000/sse
 ```
 
+推荐使用 Streamable HTTP 的客户端配置为：
+
+```text
+http://localhost:8000/mcp
+```
+
+容器内客户端访问 Windows 宿主机时，使用：
+
+```text
+http://host.docker.internal:8000/mcp
+```
+
 云端 Agent 平台通常无法直接访问本机 `localhost`。平台接入时应采用公网部署、内网穿透或平台原生工具改写方式，并配置鉴权、IP 白名单和调用日志。
 
 本项目 MCP 工具：
