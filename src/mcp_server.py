@@ -179,7 +179,7 @@ async def lifespan(_: Starlette):
 
 app = Starlette(
     routes=[
-        Route("/mcp", endpoint=streamable_http.handle_request, methods=["GET", "POST", "DELETE"]),
+        Mount("/mcp", app=streamable_http.handle_request),
         Route("/sse", endpoint=handle_sse),
         Mount("/messages", app=sse.handle_post_message),
     ],
