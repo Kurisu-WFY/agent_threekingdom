@@ -209,6 +209,7 @@ function render() {
 
 /* ---------------- 展开 / 收起 ---------------- */
 let launcherRestLeft = null;
+let chatOpeningScroll = null;
 
 function updateChatLayout() {
   if (!panel.hidden && window.innerWidth > 760) {
@@ -219,6 +220,7 @@ function updateChatLayout() {
 function toggleChat(open) {
   if (open === !panel.hidden) return;
   if (open) {
+    chatOpeningScroll = { view: currentContentView, top: window.scrollY || 0 };
     const rect = launcher.getBoundingClientRect();
     launcherRestLeft = rect.left;
     launcher.style.left = rect.left + 'px';
@@ -233,7 +235,12 @@ function toggleChat(open) {
   launcher.setAttribute('aria-expanded', String(open));
   launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');
   viewLabel.textContent = open ? '对话界面' : '主界面';
-  if (open) input.focus(); else launcher.focus();
+  if (open) input.focus({ preventScroll: true });
+  else {
+    launcher.focus({ preventScroll: true });
+    if (chatOpeningScroll?.view === currentContentView) window.scrollTo({ top: chatOpeningScroll.top, behavior: 'instant' });
+    chatOpeningScroll = null;
+  }
 }
 
 /* ---------------- 拖动入口 ---------------- */
@@ -414,13 +421,29 @@ checkHealth();
 window.addEventListener('online', checkHealth);
 
 /* ---------------- 主框内容切换 ---------------- */
+const contentScrollPositions = new Map();
+let currentContentView = 'welcome';
+let contentEntrance = null;
 function showContentView(view) {
-    document.querySelectorAll('[data-view-panel]').forEach(section => {
-      section.hidden = section.dataset.viewPanel !== view;
-    });
+    const sections = Array.from(document.querySelectorAll('[data-view-panel]'));
+    const target = sections.find(section => section.dataset.viewPanel === view);
+    if (!target || view === currentContentView) return;
+    const savedTop = !panel.hidden && chatOpeningScroll?.view === currentContentView ? chatOpeningScroll.top : window.scrollY || 0;
+    contentScrollPositions.set(currentContentView, savedTop);
+    contentEntrance?.cancel();
+    const leaving = sections.find(section => !section.hidden);
+    const restoreFocus = leaving?.contains(document.activeElement);
+    sections.forEach(section => { section.hidden = section !== target; });
+    currentContentView = view;
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
+    // Restore the view's page position synchronously; never reset map or conversation state.
+    window.scrollTo({ top: contentScrollPositions.get(view) || 0, behavior: 'instant' });
+    if (restoreFocus) document.querySelector('.content-switch [data-content-view="' + view + '"]')?.focus({ preventScroll: true });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && target.animate) {
+      contentEntrance = target.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });
+    }
     if (!panel.hidden) updateChatLayout();
 }
 document.querySelectorAll('[data-content-view]').forEach(button => {
