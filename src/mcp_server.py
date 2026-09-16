@@ -15,6 +15,7 @@ from starlette.requests import Request
 from starlette.routing import Mount, Route
 
 from agent.orchestrator import TravelAgentService
+from planning.route_planner import plan_route
 from rag.hybrid_retriever import HybridRetriever, format_context
 from tools.travel_business_tools import (
     estimate_hotel_budget,
@@ -45,11 +46,46 @@ async def list_tools():
         ),
         Tool(
             name="answer_travel_question",
-            description="调用本地 Agent 编排，完成意图识别、RAG 检索、召回检查和受控回答。",
+            description="调用本地 Agent 编排，完成意图识别、RAG 检索、召回检查和受控回答。可指定亲子、大众或学术叙事模式。",
             inputSchema={
                 "type": "object",
-                "properties": {"message": {"type": "string", "description": "用户完整问题"}},
+                "properties": {
+                    "message": {"type": "string", "description": "用户完整问题"},
+                    "mode": {
+                        "type": "string",
+                        "enum": ["亲子", "大众", "学术"],
+                        "description": "叙事模式，默认大众。",
+                    },
+                    "history": {
+                        "type": "array",
+                        "description": "可选的先前对话，元素格式为 {role, content}。",
+                        "items": {"type": "object"},
+                    },
+                },
                 "required": ["message"],
+            },
+        ),
+        Tool(
+            name="plan_cultural_route",
+            description="按城市、游览时长、游客类型、兴趣和出行方式，选择最匹配的三国文化 Demo 路线，并返回每站历史叙事理由。",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "description": "目的地，如南充、阆中、广元。"},
+                    "duration_hours": {"type": "number", "description": "可游览小时数，如 4、8、16。"},
+                    "group_type": {
+                        "type": "string",
+                        "enum": ["亲子", "大众", "学术"],
+                        "description": "游客类型/叙事深度。",
+                    },
+                    "interests": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "兴趣，如陈寿、蜀汉人物、军事地理、亲子研学。",
+                    },
+                    "transport_mode": {"type": "string", "description": "出行方式，如步行、打车、自驾。"},
+                },
+                "required": ["city"],
             },
         ),
         Tool(
@@ -124,7 +160,42 @@ async def call_tool(name: str, arguments: dict):
         hits, report = HybridRetriever().retrieve(arguments["query"], arguments.get("intent"))
         return as_text({"context": format_context(hits), "recall_report": report.model_dump()})
     if name == "answer_travel_question":
-        return as_text(TravelAgentService().answer(arguments["message"]))
+        history = arguments.get("history")
+        return as_text(
+            TravelAgentService().answer(
+                arguments["message"],
+                mode=arguments.get("mode", "大众"),
+                history=history if isinstance(history, list) else None,
+            )
+        )
+    if name == "plan_cultural_route":
+        city = arguments["city"]
+        duration_hours = arguments.get("duration_hours")
+        group_type = arguments.get("group_type", "大众")
+        interests = arguments.get("interests") or []
+        transport_mode = arguments.get("transport_mode")
+        request_summary = " ".join(
+            part
+            for part in [
+                city,
+                f"{duration_hours}小时" if duration_hours is not None else "",
+                group_type,
+                " ".join(str(item) for item in interests),
+                transport_mode or "",
+            ]
+            if part
+        )
+        return as_text(
+            plan_route(
+                request_summary,
+                mode=group_type,
+                city=city,
+                duration_hours=float(duration_hours) if duration_hours is not None else None,
+                target_user=group_type,
+                interests=[str(item) for item in interests],
+                transport_mode=transport_mode,
+            )
+        )
     if name == "list_scenic_spots":
         return as_text(list_scenic_spots(arguments.get("city")))
     if name == "get_spot_ticket":

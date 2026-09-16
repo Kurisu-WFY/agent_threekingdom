@@ -51,6 +51,7 @@ D:\agent_threekingdom
     db.py
     domain.py
     mcp_server.py
+    mcp_stdio_server.py
   tests/
 ```
 
@@ -68,7 +69,8 @@ D:\agent_threekingdom
 - `src/rag/retriever.py`：混合召回、重排和召回报告生成。
 - `src/rag/recall_checker.py`：检测召回覆盖度、缺失实体和来源等级风险。
 - `src/api.py`：FastAPI HTTP 服务入口。
-- `src/mcp_server.py`：MCP SSE 服务入口。
+- `src/mcp_server.py`：MCP HTTP（Streamable HTTP / SSE）服务入口。
+- `src/mcp_stdio_server.py`：本机 MCP stdio 服务入口，供可直接启动本地命令的客户端使用。
 
 ## 数据库设计
 
@@ -207,6 +209,28 @@ http://localhost:8000/sse
 http://localhost:8000/mcp
 ```
 
+### 本机 stdio 接入（Windows NuwaClaw）
+
+无需 Docker、端口或公网地址，使用项目虚拟环境启动：
+
+```powershell
+.\.venv\Scripts\python.exe src\mcp_stdio_server.py
+```
+
+NuwaClaw 的本地 MCP 配置：
+
+```json
+{
+  "mcpServers": {
+    "san-guo-travel-agent": {
+      "command": "D:\\agent_threekingdom\\.venv\\Scripts\\python.exe",
+      "args": ["D:\\agent_threekingdom\\src\\mcp_stdio_server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
 容器内客户端访问 Windows 宿主机时，使用：
 
 ```text
@@ -218,7 +242,8 @@ http://host.docker.internal:8000/mcp
 本项目 MCP 工具：
 
 - `retrieve_culture_knowledge`：检索文化知识并返回召回检查报告。
-- `answer_travel_question`：执行本地 Agent 编排。
+- `answer_travel_question`：执行本地 Agent 编排，可显式指定 `亲子`、`大众`、`学术`叙事模式。
+- `plan_cultural_route`：按城市、时长、游客类型、兴趣和出行方式选择三国文化 Demo 路线。
 - `list_scenic_spots`：查询景区主数据。
 - `get_spot_ticket`：查询票价维护数据。
 - `estimate_hotel_budget`：估算酒店预算。

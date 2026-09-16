@@ -50,10 +50,24 @@ def _guess_target_user(user_message: str) -> str:
     return "大众"
 
 
-def plan_route(user_message: str, mode: str = "轻松") -> dict:
-    city_name = _guess_city(user_message)
-    duration_hours = _guess_duration_hours(user_message)
-    target_user = _guess_target_user(user_message) or mode
+def plan_route(
+    user_message: str,
+    mode: str = "大众",
+    *,
+    city: str | None = None,
+    duration_hours: float | None = None,
+    target_user: str | None = None,
+    interests: list[str] | None = None,
+    transport_mode: str | None = None,
+) -> dict:
+    """Return the closest curated Demo route and its cultural interpretation.
+
+    Explicit arguments are used by MCP clients.  Natural-language inference is
+    kept as a fallback for the chat endpoint.
+    """
+    city_name = city or _guess_city(user_message)
+    duration_hours = duration_hours if duration_hours is not None else _guess_duration_hours(user_message)
+    target_user = target_user or _guess_target_user(user_message) or mode
 
     route_result = recommend_route(
         city=city_name,
@@ -94,4 +108,13 @@ def plan_route(user_message: str, mode: str = "轻松") -> dict:
         "answer": "\n".join(line for line in answer_lines if line),
         "route": route_result,
         "hotel_poi_request": hotel_poi_request,
+        "planning_preferences": {
+            "city": city_name,
+            "duration_hours": duration_hours,
+            "target_user": target_user,
+            "interests": interests or [],
+            "transport_mode": transport_mode or route_template.get("transport_mode", ""),
+        },
+        "data_status": "demo_template",
+        "notice": "路线顺序和停留时间来自 Demo 模板；实时交通、天气、营业时间和导航需接入地图/天气服务后确认。",
     }
