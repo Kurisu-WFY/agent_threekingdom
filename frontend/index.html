@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>川东北三国文化旅游助手</title>
-  <link rel="stylesheet" href="styles.css?v=journey-desk-1">
+  <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
+  <link rel="stylesheet" href="styles.css?v=story-discovery-1">
 </head>
 <body>
   <header class="topbar">
-    <span class="brand"><span class="brand-mark">蜀</span>川东北三国文化旅游助手</span>
+    <span class="brand"><span class="brand-mark">蜀</span>寻迹三国</span>
     <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">主界面</span></span>
     <span class="status" data-service-status role="status">正在检查服务…</span>
   </header>
@@ -26,12 +26,12 @@
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
         <div class="agent-hero">
           <div class="hero-copy">
-            <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 三国文化 AI 旅游智能体</p>
+            <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 寻迹三国 · 陈寿文化向导</p>
             <h1>一段旅程，<br>读懂<span class="title-accent">三国</span>。</h1>
-            <p class="welcome-sub">从陈寿笔下的蜀汉记忆出发。把想去的地方交给向导，让山河串起故事，让每一次追问带你走得更深。</p>
+            <p class="welcome-sub">沿着《三国志》，走进陈寿笔下的蜀汉记忆。</p>
             <div class="hero-destinations"><span>南充</span><i aria-hidden="true">—</i><span>阆中</span><i aria-hidden="true">—</i><span>剑阁</span><i aria-hidden="true">—</i><span>广元</span></div>
-            <a class="hero-primary" href="#journey-desk">开启我的文化之旅 <span aria-hidden="true">↓</span></a>
-            <span class="hero-footnote">需求理解 · 路线规划 · 文化讲解 · 持续探索</span>
+            <a class="hero-primary" href="#story-discovery">开始我的三国之旅 <span aria-hidden="true">↓</span></a>
+            <span class="hero-footnote">寻源 → 读史 → 探秘 → 传承</span>
           </div>
           <figure class="hero-photo">
             <img src="assets/jianmen-pass.jpg" alt="剑门关关楼与两侧山崖，石阶通向关门" width="1170" height="1671" fetchpriority="high" decoding="async">
@@ -40,6 +40,29 @@
             <span class="photo-index" aria-hidden="true">01 / 蜀道寻踪</span>
           </figure>
         </div>
+
+        <section id="story-discovery" class="story-discovery" aria-labelledby="discovery-title">
+          <div class="desk-intro"><div><span class="story-eyebrow">STORIES · 循史而行</span><h2 id="discovery-title">选择一条三国文化故事线</h2></div><p>先选一个想探索的主题。</p></div>
+          <p class="story-disclosure">首批主题模板 · 简介、时长与章节待补充，史料与行程待核验。</p>
+          <div id="story-cards" class="story-cards"></div>
+        </section>
+        <section class="story-preview" aria-labelledby="preview-title">
+          <div><span class="story-eyebrow">STORY ATLAS · 山河之间</span><h2 id="preview-title">故事将走向哪里？</h2><p id="preview-selection">从南充少年到三国史家</p><p>章节地点尚未确认，暂不绘制故事路线。</p><p class="map-note">轮廓示意图 · 2026-09-12 地理快照<br>不代表景区位置、交通路线或实时数据。</p><button type="button" class="module-button" data-content-view="map" aria-controls="map-view">展开行旅地图 →</button></div>
+          <div><svg id="story-preview-map" viewBox="0 0 900 680" role="img" aria-label="四川地理轮廓示意图，故事路线待补充"></svg><p id="story-preview-status" role="status">正在加载地理轮廓示意图…</p></div>
+        </section>
+        <section class="chenshou-entry" aria-labelledby="chenshou-title">
+          <svg class="chenshou-portrait" viewBox="0 0 180 190" role="img" aria-label="手持史册的陈寿艺术化形象，并非历史肖像">
+            <ellipse cx="90" cy="178" rx="65" ry="7" class="portrait-shadow"/>
+            <path d="M35 172Q37 116 65 108H115Q143 116 145 172Z" class="portrait-robe"/><path d="M65 108L90 144L115 108M90 144V172" class="portrait-line"/>
+            <path d="M57 53Q52 20 90 19Q128 20 123 53Z" class="portrait-hat"/><path d="M72 22V10H108V22" class="portrait-hat"/>
+            <ellipse cx="90" cy="76" rx="35" ry="39" class="portrait-face"/>
+            <path d="M65 66Q72 62 78 66M102 66Q109 62 115 66M70 75h4M106 75h4M84 89q6 5 12 0M75 98Q90 126 105 98" class="portrait-line"/>
+            <path d="M59 131Q69 121 76 133L73 146H57M121 131Q111 121 104 133L107 146H123" class="portrait-face"/>
+            <path d="M65 134L90 140L115 134V164L90 170L65 164Z" class="portrait-book"/><path d="M90 140V170M72 144l11 3M72 153l11 3M98 147l10-3M98 156l10-3" class="portrait-line"/>
+            <rect x="135" y="38" width="25" height="31" rx="2" class="portrait-stamp"/><text x="147" y="59" text-anchor="middle">史</text>
+          </svg>
+          <div><span class="story-eyebrow">万卷史官 · 陈寿</span><h2 id="chenshou-title">从你的好奇，找到故事的开篇。</h2><p>说说你喜欢谁、有几天、从哪里出发，与文化向导一起探索主题。</p><div class="chips"><button type="button" class="chip" data-agent-question="我想从喜欢的人物开始选择三国文化故事线，请先问我喜欢谁，再根据已有资料讨论适合的主题。资料不足时请说明。">我喜欢的人物… ↗</button><a class="chip" href="#journey-desk">我有几天 · 从哪里出发</a></div><small>AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料，主题建议以现有资料为限。</small></div>
+        </section>
 
         <section id="journey-desk" class="journey-desk" aria-labelledby="desk-title">
           <div class="desk-intro"><div><span class="story-eyebrow">YOUR JOURNEY · 你的旅程</span><h2 id="desk-title">你想怎样走进三国？</h2></div><p>不必准备完整计划，先说一个想法。</p></div>
@@ -81,6 +104,8 @@
           </div>
         </section>
 
+        <section class="story-buildings" aria-labelledby="buildings-title"><div class="desk-intro"><div><span class="story-eyebrow">PLACES · 故事发生的空间</span><h2 id="buildings-title">让建筑成为故事节点</h2></div><p>节点与章节的对应关系待确认。</p></div><div id="story-buildings" class="building-grid"></div><p class="map-note">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>
+
         <section class="culture-shelf" aria-labelledby="culture-title">
           <div class="desk-intro"><div><span class="story-eyebrow">READ THE LAND · 山河有迹</span><h2 id="culture-title">不只到过，更读懂过</h2></div><p>从人物、著作与遗迹，找到你的文化线索。</p></div>
           <div class="culture-grid">
@@ -97,6 +122,14 @@
         <div class="welcome-bottom"><div><strong>这一程之后，还有下一次出发。</strong><p>把喜欢的故事、走过的地方或想调整的节奏告诉向导。</p></div><button type="button" data-prepare-review>回顾与调整 <span aria-hidden="true">↗</span></button></div>
         <p class="journey-trust">内容有据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。</p>
         <button type="button" id="open-culture" hidden>与向导对话</button>
+      </div>
+
+      <div class="module-view story-detail" id="story-view" data-view-panel="story" hidden>
+        <button type="button" class="module-button" data-content-view="welcome" aria-controls="welcome-view">← 返回故事线推荐</button>
+        <p class="welcome-kicker">故事线 · 主题模板</p><h2 id="story-title" tabindex="-1">选择一条故事线</h2>
+        <div id="story-detail-content"></div>
+        <button type="button" class="module-button" id="story-ask">与陈寿向导讨论这个主题 ↗</button>
+        <p class="map-note" id="story-action-status" role="status">当前为主题模板，尚未形成可执行行程。</p>
       </div>
 
       <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
@@ -230,11 +263,12 @@
     </section>
   </aside>
 
-  <script src="app.js?v=journey-desk-1"></script>
-  <script src="landing.js?v=journey-desk-1"></script>
+  <script src="app.js?v=story-discovery-1"></script>
+  <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
   <script src="travel-modules.js?v=agent-home-1"></script>
   <script src="map-route-core.js?v=agent-home-1"></script>
-  <script src="travel-map.js?v=agent-home-1"></script>
+  <script src="travel-map.js?v=story-discovery-1"></script>
+  <script src="stories.js?v=story-discovery-1"></script>
 </body>
 </html>

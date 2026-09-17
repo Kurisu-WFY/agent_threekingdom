@@ -656,3 +656,39 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:#efede
  .content-footer { padding:10px 14px; flex-wrap:wrap; gap:4px; } .launcher { right:14px; bottom:14px; height:48px; } .map-view { min-height:0; }
 }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .chat-panel:not([hidden]) { animation:none; } .content-switch button,.intent-switch button { transition:none; } }
+
+/* Story discovery reuses the existing paper, ink and seal palette. */
+.story-discovery { margin-top:28px; scroll-margin-top:90px; }
+.story-discovery .desk-intro { margin-bottom:8px; }
+.story-disclosure { color:var(--muted); font-size:12px; line-height:1.8; }
+.story-cards { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-top:16px; }
+.story-card { display:flex; flex-direction:column; align-items:flex-start; position:relative; text-align:left; min-width:0; padding:18px 14px 14px; color:var(--ink); background:linear-gradient(90deg,var(--surface-2),var(--surface) 12%,var(--surface) 88%,var(--surface-2)); border:1px solid var(--line); border-top:3px solid var(--brass); border-radius:3px 3px var(--radius) var(--radius); box-shadow:var(--shadow-sm); cursor:pointer; }
+.story-card:hover { border-color:var(--brass); }
+.story-card:focus-visible,.story-detail h2:focus-visible { outline:3px solid var(--jade); outline-offset:4px; }
+.story-number { display:grid; place-items:center; width:28px; height:31px; color:var(--shu); border:1px solid var(--shu); font:18px 'SimSun',serif; border-radius:3px; margin-bottom:10px; }
+.story-card-title { font:600 18px/1.5 'Songti SC','SimSun',serif; min-height:54px; overflow-wrap:anywhere; }
+.story-facts { width:100%; margin:12px 0; font-size:11px; }
+.story-facts > div { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; margin:7px 0; }
+.story-facts dt { color:var(--muted); }.story-facts dd { margin:0; color:var(--ink-soft); }
+.story-summary { font-size:12px; line-height:1.7; color:var(--ink-soft); }
+.story-card-end { display:block; width:100%; margin-top:14px; padding-top:10px; border-top:1px solid var(--line); color:var(--shu); font-size:10px; }
+.story-preview { margin-top:32px; border:1px solid var(--line); border-radius:var(--radius); display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:24px; padding:26px; background:var(--surface-2); }
+.story-preview h2,.chenshou-entry h2,.story-buildings h2 { font:25px/1.5 'Songti SC','SimSun',serif; }
+.story-preview p,.chenshou-entry p { font-size:13px; line-height:1.9; color:var(--ink-soft); }
+#story-preview-map { display:block; width:100%; height:220px; }
+.preview-region { fill:var(--paper); stroke:var(--jade); stroke-width:.8; }
+#story-preview-status { font-size:11px; text-align:center; }
+.chenshou-entry { display:flex; align-items:center; gap:30px; margin:28px 0; padding:24px; border-bottom:1px solid var(--line); }
+.chenshou-portrait { width:150px; flex:none; }.chenshou-entry small { display:block; margin-top:12px; color:var(--muted); font-size:11px; line-height:1.8; }
+.chenshou-entry a.chip { text-decoration:none; display:inline-flex; align-items:center; }
+.portrait-shadow { fill:var(--line); }.portrait-robe { fill:var(--jade); }.portrait-hat { fill:var(--ink); }.portrait-face { fill:var(--paper); stroke:var(--brass); }.portrait-book { fill:var(--surface); stroke:var(--brass); }.portrait-line { fill:none; stroke:var(--ink); stroke-width:2; stroke-linecap:round; }.portrait-stamp { fill:var(--shu); }.chenshou-portrait text { fill:var(--surface); font:18px serif; }
+.story-buildings { margin-top:32px; }.building-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }.building-card { text-align:center; padding:12px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); }.building-card svg { height:130px; width:100%; }.building-card path { fill:var(--paper); stroke:var(--jade); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }.building-card h3 { font:18px 'SimSun',serif; }.building-card p { font-size:11px; color:var(--muted); line-height:1.8; }
+.story-detail { max-width:900px; margin:auto; }.story-detail h2 { font:32px/1.5 'Songti SC','SimSun',serif; }.story-detail .welcome-kicker { margin-top:30px; }.story-detail .story-facts { max-width:480px; font-size:14px; }.story-detail h3 { margin-top:28px; font-size:17px; }.story-detail p { line-height:1.9; }.story-empty { background:var(--surface-2); border-left:3px solid var(--brass); padding:20px; }.story-detail #story-ask { margin-top:24px; }
+@media(min-width:1051px) { .agent-hero { gap:32px; }.hero-photo { height:280px; }.welcome h1 { font-size:48px; }.welcome-kicker { margin-bottom:12px; }.welcome-sub { margin:12px 0; }.hero-primary { margin-top:12px; }.hero-photo figcaption { bottom:20px; }.photo-inscription { top:35px; } }
+@media(max-width:1050px) and (min-width:761px) { .story-cards { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(min-width:761px) { body.chat-open .story-cards { grid-template-columns:1fr; } body.chat-open .story-preview { grid-template-columns:1fr; } body.chat-open .chenshou-entry { flex-direction:column; } body.chat-open .building-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:760px) { .story-cards { grid-template-columns:1fr; gap:16px; }.story-card { padding:20px; }.story-card-title { min-height:0; font-size:22px; }.story-facts { font-size:13px; }.story-preview { grid-template-columns:1fr; padding:20px; gap:12px; }.chenshou-entry { flex-direction:column; gap:8px; padding:20px 0; align-items:flex-start; }.chenshou-portrait { width:120px; align-self:center; }.building-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }.building-card { min-width:0; padding:10px; }.building-card svg { height:100px; }.story-detail h2 { font-size:26px; } }
+
+.story-facts > span { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; margin:7px 0; }
+.story-facts .fact-label { color:var(--muted); }.story-facts .fact-value { color:var(--ink-soft); margin:0; }
+@media(min-width:1051px) { .welcome { padding-top:22px; }.hero-copy { padding:0; }.welcome h1 { font-size:42px; line-height:1.2; }.hero-photo { height:255px; }.hero-footnote { margin-top:10px; }.story-discovery { margin-top:20px; }.story-card { padding-top:12px; }.story-number { margin-bottom:6px; }.story-card-title { font-size:17px; min-height:51px; }.story-facts { margin:8px 0; }.story-card-end { margin-top:10px; padding-top:8px; } }

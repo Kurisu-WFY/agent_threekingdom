@@ -1,3 +1,11 @@
+# 最新接手增量 · 2026-09-17
+
+首页已改为五条故事线模板发现入口，具体审查、文件变更和验证见 HANDOFF.md 最后记录。用户确认内容缺项先标待补充/待核验，不能自行编造章节、时长或坐标。新增 stories.js 在页面最后加载；通过 SGTJourney.ask 复用对话与草稿。story 详情走 showContentView，主导航仍为两项。
+
+当前回归为七组：新增 stories.test.cjs；另外运行 landing/app/travel-api/map-route/travel-map/navigation.test.cjs 和全部 JS 语法检查。后端仍为演示资料服务，提问不等于已有完整故事匹配能力。只在 sgt-frontend-iter3/frontend 继续，不修改冻结主工作树前端。
+
+---
+
 # 新对话接手指南 · 2026-09-16
 
 ## 最新增量（优先于下方历史基线说明）

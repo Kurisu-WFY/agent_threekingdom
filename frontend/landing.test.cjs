@@ -27,3 +27,8 @@ const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(
 for(const id of ['map-view','route-map','map-prefecture','map-county','map-zoom-range'])assert.ok(html.includes('id="'+id+'"'));
 for(const asset of ['jianmen-pass.jpg','langzhong-town.jpg'])assert.ok(fs.statSync(__dirname+'/assets/'+asset).size>10000);
 console.log('PASS: journey drafts, preference submission, character boundaries, pending draft preservation, two-item navigation and map controls');
+
+context.window.SGTJourney.ask('故事线主题追问');
+assert.ok(input.value.endsWith('故事线主题追问'));assert.equal(calls.at(-1),'draft');
+chat.pending=false;context.window.SGTJourney.ask('另一条主题');assert.equal(calls.at(-1),'另一条主题');
+console.log('PASS: story detail uses the same request/pending-draft bridge');

@@ -210,3 +210,47 @@
 - 真实联调：南充一天路线携带“亲子同行/亲子故事版”收到 route_planning 回答并联动地图；陈寿问题返回 culture_qa。后端仍为演示检索/路线能力，讲解偏好只是随问题传入，不等于已实现人物扮演、评价闭环、语音或长期档案。文化检索把“亲子故事版”计为未覆盖实体，已在共享交接中记录给后端协调。
 - 验证：所有 frontend/*.js 语法检查和六组 *.test.cjs 通过（新增 navigation.test.cjs）；覆盖主题草稿、偏好、人物边界、请求中草稿保留、快速切换、滚动恢复、减少动态效果及既有地图/接口回归。diff --check 通过。
 - 下一步按用户反馈继续视觉与体验迭代；旅游四接口仍 enabled=false；共享 TASKS/HANDOFF 已回填。不改后端或部署，不合并、不 push。
+
+
+## 2026-09-17 · 首页故事线发现入口
+
+### 审查与确认
+
+- 用户要求先审查再改造，确认桌面优先五卡、375px 单列向下浏览；确认仅做五个主题模板，缺项显示待补充/待核验，完整内容等待提供。
+- 实际基线为 feat/frontend-iteration-3@fba8a41，开工工作区干净。复用 agent-hero、journey-desk、landing.js 草稿桥接及 showContentView；五个旧隐藏模块保持。
+- 需求同时要求两项主导航与 story 按钮：story 入口落在卡片，主导航保持 welcome/map。实际 showContentView 原先未更新 view-label，本轮补齐。
+- 文档的坐标、时间、来源均为示例，未直接采用。没有新增史实、时长、章节、景区坐标、实时信息。陈寿与建筑图形均为艺术化 SVG 示意。
+
+### 改动文件与原因
+
+| 文件 | 改动 |
+|---|---|
+| index.html | 寻迹三国品牌、故事推荐区、轮廓预览、陈寿入口、建筑节点、story 详情面板；保留工作台与两项导航 |
+| styles.css | 复用现有令牌实现卷轴卡片、朱红编号、SVG 形象、响应式单列；压缩桌面 hero 以容纳五卡 |
+| stories.js（新增） | 五条 SGT_STORIES 待补充模板、四个 SGT_PLACES 待确认节点；安全文本渲染、详情与提问、地图轮廓失败降级 |
+| app.js | view-label 同步；无对应主导航时，键盘焦点落到 story 标题 |
+| landing.js | 暴露 SGTJourney.ask，共用原有 send 与 pending 草稿规则 |
+| travel-map.js | 无识别地点也无歧义地点的问题不清空路线、不跳转空地图；实际联调发现并修复 |
+| stories.test.cjs（新增） | 缺项、坐标留空、选择、共享提问、安全文本、轮廓加载失败回归 |
+| navigation.test.cjs | story/home/map 的标题、焦点、独立滚动、动画取消与地图状态回归 |
+| landing.test.cjs | 新公开桥接的发送与 pending 草稿回归 |
+| travel-map.test.cjs | 无地名主题保留路线/视图/缩放；明确地名仍进入地图 |
+| HANDOFF.md / START-HERE.md | 本轮结果和接手事项 |
+
+新增 stories.js 在 index.html 的 travel-map.js 后引入（页面末尾），版本为 ?v=story-discovery-1；styles.css、app.js、landing.js、travel-map.js 同步更新该版本串。stories.test.cjs 不在网页中引入。
+
+### 实测
+
+- 所有 frontend/*.js 的 node --check 通过；七组 *.test.cjs 全通过；git diff --check 通过。
+- 1280×900：五卡同排完整首屏（底部约 883px），默认对话收起，无横向溢出。375×812：五卡单列、首页/详情/对话无横向溢出。
+- 浏览器 Enter 进入故事详情后焦点为 story-title，view-label 为故事线；返回与地图切换可用。地图手选仪陇县经过首页/故事往返后仍存在。自动缩放动画中曾读取 477%→409%，不将这一过程声称为固定缩放保持；固定缩放保持由自动回归覆盖。
+- 手机故事详情入口真实调用 /chat 得到“正史 / 演义”检索式回答；结构化信任信息缺失仍显示待核验。发现无地名问题误跳空地图后加 guard，浏览器再次提问保持 story 视图。
+- 浏览器自动点击曾两次因 CDP 超时未完成；读取状态后改用键盘 Enter 完成对应操作。浏览器控制台未见 warning/error。没有新保存截图文件。
+- /health 实测 ok；index.html、styles.css、app.js、landing.js、stories.js、travel-map.js 的服务端字节与迭代目录一致。
+
+### 取舍与下一步
+
+- 放弃编造完整故事线；人物、地区也不从标题自动推成结构化路线事实。无章节地点时仅展示现有四川轮廓，不画虚假路线。
+- 手机优先可读性，不要求一屏塞入五卡。建筑只呈现类型剪影，章节关联待确认。
+- 需要内容负责人提供五模板的核心问题、简介、人物/事件、章节顺序与地点、每站理由、可靠 A/B 来源及更新时间；再补可信坐标和出行约束。本轮未实现已完成/探索记录或专门故事匹配接口。
+- 后端、部署、数据目录和旅游 API 开关未改；未合并、未 push。下一轮在此迭代目录继续。

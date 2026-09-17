@@ -435,12 +435,15 @@ function showContentView(view) {
     const restoreFocus = leaving?.contains(document.activeElement);
     sections.forEach(section => { section.hidden = section !== target; });
     currentContentView = view;
+    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', destinations: '目的地', planner: '规划行程', plan: '出行方案', budget: '预算明细', travel: '天气与交通' };
+    const label = document.querySelector('#view-label');
+    if (label) label.textContent = labels[view] || '主界面';
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
     // Restore the view's page position synchronously; never reset map or conversation state.
     window.scrollTo({ top: contentScrollPositions.get(view) || 0, behavior: 'instant' });
-    if (restoreFocus) document.querySelector('.content-switch [data-content-view="' + view + '"]')?.focus({ preventScroll: true });
+    if (restoreFocus) (document.querySelector('.content-switch [data-content-view="' + view + '"]') || target.querySelector('[tabindex="-1"]'))?.focus({ preventScroll: true });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && target.animate) {
       contentEntrance = target.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });
     }

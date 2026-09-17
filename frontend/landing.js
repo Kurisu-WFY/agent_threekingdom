@@ -33,6 +33,7 @@
       $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';
     } else { send(question); $('#journey-feedback').textContent = '已交给向导，可以在对话中继续追问。'; }
   }
+  window.SGTJourney = { ask };
   field.addEventListener('input', update);
   $('#hero-form').addEventListener('submit', event => {
     event.preventDefault();

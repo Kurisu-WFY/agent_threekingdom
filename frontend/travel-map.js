@@ -215,6 +215,8 @@
       ready.then(ok => {
         if (!ok || chat.mapQuestion !== text) return;
         const parsed = core.mentions(text, places);
+        // A general story question must not clear the route or open an empty map.
+        if (!parsed.points.length && !parsed.ambiguous.length) return;
         chat.mapRoute = { points: parsed.points, missing: parsed.ambiguous, kind: '按你的地名提及顺序' };
         if (activeChat === chat) {
           drawRoute(); fit(parsed.points); showContentView('map');
