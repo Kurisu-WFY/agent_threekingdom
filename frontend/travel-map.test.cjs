@@ -111,5 +111,8 @@ const assert=require('node:assert/strict');
  console.log('PASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication');
  console.log('PASS: general story questions preserve route/view/zoom; explicit destinations still map');
  console.log('PASS: two-pointer pinch increases zoom');
+ await window.TravelMap.showPlan({stops:[{name:'剑门关',address:'广元市剑阁县'},{name:'未知景区'},{name:'昭化古城',address:'广元市昭化区'}]});
+ assert.equal(chat.mapRoute.points[0].level,'county');assert.equal(chat.mapRoute.points[1],null);assert.equal(chat.mapRoute.points[2].level,'county');
+ assert.ok(chat.mapRoute.kind.includes('待定位'));assert.equal(registry.get('#route-lines').children.length,0);
  console.log('PASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
-  <link rel="stylesheet" href="styles.css?v=story-system-1">
+  <link rel="stylesheet" href="styles.css?v=story-route-1">
 </head>
 <body>
   <header class="topbar">
@@ -191,6 +191,7 @@
           <p class="map-note">地图仅为位置示意，驻地不是景区入口；待定位章节不会连接。当前章高亮，已完成盖“已寻迹”，未到达为待探索。</p>
           <p id="story-map-status" role="status"></p><ol id="story-chapter-list"></ol>
         </section>
+        <button id="map-back-plan" type="button" class="module-button" data-content-view="plan" hidden>返回路线方案</button>
         <p id="map-route-status" role="status">正在加载县级地点…</p>
         <ol id="map-route-list" class="map-route-list"></ol>
         <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部即可选中；县名自动避让，未显示的县区也可从列表选择。</p>
@@ -207,26 +208,37 @@
       </section>
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
-        <p class="welcome-kicker">把想法整理成行程</p><h2>规划你的川东北之旅</h2>
-        <p>目前可预览并保存出行草稿，具体站点将在路线服务接入后提供。</p>
+        <p class="welcome-kicker">把想法整理成行程</p><h2 tabindex="-1">规划你的川东北之旅</h2>
+        <p>通过文化向导规划路线；交通、开放时间与费用仍需核验。调整条件不会清空已寻迹记录。</p>
+        <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
+        <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
         <form id="trip-form" class="module-form">
           <label>目的地<select name="city"><option>南充</option><option>阆中</option><option>广元</option></select></label>
-          <label>出发日期<input name="date" type="date" required></label>
-          <label>游玩天数<input name="days" type="number" value="2" min="1" max="14" required></label>
+          <label>出发地<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
+          <label>出发日期<input name="date" type="date"></label>
+          <label>可用时间<select name="days"><option value="0.5">半天</option><option value="1" selected>一天</option><option value="2">两天</option></select></label>
           <label>人数<input name="people" type="number" value="2" min="1" max="50" required></label>
-          <label>同行人群<select name="group"><option>朋友同行</option><option>独自出行</option><option>亲子家庭</option><option>长辈同行</option></select></label>
+          <label>同行人群<select name="group"><option>独行</option><option selected>家庭</option><option>亲子</option><option>研学</option></select></label>
           <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
+          <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
+          <label>预算下限（元 / 全团）<input name="budget_min" type="number" min="0" step="1" placeholder="可不填"></label>
+          <label>预算上限（元 / 全团）<input name="budget_max" type="number" min="0" step="1" placeholder="可不填"></label>
           <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option>高档型</option></select></label>
           <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
           <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
-          <button class="module-button primary" type="submit">生成行程草稿</button>
+          <button class="module-button primary" type="submit">规划 / 重绘路线</button>
         </form>
+        <p class="map-note">时间预算按半天4小时、一天8小时、两天16小时计算，含游览与交通；具体出发时刻、开放时段和班次仍待核验。预算为全团范围。</p>
+        <button type="button" class="module-button" data-content-view="plan">查看上一份方案</button>
         <p id="planner-status" role="status"></p>
+        <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
       </section>
 
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
-        <p class="welcome-kicker">我的行程</p><h2>出行方案</h2>
+        <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">出行方案</h2>
         <div id="plan-results" class="module-results"></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细（待接入）</button><button class="module-button" data-content-view="travel">天气与交通（待接入）</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
+        <div class="route-replan"><label>途中剩余时间<select id="remaining-time"><option value="0.5">半天</option><option value="1">一天</option><option value="2">两天</option></select></label><button id="replan-remaining" class="module-button">重绘剩余路线</button><p class="map-note">沿用已完成记录，只请求调整剩余章节；后端是否满足约束会在结果中说明。</p></div>
         <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <p id="plan-status" role="status"></p>
         <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
@@ -234,6 +246,7 @@
       </section>
 
       <section class="module-view" id="budget-view" data-view-panel="budget" hidden>
+        <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
         <p class="welcome-kicker">费用分开看</p><h2>预算明细</h2>
         <p>根据当前行程的人数、住宿晚数和房间数估算。没有数据的费用不会按零元计入。</p>
         <button id="load-budget" class="module-button">查询当前行程预算</button>
@@ -241,6 +254,7 @@
       </section>
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
+        <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与交通</h2>
         <p>按当前行程目的地和出发日期查询。接入后显示来源与查询时间。</p>
         <button id="load-travel" class="module-button">查询出行信息</button>
@@ -291,14 +305,14 @@
     </section>
   </aside>
 
-  <script src="app.js?v=story-map-2"></script>
+  <script src="app.js?v=story-route-1"></script>
   <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
-  <script src="travel-modules.js?v=agent-home-1"></script>
+  <script src="travel-modules.js?v=story-route-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
-  <script src="travel-map.js?v=story-map-2"></script>
+  <script src="travel-map.js?v=story-route-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
-  <script src="stories.js?v=story-system-1"></script>
+  <script src="stories.js?v=story-route-1"></script>
   <script src="story-map.js?v=story-system-1"></script>
 </body>
 </html>

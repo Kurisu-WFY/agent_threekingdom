@@ -70,12 +70,13 @@ function routeCard(route, stops) {
   name.className = 'route-name';
   name.textContent = route.name + (route.duration_hours ? ' · ' + route.duration_hours + ' 小时' : '');
   card.append(name);
+  const risk = document.createElement('p'); risk.textContent = '风险提示：' + (route.risk_note || '待核验'); card.append(risk);
   if (Array.isArray(stops) && stops.length) {
     const list = document.createElement('ol');
     list.className = 'route-stops';
     stops.filter(stop => stop && typeof stop.name === 'string').forEach(stop => {
       const li = document.createElement('li');
-      li.textContent = stop.name + (stop.stay_minutes ? '（约 ' + stop.stay_minutes + ' 分钟）' : '');
+      li.textContent = stop.name + ' · 推荐理由：' + (stop.reason || '待核验') + ' · 安排停留：' + (Number.isFinite(stop.stay_minutes) && stop.stay_minutes > 0 ? stop.stay_minutes + ' 分钟' : '待核验') + ' · 建议游览：' + (Number.isFinite(stop.recommended_duration_min) && stop.recommended_duration_min > 0 ? stop.recommended_duration_min + ' 分钟' : '待核验') + ' · 开放时间：' + (stop.open_time || '待核验');
       list.append(li);
     });
     card.append(list);
@@ -120,7 +121,7 @@ function metaNode(data) {
   if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
   meta.append(trustNode(data));
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
-  const route = data && data.route && data.route.route;
+  const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
     meta.append(routeCard(route, data.route.stops), trustNode(route, '路线'));
   }
@@ -317,6 +318,17 @@ function ask(text, history) {
     return response.json();
   });
 }
+
+// Shared /chat transport for the existing trip form; its results stay in the plan view.
+window.SGTChat = { async request(text) {
+  const message = typeof text === 'string' ? text.trim() : '';
+  if (!message) throw new Error('请先填写出行需求。');
+  const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
+    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:item.text}));
+  const data = await ask(message, history);
+  if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
+  return data;
+} };
 
 function send(text) {
   const trimmed = (text || '').trim();

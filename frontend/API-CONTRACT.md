@@ -150,3 +150,9 @@ HTTP 200，JSON：`{ "status": "ok|empty|unavailable", "message": "用户可读�
 上述“仅本页内存”已更新：story-progress.js 使用 sgt.story-progress.v1 保存浏览器本地记录，不调用后端。以 story.id 与章节 id/placeId/name 序列签名隔离；序列改变重置，同序列正文更新保留。StoryMap.setData 的章节变更因此重置本地进度，同章节更新保留。无账号或跨标签实时同步。
 
 详情可选 chapter.reason（推荐理由）、chapter.role（叙事作用）与 story.constraints.transport/openTime/duration/budget；无值显示待补充/待核验。story.phase 为前端编辑分组，不代表史料事实。压缩不修改 chapters，仅记录 skipped 索引；全章完成才显示故事已寻迹。
+
+## 2026-09-18 现实约束路线接入
+
+trip-form已由关闭的createPlan预览调用改为SGTChat.request→现有/chat。约束与story章节选取/已完成状态作为message文本传入，非新增后端字段。只在intent.intent=route_planning且route.found=true、route.route为对象、stops有效非空时显示路线；其余显示可调整/重试反馈，保留旧方案。
+
+真实后端未严格遵守半天时间/已完成节点过滤，且story.placeId与spot_id缺统一映射；需后端完善结构化约束与逐节点取舍。前端不模糊匹配推断史实关联，不伪造可执行性。未知价格0显示待核验。所有/api/travel/*仍enabled=false。

@@ -732,3 +732,9 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:#efede
 .story-compression .module-button { margin:4px; }
 .story-detail h4 { margin:6px 0; }
 @media(max-width:760px) { .content-heading { flex-wrap:wrap; gap:8px; } .content-switch { flex-wrap:wrap; } .story-chapter-axis { padding-left:15px; } }
+
+.route-stop-cards { padding-left:24px; }
+.route-stop-cards .result-card { margin:12px 0; overflow-wrap:anywhere; }
+.route-replan { padding:16px; margin:16px 0; border:1px solid var(--line); border-radius:var(--radius); }
+.route-replan select { margin:8px; padding:8px; max-width:100%; background:var(--surface); color:var(--ink); border:1px solid var(--line); }
+#planner-story,#planner-status { overflow-wrap:anywhere; }

@@ -275,3 +275,21 @@
 - 新增 story-progress.test.cjs；更新 stories/story-map/landing.test.cjs，其他回归保持。全部 JS 语法与九组回归、git diff --check 通过。浏览器实测刷新恢复 1/3 进度、模式与跳过选取，逐章标记到3/3并显示收尾推荐；筛选正常。375×812 首页与详情无横向溢出，桌面与手机截图已目视检查（未保存文件）。浏览器点击工具偶发超时，读取状态后用 AX 操作完成；控制台未见 error/warn。
 - 取舍：四条空模板的开始按钮禁用；不编核心章节，也不保证半天可走完。完成本次缩短选取不等于整条故事已寻迹。内容负责人仍需补五模板正文、每站理由/作用、来源、坐标与现实约束。
 - 未改后端/部署/旅游 API 开关；未合并、未 push。共享 docs/TASKS.md 与 HANDOFF.md 回填。
+
+## 2026-09-18 · 故事线 → 现实约束路线
+
+- 基于 1670c53，在现有 trip-form / travel-modules.js 上改造，保留 destinations/planner/plan/budget/travel DOM、保存/复制方案及脚本依赖。故事详情新增“按现实条件规划路线”、压缩选择新增“压缩后重绘路线”；原方案面板承接结果和剩余时间重排。
+- app.js 暴露 SGTChat.request，复用 ask 的同源 POST /chat、60秒超时与历史格式；表单结果显示在方案面板，不伪装为聊天消息。空出发地、非法人数/时间和预算倒置禁发；非2xx/超时/非法JSON/坏路线可重试，保留上一份结果；culture_qa 无route与 budget_ticket 的null均不替换路线。
+- 每站展示 reason、stay_minutes、recommended_duration_min、open_time、地址、故事作用（缺项待核验）；显示 selection_reason、risk_note、updated_at。逐章对照保留/跳过/已完成；未匹配站点不推断舍弃原因。按明确的ID或完整名称匹配，不用模糊名字强行关联。
+- 时间预算明示半天4小时/一天8小时/两天16小时，交通包含其中；超时长与交通不一致显式提示。请求带已有完成/跳过状态；重绘不刷新页面、不清空 StoryProgress。条件编辑或另选故事/方案时，旧响应失效，避免覆盖新条件。
+- TravelMap.showPlan 复用县名解析和既有投影/绘图，只接受地址/城市/名称中唯一匹配的县级驻地；重复同县去重，歧义/未知位置留空，不跨缺口连线。显示位置示意/待定位，不编景区坐标。新增地图/预算/出行返回方案入口。
+- travel-api.js 未改，enabled=false；四个 /api/travel/* 不启用。费用0/负数/未知显示待核验，不显示为免费。
+- 修改：app.js/app.test.cjs、index.html/styles.css、stories.js、travel-modules.js、travel-map.js/travel-map.test.cjs；新增 travel-modules.test.cjs。相关 ?v=story-route-1；没有新增运行时依赖/模块。
+
+### 验证与实际限制
+
+- 全部JS语法、十组 *.test.cjs、git diff --check通过。新增覆盖表单校验、多态响应、失败重试、迟到响应/编辑隔离、半天重排、完成进度保持、0金额、来源空项、县级退回及缺口不连线。
+- 真实后端：南充半天仍回8小时一日模板；广元半天仍回16小时两日模板，且重复包含已完成昭化古城。前端显示时间超限/已完成冲突，不声称已经得到现实可执行路线。selection_reason仍仅通用城市/人群/时长匹配说明，非逐章取舍推理。
+- 浏览器真实走通故事→表单→结果→县级地图；南充示意为顺庆区/高坪区。2026-09-18 Docker恢复后实测广元剩余时间重绘，返回故事仍2/3；预算/出行待接入与返回路径可用。375×812表单和站点结果无横向溢出；桌面结果已目视检查。控制台无error/warn，未保存截图文件。
+- 后端待协调：硬约束规划/剩余章节过滤、逐节点舍弃原因、故事placeId与后端spot_id稳定映射（例如“剑门关”与“剑门蜀道剑门关旅游景区”无法确认同一ID）、交通耗时/开放时段与价格来源。前端只完成承接流程和冲突揭示，不补造可行性结论。
+- 未改src/data/prompts/Docker配置，未push、未合并。继续在本迭代worktree前端开发。

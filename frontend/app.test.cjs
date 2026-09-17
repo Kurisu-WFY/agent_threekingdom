@@ -101,6 +101,11 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     await flush();
     assert.equal(errorMessage.error,false);
   }
+  await assert.rejects(context.window.SGTChat.request('   '),/填写/);
+  for(const failure of [{ok:false,status:503},{ok:true,json:async()=>{throw new SyntaxError('bad JSON');}},Object.assign(Error('timeout'),{name:'TimeoutError'})]) {
+    const p=context.window.SGTChat.request('请规划路线');const assertion=assert.rejects(p);const req=requests.at(-1);
+    assert.equal(req.body.message,'请规划路线');if(failure instanceof Error)req.reject(failure);else req.resolve(failure);await assertion;
+  }
   console.log('PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover');
   console.log('PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation');
   console.log('PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery');

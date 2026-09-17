@@ -211,6 +211,21 @@
   window.TravelMap = {
     ready,
     getPlaces() { return places; },
+    async showPlan(result) {
+      const chat=activeChat;
+      if(!await ready || !chat || activeChat!==chat)return false;
+      const stops=Array.isArray(result?.stops)?result.stops:[];
+      // Never synthesize scenic coordinates. Only unique county names in the returned address qualify.
+      const points=stops.map(stop=>{
+        const found=core.mentions([stop.address,stop.city,stop.name].filter(Boolean).join(' '),counties);
+        const unique=[...new Map(found.points.map(point=>[point.id,point])).values()];
+        return unique.length===1&&!found.ambiguous.length?unique[0]:null;
+      });
+      if(window.StoryMap?.isActive())window.StoryMap.exit();
+      delete chat.mapQuestion;
+      chat.mapRoute={points,missing:stops.filter((_,i)=>!points[i]).map(s=>s.name),kind:'路线位置示意 / 景区待定位（县级驻地）'};
+      drawRoute();fit(points);$('#map-back-plan').hidden=false;showContentView('map');return true;
+    },
     refreshLabels() { updateLabels(); },
     beginStory(points) {
       if (!storySnapshot) storySnapshot = { view: [...targetView], prefecture: $('#map-prefecture').value, selected };

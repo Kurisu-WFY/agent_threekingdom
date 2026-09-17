@@ -78,7 +78,8 @@
     const modes=node('div','story-controls');
     ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
       const b=action(mode,()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
-    }); detail.append(modes,node('p','map-note','仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。'));
+    }); detail.append(action('按现实条件规划路线',()=>window.TravelModules.openStory(story)));
+    detail.append(modes,node('p','map-note','仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。'));
     detail.append(node('h3','','相关人物与关键事件'),node('p','','人物：'+list(story.people)+'；事件：'+list(story.events)));
     detail.append(node('h3','','现实约束'),node('p','','交通：'+text(story.constraints?.transport)+'；开放时间：'+text(story.constraints?.openTime)+'；游览时长：'+text(story.constraints?.duration)+'；预算：'+text(story.constraints?.budget)+'。以上信息待核验。'),provenance(story));
     const axis=node('ol','story-chapter-axis');
@@ -95,7 +96,7 @@
       const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));
       const inputs=chapters.map((c,i)=>{const label=node('label',''),input=node('input');input.type='checkbox';input.checked=!s.skipped.has(i);label.append(input,node('span','',c.name));box.append(label);return input;});
       const feedback=node('p','map-note','核心章节尚待编辑确认，由你选择；交通和游览时长待核验，不保证半天可完成。');feedback.setAttribute('role','status');
-      box.append(action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);
+      box.append(action('压缩后重绘路线',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';else window.TravelModules.openStory(story);}),action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);
     }
     if(progress.status(story)==='已寻迹') {
       const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');
