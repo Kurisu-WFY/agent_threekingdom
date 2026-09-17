@@ -104,3 +104,43 @@ HTTP 200，JSON：`{ "status": "ok|empty|unavailable", "message": "用户可读�
 
 > 结论：后端只要按本文补 `coordinates` + `coordinate_system: "GCJ-02"`，以及价格类的
 > `data_status` / `updated_at` / `sources`（未知金额用 `null` 而不是 `0`），前端侧**无需再改协议**。
+
+
+## 2026-09-17 · 三国故事地图接入边界（前端已留入口，后端待确认）
+
+### 当前运行状态
+
+- 未启用任何 `/api/travel/*`，`travel-api.js` 仍 `enabled=false`。未猜测故事接口 URL，也未新增网络依赖。
+- 新增 `window.StoryMap.setData({ story, places })`：由将来的 API 客户端在获取、映射数据后显式调用，返回 Promise；非法顶层/章节/地点结构抛 TypeError。当前没有自动调用方。
+- `open(storyId)` 返回 Promise<boolean>；接受五个前端模板 ID 或已经 setData 注入的 ID。`exit()` 退出并恢复原地图视口、筛选和县区选择；既有路线对象保留，用户明确加入的故事地点也保留。
+- `setData` 按 story.id 隔离覆盖；更新当前故事会重开图层并清空该故事本页进度（防止章节变更后错配）。它只更新故事地图数据及该地图进入的详情，不自动改写首页五个编辑模板。
+- `SGTStoryUI.openStory(id, suppliedStory)` 支持地图把当前故事对象传入详情；`SGTStoryUI.icon(building)` 共用内联 SVG，不加载外部图片。
+
+### 地图数据字段（不是已实现的 HTTP 协议）
+
+| 对象 | 字段 | 缺失时行为 |
+|---|---|---|
+| story | id、title、chapters[] | id/title/chapters 为接入结构必填；无章节显示待确认 |
+| chapter | name、placeId | 接入结构必填；数组顺序为幕序，不能依赖展示名称排序 |
+| chapter | people[]、events[]、story、dataStatus、updatedAt、sources[] | 人物、事件、简述、史料和时间显示待确认；不生成史实 |
+| place | id、name、building | id/name 为必填；building 支持 tower/shrine/pass/wall/road/book/person，未知形制回书卷 |
+| place | coordinates:[lon,lat]、coordinate_system | 必须 GCJ-02，经度97–109、纬度26–35；缺失或不合格不作为景区坐标 |
+| place | dataStatus、updatedAt、sources[] | 仅 maintained/live + 有时区且合法日期 + 至少一条带 http/https 链接的 A/B 来源才接受景区坐标；示例/pending/stale/C级不合格 |
+| place | fallbackName、fallbackParent | 县区归属经后端确认后提供；用现有 MapRouteCore.structured 匹配县级驻地，不另造坐标。缺失/歧义就待定位 |
+| source | title、source_url、source_level | 链接只允许 http/https；C 级仅作线索，不能支撑史实；不安全链接只显示文本 |
+
+约定这里使用前端 camelCase 的 `dataStatus`/`updatedAt`；后端若用 `data_status`/`updated_at`，适配器须显式映射，不默认为已验证。示例数据中的经纬度没有沿用。
+
+### 等数据库与后端后再接的部分
+
+1. 五条故事的可靠章节内容、人物事件、各站理由、A/B 史料、维护时间。当前仅蜀道故事按用户指定的昭化古城→剑门关→米仓道展示三幕；顺序是产品模板，不是可执行行程。
+2. 米仓道具体遗址及唯一县区；当前第三幕仍能查看、问陈寿和记录探索，但不画坐标、不连跨缺口线路，不能加入假位置。
+3. 道路路线与导航：字段、提供方、入口坐标、交通方式及其数据状态待后端确认；目前不约定 URL 或启用解析器。UI 导航按钮禁用并标待确认；虚线只表示地名提及顺序，墨迹线只表示章节顺序，两者都不是道路。
+4. 正史/演义的结构化对照、章节知识：当前按钮只复用 `/chat`，并非已有独立对照数据库；卡片上的资料仍待确认。
+5. 进度持久化：现在仅本页内存、按故事隔离、用户手动标记可撤销；没有定位签到、登录同步、跨页持久化 API。后端需提供稳定章节 ID 与进度版本后另行接入。
+
+### 与现有聊天、地图的关系
+
+点击节点首次自动通过 `SGTJourney.ask` 提交章节上下文（含上一章、当前章与缺项说明）；同一章本页不重复自动发出，仍可点“问陈寿”。已有请求则追加草稿。章节文本以“【故事章节讲解】”开头，发送或稍后发送该草稿不会被地名识别误作新路线。明确的新行程问题识别到地名时会退出故事模式并沿用原地图行为。
+
+几何、投影、缩放分级、共享弧段、拖动/双指/滚轮保持原实现。仅增加故事标签优先级、大印章的 labelLayout markerRadius 可选避让、节点点击分流与视口通知；普通标签不传 markerRadius 时布局保持原值。

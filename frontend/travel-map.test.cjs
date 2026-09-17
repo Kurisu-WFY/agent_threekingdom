@@ -19,7 +19,7 @@ function makeNode(tag = 'div') {
     listeners: {}, addEventListener(type,fn) { this.listeners[type]=fn; }, removeEventListener() {}, focus() {}, scrollIntoView() {},
     setPointerCapture() { this.captured=true; }, getBoundingClientRect() { return { top: 0, left: 0, width: 900, height: 680 }; },
     getScreenCTM() { return { a: 1, b: 0, inverse: () => ({}) }; },
-    closest() { return this.attributes['data-county-code'] ? this : null; },
+    closest(selector) { const key=selector.slice(1,-1);return this.attributes[key] !== undefined ? this : null; },
     querySelector() { return makeNode(); }
   };
   Object.defineProperty(node, 'firstElementChild', { writable: true, value: undefined });
@@ -93,6 +93,22 @@ const assert=require('node:assert/strict');
  window.TravelMap.fromMessage(chat,'从南充出发去阆中');
  await new Promise(resolve=>setImmediate(resolve));paintAll();
  assert.equal(global.lastView,'map');assert.ok(chat.mapRoute.points.length>=2);
+ const savedRoute=chat.mapRoute, savedZoom=registry.get('#map-zoom-range').value, savedSelection=registry.get('#map-county').value;
+ window.TravelMap.beginStory([window.TravelMap.getPlaces().find(p=>p.name==='昭化区')]);paintAll();
+ assert.equal(registry.get('#map-prefecture').value,'');assert.equal(chat.mapRoute,savedRoute);
+ window.TravelMap.endStory();paintAll();
+ assert.equal(registry.get('#map-prefecture').value,'南充市');assert.equal(registry.get('#map-county').value,savedSelection);assert.equal(registry.get('#map-zoom-range').value,savedZoom);assert.equal(chat.mapRoute,savedRoute);
+ let chapterPicked=-1;
+ window.StoryMap={isActive:()=>true,getLabels:()=>[],onViewport(){},selectChapter:index=>{chapterPicked=index;}};
+ const storyTarget=makeNode('g');storyTarget.setAttribute('data-story-chapter','1');
+ svg.listeners.pointerdown({...event,target:storyTarget});svg.listeners.pointerup({...event,target:storyTarget});
+ svg.listeners.click({...event,target:storyTarget});assert.equal(chapterPicked,1);
+ chapterPicked=-1;svg.listeners.pointerdown({...event,target:storyTarget});svg.listeners.pointermove({...event,target:storyTarget,clientX:50});svg.listeners.pointerup(event);svg.listeners.click({...event,target:storyTarget});assert.equal(chapterPicked,-1);paintAll();
+ window.TravelMap.fromMessage(chat,'【故事章节讲解】从成都到剑门关的章节');await new Promise(resolve=>setImmediate(resolve));assert.equal(chat.mapRoute,savedRoute);
+ const extra=window.TravelMap.getPlaces().find(p=>p.name==='昭化区');assert.equal(window.TravelMap.addStoryPlace(extra),true);assert.equal(window.TravelMap.addStoryPlace(extra),false);
+ let exited=false;window.StoryMap.exit=()=>{exited=true;};window.TravelMap.fromMessage(chat,'从成都出发');await new Promise(resolve=>setImmediate(resolve));assert.equal(exited,true);assert.notEqual(chat.mapRoute,savedRoute);
+ delete window.StoryMap;
+ console.log('PASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication');
  console.log('PASS: general story questions preserve route/view/zoom; explicit destinations still map');
  console.log('PASS: two-pointer pinch increases zoom');
  console.log('PASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels');

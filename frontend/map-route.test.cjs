@@ -93,3 +93,10 @@ for(const city of geometry.cities){
  for(const line of city.outline.split('M').filter(Boolean)){const key=line.split('L').sort().join('|');assert.equal(edges.get(key)%2,1,'city outline must not stroke shared internal county edge');}
 }
 console.log('PASS: shared internal county edges removed from city outline');
+
+// Large cultural seals reserve space while ordinary county labels still use the same algorithm.
+const markerLabels=[{id:'story',x:450,y:340,name:'剑门关',size:12,markerRadius:34},{id:'county',x:450,y:340,name:'剑阁县',size:11}];
+for(const label of core.labelLayout(markerLabels,[0,0,900,680],900,680)) {
+ const box=label.box;assert.ok(!(box[0]<484&&box[2]>416&&box[1]<374&&box[3]>306));
+}
+console.log('PASS: chapter seals reserve label clearance without changing ordinary projection');

@@ -78,11 +78,17 @@
     const scale = Math.min(width/view[2],height/view[3]);
     const ox=(width-view[2]*scale)/2,oy=(height-view[3]*scale)/2;
     const occupied=[],visible=[];
+    // Optional marker clearance for larger story seals; ordinary labels keep their old layout.
+    for (const item of items.filter(item=>item.markerRadius>0)) {
+      const x=(item.x-view[0])*scale+ox,y=(item.y-view[1])*scale+oy,r=item.markerRadius;
+      if(x+r>=0&&x-r<=width&&y+r>=0&&y-r<=height) occupied.push([x-r,y-r,x+r,y+r]);
+    }
     for(const item of items) {
       const x=(item.x-view[0])*scale+ox,y=(item.y-view[1])*scale+oy;
       const w=item.name.length*item.size;
       if(x<0||x>width||y<0||y>height) continue;
-      for(const [dx,dy] of [[8,-8],[-w-8,-8],[8,18],[-w-8,18]]) {
+      const gap=8+(item.markerRadius||0);
+      for(const [dx,dy] of [[gap,-8],[-w-gap,-8],[gap,18],[-w-gap,18]]) {
         const box=[x+dx-3,y+dy-item.size-3,x+dx+w+3,y+dy+3];
         if(box[0]<0||box[1]<0||box[2]>width||box[3]>height) continue;
         if(occupied.some(b=>box[0]<b[2]&&box[2]>b[0]&&box[1]<b[3]&&box[3]>b[1])) continue;

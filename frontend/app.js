@@ -234,12 +234,13 @@ function toggleChat(open) {
   document.body.classList.toggle('chat-open', open);
   launcher.setAttribute('aria-expanded', String(open));
   launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');
-  viewLabel.textContent = open ? '对话界面' : '主界面';
+  viewLabel.textContent = open ? '对话界面' : ({ map: '行旅地图', story: '故事线' }[currentContentView] || '主界面');
   if (open) input.focus({ preventScroll: true });
   else {
     launcher.focus({ preventScroll: true });
     if (chatOpeningScroll?.view === currentContentView) window.scrollTo({ top: chatOpeningScroll.top, behavior: 'instant' });
     chatOpeningScroll = null;
+    window.StoryMap?.revealCard();
   }
 }
 

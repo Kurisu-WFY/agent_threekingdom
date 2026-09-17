@@ -1,3 +1,9 @@
+> 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/sgt-frontend-iter3/frontend 开发。先检查 git status / git log 与 http://127.0.0.1:8001/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
+# 最新接手增量 · 2026-09-17 三国故事地图
+
+本轮已完成故事图层、章节进度与文化节点卡，详见 HANDOFF.md 最后记录。story-map.js 叠加在 travel-map.js 上，复用 MapRouteCore；不得重写地图核心。后端适配口为 StoryMap.setData({story, places})，协议见 API-CONTRACT.md；所有缺后端数据继续标待确认，/api/travel/* 仍关闭。昭化古城/剑门关使用县级驻地示意，米仓道待定位，导航不可用。回归现为八组（新增 story-map.test.cjs），全部 JS 语法及八组测试已通过，桌面/375px 浏览器检查已完成。实际提交以 git log 为准。
+
+---
 # 最新接手增量 · 2026-09-17
 
 首页已改为五条故事线模板发现入口，具体审查、文件变更和验证见 HANDOFF.md 最后记录。用户确认内容缺项先标待补充/待核验，不能自行编造章节、时长或坐标。新增 stories.js 在页面最后加载；通过 SGTJourney.ask 复用对话与草稿。story 详情走 showContentView，主导航仍为两项。

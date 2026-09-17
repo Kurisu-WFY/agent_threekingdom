@@ -26,13 +26,15 @@
     $('#county-points').setAttribute('visibility', detailed ? 'visible' : 'hidden');
     $('#county-points').setAttribute('display',detailed?'inline':'none');
     labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-20/scale&&l.x<=extent[2]+20/scale&&l.y>=extent[1]-20/scale&&l.y<=extent[3]+20/scale;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
-    const candidates = labels.filter(l => l.city || detailed).sort((a,b) => (b.selected?100: b.capital?90:b.city?50:0)-(a.selected?100:a.capital?90:a.city?50:0));
+    const storyLabels = window.StoryMap?.getLabels() || [];
+    const candidates = [...storyLabels, ...labels.filter(l => l.city || detailed)].sort((a,b) => (b.story?200:b.selected?100: b.capital?90:b.city?50:0)-(a.story?200:a.selected?100:a.capital?90:a.city?50:0));
     const positions = new Map(core.labelLayout(candidates, view, rect.width, rect.height).map(l => [l.id,l]));
-    labels.forEach(l => {
+    [...labels, ...storyLabels].forEach(l => {
       const pos = positions.get(l.id);
       if(Boolean(pos)!==l.visible){l.node.setAttribute('visibility',pos?'visible':'hidden');l.visible=Boolean(pos);}
       if(pos){l.node.setAttribute('dx',pos.dx/scale);l.node.setAttribute('dy',pos.dy/scale);}
     });
+    window.StoryMap?.onViewport(view, rect);
   }
   function paint(time) {
     frame = 0;
@@ -129,6 +131,8 @@
   function pickNearby(event) {
     if (suppressMapClick) { suppressMapClick = false; return; }
     if (!loaded) return;
+    const storyNode = event.target.closest('[data-story-chapter]');
+    if (storyNode) { window.StoryMap?.selectChapter(Number(storyNode.getAttribute('data-story-chapter'))); return; }
     const code=event.target.closest('[data-county-code]')?.getAttribute('data-county-code');
     if(code){const county=counties.find(c=>String(c.adcode)===code);if(county)return selectPlace(county);}
     const matrix = svg.getScreenCTM();
@@ -203,13 +207,39 @@
     return true;
   }).catch(() => { $('#map-route-status').textContent = '地图边界或点位加载失败，请刷新页面重试。'; return false; });
 
+  let storySnapshot = null;
   window.TravelMap = {
+    ready,
+    getPlaces() { return places; },
+    refreshLabels() { updateLabels(); },
+    beginStory(points) {
+      if (!storySnapshot) storySnapshot = { view: [...targetView], prefecture: $('#map-prefecture').value, selected };
+      if ($('#map-prefecture').value) { $('#map-prefecture').value = ''; populateCounties(); }
+      fit(points);
+    },
+    fitStory(points) { if (loaded) fit(points); },
+    endStory() {
+      if (!storySnapshot) return;
+      const saved = storySnapshot; storySnapshot = null;
+      $('#map-prefecture').value = saved.prefecture; populateCounties();
+      selected = saved.selected; $('#map-county').value = selected?.id || '';
+      $('#map-add-stop').disabled = !selected; drawCounties(); setView(saved.view, false);
+    },
+    addStoryPlace(place) {
+      if (!activeChat || !place) return false;
+      const route = activeChat.mapRoute || { points: [], missing: [] };
+      if (route.points.some(point => point && point.name === place.name && point.center[0] === place.center[0] && point.center[1] === place.center[1])) return false;
+      route.points.push({ ...place }); route.kind = '手动加入的故事地点示意'; activeChat.mapRoute = route;
+      drawRoute(); return true;
+    },
     syncChat(chat) {
       if (activeChat === chat) return;
       activeChat = chat; drawRoute();
-      if (loaded) fit(chat.mapRoute?.points || []);
+      if (loaded && !window.StoryMap?.isActive()) fit(chat.mapRoute?.points || []);
     },
     fromMessage(chat, text) {
+      // Chapter context, including a pending draft sent later, must not become a route request.
+      if (text.startsWith('【故事章节讲解】')) return;
       if (!/(旅游|旅行|路线|行程|出发|去|到|游玩|途经|经过|逛)/.test(text)) return;
       chat.mapQuestion = text;
       ready.then(ok => {
@@ -217,6 +247,7 @@
         const parsed = core.mentions(text, places);
         // A general story question must not clear the route or open an empty map.
         if (!parsed.points.length && !parsed.ambiguous.length) return;
+        if (window.StoryMap?.isActive()) window.StoryMap.exit();
         chat.mapRoute = { points: parsed.points, missing: parsed.ambiguous, kind: '按你的地名提及顺序' };
         if (activeChat === chat) {
           drawRoute(); fit(parsed.points); showContentView('map');
@@ -227,7 +258,7 @@
     },
     fromResponse(chat, question, data) {
       ready.then(ok => {
-        if (!ok || chat.mapQuestion !== question) return;
+        if (!ok || chat.mapQuestion !== question || window.StoryMap?.isActive()) return;
         const parsed = core.structured(data, places);
         if (!parsed) return;
         const next = core.resolveRoute(chat.mapRoute, parsed);
