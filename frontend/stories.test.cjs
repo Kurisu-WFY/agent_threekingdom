@@ -9,6 +9,7 @@ function setup(fail=false){
   const requests=[],views=[],questions=[];
   const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id)}};
   const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v),fetch:url=>{requests.push(url);return fail?Promise.reject(Error('offline')):Promise.resolve({ok:true,json:()=>Promise.resolve({cities:[{d:'M0 0L1 1Z'}]})});}};
+  vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);
   vm.runInNewContext(fs.readFileSync(__dirname+'/stories.js','utf8'),ctx);
   return {get,window,requests,views,questions,mapCalls};
 }
@@ -25,6 +26,14 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
   test.get('#story-map-open').handlers.click();assert.equal(test.mapCalls[1],'shudao-xunzong');
   test.get('#story-ask').handlers.click();assert.equal(test.questions.length,1);assert.ok(test.questions[0].includes('蜀道寻踪'));assert.ok(test.questions[0].includes('尚未确认'));
+  const story=test.window.SGT_STORIES[2],progress=test.window.StoryProgress;
+  const state=progress.get(story);state.started=true;state.completed=new Set([0,1,2]);progress.save(story);
+  assert.ok(contents(test.get('#story-detail-content')).includes('一卷读罢'));
+  assert.ok(contents(test.get('#story-detail-content')).includes('接着探索'));
+  assert.equal(test.get('#story-cards').children[2].dataset.progress,'已寻迹');
+  test.get('#story-phase-filters').children[2].handlers.click();
+  assert.equal(test.get('#story-cards').children.filter(n=>!n.hidden).length,1);
+  assert.equal(test.get('#story-cards').children[4].hidden,false);
   // Untrusted content remains text rather than executable markup.
   test.window.SGT_STORIES[0].title='<img src=x onerror=alert(1)>';cards[0].handlers.click();assert.equal(test.get('#story-title').textContent,'<img src=x onerror=alert(1)>');
   await new Promise(resolve=>setImmediate(resolve));assert.equal(test.get('#story-preview-map').children.length,1);assert.deepEqual(test.requests,['sichuan-map-geometry.json']);

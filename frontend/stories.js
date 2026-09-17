@@ -21,6 +21,9 @@
     { id: 'zhaohua', name: '昭化古城', building: 'wall', fallbackName: '昭化区', fallbackParent: '广元市' },
     { id: 'micangdao', name: '米仓道', building: 'road' }
   ].map(place => Object.assign({ coordinates: null, dataStatus: 'pending', sources: [] }, place));
+  const progress = window.StoryProgress;
+  const phases = ['寻源', '探秘', '探秘', '传承', '读史'];
+  window.SGT_STORIES.forEach((story, i) => { story.phase = phases[i]; });
   const $ = selector => document.querySelector(selector);
   const text = value => typeof value === 'string' && value.trim() ? value.trim() : '待补充';
   const list = value => Array.isArray(value) && value.length ? value.map(text).join(' · ') : '待补充';
@@ -47,23 +50,82 @@
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
       detail.append(node('h3', '', heading), node('p', '', text(value)));
     }
-    detail.append(node('h3', '', '章节与地点'), node('p', 'story-empty', story.chapters.length ? '以下为指定章节顺序。史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。' : '章节、地点与推荐理由待补充。当前模板尚未提供可核验的史料，暂不生成历史讲解或路线。'), node('h3', '', '史料与出行依据'), node('p', '', '来源、更新时间待补充；交通、开放时间、时长与预算待核验。'));
-    if (story.chapters.length) {
-      const chapters = node('ol', 'story-detail-chapters');
-      story.chapters.forEach(chapter => chapters.append(node('li', '', chapter.name + ' · 史料待补充 / 位置待核验')));
-      detail.append(node('h3', '', '本轮指定的章节顺序'), chapters);
-    }
+    detail.append(node('p', 'story-empty', '史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
     $('#story-action-status').textContent = '当前为主题模板，尚未形成可执行行程。';
+    renderSystem(story, detail);
     if (open) showContentView('story');
   }
+  function action(label, fn) {
+    const b=node('button','module-button',label); b.type='button'; b.addEventListener('click',fn); return b;
+  }
+  function provenance(record) {
+    const d=node('details','chapter-sources');
+    d.append(node('summary','', '史料依据 · 资料状态：' + text(record.dataStatus) + ' · 待核验'));
+    d.append(node('p','', '更新时间：' + (record.updatedAt || '待核验')));
+    if (!record.sources?.length) d.append(node('p','', '来源待补充；当前资料中未找到可靠记载。'));
+    (record.sources || []).filter(s=>s && typeof s==='object').forEach(s=>{
+      const row=node('p','',text(s.title)+' · 来源等级：'+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验'));
+      try { const url=new URL(s.source_url); if(['http:','https:'].includes(url.protocol)) { const a=node('a','','查看来源'); a.href=url.href; a.target='_blank'; a.rel='noopener noreferrer'; row.append(a); } } catch (_) {}
+      if(s.source_level==='C') row.append(node('small','','C 级仅作线索，不能支撑史实结论。'));
+      d.append(row);
+    }); return d;
+  }
+  function renderSystem(story, detail) {
+    const s=progress.get(story), chapters=story.chapters || [];
+    const places=window.StoryMap?.getPlaces ? window.StoryMap.getPlaces(story.id) : window.SGT_PLACES;
+    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length));
+    detail.append(node('h3','','讲解模式'));
+    const modes=node('div','story-controls');
+    ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
+      const b=action(mode,()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
+    }); detail.append(modes,node('p','map-note','仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。'));
+    detail.append(node('h3','','相关人物与关键事件'),node('p','','人物：'+list(story.people)+'；事件：'+list(story.events)));
+    detail.append(node('h3','','现实约束'),node('p','','交通：'+text(story.constraints?.transport)+'；开放时间：'+text(story.constraints?.openTime)+'；游览时长：'+text(story.constraints?.duration)+'；预算：'+text(story.constraints?.budget)+'。以上信息待核验。'),provenance(story));
+    const axis=node('ol','story-chapter-axis');
+    chapters.forEach((c,i)=>{
+      const place=places.find(p=>p.id===c.placeId), li=node('li','');
+      const status=s.skipped.has(i)?'本次跳过':s.completed.has(i)?'已完成 · 已寻迹':s.started&&s.current===i?'当前':'待探索';
+      li.dataset.state=status; li.append(node('h4','',c.name+' · '+status),node('p','','地点 / 建筑：'+(place?place.name+' / '+({wall:'城楼',pass:'关楼',road:'古道',tower:'楼阁',shrine:'祠庙'}[place.building]||'形制待补充'):'待补充')),
+        node('p','','为什么推荐：'+text(c.reason)),node('p','','在故事中的作用：'+text(c.role)),node('p','',text(c.story)),provenance(c));
+      if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
+      if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
+      axis.append(li);
+    }); detail.append(node('h3','','章节轴 · 逐幕寻迹'),axis);
+    if(chapters.length) {
+      const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));
+      const inputs=chapters.map((c,i)=>{const label=node('label',''),input=node('input');input.type='checkbox';input.checked=!s.skipped.has(i);label.append(input,node('span','',c.name));box.append(label);return input;});
+      const feedback=node('p','map-note','核心章节尚待编辑确认，由你选择；交通和游览时长待核验，不保证半天可完成。');feedback.setAttribute('role','status');
+      box.append(action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);
+    }
+    if(progress.status(story)==='已寻迹') {
+      const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');
+      detail.append(node('h3','','一卷读罢，山河有迹'),node('p','','你已手动完成本故事全部章节，回顾了：'+visitedPlaces.join('、')+'。相关人物：'+list(story.people)+'。史料仍需核验，探索记录不代表实际到访。'));
+      const next=window.SGT_STORIES.find(item=>item.id!==story.id&&progress.status(item)!=='已寻迹');
+      if(next)detail.append(action('接着探索：'+next.title,()=>select(next,true)));
+    } else if(s.skipped.size && chapters.every((_,i)=>s.skipped.has(i)||s.completed.has(i))) detail.append(node('p','','本次所选章节已完成；仍有跳过章节，整条故事保持探索中。'));
+    $('#story-map-open').disabled=!chapters.length;
+    $('#story-map-open').textContent=chapters.length?'开始探索 →':'开始探索（章节待补充）';
+  }
+  const filters=$('#story-phase-filters');
+  ['全部','寻源','读史','探秘','传承'].forEach(phase=>{
+    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{shell.hidden=phase!=='全部'&&shell.dataset.phase!==phase;});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));});
+    b.setAttribute('aria-pressed',String(phase==='全部'));filters.append(b);
+  });
+  progress.subscribe(()=>{if(selected)select(selected,false);});
   const cards = $('#story-cards');
   window.SGT_STORIES.forEach((story, index) => {
     const card = node('button', 'story-card'); card.type = 'button';
     card.dataset.contentView = 'story'; card.setAttribute('aria-controls', 'story-view'); card.setAttribute('aria-pressed', 'false');
     card.setAttribute('aria-label', '查看故事线：' + story.title);
+    card.append(node('span', 'story-core-question', '核心问题：' + text(story.coreQuestion)));
     card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-summary', '故事简介：' + text(story.summary)), node('span', 'story-card-end', '待补充 / 待核验　↗'));
     card.addEventListener('click', () => select(story, true));
-    const shell = node('article', 'story-card-shell');
+    const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id;
+    shell.dataset.phase = story.phase;
+    const badge = node('span', 'story-progress-seal', progress.status(story));
+    card.append(badge);
+    shell.dataset.progress = progress.status(story);
+    progress.subscribe(() => { badge.textContent = progress.status(story); shell.dataset.progress = progress.status(story); });
     const mapButton = node('button', 'story-map-entry', '在故事地图中探索 →'); mapButton.type = 'button';
     mapButton.setAttribute('aria-label', '在故事地图中探索：' + story.title); mapButton.setAttribute('aria-controls', 'map-view');
     mapButton.addEventListener('click', () => window.StoryMap.open(story.id));

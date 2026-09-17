@@ -144,3 +144,9 @@ HTTP 200，JSON：`{ "status": "ok|empty|unavailable", "message": "用户可读�
 点击节点首次自动通过 `SGTJourney.ask` 提交章节上下文（含上一章、当前章与缺项说明）；同一章本页不重复自动发出，仍可点“问陈寿”。已有请求则追加草稿。章节文本以“【故事章节讲解】”开头，发送或稍后发送该草稿不会被地名识别误作新路线。明确的新行程问题识别到地名时会退出故事模式并沿用原地图行为。
 
 几何、投影、缩放分级、共享弧段、拖动/双指/滚轮保持原实现。仅增加故事标签优先级、大印章的 labelLayout markerRadius 可选避让、节点点击分流与视口通知；普通标签不传 markerRadius 时布局保持原值。
+
+## 需求12 更新：本地探索记录
+
+上述“仅本页内存”已更新：story-progress.js 使用 sgt.story-progress.v1 保存浏览器本地记录，不调用后端。以 story.id 与章节 id/placeId/name 序列签名隔离；序列改变重置，同序列正文更新保留。StoryMap.setData 的章节变更因此重置本地进度，同章节更新保留。无账号或跨标签实时同步。
+
+详情可选 chapter.reason（推荐理由）、chapter.role（叙事作用）与 story.constraints.transport/openTime/duration/budget；无值显示待补充/待核验。story.phase 为前端编辑分组，不代表史料事实。压缩不修改 chapters，仅记录 skipped 索引；全章完成才显示故事已寻迹。

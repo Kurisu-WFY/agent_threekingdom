@@ -15,6 +15,7 @@ function setup(ready=Promise.resolve(true)){
  const window={MapRouteCore:core,SGT_STORIES:[story,{id:'empty',title:'空模板',chapters:[]}],SGT_PLACES:places,
   SGTStoryUI:{icon:kind=>{const icon=new Element('svg');icon.dataset.kind=kind;return icon;},openStory:id=>opened.push(id)},
   SGTJourney:{ask:q=>questions.push(q)},TravelMap:{ready,getPlaces:()=>counties,refreshLabels(){window.StoryMap.onViewport([0,0,900,680],{width:900,height:680});},beginStory:p=>fits.push(p),fitStory:p=>fits.push(p),endStory(){fits.push('restored');},addStoryPlace:p=>{added.push(p);return true;}}};
+ vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),{window});
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-map.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v)});
  return {window,get,questions,views,fits,added,opened,story,places};
 }
@@ -35,6 +36,13 @@ function allText(node){return node.textContent+node.children.map(allText).join('
  api.exit();assert.equal(api.isActive(),false);assert.equal(t.get('#story-map-nodes').children.length,0);assert.equal(t.fits.at(-1),'restored');
  await api.open('test');assert.ok(t.get('#story-map-progress').textContent.includes('已寻迹 1 / 3'));
  await api.open('empty');assert.equal(t.get('#story-map-nodes').children.length,0);assert.ok(t.get('#story-map-progress').textContent.includes('待确认'));
+ await api.open('test');
+ const progress=t.window.StoryProgress, state=progress.get(t.story);
+ progress.choose(t.story,[0,2]);api.selectChapter(0);t.get('#chapter-next').click();assert.equal(state.current,2);
+ assert.ok(allText(t.get('#story-chapter-list')).includes('本次跳过'));
+ state.mode='学术探索版';progress.save(t.story);t.get('#chapter-ask').click();assert.ok(t.questions.at(-1).includes('学术探索版'));assert.equal(state.current,2);
+ state.completed=new Set([0,2]);progress.save(t.story);assert.equal(progress.status(t.story),'探索中');
+ progress.choose(t.story,[0,1,2]);state.completed.add(1);progress.save(t.story);assert.equal(progress.status(t.story),'已寻迹');
  // Future backend data must explicitly qualify coordinates; missing or C-level provenance never qualifies.
  const payload={story:{id:'test',title:'后端主题',chapters:[{placeId:'a',name:'一',dataStatus:'live',sources:[{source_url:'javascript:alert(1)',source_level:'C',title:'不可信链接'}]}]},places:[{id:'a',name:'测试坐标',coordinates:[105.8,32.2],coordinate_system:'WGS84',dataStatus:'live',updatedAt:'2026-09-17T10:00:00+08:00',sources:[{source_url:'https://example.org/source',source_level:'A'}]}]};
  await api.setData(payload);await api.open('test');assert.equal(t.get('#story-map-nodes').children.length,0);

@@ -1,3 +1,8 @@
+# 最新接手增量 · 需求12（2026-09-17）
+
+已实现故事线列表筛选、详情章节轴、浏览器本地进度、手选章节压缩与三讲解模式。用户确认继续模板和缺项提示，不编造完整故事内容。主导航现在为 welcome / map / story 三项；早先“两项”说明已过时。story-progress.js 在 stories.js 前加载，地图与列表/详情共用状态。测试为九组（新增 story-progress.test.cjs），运行所有 frontend/*.test.cjs。详情及取舍见 HANDOFF.md 最后需求12记录；唯一开发区和后端边界不变。
+
+---
 > 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/sgt-frontend-iter3/frontend 开发。先检查 git status / git log 与 http://127.0.0.1:8001/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
 # 最新接手增量 · 2026-09-17 三国故事地图
 

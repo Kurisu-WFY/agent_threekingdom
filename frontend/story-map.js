@@ -17,7 +17,8 @@
   }
   const value = text => typeof text === 'string' && text.trim() ? text.trim() : '待确认';
   const list = items => Array.isArray(items) && items.length ? items.map(value).join('、') : '待确认';
-  const state = () => active ? progress.get(active.id) : null;
+  const state = () => active ? (window.StoryProgress ? window.StoryProgress.get(active) : progress.get(active.id)) : null;
+  const persist = () => { if(active && window.StoryProgress) window.StoryProgress.save(active); };
   function safeUrl(raw) {
     try { const url = new URL(raw); return ['http:', 'https:'].includes(url.protocol) ? url.href : null; } catch (_) { return null; }
   }
@@ -39,6 +40,7 @@
     return { chapter, place, point, exact: false, note: point ? '坐标待核验 / 景区待定位 · ' + point.name + '驻地示意（关联待确认）' : '待定位 · 具体遗址与县区待确认' };
   }
   function currentStatus(index) {
+    if (state().skipped?.has(index)) return '本次跳过';
     return state().completed.has(index) ? '已寻迹' : state().current === index ? '当前章' : '待探索';
   }
   function onViewport(view, rect) {
@@ -52,20 +54,22 @@
     $('#story-chapter-list').replaceChildren();
     if (!active) return;
     const current = state().current;
+    const notice = $('.story-map-memory'); if(notice && window.StoryProgress)notice.textContent=window.StoryProgress.notice();
     $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';
     $('#story-map-badge').textContent = $('#story-map-progress').textContent;
-    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '前端章节模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个可示意位置 · ' + resolved.filter(item => !item.point).length + ' 个待定位。道路导航待接入。' : '这条故事线尚无章节数据，等待后端接入。可以退出故事模式继续浏览地图。';
+    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '前端章节模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。道路导航待接入。' : '这条故事线尚无章节数据，等待后端接入。可以退出故事模式继续浏览地图。';
     resolved.forEach((item, index) => {
       const status = currentStatus(index);
       const li = node('li', 'chapter-list-item');
       const button = node('button', 'chapter-list-button', (index + 1) + ' · ' + value(item.chapter.name) + ' · ' + status);
+      button.disabled = Boolean(state().skipped?.has(index));
       button.type = 'button'; button.setAttribute('aria-current', current === index ? 'step' : 'false');
       button.setAttribute('aria-controls', 'story-node-card'); button.dataset.state = status;
       button.addEventListener('click', () => selectChapter(index));
-      li.append(button, node('small', '', item.note)); $('#story-chapter-list').append(li);
-      if (!item.point) return;
+      li.append(button, node('small', '', item.note), node('small', '', state().skipped?.has(index) ? '本次跳过：由你选择将有限时间留给其他章节。' : state().skipped?.size ? '本次保留：你选取的核心章节，时长待核验。' : '')); $('#story-chapter-list').append(li);
+      if (!item.point || state().skipped?.has(index)) return;
       const [x, y] = core.project(item.point.center);
-      if (index && resolved[index - 1].point) {
+      if (index && resolved[index - 1].point && !state().skipped?.has(index-1)) {
         const [px, py] = core.project(resolved[index - 1].point.center);
         $('#story-order-lines').append(svgNode('path', { d: 'M' + px + ',' + py + 'L' + x + ',' + y, class: 'story-order-segment' }));
         const dx = x - px, dy = y - py;
@@ -113,6 +117,8 @@
     const statuses = {pending:'待确认',sample:'示例资料 / 待核验',maintained:'维护资料',live:'实时资料',stale:'过期资料'};
     const verified = ['maintained','live'].includes(chapter.dataStatus) && chapter.updatedAt && /(?:Z|[+-]\d{2}:\d{2})$/.test(chapter.updatedAt) && Number.isFinite(Date.parse(chapter.updatedAt)) && Array.isArray(chapter.sources) && chapter.sources.some(s=>s && ['A','B'].includes(s.source_level)&&safeUrl(s.source_url));
     content.replaceChildren(node('p', 'chapter-trust', '资料状态：' + (statuses[chapter.dataStatus] || '待确认') + (verified ? '' : ' · 史料待核验')),
+      node('p', '', '为什么推荐：' + value(chapter.reason)), node('p', '', '在故事中的作用：' + value(chapter.role)),
+      node('p', '', '讲解模式：' + (state().mode || '大众体验版')),
       node('p', '', '相关人物：' + list(chapter.people)), node('p', '', '相关事件：' + list(chapter.events)),
       node('p', 'chapter-narrative', typeof chapter.story === 'string' && chapter.story.trim() ? chapter.story : '故事内容待确认。接入可核验史料后，再讲述这一章。'),
       node('p', 'map-note', '更新时间：' + (verified ? chapter.updatedAt : '待确认')), sources(chapter));
@@ -120,14 +126,14 @@
     $('#chapter-add').textContent = item.exact ? '加入路线' : item.point ? '加入路线（驻地示意）' : '加入路线（待定位）';
     $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '导航到这里（待确认）';
     $('#chapter-complete').textContent = state().completed.has(index) ? '撤销已寻迹' : '标记已寻迹';
-    $('#chapter-next').disabled = index === resolved.length-1;
+    $('#chapter-next').disabled = !resolved.some((_,i)=>i>index&&!state().skipped?.has(i));
     $('#story-node-feedback').textContent = '点击章节后由陈寿接续讲解；资料不足时保留疑问。';
   }
   function askCurrent(compare) {
     if (!active || !resolved.length) return;
     const index = state().current, item = resolved[index];
     const previous = index ? resolved[index-1].chapter : null;
-    const question = '【故事章节讲解】故事线：' + active.title + '。' +
+    const question = '【故事章节讲解】讲解模式：' + (state().mode || '大众体验版') + '。大众用清晰易懂的表达，亲子用问题引导，学术侧重史料依据与不确定性；保持当前故事与地点。故事线：' + active.title + '。' +
       (previous ? '上一章（章节顺序，不代表已到访）：' + previous.name + '；已有文本：' + value(previous.story) + '。' : '这是开篇。') +
       '当前第 ' + (index+1) + '/' + resolved.length + ' 幕：' + item.chapter.name + '；地点：' + item.place.name + '；定位情况：' + item.note + '。' +
       '当前章节资料：' + value(item.chapter.story) + '；人物：' + list(item.chapter.people) + '；事件：' + list(item.chapter.events) + '。' +
@@ -144,9 +150,9 @@
     } else if ($('#chat-panel').hidden) card.scrollIntoView({block:'start',behavior:'instant'});
   }
   function selectChapter(index) {
-    if (!active || !Number.isInteger(index) || !resolved[index]) return;
+    if (!active || !Number.isInteger(index) || !resolved[index] || state().skipped?.has(index)) return;
     $('#map-place-picker').hidden = true;
-    state().current = index; cardOpen = true; draw(); renderCard();
+    state().current = index; state().started = true; persist(); cardOpen = true; draw(); renderCard();
     $('#story-node-title').focus({preventScroll:true});
     if (!state().asked.has(index)) { state().asked.add(index); askCurrent(false); }
     revealCard();
@@ -163,6 +169,8 @@
     if (!progress.has(id)) progress.set(id,{current:0,completed:new Set(),asked:new Set()});
     const places = overrides.get(id)?.places || window.SGT_PLACES;
     resolved = (story.chapters || []).map(chapter=>locate(chapter,places));
+    if(window.StoryProgress && story.chapters?.length) { state().started=true; persist(); }
+
     $('#map-view').classList.add('story-mode'); $('#map-view').dataset.storyId = id;
     $('#story-map-badge').hidden = false; $('#story-map-toolbar').hidden = false; $('#story-map-chapters').hidden = false; $('#story-node-card').hidden = true;
     $('#story-map-title').textContent = story.title;
@@ -193,7 +201,8 @@
   $('#chapter-ask').addEventListener('click',()=>askCurrent(false));
   $('#chapter-compare').addEventListener('click',()=>askCurrent(true));
   $('#chapter-add').addEventListener('click',()=>{if(!active)return;const item=resolved[state().current];if(!item?.point)return;const added=window.TravelMap.addStoryPlace(item.point);$('#story-node-feedback').textContent=added?'已加入现有路线：'+item.point.name+(item.exact?'。':'驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
-  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);draw();renderCard();$('#story-node-feedback').textContent='已更新本页探索记录，可撤销；不代表实际到访。';});
-  $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(state().current+1);});
-  window.StoryMap = {open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
+  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全章已寻迹！进入故事查看收尾与下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
+  $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(resolved.findIndex((_,i)=>i>state().current&&!state().skipped?.has(i)));});
+  if(window.StoryProgress)window.StoryProgress.subscribe(story=>{if(active?.id===story.id&&resolved.length){draw();renderCard();}});
+  window.StoryMap = {getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
 })();

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
-  <link rel="stylesheet" href="styles.css?v=story-map-4">
+  <link rel="stylesheet" href="styles.css?v=story-system-1">
 </head>
 <body>
   <header class="topbar">
@@ -20,6 +20,7 @@
         <nav class="content-switch" aria-label="主内容视图">
           <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">与蜀汉对话</button>
           <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
+          <button type="button" data-content-view="story" aria-pressed="false" aria-controls="story-view">故事线</button>
         </nav>
       </div>
 
@@ -44,6 +45,7 @@
         <section id="story-discovery" class="story-discovery" aria-labelledby="discovery-title">
           <div class="desk-intro"><div><span class="story-eyebrow">STORIES · 循史而行</span><h2 id="discovery-title">选择一条三国文化故事线</h2></div><p>先选一个想探索的主题。</p></div>
           <p class="story-disclosure">首批主题模板 · 后端数据待确认，缺项待补充；史料与行程待核验。</p>
+          <div id="story-phase-filters" class="story-controls" role="group" aria-label="按故事框架筛选"></div>
           <div id="story-cards" class="story-cards"></div>
         </section>
         <section class="story-preview" aria-labelledby="preview-title">
@@ -142,7 +144,7 @@
         <section id="story-map-toolbar" class="story-map-toolbar" aria-labelledby="story-map-title" hidden>
           <div><p class="story-eyebrow">STORY MODE · 沿章节寻迹</p><h3 id="story-map-title" tabindex="-1"></h3><p id="story-map-progress" role="status"></p></div>
           <div class="module-actions"><button type="button" class="module-button" id="story-fit">看整条故事</button><button type="button" class="module-button" id="story-exit">退出故事模式</button></div>
-          <p class="story-map-memory">进度由你手动标记，仅本页保留；不代表实际到访或自动定位。</p>
+          <p class="story-map-memory">探索进度仅保存在此浏览器本地，未与账号或后端同步；不代表实际到访或自动定位。</p>
         </section>
         <p class="map-note" id="map-layer-status">100%–249% 显示市州边界；250% 起叠加县级边界。标注自动避让，全部县区均可从列表选择。</p>
         <div class="county-controls">
@@ -295,7 +297,8 @@
   <script src="travel-modules.js?v=agent-home-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
   <script src="travel-map.js?v=story-map-2"></script>
-  <script src="stories.js?v=story-map-2"></script>
-  <script src="story-map.js?v=story-map-4"></script>
+  <script src="story-progress.js?v=story-system-1"></script>
+  <script src="stories.js?v=story-system-1"></script>
+  <script src="story-map.js?v=story-system-1"></script>
 </body>
 </html>

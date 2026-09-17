@@ -23,10 +23,10 @@ modes[2].handlers.click();field.value='张飞与阆中';submitForm();assert.ok(c
 chat.pending=true;input.value='原有对话草稿';question.handlers.click();assert.equal(input.value,'原有对话草稿\n\n阆中的故事');assert.equal(calls.at(-1),'draft');
 assert.equal(calls.filter(c=>c==='阆中的故事').length,0);
 node('[data-prepare-review]').handlers.click();assert.equal(modes[3].attrs['aria-pressed'],'true');assert.ok(field.focused);assert.ok(node('#journey-desk').scrolled);
-const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(/<nav class="content-switch"[\s\S]*?<\/nav>/)[0];assert.equal((nav.match(/data-content-view=/g)||[]).length,2);
+const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(/<nav class="content-switch"[\s\S]*?<\/nav>/)[0];assert.equal((nav.match(/data-content-view=/g)||[]).length,3);
 for(const id of ['map-view','route-map','map-prefecture','map-county','map-zoom-range'])assert.ok(html.includes('id="'+id+'"'));
 for(const asset of ['jianmen-pass.jpg','langzhong-town.jpg'])assert.ok(fs.statSync(__dirname+'/assets/'+asset).size>10000);
-console.log('PASS: journey drafts, preference submission, character boundaries, pending draft preservation, two-item navigation and map controls');
+console.log('PASS: journey drafts, preference submission, character boundaries, pending draft preservation, three-item navigation and map controls');
 
 context.window.SGTJourney.ask('故事线主题追问');
 assert.ok(input.value.endsWith('故事线主题追问'));assert.equal(calls.at(-1),'draft');

@@ -714,3 +714,21 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:#efede
 
 @media(min-width:761px) { body.chat-open #map-view.story-mode .story-map-layout { grid-template-columns:minmax(0,1fr); } body.chat-open #map-view.story-mode #route-map { min-height:300px; } }
 .story-map-badge { position:absolute; top:12px; left:12px; max-width:calc(100% - 24px); padding:9px 12px; border:1px solid var(--line); border-left:3px solid var(--shu); border-radius:6px; background:var(--surface); color:var(--shu); font-size:12px; line-height:1.6; box-shadow:var(--shadow-sm); pointer-events:none; }
+
+/* Story system: device-local progress and chapter choices. */
+.story-controls { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+.story-controls [aria-pressed="true"] { background:var(--shu); color:var(--surface); border-color:var(--shu); }
+.story-card-shell[data-progress="探索中"] { outline:2px solid var(--shu); outline-offset:3px; border-radius:var(--radius); }
+.story-progress-seal { display:inline-block; color:var(--muted); padding:6px 10px; }
+[data-progress="已寻迹"] .story-progress-seal { color:var(--shu); border:3px double var(--shu); transform:rotate(-6deg); font-family:'Songti SC','SimSun',serif; }
+.story-core-question { font-size:12px; color:var(--ink-soft); }
+.story-local-notice { border-left:3px solid var(--jade); padding:12px; background:var(--surface-2); }
+.story-chapter-axis { padding-left:24px; }
+.story-chapter-axis > li { padding:12px 18px; margin:12px 0; border-left:3px solid var(--line); background:var(--surface); overflow-wrap:anywhere; }
+.story-chapter-axis [data-state="当前"] { border-color:var(--shu); }
+.story-chapter-axis [data-state="本次跳过"] { border-style:dashed; color:var(--muted); }
+.story-compression { border:1px solid var(--line); border-radius:var(--radius); padding:16px; min-width:0; }
+.story-compression label { display:flex; gap:10px; margin:12px 0; align-items:center; }
+.story-compression .module-button { margin:4px; }
+.story-detail h4 { margin:6px 0; }
+@media(max-width:760px) { .content-heading { flex-wrap:wrap; gap:8px; } .content-switch { flex-wrap:wrap; } .story-chapter-axis { padding-left:15px; } }
