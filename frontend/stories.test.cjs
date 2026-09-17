@@ -34,6 +34,11 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   test.get('#story-phase-filters').children[2].handlers.click();
   assert.equal(test.get('#story-cards').children.filter(n=>!n.hidden).length,1);
   assert.equal(test.get('#story-cards').children[4].hidden,false);
+  const kinds=['tower','shrine','pass','wall','road'];
+  const shapes=kinds.map(kind=>test.window.SGTStoryUI.icon(kind));
+  assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);
+  assert.ok(shapes.every(svg=>svg.children.length===3));
+  assert.equal(test.get('#story-buildings').children.length,5);
   // Untrusted content remains text rather than executable markup.
   test.window.SGT_STORIES[0].title='<img src=x onerror=alert(1)>';cards[0].handlers.click();assert.equal(test.get('#story-title').textContent,'<img src=x onerror=alert(1)>');
   await new Promise(resolve=>setImmediate(resolve));assert.equal(test.get('#story-preview-map').children.length,1);assert.deepEqual(test.requests,['sichuan-map-geometry.json']);

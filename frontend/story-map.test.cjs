@@ -43,6 +43,8 @@ function allText(node){return node.textContent+node.children.map(allText).join('
  state.mode='学术探索版';progress.save(t.story);t.get('#chapter-ask').click();assert.ok(t.questions.at(-1).includes('学术探索版'));assert.equal(state.current,2);
  state.completed=new Set([0,2]);progress.save(t.story);assert.equal(progress.status(t.story),'探索中');
  progress.choose(t.story,[0,1,2]);state.completed.add(1);progress.save(t.story);assert.equal(progress.status(t.story),'已寻迹');
+ let detail; t.window.CulturalNode={open:payload=>detail=payload};
+ await api.open('test');api.selectChapter(1);assert.equal(detail.index,1);assert.equal(detail.place.id,'b');assert.equal(detail.story.id,'test');delete t.window.CulturalNode;
  // Future backend data must explicitly qualify coordinates; missing or C-level provenance never qualifies.
  const payload={story:{id:'test',title:'后端主题',chapters:[{placeId:'a',name:'一',dataStatus:'live',sources:[{source_url:'javascript:alert(1)',source_level:'C',title:'不可信链接'}]}]},places:[{id:'a',name:'测试坐标',coordinates:[105.8,32.2],coordinate_system:'WGS84',dataStatus:'live',updatedAt:'2026-09-17T10:00:00+08:00',sources:[{source_url:'https://example.org/source',source_level:'A'}]}]};
  await api.setData(payload);await api.open('test');assert.equal(t.get('#story-map-nodes').children.length,0);

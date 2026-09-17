@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
-  <link rel="stylesheet" href="styles.css?v=story-route-1">
+  <link rel="stylesheet" href="styles.css?v=cultural-node-1">
 </head>
 <body>
   <header class="topbar">
@@ -180,7 +180,7 @@
           <p class="story-art-note">建筑类型艺术示意 · 非实测复原</p>
           <h3 id="story-node-title" tabindex="-1"></h3><p id="story-node-location"></p>
           <div id="story-node-content"></div>
-          <div class="story-node-actions"><button type="button" class="module-button" id="chapter-enter">进入故事</button><button type="button" class="module-button" id="chapter-ask">问陈寿</button><button type="button" class="module-button" id="chapter-compare">正史-演义对照</button><button type="button" class="module-button" id="chapter-add">加入路线</button><button type="button" class="module-button" id="chapter-navigate" disabled>导航到这里</button></div>
+          <div class="story-node-actions"><button type="button" class="module-button" id="chapter-detail">文化节点详情</button><button type="button" class="module-button" id="chapter-enter">进入故事</button><button type="button" class="module-button" id="chapter-ask">问陈寿</button><button type="button" class="module-button" id="chapter-compare">正史-演义对照</button><button type="button" class="module-button" id="chapter-add">加入路线</button><button type="button" class="module-button" id="chapter-navigate" disabled>导航到这里</button></div>
           <p id="story-navigation-note" class="map-note">景区入口坐标与道路导航待接入，不能导航到驻地示意点。</p>
           <div class="module-actions"><button type="button" class="module-button" id="chapter-complete">标记已寻迹</button><button type="button" class="module-button" id="chapter-next">下一幕 →</button></div>
           <p id="story-node-feedback" class="map-note" role="status"></p>
@@ -199,6 +199,18 @@
         <div class="module-actions"><button type="button" class="module-button" data-agent-question="帮我规划南充、阆中和广元的三国文化旅游路线">让向导帮我规划这趟旅程 ↗</button></div>
       </section>
 
+      <section class="module-view cultural-node" id="node-view" data-view-panel="node" hidden>
+        <button type="button" class="module-button" id="node-back">返回上一视图</button>
+        <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">文化节点 · 在故事中读懂这里</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
+        <p class="story-art-note">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>
+        <div id="node-metadata"></div>
+        <div id="node-modes" class="story-controls" role="group" aria-label="节点讲解深度"></div><p id="node-mode-status" role="status"></p>
+        <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
+        <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
+        <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
+        <div class="module-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">正史-演义对照</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>导航到这里（待接入）</button></div>
+        <p class="map-note">景区入口、道路导航与实时旅游工具待接入。</p><p id="node-feedback" role="status"></p>
+      </section>
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
         <p class="welcome-kicker">从目的地开始</p><h2>探索川东北</h2>
         <p>选择目的地，查看景区资料或带入行程规划。</p>
@@ -305,14 +317,15 @@
     </section>
   </aside>
 
-  <script src="app.js?v=story-route-1"></script>
+  <script src="app.js?v=cultural-node-1"></script>
   <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
   <script src="travel-modules.js?v=story-route-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
   <script src="travel-map.js?v=story-route-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
-  <script src="stories.js?v=story-route-1"></script>
-  <script src="story-map.js?v=story-system-1"></script>
+  <script src="stories.js?v=cultural-node-1"></script>
+  <script src="story-map.js?v=cultural-node-1"></script>
+  <script src="cultural-node.js?v=cultural-node-1"></script>
 </body>
 </html>

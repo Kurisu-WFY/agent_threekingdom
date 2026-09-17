@@ -738,3 +738,23 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:#efede
 .route-replan { padding:16px; margin:16px 0; border:1px solid var(--line); border-radius:var(--radius); }
 .route-replan select { margin:8px; padding:8px; max-width:100%; background:var(--surface); color:var(--ink); border:1px solid var(--line); }
 #planner-story,#planner-status { overflow-wrap:anywhere; }
+
+/* Cultural evidence and reading: all colors reuse the paper/ink palette. */
+.node-heading { display:grid; grid-template-columns:minmax(170px,30%) 1fr; gap:24px; align-items:center; }
+.node-heading .story-building-visual svg { height:230px; }
+.building-miniature .building-ground { fill:var(--line); opacity:.7; }
+.building-miniature .building-depth { fill:var(--brass); stroke:var(--brass); opacity:.55; }
+.building-miniature .building-face { fill:var(--paper); stroke:var(--jade); stroke-width:2; }
+.node-reading { height:340px; overflow:auto; overscroll-behavior:contain; overflow-anchor:none; padding:18px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); }
+.node-reading:focus-visible { outline:2px solid var(--jade); }
+.node-comparison { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.node-evidence { padding:16px; border:1px solid var(--line); border-left:4px solid var(--jade); margin:10px 0; background:var(--surface); min-width:0; }
+.node-literature { border-left-color:var(--brass); background:var(--surface-2); }
+.node-inference { border-left:4px dashed var(--shu); padding:12px; background:var(--surface-2); }
+.node-evidence-label { color:var(--jade); font-weight:700; }.node-inference .node-evidence-label,.node-unverified { color:var(--shu); }
+.node-sources { padding:10px 0; overflow-wrap:anywhere; }.node-sources summary { cursor:pointer; min-height:30px; }.node-sources a { color:var(--jade); }
+.node-disputes { padding:16px; border:1px dashed var(--brass); margin:20px 0; }
+.node-tourism { border-top:3px solid var(--jade); padding:18px; background:var(--surface-2); margin:24px 0; }
+.node-travel-item { border-bottom:1px solid var(--line); padding:8px 0; }
+.cultural-node p { line-height:1.8; overflow-wrap:anywhere; }.node-question { color:var(--jade); }
+@media(max-width:760px) { .node-heading,.node-comparison { grid-template-columns:1fr; gap:12px; }.node-heading .story-building-visual svg { height:170px; }.node-reading { height:320px; padding:12px; }.node-tourism { padding:12px; } }

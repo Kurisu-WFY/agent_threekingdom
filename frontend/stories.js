@@ -151,13 +151,18 @@
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 160 165'); svg.setAttribute('aria-hidden', 'true');
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', silhouettes[kind] || silhouettes.book); svg.append(path);
+    path.setAttribute('d', silhouettes[kind] || silhouettes.book); path.setAttribute('class','building-face');
+    svg.setAttribute('class','building-miniature');svg.setAttribute('data-building',kind);
+    const base=document.createElementNS('http://www.w3.org/2000/svg','ellipse');base.setAttribute('cx','80');base.setAttribute('cy','151');base.setAttribute('rx','66');base.setAttribute('ry','10');base.setAttribute('class','building-ground');
+    const depth=document.createElementNS('http://www.w3.org/2000/svg','path');depth.setAttribute('d',silhouettes[kind] || silhouettes.book);depth.setAttribute('transform','translate(5 5)');depth.setAttribute('class','building-depth');
+    svg.append(base,depth,path);
     return svg;
   }
   window.SGTStoryUI = { icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));
+    article.append(action('读懂'+place.name,()=>window.CulturalNode.openPlace(place.id)));
     $('#story-buildings').append(article);
   });
   select(selected, false);

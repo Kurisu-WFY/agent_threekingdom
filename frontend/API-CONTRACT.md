@@ -156,3 +156,14 @@ HTTP 200，JSON：`{ "status": "ok|empty|unavailable", "message": "用户可读�
 trip-form已由关闭的createPlan预览调用改为SGTChat.request→现有/chat。约束与story章节选取/已完成状态作为message文本传入，非新增后端字段。只在intent.intent=route_planning且route.found=true、route.route为对象、stops有效非空时显示路线；其余显示可调整/重试反馈，保留旧方案。
 
 真实后端未严格遵守半天时间/已完成节点过滤，且story.placeId与spot_id缺统一映射；需后端完善结构化约束与逐节点取舍。前端不模糊匹配推断史实关联，不伪造可执行性。未知价格0显示待核验。所有/api/travel/*仍enabled=false。
+
+## 2026-09-18 文化节点详情资料适配
+
+新cultural-node.js通过CulturalNode.open({place, chapter, story, index, point, exact, note, back})接收StoryMap已解析上下文；首页openPlace(placeId)从模板准确关联。place.city缺失待核验。新增字段不是后端已有接口，也未触发任何旅游API。
+
+- chapter.story正文需chapter.narrative_type为record/inference/literature显式分类；chapter元数据支撑该正文。未分类旧story在新详情不显示为史实。
+- chapter.history / romance / differences / compilation / relationships：{text, data_status或dataStatus, updated_at或updatedAt, sources[]}。
+- chapter.disputes与inferences为上述record数组；两项及以上争议并列“存在不同说法”，inferences一律“合理推断·非史料原文”。differences须双方及自身均有合格依据才展示正文。
+- record合格条件：maintained/live、带时区合法日期、至少一条A/B且http/https来源；否则不呈现为可靠正文。source显示title/source_url/source_level/data_status；不安全链接为文本，C级明确不足以支撑史实。
+- place.travel.ticket/opening/weather分别为{amount或text, tool_source, data_status:'live', updated_at, sources[]}。缺工具名/元数据不显示为实时结果，票价<=0视为未知。历史资料与实时区独立，不共享更新时间。
+- 三深度对同组资料作阅读组织，不虚构模式正文；AI自由回答仍仅在原对话中显示，不自动导入为证据。提示明确要求史料/文学/合理推断分段，实际回复有赖后端。

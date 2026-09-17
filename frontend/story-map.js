@@ -154,6 +154,7 @@
     $('#map-place-picker').hidden = true;
     state().current = index; state().started = true; persist(); cardOpen = true; draw(); renderCard();
     $('#story-node-title').focus({preventScroll:true});
+    if(window.CulturalNode){openDetail();return;}
     if (!state().asked.has(index)) { state().asked.add(index); askCurrent(false); }
     revealCard();
   }
@@ -177,6 +178,7 @@
     showContentView('map'); window.TravelMap.beginStory(resolved.map(item=>item.point).filter(Boolean)); draw();
     $('#story-map-title').focus({preventScroll:true}); return true;
   }
+  function openDetail(){if(active&&resolved[state().current])window.CulturalNode?.open({...resolved[state().current],story:active,index:state().current,back:'map'});}
   function exit() {
     ++epoch; active = null; resolved = []; cardOpen = false; draw();
     $('#map-view').classList.remove('story-mode'); delete $('#map-view').dataset.storyId;
@@ -197,6 +199,7 @@
   $('#story-fit').addEventListener('click',()=>window.TravelMap.fitStory(resolved.map(item=>item.point).filter(Boolean)));
   $('#story-card-close').addEventListener('click',()=>{cardOpen=false;$('#story-node-card').hidden=true;const marker=markers.find(m=>m.index===state()?.current);if(marker)marker.group.focus();else $('#story-map-title').focus();});
   $('#story-node-card').addEventListener('keydown',event=>{if(event.key==='Escape'){event.stopPropagation();$('#story-card-close').click();}});
+  $('#chapter-detail').addEventListener('click',openDetail);
   $('#chapter-enter').addEventListener('click',()=>{if(active)window.SGTStoryUI.openStory(active.id,active);});
   $('#chapter-ask').addEventListener('click',()=>askCurrent(false));
   $('#chapter-compare').addEventListener('click',()=>askCurrent(true));
@@ -204,5 +207,5 @@
   $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全章已寻迹！进入故事查看收尾与下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
   $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(resolved.findIndex((_,i)=>i>state().current&&!state().skipped?.has(i)));});
   if(window.StoryProgress)window.StoryProgress.subscribe(story=>{if(active?.id===story.id&&resolved.length){draw();renderCard();}});
-  window.StoryMap = {getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
+  window.StoryMap = {describePlace:(place,chapter)=>locate(chapter,[place]),getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
 })();
