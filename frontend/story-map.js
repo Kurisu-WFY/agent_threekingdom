@@ -154,7 +154,7 @@
     $('#map-place-picker').hidden = true;
     state().current = index; state().started = true; persist(); cardOpen = true; draw(); renderCard();
     $('#story-node-title').focus({preventScroll:true});
-    if(window.CulturalNode){openDetail();return;}
+    if(window.CulturalNode){openDetail();window.ChenshouGuide?.enter(window.StoryMap.getContext());return;}
     if (!state().asked.has(index)) { state().asked.add(index); askCurrent(false); }
     revealCard();
   }

@@ -221,6 +221,13 @@
       const owner=activeChat;
       if (!await ready || activeChat!==owner) return false;
       const matches = counties.filter(p => p.name === name);
+      if (!matches.length) {
+        const city=places.find(p=>p.level==='city'&&p.name===name);
+        if(!city)return false;
+        $('#map-prefecture').value=name;populateCounties();
+        if(reveal)showContentView('map');
+        $('#map-route-status').textContent=name+' · 市州范围示意 / 景区待定位';return true;
+      }
       if (matches.length !== 1) return false;
       selected = matches[0]; $('#map-prefecture').value='';populateCounties();selected=matches[0];$('#map-county').value=selected.id;$('#map-add-stop').disabled=false;drawCounties(); fit(matches);
       if(reveal)showContentView('map'); $('#map-route-status').textContent = name + ' · 位置示意 / 景区待定位（县级驻地）'; return true;

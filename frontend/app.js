@@ -8,7 +8,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 const viewLabel = document.querySelector('#view-label');
 
 const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
-const WELCOME = '你好，我是川东北三国文化旅游助手。重点为你介绍南充、阆中、广元与剑阁的三国文化，规划游览顺序，并提供门票和住宿预算参考。';
+const WELCOME = '展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。';
 const INTENT_LABELS = {
   culture_qa: '文化问答',
   history_vs_romance: '正史 / 演义',
@@ -139,12 +139,8 @@ function bubbleNode(message) {
   const bubble = document.createElement('div');
   if (message.pending) {
     bubble.className = 'bubble typing';
-    bubble.setAttribute('aria-label', '正在整理回答，请稍候');
-    for (let i = 0; i < 3; i += 1) {
-      const dot = document.createElement('span');
-      dot.className = 'typing-dot';
-      bubble.append(dot);
-    }
+    bubble.setAttribute('aria-label', '陈寿正在查阅史料，请稍候');
+    bubble.textContent = /路线|半天|规划/.test(message.question || '') ? '陈寿正在展开行旅图，核对章节与时间…' : '陈寿正在查阅史料，核对出处…';
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
@@ -159,14 +155,15 @@ function messageNode(message) {
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
   if (message.persona && message.role !== 'user' && window.CharacterChat) avatar.append(window.CharacterChat.portrait(message.persona));
-  else avatar.textContent = message.role === 'user' ? '你' : '蜀';
+  else if (message.role !== 'user' && window.ChenshouGuide) avatar.append(window.ChenshouGuide.portrait());
+  else avatar.textContent = message.role === 'user' ? '你' : '寿';
   const body = document.createElement('div');
   body.className = 'body';
   body.append(bubbleNode(message));
   if (message.error) {
     const retry = document.createElement('button');
     retry.className = 'retry';
-    retry.textContent = '重新请求';
+    retry.textContent = '重新请求 · 请陈寿再查一次';
     retry.disabled = !!chats[active].pending;
     retry.onclick = () => requestReply(chats[active], message);
     body.append(retry);
@@ -208,6 +205,7 @@ function render() {
   document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
   window.CharacterChat?.sync(chats[active]);
+  window.ChenshouGuide?.refresh();
   window.ExplorationJournal?.sync(chats);
   window.TravelMap?.syncChat(chats[active]);
 }
@@ -350,7 +348,7 @@ function send(text) {
   if (chat.messages.length === 1) chat.title = trimmed.slice(0, 10);
   const prepared = window.CharacterChat?.prepare(chat, trimmed);
   chat.messages.push({ role: 'user', text: trimmed, persona: prepared?.persona });
-  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
+  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
   chat.messages.push(reply);
   if (!prepared?.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
@@ -380,8 +378,8 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.error = true;
       reply.text = error.name === 'TimeoutError'
-        ? '等待回答超时，请稍后重试。'
-        : '暂时无法获取回答，请检查连接后重试。';
+        ? '此番查阅等候太久，尚未取得可靠回答。请让我再查一次。'
+        : '书卷暂未送达，尚未取得有效回答。请检查连接，再让我查一次。';
     })
     .finally(() => {
       chat.pending = false;
@@ -470,6 +468,7 @@ function showContentView(view) {
       contentEntrance = target.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });
     }
     if (!panel.hidden) updateChatLayout();
+    window.ChenshouGuide?.refresh();
 }
 document.querySelectorAll('[data-content-view]').forEach(button => {
   button.addEventListener('click', () => showContentView(button.dataset.contentView));
