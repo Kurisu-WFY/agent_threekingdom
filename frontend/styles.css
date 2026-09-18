@@ -758,3 +758,26 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:#efede
 .node-travel-item { border-bottom:1px solid var(--line); padding:8px 0; }
 .cultural-node p { line-height:1.8; overflow-wrap:anywhere; }.node-question { color:var(--jade); }
 @media(max-width:760px) { .node-heading,.node-comparison { grid-template-columns:1fr; gap:12px; }.node-heading .story-building-visual svg { height:170px; }.node-reading { height:320px; padding:12px; }.node-tourism { padding:12px; } }
+
+/* Quiet portraits and visible evidence boundaries in the existing conversation. */
+.character-panel { padding:8px 16px; border-bottom:1px solid var(--line); font-size:12px; max-height:180px; overflow:auto; flex-shrink:0; }
+.character-panel select { margin-left:8px; padding:5px 12px; font:inherit; background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:6px; }
+.character-panel summary { cursor:pointer; margin-top:6px; }
+.character-panel p { margin:6px 0; }
+.character-portrait { width:56px; height:64px; flex-shrink:0; filter:drop-shadow(0 3px 2px #30281c22); }
+.portrait-layer { stroke:var(--ink); stroke-width:1.6; stroke-linejoin:round; fill:var(--paper); }
+.portrait-layer.layer-0 { fill:#9ba795; }.portrait-layer.layer-1 { fill:#e6cbb0; }.portrait-layer.layer-2 { fill:#bbb39c; }
+.avatar .character-portrait { width:30px; height:34px; }
+.character-evidence { border-left:3px solid #81967e; padding:8px 10px; margin:10px 0; background:#f7f6ee; }
+.character-evidence h4 { margin:0 0 6px; font-size:12px; }.character-evidence p { margin:0; white-space:pre-wrap; }
+.character-evidence.inference { border:1px dashed #987050; }.character-evidence.romance { border-left-color:#ad8394; background:#f7f0f3; }
+.character-evidence.unverified { border-left-color:#a49c8e; }
+.character-raw { padding:8px 0; border-top:1px solid var(--line); }.character-raw p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.character-sources { font-size:12px; overflow-wrap:anywhere; }.character-answer button { margin:4px; white-space:normal; text-align:left; }
+@media(max-width:760px) { .character-panel { max-height:145px; }.character-answer { min-width:0; overflow-wrap:anywhere; } }
+
+.character-comparison { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
+.character-comparison > * { grid-column:1 / -1; }
+.character-comparison > .unverified,.character-comparison > .history { grid-column:1; }
+.character-comparison > .romance { grid-column:2; grid-row:2; }
+@media(max-width:760px) { .character-comparison { display:block; } }

@@ -207,5 +207,5 @@
   $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全章已寻迹！进入故事查看收尾与下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
   $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(resolved.findIndex((_,i)=>i>state().current&&!state().skipped?.has(i)));});
   if(window.StoryProgress)window.StoryProgress.subscribe(story=>{if(active?.id===story.id&&resolved.length){draw();renderCard();}});
-  window.StoryMap = {describePlace:(place,chapter)=>locate(chapter,[place]),getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
+  window.StoryMap = {getContext:()=>active?{story:active,chapter:resolved[state().current]?.chapter,place:resolved[state().current]?.place,index:state().current}:null,describePlace:(place,chapter)=>locate(chapter,[place]),getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};
 })();

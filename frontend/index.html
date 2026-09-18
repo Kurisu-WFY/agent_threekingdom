@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
-  <link rel="stylesheet" href="styles.css?v=cultural-node-1">
+  <link rel="stylesheet" href="styles.css?v=character-1">
 </head>
 <body>
   <header class="topbar">
@@ -303,6 +303,12 @@
         </div>
         <button id="close-chat" class="close" aria-label="关闭对话">×</button>
       </header>
+      <section id="character-panel" class="character-panel" aria-label="人物视角">
+        <label for="character-select">当前人物视角</label>
+        <select id="character-select"><option>陈寿</option><option>诸葛亮</option><option>张飞</option></select>
+        <details><summary>人物依据与相关故事</summary><div id="character-card"></div></details>
+        <p id="character-notice" role="status">AI 人物解读 · 非人物原话 · 对话仅本页保留</p>
+      </section>
       <div id="messages" class="messages" role="log" aria-live="polite"></div>
       <div class="delete-notice" id="delete-notice" role="status" hidden>已删除对话 <button type="button" id="undo-delete">撤销</button></div>
       <form id="chat-form" class="composer">
@@ -317,15 +323,16 @@
     </section>
   </aside>
 
-  <script src="app.js?v=cultural-node-1"></script>
+  <script src="app.js?v=character-1"></script>
   <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
   <script src="travel-modules.js?v=story-route-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
-  <script src="travel-map.js?v=story-route-1"></script>
+  <script src="travel-map.js?v=character-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
-  <script src="stories.js?v=cultural-node-1"></script>
-  <script src="story-map.js?v=cultural-node-1"></script>
-  <script src="cultural-node.js?v=cultural-node-1"></script>
+  <script src="stories.js?v=character-1"></script>
+  <script src="story-map.js?v=character-1"></script>
+  <script src="cultural-node.js?v=character-1"></script>
+  <script src="character-chat.js?v=character-1"></script>
 </body>
 </html>

@@ -211,6 +211,19 @@
   window.TravelMap = {
     ready,
     getPlaces() { return places; },
+    focusStoryPoint(point) {
+      if(!loaded || !point) return false;
+      selected=counties.find(p=>p.id===point.id)||null;drawCounties();fit([point]);showContentView('map');
+      $('#map-route-status').textContent=point.name+' · 位置示意 / 入口待核验';return true;
+    },
+    async focusMention(name) {
+      const owner=activeChat;
+      if (!await ready || activeChat!==owner) return false;
+      const matches = counties.filter(p => p.name === name);
+      if (matches.length !== 1) return false;
+      selected = matches[0]; $('#map-prefecture').value='';populateCounties();selected=matches[0];$('#map-county').value=selected.id;$('#map-add-stop').disabled=false;drawCounties(); fit(matches);
+      showContentView('map'); $('#map-route-status').textContent = name + ' · 位置示意 / 景区待定位（县级驻地）'; return true;
+    },
     async showPlan(result) {
       const chat=activeChat;
       if(!await ready || !chat || activeChat!==chat)return false;

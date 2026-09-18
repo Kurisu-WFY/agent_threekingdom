@@ -107,11 +107,12 @@
   $('#node-enter-story').addEventListener('click',()=>{if(context?.story)window.SGTStoryUI.openStory(context.story.id,context.story);});
   $('#node-ask').addEventListener('click',()=>{
     if(!context)return;
+    window.CharacterChat?.selectPersona('陈寿');
     window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。');
     $('#node-feedback').textContent='已交给陈寿；回答或草稿在现有对话中，资料仍需核验。';
   });
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
   $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
   $('#node-reading').addEventListener('scroll',()=>{if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});});
-  window.CulturalNode={open,openPlace,changeMode};
+  window.CulturalNode={getContext:()=>!$('#node-view').hidden?context:null,compare:()=>$('#node-compare').click(),open,openPlace,changeMode};
 })();

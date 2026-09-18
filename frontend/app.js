@@ -147,7 +147,8 @@ function bubbleNode(message) {
     }
   } else {
     bubble.className = 'bubble';
-    bubble.textContent = message.text;
+    if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
+    else bubble.textContent = message.text;
   }
   return bubble;
 }
@@ -157,7 +158,8 @@ function messageNode(message) {
   row.className = 'message ' + (message.role === 'user' ? 'user' : 'assistant');
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.textContent = message.role === 'user' ? '你' : '蜀';
+  if (message.persona && message.role !== 'user' && window.CharacterChat) avatar.append(window.CharacterChat.portrait(message.persona));
+  else avatar.textContent = message.role === 'user' ? '你' : '蜀';
   const body = document.createElement('div');
   body.className = 'body';
   body.append(bubbleNode(message));
@@ -205,6 +207,7 @@ function render() {
   messages.scrollTop = messages.scrollHeight;
   document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
+  window.CharacterChat?.sync(chats[active]);
   window.TravelMap?.syncChat(chats[active]);
 }
 
@@ -324,7 +327,7 @@ window.SGTChat = { async request(text) {
   const message = typeof text === 'string' ? text.trim() : '';
   if (!message) throw new Error('请先填写出行需求。');
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:item.text}));
+    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text}));
   const data = await ask(message, history);
   if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
   return data;
@@ -332,18 +335,23 @@ window.SGTChat = { async request(text) {
 
 function send(text) {
   const trimmed = (text || '').trim();
-  if (!trimmed || chats[active].pending) return;
+  if (!trimmed) return;
+  if (chats[active].pending) {
+    if (trimmed !== input.value.trim()) input.value = input.value.trim() ? input.value + '\n\n' + trimmed : trimmed;
+    saveDraft(); updateComposer(); return;
+  }
 
   const chat = chats[active];
   const history = chat.messages
     .filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: item.text }));
+    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text }));
 
   if (chat.messages.length === 1) chat.title = trimmed.slice(0, 10);
-  chat.messages.push({ role: 'user', text: trimmed });
-  const reply = { role: 'assistant', text: '', question: trimmed, history };
+  const prepared = window.CharacterChat?.prepare(chat, trimmed);
+  chat.messages.push({ role: 'user', text: trimmed, persona: prepared?.persona });
+  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
   chat.messages.push(reply);
-  window.TravelMap?.fromMessage(chat, trimmed);
+  if (!prepared?.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
   input.value = '';
   chat.draft = '';
@@ -365,7 +373,7 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.text = data.answer;
       reply.data = data;
-      window.TravelMap?.fromResponse(chat, reply.question, data);
+      if (!reply.preserveMap && (!reply.persona || data?.intent?.intent === 'route_planning')) window.TravelMap?.fromResponse(chat, reply.originalQuestion || reply.question, data);
     })
     .catch(error => {
       reply.pending = false;

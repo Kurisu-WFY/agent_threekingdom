@@ -167,3 +167,12 @@ trip-form已由关闭的createPlan预览调用改为SGTChat.request→现有/cha
 - record合格条件：maintained/live、带时区合法日期、至少一条A/B且http/https来源；否则不呈现为可靠正文。source显示title/source_url/source_level/data_status；不安全链接为文本，C级明确不足以支撑史实。
 - place.travel.ticket/opening/weather分别为{amount或text, tool_source, data_status:'live', updated_at, sources[]}。缺工具名/元数据不显示为实时结果，票价<=0视为未知。历史资料与实时区独立，不共享更新时间。
 - 三深度对同组资料作阅读组织，不虚构模式正文；AI自由回答仍仅在原对话中显示，不自动导入为证据。提示明确要求史料/文学/合理推断分段，实际回复有赖后端。
+
+
+## 人物视角前端适配（2026-09-18，非新增接口）
+
+仍POST /chat，message原用户问题，mode仍为既有大众受众模式；history中附用户角色的当前人物/风格/故事/章节/地点说明，历史消息前缀【人物视角：姓名】。附加规则不拼进message，避免触发后端关键词路由。
+
+可选响应字段 `evidence_segments: [{type: "history|inference|romance", text, data_status, updated_at, sources: [{title,source_url,source_level,data_status}]}]` 仅为前端兼容适配提案；实际后端未提供，不请求其他接口。史料段须maintained/live、有效时区时间及至少一个maintained/live且A/B级的http(s)出处。C级不支撑史实。带演义字样的史料候选不得直接标可靠史实。缺元数据只显示缺项，不用原answer猜出处。
+
+纯文本仅提取明确【合理推断】与【演义】段落作为未核验解读，不能提取“史料记载”冒充可靠证据。完整answer在未逐项核验展开区；来源未知保持待核验。此规则不保证后端遵循角色语气，不代表人物对话专用服务。

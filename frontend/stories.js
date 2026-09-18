@@ -158,7 +158,7 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = { icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
+  window.SGTStoryUI = { getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));
