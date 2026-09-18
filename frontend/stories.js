@@ -127,7 +127,7 @@
     card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '主题模板 · 内容待接入 / 史料待核验　↗'));
     if(story.summary)card.append(node('span','story-summary',story.summary));
     card.addEventListener('click', () => select(story, true));
-    const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id;
+    const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id; shell.dataset.phase = story.phase || "";
     shell.dataset.phase = story.phase;
     const badge = node('span', 'story-progress-seal', progress.status(story));
     card.append(badge);

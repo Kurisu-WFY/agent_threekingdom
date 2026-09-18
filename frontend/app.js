@@ -60,6 +60,7 @@ function tag(text, variant) {
   const span = document.createElement('span');
   span.className = 'tag' + (variant ? ' ' + variant : '');
   span.textContent = text;
+  if (/待核验|待接入|未找到可靠记载|暂无数据/.test(text)) span.setAttribute('data-trust-state','unverified');
   return span;
 }
 

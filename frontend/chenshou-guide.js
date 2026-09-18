@@ -8,20 +8,20 @@
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('viewBox','0 0 120 128');svg.setAttribute('class','historian-svg');svg.setAttribute('role','img');svg.setAttribute('aria-label','陈寿史官插画，持书卷与印章，非历史肖像');
     const shape=(tag,attrs,parent=svg)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));parent.append(n);return n;};
-    shape('ellipse',{cx:61,cy:119,rx:43,ry:6,fill:'#392f2820'});
+    shape('ellipse',{cx:61,cy:119,rx:43,ry:6,fill:'color-mix(in srgb,var(--ink) 12%,transparent)'});
     const body=shape('g',{class:'historian-body'});
-    shape('path',{d:'M19 115Q15 66 59 63Q103 68 104 115Z',fill:'#547069',stroke:'#344e49','stroke-width':2},body);
-    shape('path',{d:'M43 66L60 99L77 66L67 115H51Z',fill:'#e5d1a4'},body);
-    shape('ellipse',{cx:60,cy:44,rx:27,ry:30,fill:'#efd0a5',stroke:'#94744f','stroke-width':1.5},body);
-    shape('path',{d:'M32 34L36 13Q60 4 84 13L88 34Q61 23 32 34ZM44 12V6H76V12',fill:'#343e3b'},body);
-    shape('path',{d:'M44 44Q49 41 53 44M68 44Q73 41 77 44',fill:'none',stroke:'#473c30','stroke-width':2,class:'historian-eyes'},body);
-    shape('path',{d:'M51 58Q61 65 70 57M46 65Q60 88 75 65',fill:'none',stroke:'#675749','stroke-width':3,'stroke-linecap':'round'},body);
-    shape('path',{d:'M25 79Q25 91 39 94M94 77L101 59',fill:'none',stroke:'#efd0a5','stroke-width':10,'stroke-linecap':'round',class:'historian-hand'},body);
+    shape('path',{d:'M19 115Q15 66 59 63Q103 68 104 115Z',fill:'var(--jade)',stroke:'var(--jade-deep)','stroke-width':2},body);
+    shape('path',{d:'M43 66L60 99L77 66L67 115H51Z',fill:'var(--brass-soft)'},body);
+    shape('ellipse',{cx:60,cy:44,rx:27,ry:30,fill:'var(--portrait-skin)',stroke:'var(--brass-ink)','stroke-width':1.5},body);
+    shape('path',{d:'M32 34L36 13Q60 4 84 13L88 34Q61 23 32 34ZM44 12V6H76V12',fill:'var(--ink)'},body);
+    shape('path',{d:'M44 44Q49 41 53 44M68 44Q73 41 77 44',fill:'none',stroke:'var(--ink)','stroke-width':2,class:'historian-eyes'},body);
+    shape('path',{d:'M51 58Q61 65 70 57M46 65Q60 88 75 65',fill:'none',stroke:'var(--ink-soft)','stroke-width':3,'stroke-linecap':'round'},body);
+    shape('path',{d:'M25 79Q25 91 39 94M94 77L101 59',fill:'none',stroke:'var(--portrait-skin)','stroke-width':10,'stroke-linecap':'round',class:'historian-hand'},body);
     const book=shape('g',{class:'historian-book'},body);
-    shape('path',{d:'M29 86L59 90L90 82V110L59 118L29 114Z',fill:'#d1b278',stroke:'#786442','stroke-width':2},book);
-    shape('path',{d:'M59 91V116M35 91V109M42 92V110M49 94V112M67 93V109M75 90V107M83 88V105',fill:'none',stroke:'#8c7047','stroke-width':1.5},book);
-    const map=shape('g',{class:'historian-map'},body);shape('path',{d:'M28 86L50 91L72 83L93 88V114L72 109L50 117L28 112Z',fill:'#ece6cf',stroke:'#547069','stroke-width':2},map);shape('path',{d:'M37 102L47 96L61 106L79 96L87 99',fill:'none',stroke:'#963a2e','stroke-width':2,'stroke-dasharray':'3 2'},map);
-    const stamp=shape('g',{class:'historian-stamp'});shape('rect',{x:84,y:92,width:31,height:28,rx:3,fill:'#963a2e'},stamp);const label=shape('text',{x:99,y:109,'text-anchor':'middle',fill:'#fff5dc','font-size':9},stamp);label.textContent='已寻迹';
+    shape('path',{d:'M29 86L59 90L90 82V110L59 118L29 114Z',fill:'var(--brass-soft)',stroke:'var(--brass-ink)','stroke-width':2},book);
+    shape('path',{d:'M59 91V116M35 91V109M42 92V110M49 94V112M67 93V109M75 90V107M83 88V105',fill:'none',stroke:'var(--brass-ink)','stroke-width':1.5},book);
+    const map=shape('g',{class:'historian-map'},body);shape('path',{d:'M28 86L50 91L72 83L93 88V114L72 109L50 117L28 112Z',fill:'var(--paper)',stroke:'var(--jade)','stroke-width':2},map);shape('path',{d:'M37 102L47 96L61 106L79 96L87 99',fill:'none',stroke:'var(--shu)','stroke-width':2,'stroke-dasharray':'3 2'},map);
+    const stamp=shape('g',{class:'historian-stamp'});shape('rect',{x:84,y:92,width:31,height:28,rx:3,fill:'var(--shu)'},stamp);const label=shape('text',{x:99,y:109,'text-anchor':'middle',fill:'var(--surface)','font-size':9},stamp);label.textContent='已寻迹';
     return svg;
   }
   function context(){const c=window.CharacterChat?.context?.()||{};if(c.story||c.place)remembered=c;return c.story||c.place?c:remembered;}
