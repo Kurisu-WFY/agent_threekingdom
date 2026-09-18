@@ -176,3 +176,10 @@ trip-form已由关闭的createPlan预览调用改为SGTChat.request→现有/cha
 可选响应字段 `evidence_segments: [{type: "history|inference|romance", text, data_status, updated_at, sources: [{title,source_url,source_level,data_status}]}]` 仅为前端兼容适配提案；实际后端未提供，不请求其他接口。史料段须maintained/live、有效时区时间及至少一个maintained/live且A/B级的http(s)出处。C级不支撑史实。带演义字样的史料候选不得直接标可靠史实。缺元数据只显示缺项，不用原answer猜出处。
 
 纯文本仅提取明确【合理推断】与【演义】段落作为未核验解读，不能提取“史料记载”冒充可靠证据。完整answer在未逐项核验展开区；来源未知保持待核验。此规则不保证后端遵循角色语气，不代表人物对话专用服务。
+
+
+## 探索志本地数据（2026-09-18）
+
+没有探索记录HTTP接口，不新增网络请求。`sgt.story-progress.v1`沿用StoryProgress；`sgt.journal.questions.v1`是最多200条`{id,text,persona,comparison,recordedAt}`本地问题。recordedAt是前端记入时间，不是推测的历史提问时间。保留用户提问，不归档AI答复或把其当史料。删除当前页会话会移除其问题，撤销恢复；旧页面未归档的历史无法追溯。刷新不恢复聊天，只恢复探索志问题。
+
+来源字段缺失不补造解锁人物/事件；地理底图由TravelMap.getGeometry只读复用，位置由StoryMap.describePlace按原可靠坐标/县级示意规则返回。探索志查看本身不改故事进度或地图状态，显式点击地图入口才定位。

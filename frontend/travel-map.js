@@ -211,6 +211,7 @@
   window.TravelMap = {
     ready,
     getPlaces() { return places; },
+    getGeometry() { return geometry; },
     focusStoryPoint(point) {
       if(!loaded || !point) return false;
       selected=counties.find(p=>p.id===point.id)||null;drawCounties();fit([point]);showContentView('map');

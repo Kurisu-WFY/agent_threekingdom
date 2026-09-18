@@ -14,7 +14,7 @@
     const paths=['M10 84Q10 56 40 55Q70 56 70 84Z','M26 27Q25 13 40 13Q56 13 54 29L52 46Q40 60 28 46Z',name==='陈寿'?'M25 22V10H55V22ZM19 62H40V83H19ZM23 66H36M23 72H36':name==='诸葛亮'?'M23 24L28 8L42 13L55 8L58 24ZM54 79L65 48M65 48Q40 43 50 29Q59 26 63 41Q65 18 73 30Q81 45 65 48':'M23 24Q40 2 57 24L54 29H26ZM27 44L30 58L40 65L50 58L53 44M18 64L40 78L62 64'];
     paths.forEach((d,i)=>{const path=document.createElementNS(svg.namespaceURI||'http://www.w3.org/2000/svg','path');path.setAttribute('d',d);path.setAttribute('class','portrait-layer layer-'+i);svg.append(path);});return svg;
   }
-  function sync(chat){$('#character-notice').textContent='AI 人物解读 · 非人物原话 · 对话仅本页保留';const name=profiles[chat.persona]?chat.persona:'陈寿';$('#character-select').value=name;const box=$('#character-card');box.replaceChildren(portrait(name),node('strong','',name+' · '+profiles[name].style),node('p','',profiles[name].basis));const story=window.SGT_STORIES?.find(s=>s.id===profiles[name].story);if(story)box.append(button('相关主题：'+story.title,()=>window.SGTStoryUI.openStory(story.id)));}
+  function sync(chat){$('#character-notice').textContent='AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志';const name=profiles[chat.persona]?chat.persona:'陈寿';$('#character-select').value=name;const box=$('#character-card');box.replaceChildren(portrait(name),node('strong','',name+' · '+profiles[name].style),node('p','',profiles[name].basis));const story=window.SGT_STORIES?.find(s=>s.id===profiles[name].story);if(story)box.append(button('相关主题：'+story.title,()=>window.SGTStoryUI.openStory(story.id)));}
   function context(){return window.CulturalNode?.getContext()||window.StoryMap?.getContext()||window.SGTStoryUI?.getContext()||{};}
   function prepare(chat,text){
     const userQuestion=text.split('\n')[0];

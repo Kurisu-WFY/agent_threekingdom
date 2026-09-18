@@ -1,0 +1,26 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+class Element{constructor(tag='div'){this.tag=tag;this.children=[];this.attrs={};this.handlers={};this.textContent='';this.style={};}append(...n){this.children.push(...n);}replaceChildren(...n){this.children=n;}setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,f){this.handlers[k]=f;}focus(){this.focused=true;}}
+const flatten=n=>[n,...n.children.flatMap(flatten)],text=n=>flatten(n).map(x=>x.textContent).join(' ');
+function setup({saved={},blocked=false,broken=false}={}){
+ const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);},views=[],map=[];
+ const store={...saved};if(broken)store['sgt.journal.questions.v1']='{broken';
+ const story={id:'shudao-xunzong',title:'蜀道寻踪',chapters:[{name:'剑门',placeId:'pass',people:['诸葛亮'],events:['示例事件']},{name:'古道',placeId:'road',people:[],events:[]}]};
+ const chats=[{messages:[{role:'assistant',text:'欢迎'}]}];const window={localStorage:{getItem:k=>{if(blocked)throw Error('blocked');return store[k]||null;},setItem:(k,v)=>{if(blocked)throw Error('blocked');store[k]=v;}},SGT_STORIES:[story,{id:'zhangfei',title:'镇守阆中·寻迹张飞',chapters:[]}],SGT_PLACES:[{id:'pass',name:'剑门关',building:'pass'},{id:'road',name:'古道',building:'road'}],SGTStoryUI:{icon:()=>new Element('svg'),openStory:id=>views.push(id)},StoryMap:{describePlace:p=>({point:p.id==='pass'?{name:'剑阁县',center:[105,32]}:null,exact:false})},TravelMap:{focusStoryPoint:p=>map.push(p)},MapRouteCore:{project:c=>c},CulturalNode:{openPlace:id=>views.push(id)}};
+ const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},chats,showContentView:v=>views.push(v)};
+ vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);vm.runInNewContext(fs.readFileSync(__dirname+'/journal.js','utf8'),ctx);
+ return {get,window,story,chats,store,views,map};
+}
+const t=setup(),journal=t.window.ExplorationJournal,progress=t.window.StoryProgress;
+assert.ok(text(t.get('#journal-empty')).includes('你还没有开始第一段旅程'));assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('没有足够的兴趣记录'));
+t.get('#journal-empty').children.at(-1).handlers.click();assert.deepEqual(t.views,['story']);
+const s=progress.get(t.story);s.started=true;s.current=1;s.completed.add(0);progress.save(t.story);
+assert.equal(journal.model().explored.length,1);assert.equal(journal.model().people[0],'诸葛亮');assert.equal(journal.model().events[0],'示例事件');assert.ok(text(t.get('#journal-book')).includes('第 2 / 2 幕'));assert.ok(text(t.get('#journal-book')).includes('驻地示意'));assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);
+s.completed.add(1);progress.save(t.story);assert.equal(journal.model().completed.length,1);assert.equal(journal.model().explored.length,2);assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);s.completed.delete(0);progress.save(t.story);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,0);
+const q={role:'user',text:'历史上的张飞与演义有什么不同？',persona:'陈寿'};t.chats[0].messages.push(q);journal.sync(t.chats);journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,1);assert.equal(journal.model().next.story.id,'zhangfei');assert.ok(journal.model().reason.includes('张飞'));assert.equal(journal.model().people.length,0);
+t.get('#journal-next').handlers.click();assert.ok(text(t.get('#journal-book')).includes(q.text));assert.ok(text(t.get('#journal-book')).includes('正史 × 演义探索'));assert.equal(t.get('#journal-page-number').textContent,'第 2 / 3 页');
+journal.sync([]);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,0);journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,1);
+const reload=setup({saved:t.store});reload.get('#journal-next').handlers.click();assert.ok(text(reload.get('#journal-book')).includes(q.text));assert.equal(reload.window.ExplorationJournal.model().explored.length,1);
+for(let i=0;i<210;i++)t.chats[0].messages.push({role:'user',text:'问题 '+i});journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,200);
+const failure=setup({blocked:true});failure.chats[0].messages.push({role:'user',text:'存储失败仍可看'});failure.window.ExplorationJournal.sync(failure.chats);failure.get('#journal-next').handlers.click();assert.ok(text(failure.get('#journal-book')).includes('存储失败仍可看'));assert.ok(failure.get('#journal-local-notice').textContent.includes('仅本页保留'));
+const corrupt=setup({broken:true});assert.ok(corrupt.get('#journal-local-notice').textContent.includes('读取失败'));assert.equal(corrupt.window.ExplorationJournal.model().completed.length,0);
+console.log('PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage');

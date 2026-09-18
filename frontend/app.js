@@ -208,6 +208,7 @@ function render() {
   document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
   window.CharacterChat?.sync(chats[active]);
+  window.ExplorationJournal?.sync(chats);
   window.TravelMap?.syncChat(chats[active]);
 }
 
@@ -456,7 +457,7 @@ function showContentView(view) {
     const restoreFocus = leaving?.contains(document.activeElement);
     sections.forEach(section => { section.hidden = section !== target; });
     currentContentView = view;
-    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', destinations: '目的地', planner: '规划行程', plan: '出行方案', budget: '预算明细', travel: '天气与交通' };
+    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地', planner: '规划行程', plan: '出行方案', budget: '预算明细', travel: '天气与交通' };
     const label = document.querySelector('#view-label');
     if (label) label.textContent = labels[view] || '主界面';
     document.querySelectorAll('[data-content-view]').forEach(option => {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
-  <link rel="stylesheet" href="styles.css?v=character-1">
+  <link rel="stylesheet" href="styles.css?v=journal-1">
 </head>
 <body>
   <header class="topbar">
@@ -21,9 +21,18 @@
           <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">与蜀汉对话</button>
           <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
           <button type="button" data-content-view="story" aria-pressed="false" aria-controls="story-view">故事线</button>
+          <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
         </nav>
       </div>
 
+      <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
+        <header class="journal-heading"><p class="welcome-kicker">山河有迹 · 我的文化旅行史</p><h1 tabindex="-1">我的三国探索志</h1><p id="journal-local-notice" role="status"></p><p>记录保存在此浏览器，换设备不会同步；不是账号档案，也不代表实际到访。</p></header>
+        <div id="journal-empty"></div>
+        <nav id="journal-pages" class="journal-pages" aria-label="探索志书页"></nav>
+        <article id="journal-book" class="journal-book" aria-label="探索志正文"></article>
+        <footer class="journal-pagination"><button type="button" id="journal-prev" class="module-button">← 前一页</button><span id="journal-page-number" aria-live="polite"></span><button type="button" id="journal-next" class="module-button">后一页 →</button></footer>
+        <section id="journal-recommendation" class="journal-recommendation" aria-label="下一条故事线推荐"></section>
+      </div>
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
         <div class="agent-hero">
           <div class="hero-copy">
@@ -101,7 +110,7 @@
                 <li><span class="stage-number">03</span><div><strong>边走边讲人物</strong><p>联系史实、演义与眼前山河。</p></div></li>
                 <li><span class="stage-number">04</span><div><strong>一路追问调整</strong><p>继续提问，让行程更合心意。</p></div></li>
               </ol>
-              <p class="companion-note">本页对话可回看；刷新后不保留。讲解偏好会随问题发送，实际回答以当前服务为准。</p>
+              <p class="companion-note">本页对话可回看；问题记录另存于此浏览器的探索志，换设备不随行。讲解偏好会随问题发送，实际回答以当前服务为准。</p>
             </aside>
           </div>
         </section>
@@ -323,16 +332,17 @@
     </section>
   </aside>
 
-  <script src="app.js?v=character-1"></script>
+  <script src="app.js?v=journal-1"></script>
   <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
   <script src="travel-modules.js?v=story-route-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
-  <script src="travel-map.js?v=character-1"></script>
+  <script src="travel-map.js?v=journal-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
   <script src="stories.js?v=character-1"></script>
   <script src="story-map.js?v=character-1"></script>
   <script src="cultural-node.js?v=character-1"></script>
-  <script src="character-chat.js?v=character-1"></script>
+  <script src="character-chat.js?v=journal-1"></script>
+  <script src="journal.js?v=journal-1"></script>
 </body>
 </html>
