@@ -12,7 +12,7 @@
   function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n;}
   function safeUrl(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}
   function dated(r){return typeof updated(r)==='string'&&/(Z|[+-]\d{2}:\d{2})$/.test(updated(r))&&Number.isFinite(Date.parse(updated(r)));}
-  function evidence(r){return ['maintained','live'].includes(status(r))&&dated(r)&&sources(r).some(s=>['A','B'].includes(s.source_level)&&safeUrl(s.source_url));}
+  function evidence(r){return ['maintained','live'].includes(status(r))&&dated(r)&&sources(r).some(s=>['A','B'].includes(s.source_level)&&['maintained','live'].includes(status(s))&&safeUrl(s.source_url));}
   function provenance(r,label='史料来源'){
     const d=node('details','node-sources');d.append(node('summary','',label+' · '+sources(r).length+' 条'));
     d.append(node('p','','资料状态：'+text(status(r))+' · 更新时间：'+(dated(r)?updated(r):'待核验')+(evidence(r)?'':' · 待核验')));
@@ -56,7 +56,7 @@
     $('#node-reading-content').style.minHeight=$('#node-reading-content').scrollHeight+'px';
     mode=next;renderReading();reader.scrollTop=top;
     if(context.story){const s=window.StoryProgress.get(context.story);s.mode=mode;window.StoryProgress.save(context.story);}
-    readings.set(readingKey,{top,mode,height:$('#node-reading-content').scrollHeight});window.scrollTo?.({top:pageTop,behavior:'instant'});
+    readings.set(readingKey,{top,mode,height:$('#node-reading-content').scrollHeight});window.scrollTo?.({top:pageTop,behavior:'instant'});window.CharacterChat?.refresh();
   }
   function comparison(){
     const chapter=context.chapter || {}, grid=$('#node-comparison');
@@ -93,7 +93,7 @@
     $('#node-enter-story').disabled=!story;$('#node-add-route').disabled=!context.point;
     $('#node-add-route').textContent=context.point?(context.exact?'加入路线':'加入路线（驻地示意）'):'加入路线（待定位）';
     $('#node-feedback').textContent='史料不足时保留问题；AI讲解不作为已核验史实。';
-    showContentView('node');$('#node-reading').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
+    showContentView('node');window.CharacterChat?.refresh();$('#node-reading').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
   }
   function openPlace(id){
     const place=window.SGT_PLACES.find(p=>p.id===id);if(!place)return false;
@@ -114,5 +114,6 @@
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
   $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
   $('#node-reading').addEventListener('scroll',()=>{if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});});
-  window.CulturalNode={getContext:()=>!$('#node-view').hidden?context:null,compare:()=>$('#node-compare').click(),open,openPlace,changeMode};
+  window.StoryProgress?.subscribe?.(story=>{if(context?.story?.id===story.id)changeMode(window.StoryProgress.get(story).mode);});
+  window.CulturalNode={getMode:()=>mode,getContext:()=>!$('#node-view').hidden?context:null,compare:()=>$('#node-compare').click(),open,openPlace,changeMode};
 })();

@@ -107,6 +107,7 @@ const assert=require('node:assert/strict');
  window.TravelMap.fromMessage(chat,'【故事章节讲解】从成都到剑门关的章节');await new Promise(resolve=>setImmediate(resolve));assert.equal(chat.mapRoute,savedRoute);
  const extra=window.TravelMap.getPlaces().find(p=>p.name==='昭化区');assert.equal(window.TravelMap.addStoryPlace(extra),true);assert.equal(window.TravelMap.addStoryPlace(extra),false);
  let exited=false;window.StoryMap.exit=()=>{exited=true;};window.TravelMap.fromMessage(chat,'从成都出发');await new Promise(resolve=>setImmediate(resolve));assert.equal(exited,true);assert.notEqual(chat.mapRoute,savedRoute);
+ global.lastView='node';const routeBeforeFocus=chat.mapRoute;await window.TravelMap.focusMention('阆中市',{reveal:false});assert.equal(global.lastView,'node');assert.equal(chat.mapRoute,routeBeforeFocus);assert.equal(registry.get('#map-county').value,'county-511381');await window.TravelMap.focusMention('阆中市');assert.equal(global.lastView,'map');
  delete window.StoryMap;
  console.log('PASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication');
  console.log('PASS: general story questions preserve route/view/zoom; explicit destinations still map');

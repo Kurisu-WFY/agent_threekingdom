@@ -175,7 +175,7 @@
     $('#map-view').classList.add('story-mode'); $('#map-view').dataset.storyId = id;
     $('#story-map-badge').hidden = false; $('#story-map-toolbar').hidden = false; $('#story-map-chapters').hidden = false; $('#story-node-card').hidden = true;
     $('#story-map-title').textContent = story.title;
-    showContentView('map'); window.TravelMap.beginStory(resolved.map(item=>item.point).filter(Boolean)); draw();
+    showContentView('map'); window.CharacterChat?.refresh(); window.TravelMap.beginStory(resolved.map(item=>item.point).filter(Boolean)); draw();
     $('#story-map-title').focus({preventScroll:true}); return true;
   }
   function openDetail(){if(active&&resolved[state().current])window.CulturalNode?.open({...resolved[state().current],story:active,index:state().current,back:'map'});}
@@ -187,12 +187,27 @@
   }
   // Backend adapter: a future API client supplies data here; no endpoint is guessed or enabled.
   function setData(payload) {
-    const story = payload?.story;
-    if (!story || typeof story.id !== 'string' || typeof story.title !== 'string' || !Array.isArray(story.chapters) || !Array.isArray(payload.places)) throw new TypeError('故事数据结构待确认');
-    if (story.chapters.some(c=>!c || typeof c.placeId!=='string' || typeof c.name!=='string') || payload.places.some(p=>!p || typeof p.id!=='string' || typeof p.name!=='string')) throw new TypeError('章节或地点字段待确认');
-    // Isolate frontend progress from mutable API response objects; changed chapter lists reset progress.
-    const copy = JSON.parse(JSON.stringify(payload)); overrides.set(story.id,copy); progress.delete(story.id);
-    if (active?.id===story.id) return open(story.id);
+    const nonempty=v=>typeof v==='string'&&v.trim().length>0;
+    const story=payload?.story,places=payload?.places;
+    const fallback=()=>{
+      const id=nonempty(story?.id)?story.id:active?.id;
+      if(window.SGT_STORIES.some(s=>s.id===id)) {
+        overrides.delete(id);
+        if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；资料待接入。';return false; });
+      }
+      $('#map-route-status').textContent='故事资料不完整，保留当前内容；资料待接入。';
+      return Promise.resolve(false);
+    };
+    if(!story||!nonempty(story.id)||!nonempty(story.title)||!Array.isArray(story.chapters)||!story.chapters.length||!Array.isArray(places))return fallback();
+    if(places.some(p=>!p||!nonempty(p.id)||!nonempty(p.name)||!['tower','shrine','pass','wall','road'].includes(p.building))||new Set(places.map(p=>p.id)).size!==places.length)return fallback();
+    if(story.chapters.some(c=>!c||!nonempty(c.placeId)||!nonempty(c.name)||!places.some(p=>p.id===c.placeId)))return fallback();
+    const arrays=(record,keys)=>keys.every(k=>record[k]==null||Array.isArray(record[k]));
+    const meta=record=>record&&typeof record==='object'&&!Array.isArray(record)&&arrays(record,['sources']);
+    if(!arrays(story,['people','events','areas','sources'])||places.some(p=>!arrays(p,['sources']))||story.chapters.some(c=>!arrays(c,['people','events','sources','disputes','inferences'])||['history','romance','differences','compilation','relationships'].some(k=>c[k]!=null&&!meta(c[k]))||['disputes','inferences'].some(k=>(c[k]||[]).some(r=>!meta(r)))))return fallback();
+    // Reject a malformed payload atomically; never install a half-valid override.
+    let copy;try{copy=JSON.parse(JSON.stringify(payload));}catch(_){return fallback();}
+    overrides.set(story.id,copy);progress.delete(story.id);
+    if(active?.id===story.id)return open(story.id);
     return Promise.resolve(true);
   }
   $('#story-exit').addEventListener('click',exit);

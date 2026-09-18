@@ -311,12 +311,12 @@ document.querySelector('#new-chat').onclick = () => {
 };
 
 /* ---------------- 调用后端 ---------------- */
-function ask(text, history) {
+function ask(text, history, mode = '大众') {
   return fetch(API, {
     signal: AbortSignal.timeout(60000),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text, mode: '大众', history })
+    body: JSON.stringify({ message: text, mode, history })
   }).then(response => {
     if (!response.ok) throw new Error('HTTP ' + response.status);
     return response.json();
@@ -329,7 +329,7 @@ window.SGTChat = { async request(text) {
   if (!message) throw new Error('请先填写出行需求。');
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
     .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text}));
-  const data = await ask(message, history);
+  const data = await ask(message, history, window.CharacterChat?.backendMode() || '大众');
   if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
   return data;
 } };
@@ -350,7 +350,7 @@ function send(text) {
   if (chat.messages.length === 1) chat.title = trimmed.slice(0, 10);
   const prepared = window.CharacterChat?.prepare(chat, trimmed);
   chat.messages.push({ role: 'user', text: trimmed, persona: prepared?.persona });
-  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
+  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
   chat.messages.push(reply);
   if (!prepared?.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
@@ -366,7 +366,7 @@ function requestReply(chat, reply) {
   reply.error = false;
   render();
 
-  ask(reply.question, reply.history)
+  ask(reply.question, reply.history, reply.mode)
     .then(data => {
       if (!data || typeof data.answer !== 'string' || !data.answer.trim()) {
         throw new Error('服务未返回有效回答');

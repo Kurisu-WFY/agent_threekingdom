@@ -1,185 +1,100 @@
-# 旅游模块接口交接（前端提案，后端尚未实现）
+# 前端内容与接口契约（需求20，2026-09-18）
 
-本轮只做前端，未修改 src、数据库或部署。现有 `/chat` 与 `/health` 保持原协议。
+本文替代此前按迭代追加的说明。只有 `/health` 与 `/chat` 已有真实服务；以下结构除已实现部分外均是适配约定，不代表数据库、接口或资料已到位。没有新增依赖或网络接口，`travel-api.js` 保持 `enabled: false`。
 
-## 接入开关
+## 1. 故事线与章节
 
-`travel-api.js` 集中处理网络请求，默认 `config.enabled: false`，不会请求以下预留地址，而是返回 `unavailable`。同伴实现接口后将开关设为 true，并按实际路由调整 `baseUrl`（默认 `/api/travel`）。不在浏览器写模型密钥或数据库凭据。
+**前端已准备好什么**：适配点为 `stories.js` 的 `SGT_STORIES`、`SGTStoryUI.openStory(id, suppliedStory)` 与 `story-progress.js`。筛选直接读取每条 `story.phase`，不依赖数组下标。首页只展示真实存在的字段，缺项集中为“主题模板 · 内容待接入，史料待核验”。这是内容状态，不是请求失败。
 
-前端脚本加载顺序：app.js → travel-api.js → travel-modules.js。无需依赖安装或打包。
+**后端需要提供什么**：没有约定故事HTTP地址；获取后须由调用方映射为下列前端对象，再在渲染前提供。动态地图注入见第3项，不自动改写首页目录。
 
-## 通用返回
-
-HTTP 200，JSON：`{ "status": "ok|empty|unavailable", "message": "用户可读信息", "data": {} }`。
-
-- ok：提供下表结构的数据。empty：接口可用但无匹配结果。unavailable：能力未接入/暂不可用，data 可为 null。
-- 非 2xx、超时（15 秒）、JSON 不合法显示错误，可再次点击重试。网络失败不会伪装成成功数据。
-- 空数组显示无数据状态。
-- 时间使用带时区的 ISO 8601；金额单位 CNY 元，未知金额用 null，不用 0。
-- data_status：sample / maintained / live / pending / stale。每个含价格、时间或动态信息的记录需携带 updated_at 与 sources。
-- sources 数组元素：`{ "title": "来源名称", "source_url": "https://...", "source_level": "A|B|C" }`。前端仅允许 http/https 来源链接。C 级不用于史实结论；来源分级由后端/资料维护人确定。
-
-## 请求及响应 data
-
-| 方法与地址 | 请求 | data |
+| 层级 | 字段与形状 | 必填与约束 |
 |---|---|---|
-| GET /spots?city=南充 | city 查询参数（URL编码） | `{ "spots": [{ "id":"...", "name":"...", "description":"...", "data_status":"maintained", "updated_at":"...", "sources":[] }] }` |
-| POST /plans/preview | 下方出行条件对象 | `{ "title":"方案名称", "data_status":"maintained", "updated_at":"...", "days":[{"day":1,"stops":[{"name":"站点","stay_minutes":60,"note":"游览提醒"}]}], "sources":[] }` |
-| POST /budget/estimate | 同一出行条件对象 | `{ "items":[{"label":"住宿","amount":null,"basis":"2间房×1晚；价格待接入","data_status":"pending","updated_at":null,"sources":[]}] }` |
-| POST /travel-info | 同一出行条件对象 | `{ "items":[{"title":"天气/交通","summary":"查询结果","data_status":"live","updated_at":"...","sources":[]}] }` |
+| story | `id:string, title:string, phase:string` | id/title非空、id稳定且唯一；phase为寻源/读史/探秘/传承，缺失或未知只进入“全部” |
+| story | `coreQuestion:string, summary:string, people:string[], events:string[], durationHours:number|null, areas:string[]` | 内容可缺，数组使用空数组；时长若提供须正有限数，不把null当0小时 |
+| story | `dataStatus, updatedAt, sources[]` | 对应第5项；缺省pending/null/[]，不能声明已核实 |
+| story | `chapters:chapter[]` | 静态模板允许[]，有序数组决定幕序；地图注入须非空 |
+| chapter | `order:number, name:string, placeId:string` | order为正整数，按数组顺序提供；name/placeId非空，placeId须引用地点ID |
+| chapter | `people:string[], events:string[], story:string, reason:string, role:string` | 正文、推荐理由和叙事作用不可推测补齐；解锁人物/事件仅来自已完成章节的对应数组 |
+| chapter | `dataStatus, updatedAt, sources[]` | 同第5项；正文的分类及证据要求另见第6项 |
 
-出行条件示例（字段名固定；数量为数字）：
+可选现实约束：`constraints:{transport,openTime,duration,budget}`，均为显示用文本，不意味着可执行路线。camelCase元数据是目录/章节现有约定；后端snake_case需显式映射。
 
-```json
-{
-  "city": "南充",
-  "date": "2026-10-01",
-  "days": 2,
-  "people": 2,
-  "group": "朋友同行",
-  "transport": "公共交通",
-  "hotel_tier": "舒适型",
-  "rooms": 1,
-  "notes": "少走路"
-}
-```
+**不可用时的降级行为**：缺正文不拼百科，空模板不堆逐字段占位；保留主题名、已提供的章节数、统一状态及探索入口。无章节禁用章节开始操作，不制造完成记录。验收：删除/调序/新增故事不改变其他ID的phase；未知phase在全部可见；空模板没有人物、事件、来源和坐标假值；真实3章仍显示。
 
-天数 1–14，人数和房间数 1–50；后端仍须自行验证。当前住宿晚数按 days-1 展示，后端应明确预算 basis，不能默认每人一间房。交通/门票未提供时金额为 null，前端不计算完整旅行总价。
+## 2. 地点节点
 
-## 前端独立可用的部分
+**前端已准备好什么**：`stories.js:SGT_PLACES`、`SGTStoryUI.icon(building)`、`CulturalNode.openPlace(id)` 与 `StoryMap.describePlace(place,chapter)`。五种建筑只使用内联SVG，节点详情接收 `{place,chapter,story,index,point,exact,note,back}`，不另请求地点接口。
 
-- 目的地选择、地图快捷入口、行程条件填写、按天草稿、调整条件。
-- disabled 模式下生成的是明确标为“站点待接入”的草稿，绝不虚构景区、票价或天气。收到 empty 不生成假路线；收到错误保留原方案。
-- 方案保存到当前浏览器 localStorage，键 `sanguo.travel-plans.v1`，最多20份；不是数据库保存，也不代表跨设备同步。复制采用剪贴板 API，失败提示手动复制。
-- 来源组件用于景区、行程、预算、出行结果，无来源显示待核验。现有文化问答来源接入仍需另与 `/chat` 响应协议对齐。
-- 更换目的地或当前方案时，旧请求结果不覆盖新选择；按钮等待时禁用。
+**后端需要提供什么**：`{id:string,name:string,city:string,building:'tower|shrine|pass|wall|road',coordinate_system:'GCJ-02',coordinates:[lon,lat]|null,dataStatus,updatedAt,sources:Source[]}`。id/name非空、id唯一、building必填且为五值之一。只有可靠且位于经度97–109/纬度26–35的GCJ-02数值坐标才可落点；坐标记录还须maintained/live、带时区的合法更新时间及A/B http(s)来源。`updatedAt`也是坐标核验必需字段，不能省略。可选`fallbackName/fallbackParent`只能填已确认的县区及市州名称，供现有县级驻地唯一匹配，不能猜。
 
-## 验收
+**不可用时的降级行为**：缺city及元数据显示待核验；无合格坐标只用已确认县区驻地并标“位置示意 / 待定位”，连县区都不确定时不画点、不连跨缺口线。WGS84/BD09不直接当GCJ-02。验收：错坐标系、越界、无更新时间、C级来源均不能成为精确点；米仓道保持待定位；静态空坐标不被接口示例覆盖。
 
-默认关闭接口：目的地/预算/出行显示待接入，表单可生成每日空站点草稿、保存、刷新后打开、复制。
+## 3. 地图适配口
 
-开启接口：分别提供 ok、empty、unavailable、非2xx、非法JSON与超时响应；核对数据状态、来源链接、费用缺失项及重试。后端不可在 ok 里省略 spots/days/items。
+**前端已准备好什么**：`story-map.js:StoryMap.setData({story,places}) -> Promise<boolean>`。仅显式调用；深拷贝并整体验证后安装按ID隔离的覆盖数据。`open(id)`进入故事地图，`exit()`恢复原视口/筛选；进度按稳定章节序列签名保存，同序列正文更新保留进度。
 
-## 对话联动地图（新增，可选 /chat 返回字段）
+**后端需要提供什么**：第1/2项形状；story.id/title非空、chapters非空数组，每章name/placeId非空且指向本次places；places中id/name非空、building合法、id不重复。people/events/areas/sources/disputes/inferences若提供必须是数组；分层record若提供须是对象且sources须数组。禁止循环对象。安全来源/精确坐标还有后续证据检查，不因通过结构校验就算核验成功。
 
-本地加载183个县级行政区驻地点与21个市州驻地点。发送含旅游语义的文本时，按地名提及顺序标点并连虚线；这只是可编辑的地点示意，不推断道路、距离、车程或最优顺序。非地名的旅游目的（如“看三国文化景点”）仍需要后端提供站点。
+**不可用时的降级行为**：返回false，不抛结构异常使页面停止。对应ID有静态模板时移除覆盖并恢复该模板；未知ID没有静态模板时保留当前内容，显示资料待接入。拒绝半份数据，不清空旧地图。验收：非法顶层、空章节、缺地点引用、重复ID、无效building、错误sources类型均降级；有效结构但不可靠坐标仍按第2项不画错点。此口只更新地图及地图打开的详情，不是首页/探索志目录热更新接口。
 
-后端可在原 /chat JSON 中增加如下字段，按行程顺序返回 stops：
+## 4. 路线与站点坐标
 
-```json
-{
-  "map_route": {
-    "stops": [
-      { "name": "阆中市", "parent": "南充市" },
-      { "name": "剑阁县", "parent": "广元市" }
-    ]
-  }
-}
-```
+**前端已准备好什么**：旧`#trip-form`通过`SGTChat.request`调用`POST /chat`；`travel-modules.js`只在`intent.intent==='route_planning'`且`route.found===true`、route.route为对象、stops有效非空时替换方案。`culture_qa`可以没有route键，`budget_ticket`的route可为null，均保留旧方案。`map-route-core.js:structured/resolveRoute`提供结构化坐标解析及旧点位保留。
 
-- 现有 `route.stops` 也支持。优先使用 `map_route.stops`。
-- 景区级站点应提供 `coordinates: [经度, 纬度]` 和 `coordinate_system: "GCJ-02"`（与 DataV 底图一致）。数值必须合法且位于四川地理范围附近。不要把 WGS84 或 BD09 未转换坐标直接传入。
-- 无坐标时只对完整名称/唯一别名匹配本地点位。驻地坐标不能当作景区入口；无法匹配的景点保留缺口，不连接跨过缺失站点的线段。
-- 同名县区需传 parent 消歧。没有唯一结果就提示人工选择，不猜坐标。
-- 路线绑定当前对话对象；切换/删除/撤销对话会同步路线。清除路线后迟到的回答不会重新绘制。
-- 县级数据来源为 `https://geo.datav.aliyun.com/areas_v3/bound/{市州adcode}_full.json`，2026-09-11 获取。原始 adcode 仅用于该数据快照内部标识（供应方可能保留历史代码），不是经过最新行政区划核验的业务主键；业务接入时请另行校验行政代码及景区 POI。
+**后端需要提供什么**：`route:{found:boolean,route:{route_id,name,city,theme,target_user,duration_hours,transport_mode,summary,risk_note,updated_at},stops:Stop[],selection_reason:string}`；Stop为`{stop_order,stay_minutes,reason,spot_id,name,city,address,recommended_duration_min,open_time,coordinates?:[lon,lat],coordinate_system?:'GCJ-02'}`。站名非空，时间为正有限数或null；坐标须按第2项范围及坐标系约定且有可靠出处。可选`map_route:{stops:[{name,parent,coordinates?,coordinate_system?}]}`由同一核心解析，parent用于同名县区消歧。真实后端目前没有站点坐标，placeId与spot_id也未统一，不能模糊推断章节归属。
 
-## 前端已实现的降级（2026-09-12 实测补充）
+**不可用时的降级行为**：保持现有县级驻地/待定位行为。对话地图经核心解析优先接受合法结构化位置，全部无法定位时保留先前地名点；方案页`TravelMap.showPlan`当前按地址/城市解析县级驻地，本轮没有改为精确景点导航。缺坐标不跨缺口连线，缺reason/时间/开放时间/risk_note/updated_at显示待核验。验收：三类intent正确，非2xx/超时/非法JSON可重试；无坐标路线不清空已有地名路线。时间与已完成节点约束目前后端仍可能忽略，UI必须标冲突，不宣称可执行。
 
-后端目前仍未返回坐标（`route.stops[]` 里没有 `coordinates`），前端已按上一节实现降级，行为如下
-（可用 `node map-route.test.cjs` 复核，或用仓库外回放脚本 `D:\DSH Workspace\.tmp-e2e\replay-map.cjs` 喂真实响应）：
+## 5. 通用可信元数据
 
-1. 发送含旅游语义的文本时，先按**地名提及顺序**标点（`MapRouteCore.mentions`）。
-2. 后端回答到达后（`MapRouteCore.resolveRoute`）：
-   - 后端站点**有** `coordinates` + `coordinate_system: "GCJ-02"`（或名称唯一命中本地点位）
-     → **以后端站点顺序为准**替换本地点位；
-   - 后端站点**全都落不到位**（现在就是这种情况：景区名匹配不到县级驻地、又没有坐标）
-     → **保留**按地名识别的点位，并把落不到位的站点记入 `backendStopsPending`，状态栏提示
-     「后端返回的 N 个站点暂无 GCJ-02 坐标，落不到景区入口；已保留按地名识别的点位，坐标接入后自动对齐」。
-     修复前这里是**直接清空地图**（实测：已定位点从 1 个变 0 个、视口还被重置），现已修掉。
-3. 落不到位的站点在路线列表里显示为「待定位站点（此处不连接）」——**不会**用驻地坐标冒充景区入口，
-   也**不猜**坐标，跨过缺口的线段不连接。
-4. 后端一旦补上 `coordinates`，前端**不需要改代码**即自动对齐。已用「同一路线 + 补上 GCJ-02 坐标」的
-   对照响应实测：修复后与冻结版行为**完全一致**（均为「后端返回的站点顺序 · 2 个已定位地点」）。
+**前端已准备好什么**：`character-chat.js:reliable/provenance`、`cultural-node.js:evidence/provenance`以及旧模块来源组件。来源使用textContent，不注入HTML；链接经URL解析只放行http/https；C级明确提示不能支撑史实。旧模块的来源信息只作展示，不能据此认定史实可靠。
 
-> 结论：后端只要按本文补 `coordinates` + `coordinate_system: "GCJ-02"`，以及价格类的
-> `data_status` / `updated_at` / `sources`（未知金额用 `null` 而不是 `0`），前端侧**无需再改协议**。
+**后端需要提供什么**：`{data_status:'sample|maintained|live|pending|stale',updated_at:带时区ISO8601字符串,sources:[{title:string,source_url:string,source_level:'A|B|C',data_status:同一状态枚举}]}`。允许未提供值时为null/[]，不能以空值伪装已核验。用于史实的record须maintained/live、合法时区时间，至少一条有http(s)链接且A/B级、maintained/live的来源；人物回答还要求来源标题非空。来源等级和维护状态由资料负责人提供，前端不自动升格。目录/地点使用dataStatus/updatedAt，节点record兼容这两种命名。
 
+**不可用时的降级行为**：缺元数据是待核验；不安全链接仅保留来源文本，C级只能线索。即使段落自称“史料记载”也不能绕过校验。地图坐标的现有资格检查是地点记录maintained/live+有效时间+A/B安全链接，不等同于史实正文校验；补源时仍需完整Source字段。验收：C级、pending/stale来源、缺时区/非法日期、javascript链接均不能放行史实正文；不伪造更新时间或出处。
 
-## 2026-09-17 · 三国故事地图接入边界（前端已留入口，后端待确认）
+## 6. 分层正文与正史／演义
 
-### 当前运行状态
+**前端已准备好什么**：`character-chat.js:answer/reliable`接受可选`/chat`响应字段`evidence_segments`。**当前真实后端没有返回该字段**。文化节点详情的现有适配点是chapter上的record字段，不能宣称两者自动互换。
 
-- 未启用任何 `/api/travel/*`，`travel-api.js` 仍 `enabled=false`。未猜测故事接口 URL，也未新增网络依赖。
-- 新增 `window.StoryMap.setData({ story, places })`：由将来的 API 客户端在获取、映射数据后显式调用，返回 Promise；非法顶层/章节/地点结构抛 TypeError。当前没有自动调用方。
-- `open(storyId)` 返回 Promise<boolean>；接受五个前端模板 ID 或已经 setData 注入的 ID。`exit()` 退出并恢复原地图视口、筛选和县区选择；既有路线对象保留，用户明确加入的故事地点也保留。
-- `setData` 按 story.id 隔离覆盖；更新当前故事会重开图层并清空该故事本页进度（防止章节变更后错配）。它只更新故事地图数据及该地图进入的详情，不自动改写首页五个编辑模板。
-- `SGTStoryUI.openStory(id, suppliedStory)` 支持地图把当前故事对象传入详情；`SGTStoryUI.icon(building)` 共用内联 SVG，不加载外部图片。
+**后端需要提供什么**：`evidence_segments:[{type:'history|inference|romance',text:string,data_status,updated_at,sources:Source[]}]`，正文非空，元数据见第5项。history只有reliable通过才呈现为史料；inference明确合理推断，romance明确演义、非亲历。文化节点通过`chapter.history/romance/differences/compilation/relationships:{text,data_status,updated_at,sources[]}`接入；`disputes/inferences`为同样record数组。若使用chapter.story，须另给`narrative_type:'record|inference|literature'`及章节元数据；不能把未分类正文当史实。后端若仅有segments，需要调用方按含义显式映射到这些节点字段，不能从标题猜。
 
-### 地图数据字段（不是已实现的 HTTP 协议）
+**不可用时的降级行为**：可靠材料不足显示“当前资料中未找到可靠记载”。纯文本只提取明确【合理推断】/【演义】为未核验解读，原answer在“未逐项核验”展开区；不从原文编造来源。节点双方与差异record均有依据才显示差异，两条及以上争议并列来源；无材料不能断言没有争议。验收：未知type不进入史实；C级history被拦截；推断与演义各有独立标记；正文缺失不生成填空内容。
 
-| 对象 | 字段 | 缺失时行为 |
+## 7. 讲解模式、人物与会话
+
+**前端已准备好什么**：`app.js:ask(text,history,mode)`，`character-chat.js:getMode/setMode/backendMode`，`StoryProgress.get(story).mode`是已关联故事的唯一模式源。陈寿栏、故事详情、已打开节点共用状态；未关联故事的节点仍使用节点本页模式。请求发出时保存mode快照，失败重试不因之后切换而换模式。人物只影响角色说明，不能替代讲解模式。
+
+**后端需要提供什么**：现有`POST /chat`请求`{message:string,mode:string,history:[{role:'user|assistant',content:string}]}`。只读核实依据：主工作树及运行快照的`src/api.py:ChatRequest.mode`为`str='大众'`，没有枚举；快照`src/agent/orchestrator.py`透传mode；`src/agent/answer_chain.py:MODE_RULES`实际只识别大众/亲子/学术，未知字符串回退大众。主工作树`docs/BACKEND-API.md`的请求表同样写mode:string。故映射为`大众体验版→大众、亲子故事版→亲子、学术探索版→学术`，不把界面全称直接发送。未修改后端代码。
+
+**不可用时的降级行为**：未选择模式默认大众；输入空白禁发，HTTP错误/超时/非法JSON沿用可重试状态。人物、故事和模式描述放history，不把“两天”等提示拼入人物提问的message干扰意图识别。LLM不可用或召回不足时后端可能走兜底，mode正确不保证总能得到不同文风。验收：两处模式读写同一StoryProgress，三种请求值正确，切换后重试沿用原值，章节/地点/完成状态不变。
+
+人物兴趣“我想了解张飞”匹配主题并预选阆中，不自动换人物或切主视图；回答提供进入主题、查看阆中与切张飞按钮。固定说明与每会话切换提示分开，render不吞提示。对照类别由CharacterChat.isComparison统一判断，探索志优先使用请求已记录的characterAction。
+
+## 8. 实时旅游接口（尚未实现）
+
+**前端已准备好什么**：`travel-api.js`封装listSpots/createPlan/estimateBudget/getTravelInfo，默认enabled:false。`travel-modules.js`保留目的地、方案、预算、出行面板和重试入口；当前trip-form规划走/chat，**不会因为写出preview契约就改回未实现接口**。请求默认15秒超时，错误不伪装成成功。
+
+**后端需要提供什么**：统一JSON `{status:'ok|empty|unavailable',message:string,data:object|null}`；ok必须有正确数组，empty表示确实无数据，unavailable表示未接入。每条资料及实时记录的data_status、updated_at必填；未知更新时间可null并标待核验，不能声称live。sources必须采用第5项。时间带时区，金额单位CNY；未知金额必须null，不能0。
+
+| 接口 | 请求 | status=ok时的data形状 |
 |---|---|---|
-| story | id、title、chapters[] | id/title/chapters 为接入结构必填；无章节显示待确认 |
-| chapter | name、placeId | 接入结构必填；数组顺序为幕序，不能依赖展示名称排序 |
-| chapter | people[]、events[]、story、dataStatus、updatedAt、sources[] | 人物、事件、简述、史料和时间显示待确认；不生成史实 |
-| place | id、name、building | id/name 为必填；building 支持 tower/shrine/pass/wall/road/book/person，未知形制回书卷 |
-| place | coordinates:[lon,lat]、coordinate_system | 必须 GCJ-02，经度97–109、纬度26–35；缺失或不合格不作为景区坐标 |
-| place | dataStatus、updatedAt、sources[] | 仅 maintained/live + 有时区且合法日期 + 至少一条带 http/https 链接的 A/B 来源才接受景区坐标；示例/pending/stale/C级不合格 |
-| place | fallbackName、fallbackParent | 县区归属经后端确认后提供；用现有 MapRouteCore.structured 匹配县级驻地，不另造坐标。缺失/歧义就待定位 |
-| source | title、source_url、source_level | 链接只允许 http/https；C 级仅作线索，不能支撑史实；不安全链接只显示文本 |
+| `GET /api/travel/spots` | query `city:string`，URL编码 | `{spots:[{id,name,description,data_status,updated_at,sources}]}` |
+| `POST /api/travel/plans/preview` | Preferences | `{title,data_status,updated_at,sources,days:[{day:正整数,stops:[{name,stay_minutes:正数或null,note}]}]}` |
+| `POST /api/travel/budget/estimate` | Preferences | `{items:[{label,amount:正数或null,basis,data_status,updated_at,sources}]}` |
+| `POST /api/travel/travel-info` | Preferences | `{items:[{title,summary,tool_source,data_status,updated_at,sources}]}` |
 
-约定这里使用前端 camelCase 的 `dataStatus`/`updatedAt`；后端若用 `data_status`/`updated_at`，适配器须显式映射，不默认为已验证。示例数据中的经纬度没有沿用。
+Preferences为`{city:string,date:'YYYY-MM-DD',days:number,people:number,group:string,transport:string,hotel_tier:string,rooms:number,notes:string}`。旧适配保留days 1–14；故事约束表单另有origin/explanation/budget_min/budget_max，days限定0.5/1/2，人数房间1–50、预算非负且下限不大于上限。后端实现preview若要接半天，应显式支持0.5，不能以旧契约吞掉约束。
 
-### 等数据库与后端后再接的部分
+文化节点现有旅游record是`place.travel.ticket/opening/weather:{amount或text,tool_source,data_status,updated_at,sources}`，每种有独立更新时间与工具来源，live和完整证据才作实时显示。旧travel-info列表主要显示summary/元数据/sources，后端应把工具身份写进来源与summary，工具专列若需展示再评审，不能声称已自动渲染新字段。
 
-1. 五条故事的可靠章节内容、人物事件、各站理由、A/B 史料、维护时间。当前仅蜀道故事按用户指定的昭化古城→剑门关→米仓道展示三幕；顺序是产品模板，不是可执行行程。
-2. 米仓道具体遗址及唯一县区；当前第三幕仍能查看、问陈寿和记录探索，但不画坐标、不连跨缺口线路，不能加入假位置。
-3. 道路路线与导航：字段、提供方、入口坐标、交通方式及其数据状态待后端确认；目前不约定 URL 或启用解析器。UI 导航按钮禁用并标待确认；虚线只表示地名提及顺序，墨迹线只表示章节顺序，两者都不是道路。
-4. 正史/演义的结构化对照、章节知识：当前按钮只复用 `/chat`，并非已有独立对照数据库；卡片上的资料仍待确认。
-5. 进度持久化：现在仅本页内存、按故事隔离、用户手动标记可撤销；没有定位签到、登录同步、跨页持久化 API。后端需提供稳定章节 ID 与进度版本后另行接入。
+**不可用时的降级行为**：关闭开关不发以上请求，返回unavailable，UI“待接入”。非2xx/超时/非法JSON显示错误供重试，空数组显示无数据；amount缺失、null、0、负数都显示待核验，绝不显示免费，不计算含未知项的完整总额。验收：默认无任何/api/travel网络请求；开启须由人决定，分别测试ok/empty/unavailable/超时/非法JSON、缺数组、null/0费用及旧响应不覆盖新选择。
 
-### 与现有聊天、地图的关系
+## 9. 本地探索与能力边界
 
-点击节点首次自动通过 `SGTJourney.ask` 提交章节上下文（含上一章、当前章与缺项说明）；同一章本页不重复自动发出，仍可点“问陈寿”。已有请求则追加草稿。章节文本以“【故事章节讲解】”开头，发送或稍后发送该草稿不会被地名识别误作新路线。明确的新行程问题识别到地名时会退出故事模式并沿用原地图行为。
+**前端已准备好什么**：探索志仅本地状态，**本轮没有后端接口，也不预留账号同步**。`sgt.story-progress.v1`以story.id和章节签名保存手动进度；`sgt.journal.questions.v1`最多200条`{id,text,persona,comparison,recordedAt}`，来自实际用户消息，recordedAt是本地记入时间。`sanguo.travel-plans.v1`最多20份本地方案。刷新不会恢复完整会话。
 
-几何、投影、缩放分级、共享弧段、拖动/双指/滚轮保持原实现。仅增加故事标签优先级、大印章的 labelLayout markerRadius 可选避让、节点点击分流与视口通知；普通标签不传 markerRadius 时布局保持原值。
+**后端需要提供什么**：本轮没有探索接口接入工作。未来若要账号同步，应另立需求、约定身份/冲突/删除语义，不在此猜URL。四个旅游接口实现后由人review并决定何时开启；不能自行把enabled改true。无新人物服务、长期人物记忆、GPS签到、实时道路导航，只有现有/chat。
 
-## 需求12 更新：本地探索记录
-
-上述“仅本页内存”已更新：story-progress.js 使用 sgt.story-progress.v1 保存浏览器本地记录，不调用后端。以 story.id 与章节 id/placeId/name 序列签名隔离；序列改变重置，同序列正文更新保留。StoryMap.setData 的章节变更因此重置本地进度，同章节更新保留。无账号或跨标签实时同步。
-
-详情可选 chapter.reason（推荐理由）、chapter.role（叙事作用）与 story.constraints.transport/openTime/duration/budget；无值显示待补充/待核验。story.phase 为前端编辑分组，不代表史料事实。压缩不修改 chapters，仅记录 skipped 索引；全章完成才显示故事已寻迹。
-
-## 2026-09-18 现实约束路线接入
-
-trip-form已由关闭的createPlan预览调用改为SGTChat.request→现有/chat。约束与story章节选取/已完成状态作为message文本传入，非新增后端字段。只在intent.intent=route_planning且route.found=true、route.route为对象、stops有效非空时显示路线；其余显示可调整/重试反馈，保留旧方案。
-
-真实后端未严格遵守半天时间/已完成节点过滤，且story.placeId与spot_id缺统一映射；需后端完善结构化约束与逐节点取舍。前端不模糊匹配推断史实关联，不伪造可执行性。未知价格0显示待核验。所有/api/travel/*仍enabled=false。
-
-## 2026-09-18 文化节点详情资料适配
-
-新cultural-node.js通过CulturalNode.open({place, chapter, story, index, point, exact, note, back})接收StoryMap已解析上下文；首页openPlace(placeId)从模板准确关联。place.city缺失待核验。新增字段不是后端已有接口，也未触发任何旅游API。
-
-- chapter.story正文需chapter.narrative_type为record/inference/literature显式分类；chapter元数据支撑该正文。未分类旧story在新详情不显示为史实。
-- chapter.history / romance / differences / compilation / relationships：{text, data_status或dataStatus, updated_at或updatedAt, sources[]}。
-- chapter.disputes与inferences为上述record数组；两项及以上争议并列“存在不同说法”，inferences一律“合理推断·非史料原文”。differences须双方及自身均有合格依据才展示正文。
-- record合格条件：maintained/live、带时区合法日期、至少一条A/B且http/https来源；否则不呈现为可靠正文。source显示title/source_url/source_level/data_status；不安全链接为文本，C级明确不足以支撑史实。
-- place.travel.ticket/opening/weather分别为{amount或text, tool_source, data_status:'live', updated_at, sources[]}。缺工具名/元数据不显示为实时结果，票价<=0视为未知。历史资料与实时区独立，不共享更新时间。
-- 三深度对同组资料作阅读组织，不虚构模式正文；AI自由回答仍仅在原对话中显示，不自动导入为证据。提示明确要求史料/文学/合理推断分段，实际回复有赖后端。
-
-
-## 人物视角前端适配（2026-09-18，非新增接口）
-
-仍POST /chat，message原用户问题，mode仍为既有大众受众模式；history中附用户角色的当前人物/风格/故事/章节/地点说明，历史消息前缀【人物视角：姓名】。附加规则不拼进message，避免触发后端关键词路由。
-
-可选响应字段 `evidence_segments: [{type: "history|inference|romance", text, data_status, updated_at, sources: [{title,source_url,source_level,data_status}]}]` 仅为前端兼容适配提案；实际后端未提供，不请求其他接口。史料段须maintained/live、有效时区时间及至少一个maintained/live且A/B级的http(s)出处。C级不支撑史实。带演义字样的史料候选不得直接标可靠史实。缺元数据只显示缺项，不用原answer猜出处。
-
-纯文本仅提取明确【合理推断】与【演义】段落作为未核验解读，不能提取“史料记载”冒充可靠证据。完整answer在未逐项核验展开区；来源未知保持待核验。此规则不保证后端遵循角色语气，不代表人物对话专用服务。
-
-
-## 探索志本地数据（2026-09-18）
-
-没有探索记录HTTP接口，不新增网络请求。`sgt.story-progress.v1`沿用StoryProgress；`sgt.journal.questions.v1`是最多200条`{id,text,persona,comparison,recordedAt}`本地问题。recordedAt是前端记入时间，不是推测的历史提问时间。保留用户提问，不归档AI答复或把其当史料。删除当前页会话会移除其问题，撤销恢复；旧页面未归档的历史无法追溯。刷新不恢复聊天，只恢复探索志问题。
-
-来源字段缺失不补造解锁人物/事件；地理底图由TravelMap.getGeometry只读复用，位置由StoryMap.describePlace按原可靠坐标/县级示意规则返回。探索志查看本身不改故事进度或地图状态，显式点击地图入口才定位。
+**不可用时的降级行为**：存储损坏/被禁用时明确仅本页记录，不补造历史；删除本页会话同步移除其问题，撤销恢复。章节没有people/events时解锁计数为0，并说明字段待接入；不将切换人物当解锁。验收：空状态可开始探索，本地提示可见，换设备不宣称同步，章节完成撤销与问题删除/撤销均真实影响探索志，缺坐标不产生地图足迹。

@@ -2,15 +2,15 @@
 (() => {
   'use strict';
   window.SGT_STORIES = [
-    { id: 'chenshou', title: '从南充少年到三国史家' },
-    { id: 'zhangfei', title: '镇守阆中·寻迹张飞' },
-    { id: 'shudao-xunzong', title: '蜀汉北境·蜀道寻踪', chapters: [
+    { id: 'chenshou', title: '从南充少年到三国史家', phase: '寻源' },
+    { id: 'zhangfei', title: '镇守阆中·寻迹张飞', phase: '探秘' },
+    { id: 'shudao-xunzong', title: '蜀汉北境·蜀道寻踪', phase: '探秘', chapters: [
       { order: 1, name: '第一幕｜昭化古城', placeId: 'zhaohua' },
       { order: 2, name: '第二幕｜剑门天险', placeId: 'jianmenguan' },
       { order: 3, name: '第三幕｜米仓道', placeId: 'micangdao' }
     ].map(chapter => Object.assign({ people: [], events: [], story: '', dataStatus: 'pending', sources: [], updatedAt: null }, chapter)) },
-    { id: 'history-to-place', title: '从史书到现场' },
-    { id: 'official-history', title: '正史里的三国' }
+    { id: 'history-to-place', title: '从史书到现场', phase: '探秘' },
+    { id: 'official-history', title: '正史里的三国', phase: '读史' }
   ].map(story => Object.assign({ coreQuestion: '', summary: '', people: [], events: [], durationHours: null, areas: [], chapters: [], dataStatus: 'pending', updatedAt: null, sources: [] }, story));
   // Fallback county names come from the repository's scenic_spots_northeast_sichuan.sample.json addresses.
   // Its unverified lat/lng values are deliberately not copied. Chapters above are user-specified editorial order.
@@ -22,8 +22,8 @@
     { id: 'micangdao', name: '米仓道', building: 'road' }
   ].map(place => Object.assign({ coordinates: null, dataStatus: 'pending', sources: [] }, place));
   const progress = window.StoryProgress;
-  const phases = ['寻源', '探秘', '探秘', '传承', '读史'];
-  window.SGT_STORIES.forEach((story, i) => { story.phase = phases[i]; });
+  const phases = ['寻源', '读史', '探秘', '传承'];
+  const matchesPhase = (story, phase) => phase === '全部' || phases.includes(story.phase) && story.phase === phase;
   const $ = selector => document.querySelector(selector);
   const text = value => typeof value === 'string' && value.trim() ? value.trim() : '待补充';
   const list = value => Array.isArray(value) && value.length ? value.map(text).join(' · ') : '待补充';
@@ -36,6 +36,7 @@
   function facts(story, compact) {
     const dl = node(compact ? 'span' : 'dl', 'story-facts');
     [['核心人物', list(story.people)], ['预计时长', Number.isFinite(story.durationHours) && story.durationHours > 0 ? story.durationHours + ' 小时 · 待核验' : '待补充'], ['涉及地区', list(story.areas)], ['章节数量', Array.isArray(story.chapters) && story.chapters.length ? story.chapters.length + ' 章' : '待补充']].forEach(([key, value]) => {
+      if (value === '待补充') return;
       const row = node(compact ? 'span' : 'div'); row.append(node(compact ? 'span' : 'dt', 'fact-label', key), node(compact ? 'span' : 'dd', 'fact-value', value)); dl.append(row);
     });
     return dl;
@@ -46,14 +47,15 @@
     $('#story-title').textContent = text(story.title);
     $('#preview-selection').textContent = text(story.title) + (story.chapters.length ? ' · 章节顺序已设定，位置待核验' : ' · 空间走向待补充');
     const detail = $('#story-detail-content');
-    detail.replaceChildren(node('p', 'story-disclosure', '主题模板 · 内容待补充 / 史料待核验'), facts(story));
+    detail.replaceChildren(node('p', 'story-disclosure', '主题模板 · 内容待接入，史料待核验'), facts(story));
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
-      detail.append(node('h3', '', heading), node('p', '', text(value)));
+      if (value) detail.append(node('h3', '', heading), node('p', '', text(value)));
     }
     detail.append(node('p', 'story-empty', '史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
     $('#story-action-status').textContent = '当前为主题模板，尚未形成可执行行程。';
     renderSystem(story, detail);
     if (open) showContentView('story');
+    window.CharacterChat?.refresh();
   }
   function action(label, fn) {
     const b=node('button','module-button',label); b.type='button'; b.addEventListener('click',fn); return b;
@@ -73,25 +75,28 @@
   function renderSystem(story, detail) {
     const s=progress.get(story), chapters=story.chapters || [];
     const places=window.StoryMap?.getPlaces ? window.StoryMap.getPlaces(story.id) : window.SGT_PLACES;
-    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length));
+    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',chapters.length?progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length:'尚未开始 · 章节待接入'));
     detail.append(node('h3','','讲解模式'));
     const modes=node('div','story-controls');
     ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
       const b=action(mode,()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
     }); detail.append(action('按现实条件规划路线',()=>window.TravelModules.openStory(story)));
     detail.append(modes,node('p','map-note','仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。'));
-    detail.append(node('h3','','相关人物与关键事件'),node('p','','人物：'+list(story.people)+'；事件：'+list(story.events)));
-    detail.append(node('h3','','现实约束'),node('p','','交通：'+text(story.constraints?.transport)+'；开放时间：'+text(story.constraints?.openTime)+'；游览时长：'+text(story.constraints?.duration)+'；预算：'+text(story.constraints?.budget)+'。以上信息待核验。'),provenance(story));
+    if(story.people?.length || story.events?.length)detail.append(node('h3','','相关人物与关键事件'),node('p','',[story.people?.length?'人物：'+list(story.people):'',story.events?.length?'事件：'+list(story.events):''].filter(Boolean).join('；')));
+    const constraints=[['交通',story.constraints?.transport],['开放时间',story.constraints?.openTime],['游览时长',story.constraints?.duration],['预算',story.constraints?.budget]].filter(([,v])=>v);
+    if(constraints.length)detail.append(node('h3','','现实约束'),node('p','',constraints.map(([k,v])=>k+'：'+v).join('；')+' · 待核验'));
+    detail.append(provenance(story));
     const axis=node('ol','story-chapter-axis');
     chapters.forEach((c,i)=>{
       const place=places.find(p=>p.id===c.placeId), li=node('li','');
       const status=s.skipped.has(i)?'本次跳过':s.completed.has(i)?'已完成 · 已寻迹':s.started&&s.current===i?'当前':'待探索';
       li.dataset.state=status; li.append(node('h4','',c.name+' · '+status),node('p','','地点 / 建筑：'+(place?place.name+' / '+({wall:'城楼',pass:'关楼',road:'古道',tower:'楼阁',shrine:'祠庙'}[place.building]||'形制待补充'):'待补充')),
-        node('p','','为什么推荐：'+text(c.reason)),node('p','','在故事中的作用：'+text(c.role)),node('p','',text(c.story)),provenance(c));
+        node('p','story-disclosure','章节内容待接入 · 史料待核验'));
+      [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));
       if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
       if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
       axis.append(li);
-    }); detail.append(node('h3','','章节轴 · 逐幕寻迹'),axis);
+    }); if(chapters.length)detail.append(node('h3','','章节轴 · 逐幕寻迹'),axis);
     if(chapters.length) {
       const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));
       const inputs=chapters.map((c,i)=>{const label=node('label',''),input=node('input');input.type='checkbox';input.checked=!s.skipped.has(i);label.append(input,node('span','',c.name));box.append(label);return input;});
@@ -109,7 +114,7 @@
   }
   const filters=$('#story-phase-filters');
   ['全部','寻源','读史','探秘','传承'].forEach(phase=>{
-    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{shell.hidden=phase!=='全部'&&shell.dataset.phase!==phase;});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));});
+    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{const story=window.SGT_STORIES.find(item=>item.id===shell.dataset.storyId);shell.hidden=!story||!matchesPhase(story,phase);});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));$('#story-filter-status').textContent=Array.from($('#story-cards').children).some(shell=>!shell.hidden)?'':'这个阶段的主题待接入，可先查看其他阶段。';});
     b.setAttribute('aria-pressed',String(phase==='全部'));filters.append(b);
   });
   progress.subscribe(()=>{if(selected)select(selected,false);});
@@ -118,8 +123,9 @@
     const card = node('button', 'story-card'); card.type = 'button';
     card.dataset.contentView = 'story'; card.setAttribute('aria-controls', 'story-view'); card.setAttribute('aria-pressed', 'false');
     card.setAttribute('aria-label', '查看故事线：' + story.title);
-    card.append(node('span', 'story-core-question', '核心问题：' + text(story.coreQuestion)));
-    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-summary', '故事简介：' + text(story.summary)), node('span', 'story-card-end', '待补充 / 待核验　↗'));
+    if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));
+    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '主题模板 · 内容待接入 / 史料待核验　↗'));
+    if(story.summary)card.append(node('span','story-summary',story.summary));
     card.addEventListener('click', () => select(story, true));
     const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id;
     shell.dataset.phase = story.phase;
@@ -158,7 +164,7 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = { getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
+  window.SGTStoryUI = { matchesPhase, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));

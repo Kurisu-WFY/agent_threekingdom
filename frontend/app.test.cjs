@@ -106,6 +106,8 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     const p=context.window.SGTChat.request('请规划路线');const assertion=assert.rejects(p);const req=requests.at(-1);
     assert.equal(req.body.message,'请规划路线');if(failure instanceof Error)req.reject(failure);else req.resolve(failure);await assertion;
   }
+  context.window.CharacterChat={backendMode:()=> '学术'};
+  const modeRequest=run("window.SGTChat.request('文化模式校验')");assert.equal(requests.at(-1).body.mode,'学术');requests.at(-1).resolve({ok:true,json:async()=>({answer:'模式回答',intent:{intent:'culture_qa'}})});await modeRequest;delete context.window.CharacterChat;
   console.log('PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover');
   console.log('PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation');
   console.log('PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery');

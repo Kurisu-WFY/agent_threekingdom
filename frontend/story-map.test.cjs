@@ -46,14 +46,18 @@ function allText(node){return node.textContent+node.children.map(allText).join('
  let detail; t.window.CulturalNode={open:payload=>detail=payload};
  await api.open('test');api.selectChapter(1);assert.equal(detail.index,1);assert.equal(detail.place.id,'b');assert.equal(detail.story.id,'test');delete t.window.CulturalNode;
  // Future backend data must explicitly qualify coordinates; missing or C-level provenance never qualifies.
- const payload={story:{id:'test',title:'后端主题',chapters:[{placeId:'a',name:'一',dataStatus:'live',sources:[{source_url:'javascript:alert(1)',source_level:'C',title:'不可信链接'}]}]},places:[{id:'a',name:'测试坐标',coordinates:[105.8,32.2],coordinate_system:'WGS84',dataStatus:'live',updatedAt:'2026-09-17T10:00:00+08:00',sources:[{source_url:'https://example.org/source',source_level:'A'}]}]};
+ const payload={story:{id:'test',title:'后端主题',chapters:[{placeId:'a',name:'一',dataStatus:'live',sources:[{source_url:'javascript:alert(1)',source_level:'C',title:'不可信链接'}]}]},places:[{id:'a',name:'测试坐标',building:'pass',coordinates:[105.8,32.2],coordinate_system:'WGS84',dataStatus:'live',updatedAt:'2026-09-17T10:00:00+08:00',sources:[{source_url:'https://example.org/source',source_level:'A'}]}]};
  await api.setData(payload);await api.open('test');assert.equal(t.get('#story-map-nodes').children.length,0);
  payload.places[0].coordinate_system='GCJ-02';payload.places[0].sources[0].source_level='C';await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,0);
  payload.places[0].sources[0].source_level='A';await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,1);api.selectChapter(0);assert.equal(t.get('#chapter-add').disabled,false);
  assert.ok(allText(t.get('#story-node-content')).includes('C 级仅作线索'));assert.ok(allText(t.get('#story-node-content')).includes('史料待核验'));
  const links=[];const walk=n=>{if(n.tag==='a')links.push(n);n.children.forEach(walk);};walk(t.get('#story-node-content'));assert.equal(links.length,0);
  payload.places[0].coordinates=[200,10];await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,0);
- assert.throws(()=>api.setData({story:{id:'x'}}),/待确认/);
+ assert.equal(await api.setData({story:{id:'test'}}),false);assert.equal(t.get('#story-map-nodes').children.length,2);assert.equal(api.getContext().story.title,'测试主题');
+ assert.equal(await api.setData({story:{id:'test',title:'坏数据',chapters:[{name:'缺引用',placeId:'unknown'}]},places:payload.places}),false);assert.equal(t.get('#story-map-nodes').children.length,2);
+ assert.equal(await api.setData({...payload,story:{...payload.story,sources:'invalid'}}),false);assert.equal(t.get('#story-map-nodes').children.length,2);
+ assert.equal(await api.setData({story:{id:'x'}}),false);assert.equal(t.get('#story-map-nodes').children.length,2);
+
  const failed=setup(Promise.resolve(false));assert.equal(await failed.window.StoryMap.open('test'),false);assert.ok(failed.get('#map-route-status').textContent.includes('暂不可用'));
  let release;const delayed=setup(new Promise(resolve=>release=resolve));const pending=delayed.window.StoryMap.open('test');delayed.window.StoryMap.exit();release(true);await pending;assert.equal(delayed.window.StoryMap.isActive(),false);
  console.log('PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation');
