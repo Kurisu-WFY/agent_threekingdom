@@ -768,3 +768,33 @@
   `manual_fixed`→`maintained`；未知/未核验（米仓道坐标、待核验票价…）用 `pending`；外部 MCP 实时数据用 `live`；超期用 `stale`。
   另注意：`scenic_spots.ticket_source_status` 与 `hotel_budget_tiers.source_type` **不是** `data_status`（名字像但不同用途，建议改名）。
 - **改了哪些文件**：上述 6 个 md；**`src/**`、`frontend/**` 一行未改**（本轮仍只动文档）。
+
+### 2026-09-20 DSH · 用最新仓库构建可运行容器（8002）并在其上复测后端问题
+- **做了什么**：新增 `D:\DSH Workspace\sgt-latest-dev\`（`docker-compose.latest.yml` + `README.md`）——
+  构建上下文直接指向**主仓库**（`dockerfile_inline`，不碰仓库自带的 Docker 配置），
+  构建出镜像 `sanguo-latest:dev`（约 440MB），启动容器 `sanguo-latest-api` @ **http://localhost:8002**，
+  与 8001 上那个联调快照容器**并存互不干扰**。
+- **验收（全部通过）**：`/health` = `ok`（`vector_backend=local`）；**四条意图全过**
+  （route_planning 0.82 / culture_qa 0.55 / **history_vs_romance 0.72** / budget_ticket 0.78）；
+  缺 `message` → **422**、空串 → 200 `culture_qa`、`GET /sse` → 404（MCP 不在 Web API，符合预期）；
+  `/docs`、`/redoc`、`/openapi.json` 可用；前端 6 个资源（含 1.8MB 的县界 JSON）与仓库**逐字节一致**；
+  容器内 `src/api.py`、`src/mcp_server.py`、`src/mcp_stdio_server.py`、`src/planning/route_planner.py`、
+  `src/tools/travel_business_tools.py`、`frontend/index.html` 与仓库**逐字节一致**；
+  容器内 MCP 工具数 = **8**；`data/processed/*` 写入后 **git 仍干净**（`.gitignore` 覆盖）；
+  启动日志显示 seed → ingest → uvicorn 正常（`seed` 幂等，反复重启不堆重复数据）。
+- **在最新代码上复测出的四件事（重要）**：
+  1. **`route_planning` 多了三个顶层字段**：`planning_preferences`（已解析城市/时长/人群/交通/兴趣）、
+     `notice`（"路线顺序和停留时间来自 Demo 模板…"的诚实提示）、`data_status: "demo_template"`。
+     → 已写进 `docs/BACKEND-API-REFERENCE.md` **新增的 5.3 节**（本文 3.2.3 节的矩阵是 `4fcccad` 的，dev 上是 7 个键）。
+  2. ⚠️ **`demo_template` 不在拍板词表里** → 已加为 `docs/BACKEND-TODO.md` P0-2 的第 5 条（要求改成 `sample`）。
+     前端对它**安全降级**：`app.js` 的 `Object.hasOwn(statuses, …)` 判定失败 → 显示"回答 · 待核验"，不报错、不露原串。
+  3. **P1-1 有进展但没修完**：`planning_preferences.duration_hours` 已正确解析成 **4**，
+     但返回的模板仍是 **8/16 小时** → "**约束能解析、没生效**"（已更新 BACKEND-TODO P1-1 的证据）。
+  4. **P0-1 未修**：`stops[]` 仍无坐标；**B3 意图漏判仍在**（"从南充出发，去阆中、剑阁，再到广元旅游" 仍落 `culture_qa`）。
+  5. 前端新增待办 **F10**：把 `notice` 与 `planning_preferences` 展示出来，并标出与模板时长的冲突。
+- **改了哪些文件**：新增（仓库外）`D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml` 与 `README.md`；
+  更新 `AGENTS.md`（§4 容器用法 + §8 导航）、`docs/TASKS.md`（#54）、`docs/BACKEND-API-REFERENCE.md`（5.3）、
+  `docs/BACKEND-TODO.md`（P0-2/P1-1）、`docs/FRONTEND-ISSUES.md`（F10）、`docs/HANDOFF.md`（本条）。
+  **`src/**`、`frontend/**` 一行未改。**
+- **下一步**：直接开 http://localhost:8002 目视验收（前端与接口都在这一个容器里）；要换端口或改成"改完刷新即生效"见 `AGENTS.md` 第 4 节。
+- **卡点**：无。

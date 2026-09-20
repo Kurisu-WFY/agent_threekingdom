@@ -448,6 +448,22 @@ if _frontend.exists():
 > 结论：**master 仍是 `4fcccad`**，前端与联调当前对接的就是它；dev 上这些 MCP 新接口
 > 要等合进 master（或单独部署 `san-guo-mcp`）才可用。
 
+### 5.3 `dev` 上 `/chat` 的 `route_planning` **新增了顶层字段**（2026-09-20 对"最新仓库容器"实测）
+
+`dev` 的 `src/planning/route_planner.py` 已经让路线响应多返回三个字段 ——
+**本文第 3.2.3 节的多态矩阵是 `4fcccad` 的（4 个键），`dev` 上 `route_planning` 实际是 7 个键**：
+
+| 新增字段 | 实测值 | 说明 |
+|---|---|---|
+| `planning_preferences` | `{"city":"南充","duration_hours":8,"target_user":"大众","interests":[],"transport_mode":"打车/公交"}` | **后端已经会解析**用户在句子里表达的时长/人群/交通/兴趣（例："南充**半天**…" → `duration_hours: 4`） |
+| `notice` | `"路线顺序和停留时间来自 Demo 模板；实时交通、天气、营业时间和导航需接入地图/天气服务后确认。"` | 面向用户的**诚实提示**，前端可直接展示 |
+| `data_status` | `"demo_template"` | ⚠️ **这个值不在已拍板的 5 值词表里**（应为 `sample` 等，见 `docs/BACKEND-TODO.md` P0-2）。前端对它**安全降级**：`app.js` 的 `Object.hasOwn(statuses, …)` 判定失败 → 显示"回答 · 待核验"，**不会露出原串、也不会报错** |
+
+**注意两件事**（都在最新容器上复测过）：
+1. `planning_preferences.duration_hours` 已经正确解析成 4，但返回的**模板仍是 8/16 小时** ——
+   即"**约束能解析、还没生效**"（`docs/BACKEND-TODO.md` P1-1）。
+2. `stops[]` **仍然没有坐标**（P0-1 未修）。
+
 ---
 
 ## 6. 数据契约与缺口（**前端/后端联调的关键**）

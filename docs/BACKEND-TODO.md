@@ -162,6 +162,12 @@ WHERE rs.route_id = ? ORDER BY rs.stop_order
    `hotel_budget_tiers.source_type` **不是**协议里的 `data_status`，别混用（建议改名以免误读）。
 4. `updated_at` 不要再用 `date.today()` 兜底，否则每次重建都"最新"。
 
+5. ⚠️ **你已经加的 `data_status: "demo_template"` 不在拍板词表里**（2026-09-20 在最新容器实测到）：
+   `route_planning` 现在会返回顶层 `data_status: "demo_template"`，但拍板的 5 个值是
+   `sample` / `maintained` / `live` / `pending` / `stale` —— 演示模板数据请改成 **`sample`**
+   （前端会显示"演示数据"；保持 `demo_template` 的话前端只能显示"待核验"，虽然不报错但信息量更低）。
+   顺带：你新增的 `notice` 与 `planning_preferences` 方向很好，`notice` 正是前端想要的诚实提示。
+
 **验收**：结构化字段里能拿到 `data_status` + `updated_at` + `sources`；未知票价的 `price_min/max` 是 `null` 而不是 `0`。
 
 ### P0-3　含地名的旅游句被漏判，进不了路线规划
@@ -188,8 +194,10 @@ WHERE rs.route_id = ? ORDER BY rs.stop_order
 ## 3. 🟡 P1：影响体验与可执行性的
 
 ### P1-1　路线规划忽略硬约束
-- **现状（实测）**：「南充半天三国路线」仍回 **8 小时**一日模板；「广元半天」仍回 **16 小时**两日模板，
+- **现状（实测，2026-09-20 在最新容器复测）**：「南充半天三国路线」仍回 **8 小时**一日模板；「广元半天」仍回 **16 小时**两日模板，
   而且**重复安排已完成**的昭化古城。
+  > ✅ **已有进展**：`planning_preferences` 里 `duration_hours` **已经正确解析成 4**（说明偏好解析好了），
+  > 只是**没拿它去筛模板** —— 所以现在缺的是"把已解析的约束真正用于选择/裁剪"。
 - **要做什么**：按时长/人群做**硬约束筛选**（选不出就别硬套模板，返回 `found:false` + 说明更好），
   支持"排除已完成章节/景点"，并在 `selection_reason` 里给出**逐节点取舍理由**（现在只是一句通用说明）。
 - **验收**：半天请求不再返回 8/16 小时模板；已完成景点不再出现。

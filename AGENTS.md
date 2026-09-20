@@ -203,6 +203,20 @@ cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
 #   http://127.0.0.1:8001/xxx.js 与本地的 frontend/xxx.js（应一致）。
 ```
 
+### 用「最新仓库」起一个独立容器（2026-09-20 起，DSH 自建）
+```powershell
+$docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
+cd "D:\DSH Workspace\sgt-latest-dev"
+& $docker compose -f docker-compose.latest.yml up -d --build    # 构建 + 启动（上下文 = 主仓库）
+& $docker compose -f docker-compose.latest.yml logs -f          # 看 seed/ingest 与访问日志
+& $docker compose -f docker-compose.latest.yml down             # 停止并删容器（数据目录保留）
+```
+- 访问 **http://localhost:8002**（宿主 8002 → 容器 8000）；容器名 `sanguo-latest-api`，镜像 `sanguo-latest:dev`（约 440MB）。
+- 与 8001 上那个联调快照容器**并存互不干扰**：8001 = 快照（`master@4fcccad`）+ 实时挂载前端；
+  8002 = **当前 `dev` 代码**烘焙进镜像（**验证"最新仓库能不能跑"用这个**）。
+- 数据卷 = 主仓库的 `data/`（`data/processed/*` 已被 `.gitignore` 忽略，不会弄脏 git）。
+- 这个配置**不使用**仓库自带的 Docker 文件（那两套都有问题，见第 3 节「已知问题 4」与 `docs/BACKEND-TODO.md` 4.6）。
+
 ### 验收标准
 - `GET /health` → `{"status":"ok", ...}`
 - `GET /` → 返回前端页面（含「三国文化旅游助手」）
@@ -257,6 +271,7 @@ cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
 | 给 Codex 的接手提示词 | `docs\HANDOFF-TO-CODEX.md`（自包含，可直接粘贴给新会话） |
 | 后端全部接口字典 | `docs\BACKEND-API-REFERENCE.md`（HTTP + MCP、逐字段、边界、错误码、源码索引） |
 | **后端工作单（队友）** | `docs\BACKEND-TODO.md`（P0/P1/P2、实测证据、改哪里、验收标准、自测命令） |
-| 前端当前问题清单 | `docs\FRONTEND-ISSUES.md`（F1–F9 前端自己改 / B1–B9 交后端队友 / C1–C4 内容 / D1–D4 协作流程） |
+| 前端当前问题清单 | `docs\FRONTEND-ISSUES.md`（F1–F10 前端自己改 / B1–B9 交后端队友 / C1–C4 内容 / D1–D4 协作流程） |
+| 用最新仓库起容器（8002） | `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`（见第 4 节「用最新仓库起一个独立容器」） |
 | 前端对接协议 / 缺口清单 | `docs\BACKEND-API.md` |
 | 部署 | 快照目录 `sgt-snapshot-4fcccad-827adc8\`（DSH 自建的 `Dockerfile.backend` + `docker-compose.backend.yml`）；仓库自带的 `deploy/` 与根目录 Docker 配置目前都有问题，见第 3 节 |

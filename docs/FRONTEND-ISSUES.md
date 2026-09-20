@@ -28,6 +28,8 @@
 | F8 | **视觉/验收证据只在 Codex 本地机器** | `frontend/START-HERE.md` 指向 `C:/Users/Rocket/.codex/visualizations/.../*.png` | 别人（含新会话）无法复核验收结论 | 把关键截图纳入仓库（如 `frontend/tests/evidence/`）并在 HANDOFF 里引用相对路径 |
 | F9 | **前端文档里的 tip/状态已过期，会误导下一个 agent** | `frontend/START-HERE.md` 写「功能基线 `4485f1b`、接手时 HEAD `b425db7`」，实际前端已到 **`55bb0a0`**；该文件自己第 78 行也提醒"旧 tip 是历史状态" | 新会话按旧 tip 判断，容易误判"无改动/需回退" | 每轮收工把 START-HERE 顶部增量段与 HEAD 一起刷新（或改成只引用 `git log`，不写死 SHA） |
 
+| F10 | **后端新增了可展示的字段，前端还没用** | 最新容器实测：`route_planning` 现在多返回 `notice`（"路线顺序和停留时间来自 Demo 模板；实时交通、天气…需接入后确认"）与 `planning_preferences`（已解析的城市/时长/人群/交通/兴趣） | 用户看不到"这是演示模板"的诚实提示，也看不到后端已经按 `4 小时` 理解了需求（结果却给了 8 小时模板）——**冲突没被摊开** | 在路线卡片里展示 `notice` 与 `planning_preferences`（并在与 `route.route.duration_hours` 冲突时明确标注差异）；注意 `data_status: "demo_template"` 未在词表内，前端当前显示"待核验"属**正确降级**，等后端改成 `sample` 后自动显示"演示数据" |
+
 ---
 
 ## 二、被后端阻塞的（owner：后端队友）
