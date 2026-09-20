@@ -25,7 +25,7 @@ class TravelAgentService:
             return {"intent": intent.__dict__, "answer": self._answer_budget(message), "route": None}
 
         retrieval_hits, recall_report = self.hybrid_retriever.retrieve(message, intent=intent.intent)
-        answer_text = self.answer_chain.run(
+        answer_result = self.answer_chain.run_result(
             message=message,
             intent=intent,
             hits=retrieval_hits,
@@ -35,7 +35,7 @@ class TravelAgentService:
         )
         return {
             "intent": intent.__dict__,
-            "answer": answer_text,
+            **answer_result,
             "retrieval": recall_report.model_dump(),
         }
 

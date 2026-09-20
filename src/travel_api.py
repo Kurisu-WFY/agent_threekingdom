@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import json
 from datetime import date as CalendarDate
 from typing import Literal
 
@@ -58,11 +59,29 @@ def sample_meta():
 
 
 @router.get("/spots")
-def spots(city: str = ""):
+def spots(city: str = "", audience: str = "", theme: str = ""):
     records = list_scenic_spots(city.strip() or None)
-    items = [{"id": r["spot_id"], "name": r["name"],
-              "description": r.get("address") or "景点资料待补充", **sample_meta()}
-             for r in records]
+    def string_list(value):
+        try:
+            parsed = json.loads(value or "[]")
+            return [v for v in parsed if isinstance(v, str)] if isinstance(parsed, list) else []
+        except (TypeError, ValueError):
+            return []
+    items = []
+    for r in records:
+        themes = string_list(r.get("theme_json"))
+        users = string_list(r.get("suitable_users_json"))
+        if audience and audience not in users:
+            continue
+        if theme and not any(theme in t for t in themes):
+            continue
+        items.append({"id": r["spot_id"], "name": r["name"], "city": r["city"],
+                      "description": r.get("address") or "景点资料待补充",
+                      "themes": themes, "suitable_users": users,
+                      "recommended_duration_min": r.get("recommended_duration_min"),
+                      "open_time": r.get("open_time"), "relation_level": r.get("relation_level"),
+                      "coordinates": None, "coordinate_system": None,
+                      "location_note": "数据库坐标尚未核验，不能用于精确落点或导航。", **sample_meta()})
     return envelope("ok" if items else "empty", "景区演示资料；开放时间及票价须核验。", {"spots": items})
 
 

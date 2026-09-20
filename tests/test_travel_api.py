@@ -29,6 +29,9 @@ class TravelApiTests(unittest.TestCase):
         data = self.client.get('/api/travel/spots', params={'city': '南充'}).json()
         self.assertEqual(data['status'], 'ok')
         self.assertTrue(data['data']['spots'])
+        self.assertIsNone(data['data']['spots'][0]['coordinates'])
+        self.assertIsInstance(data['data']['spots'][0]['themes'], list)
+        self.assertEqual(self.client.get('/api/travel/spots?city=南充&audience=不存在').json()['status'], 'empty')
         self.assertEqual(data['data']['spots'][0]['data_status'], 'sample')
         self.assertEqual(self.client.get('/api/travel/spots?city=不存在').json()['status'], 'empty')
 

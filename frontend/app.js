@@ -121,6 +121,7 @@ function metaNode(data) {
   const intent = data && data.intent && data.intent.intent;
   if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
   meta.append(trustNode(data));
+  if (data?.generation) meta.append(tag((data.generation.kind === 'llm' ? '模型回答 · ' : '检索兜底 · ') + data.generation.reason));
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
@@ -429,12 +430,16 @@ render();
 
 async function checkHealth() {
   let connected = false;
+  let modelConfigured = false;
   try {
     const response = await fetch('/health', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
-    connected = response.ok && (await response.json()).status === 'ok';
+    const health = await response.json();
+    connected = response.ok && health.status === 'ok';
+    modelConfigured = health.chat?.configured === true;
   } catch { /* 将不可达状态显示在界面中 */ }
   document.querySelectorAll('[data-service-status]').forEach(node => {
-    node.textContent = connected ? '服务可用' : '服务暂不可达';
+    node.textContent = connected ? (modelConfigured ? '模型已配置' : '检索演示模式') : '服务暂不可达';
+    node.title = connected ? '模型已配置不代表连接测试通过；请查看每条回答的模型/兜底标记。' : '请检查后端是否启动。';
     node.dataset.state = connected ? 'online' : 'offline';
   });
 }

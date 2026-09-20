@@ -40,6 +40,9 @@ def health() -> dict:
     settings = get_settings()
     return {
         "status": "ok",
+        "chat": {"configured": service.answer_chain.llm.available(),
+                 "mode": "model_configured" if service.answer_chain.llm.available() else "retrieval_only",
+                 "connection_verified": False},
         "vector_backend": settings.vector_backend,
         "milvus_collection": settings.milvus_collection,
         "redis": redis_health(),

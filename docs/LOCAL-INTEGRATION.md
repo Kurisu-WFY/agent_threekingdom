@@ -1,5 +1,17 @@
 # 本机前后端审查与接入（2026-09-20）
 
+## 后续更新：路线1＋路线2已启用
+
+- 页面仍使用同源 REST 和 `/chat`，浏览器不连接MCP、不持有模型密钥。
+- 景区接口补主题、人群、建议时长、开放说明，支持 audience/theme 查询筛选；无核验坐标返回null。卡片可直接“向导讲讲这里”或“规划这座城市”。
+- `/chat` 复用 `.env` 中现有 DeepSeek 配置；2026-09-20在真实浏览器点击万卷楼卡片，已成功生成模型回答。未改密钥，未调用女娲平台Agent。
+- 回答增加 generation.kind（llm / retrieval_fallback）与降级原因。模型配置状态不冒充连接已验证；全部C级或召回不合格时不调用模型。
+- 历史消息只接收user/assistant角色，取最近20条；新对话不共享模型内存。保留原有前端独立会话机制。
+- 后续测试：15项Python测试及15组前端回归通过；新增模型失败、历史隔离、模式传递、C级证据保护测试。
+- 下文mock预览说明是首轮联调记录。当前8010服务已读取现有真实模型配置，发送文化问答可能消耗模型额度；如需离线演示再显式设置 LLM_BACKEND=mock。
+
+真实模型重启：在项目目录先 `Remove-Item Env:LLM_BACKEND -ErrorAction SilentlyContinue`，设置 `VECTOR_BACKEND=local`，使用下方uvicorn命令，模型配置自动从.env读取。不要把Nuwa电脑绑定密钥当成模型API密钥。
+
 工作区：`D:\agent_threekingdom`；分支：`feat/frontend-backend-integration`。未合并或推送。
 
 ## 已修复

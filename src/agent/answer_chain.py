@@ -29,6 +29,11 @@ class AnswerChain:
         self.llm = llm or LLMClient()
 
     def run(
+        self, message, intent, hits, report, *, mode="大众", history=None,
+    ) -> str:
+        return self.run_result(message, intent, hits, report, mode=mode, history=history)["answer"]
+
+    def run_result(
         self,
         message: str,
         intent: IntentResult,
@@ -37,9 +42,13 @@ class AnswerChain:
         *,
         mode: str = "大众",
         history: list[dict[str, str]] | None = None,
-    ) -> str:
+    ) -> dict:
+        def fallback(reason):
+            return {"answer": build_guarded_answer(message, intent, hits, report),
+                    "generation": {"kind": "retrieval_fallback", "reason": reason}}
+
         if not hits:
-            return build_guarded_answer(message, intent, hits, report)
+            return fallback("资料不足；未调用模型。")
 
         mode_rule = MODE_RULES.get(mode, MODE_RULES["大众"])
         warning_text = "\n".join(f"- {warning}" for warning in report.warnings) or "通过"
@@ -52,12 +61,19 @@ class AnswerChain:
             "提及依据时用《三国志》、地方志、景区资料等一般性表述，不要编造具体页码或出处。"
         )
 
-        messages = list(history or []) + [{"role": "user", "content": message}]
+        messages = [item for item in (history or [])[-20:]
+                    if item.get("role") in ("user", "assistant") and isinstance(item.get("content"), str)]
+        messages += [{"role": "user", "content": message}]
         messages = [{"role": "system", "content": system}] + messages
 
-        if not self.llm.available() or not report.passed:
-            return build_guarded_answer(message, intent, hits, report)
+        if not self.llm.available():
+            return fallback("模型未启用或未配置密钥；当前为知识检索回答。")
+        if not report.passed or all(hit.chunk.source_level == "C" for hit in hits):
+            return fallback("检索证据不足；未调用模型生成史实。")
         try:
-            return self.llm.chat(messages)
+            answer = self.llm.chat(messages)
+            if not isinstance(answer, str) or not answer.strip():
+                raise ValueError("empty model answer")
+            return {"answer": answer, "generation": {"kind": "llm", "reason": "模型基于本次检索资料生成，史料仍需核验。"}}
         except Exception:
-            return build_guarded_answer(message, intent, hits, report)
+            return fallback("模型请求失败；已降级为知识检索回答，可稍后重试。")
