@@ -646,3 +646,36 @@
 - **下一步**：① 协调者决定是否推送（两个分支 / 是否把 `master` 一起 FF 到候选分支）；
   ② 后端两处 P0 缺口（任务板 #33，坐标其实已具备，只差 SQL）；③ dev 的 MCP 新接口待合入。
 - **卡点**：**未推送**（协调者选择“先不推”）；`origin/dev` 已领先 master，是否先合 dev 待定。
+
+### 2026-09-20 DSH · 前端推送 dev（协调者指令）+ 前端问题清单
+- **协调者指令**：⛔ **不许直接推 master**，改推 `dev`。
+- **推送结果**：`origin/dev`：`546cabf` → **`b8a8ce3`**（**纯快进，无强推**）；**`master` 未动**（仍 `4fcccad`）。
+  **做法**：`dev` 与前端分支在 `4fcccad` 分叉，**直接推会被非快进拒绝**（也绝不能强推），
+  所以先从 `origin/dev` 建 `chore/frontend-into-dev`（新 worktree `D:\DSH Workspace\sgt-dev-integration`，
+  稀疏检出 `frontend docs`），依次 `merge feat/frontend-iteration-3`（Codex 最新前端）与
+  `merge chore/merge-frontend-into-master`（文档提交），**两次合并零冲突**——dev 侧改的是
+  `.idea/**`、`README.md`、`prompts/**`、`src/mcp_server.py`、`src/mcp_stdio_server.py`、
+  `src/planning/route_planner.py`，与 `frontend/**`、`docs/**` **路径完全不重叠**。
+- **推送前验证（全部通过）**：① 前端树与 `55bb0a0` **逐字节一致**（`1a14ca3…`）；
+  ② 队友的 `src`/`prompts`/`.idea`/`README.md` **保留 dev 版本**；③ **零文件丢失**
+  （两侧 `--diff-filter=D` 均为空）；④ 相对 `origin/dev` 的改动面 = `frontend/**` 48 个 +
+  `docs/**` 5 个 + 3 个根 md，**「其他」为 0**；⑤ **15/15 前端回归通过** + 全部 JS 语法通过；
+  ⑥ 先 `push --dry-run` 确认是快进才真推。
+- **新增 `docs/FRONTEND-ISSUES.md`**：把当前前端问题按**责任人**分四组 ——
+  **F1–F9（前端自己改）**：首屏 13 个同步脚本 / ≈288 KB 且无压缩、地图数据 3.37 MB（1.76 MB + 1.38 MB JSON）
+  且懒加载待确认、两张图 537 KB 未压、地图偶发长帧（p95 33.4 ms / 最大 150.3 ms）、
+  移动端触摸与无障碍未系统验收、localStorage 只有本机（问题上限 200 条）、四个 `/api/travel/*` 开关待联调、
+  验收截图只在 Codex 本地目录、前端文档里的 HEAD tip 已过期；
+  **B1–B9（交后端队友）**：`stops` 缺坐标（**数据其实已有，只差一行 SQL**）、价格 `data_status` 与未知金额 `0`、
+  「从南充出发，去阆中、剑阁，再到广元旅游」被漏判为 `culture_qa`、路线忽略硬约束（南充半天仍 8 小时模板）、
+  `placeId↔spot_id` 无稳定映射、米仓道缺坐标、四接口未实现（GET 404 / POST 405）、上下文压缩不保证、
+  dev 上队友改过的 MCP/route_planner 待合 master 后需重跑前端联调；
+  **C1–C4（内容负责人）**：五条故事线模板正文/来源、文化节点正文与分层依据、票价开放时间来源、实景图片授权；
+  **D1–D4（协作流程）**：`docs/` 在旧 worktree 读不到、`.venv` 仍被跟踪、master 落后、worktree 增至 4 个。
+- **改了哪些文件**：新增 `docs/FRONTEND-ISSUES.md`；更新 `AGENTS.md`、`docs/TASKS.md`（#31 改写、新增 #42/#43）、
+  `docs/HANDOFF.md`（本条）。**主工作树 `frontend/**` 与 `src/**` 仍未改一行。**
+- **当前状态**：可运行。`dev` 已含前端全量 + 协作文档；容器 healthy（http://localhost:8001，挂载迭代 worktree）。
+- **下一步**：① 前端按 `FRONTEND-ISSUES.md` 的 **F 组**自改（F1/F2/F3 收益最直接，且不依赖任何人）；
+  ② **B 组**交后端队友；③ 决定 `dev → master` 时机（现在是干净快进）；
+  ④ `sgt-dev-integration` worktree 可 `git worktree remove`（分支保留）。
+- **卡点**：无阻塞。注意 `master` 仍落后于 `dev`（协调者要求不推 master）。

@@ -30,11 +30,13 @@
 
 ## 3. ⚠️ 当前状态（重要，务必先看）
 
-**远端 `origin/master` = `4fcccad`；`origin/dev` = `546cabf`（2026-09-20 又前进了 5 个提交）。**
-队友已把补齐的 5 个实现模块推上去了（`7537459 补充`，随 `4fcccad` 合入 master），
-**远端 master 现在是一个完整可跑的后端**。
-⚠️ dev 上的新提交动了 **MCP 侧**（工具 7 → 8 个、新增 `src/mcp_stdio_server.py` stdio 入口）、
-`src/planning/route_planner.py` 与 `prompts/*`，**尚未合进 master**；差异见 `docs/BACKEND-API-REFERENCE.md` 第 5.2 节。
+**远端 `origin/master` = `4fcccad`；`origin/dev` = `b8a8ce3`（2026-09-20 前端全量成果已推上 dev）。**
+队友已把补齐的 5 个实现模块推上去了（`7537459 补充`，随 `4fcccad` 合入 master），**远端 master 现在是一个完整可跑的后端**。
+⛔ **协调者 2026-09-20 明确：不许直接推 master。** master 仍是 `4fcccad`，**未动**。
+`dev` 现在包含三部分：① 队友的 MCP 侧改动（工具 7→8 个、新增 `src/mcp_stdio_server.py` stdio 入口）、
+`src/planning/route_planner.py` +31 行、`prompts/*`；② **前端全量成果**（Codex 的 21 个提交，前端 `55bb0a0`）；
+③ **协作文档入库**（`AGENTS.md`/`ARCHITECTURE.md`/`TESTING.md`/`docs/`）。
+接口差异见 `docs/BACKEND-API-REFERENCE.md` 第 5.2 节；前端遗留问题见 `docs/FRONTEND-ISSUES.md`。
 
 > 🔁 **如果你是新开的会话 / 新 agent**：先读
 > `D:\DSH Workspace\HANDOFF-threekingdom-20260912.md`（**自包含交接**，含全部路径、命令、坑与禁令），
@@ -47,9 +49,10 @@
 | 缺实现模块 | ✅ 队友已推送（`7537459`）。DSH 那份实现了同一批模块但**不要推**，见文末遗留分支 |
 | 后端可跑 | ✅ 已用全新克隆 + Docker 实测：入库 8 条演示知识，`/health` 与三条意图全过 |
 | 前端（冻结基线） | ⏸️ `feat/frontend-iteration-2` @ `827adc8`（功能代码最后提交 `adccd3c`）——**仍是冻结基线**，主工作树就停在这、`frontend/` 保持干净 |
-| 前端（合并候选） | ✅ 分支 `chore/merge-frontend-into-master` = 前端合并提交 `9623be1`（解 `index.html` add/add 冲突）+ 一条「协作文档入库」提交。**推送已就绪**：凭据 OK、`push --dry-run` 通过、从 `origin/master` 到该分支是**干净的 fast-forward**。**尚未 push**（协调者 2026-09-20：先不推） |
-| 前端（当前迭代） | 🚧 `feat/frontend-iteration-3` @ `55bb0a0`：Codex 已在其上完成 21 个提交（地图分级、故事线、陈寿常驻栏、探索志、视觉令牌…，15 组回归 + 桌面/375px 浏览器验收）。**同样已就绪可推** |
-| 交付快照 | ✅ 见下节（**前端挂载源已改指迭代 worktree**，见「前端两分支 + 三个工作树」） |
+| 远端 dev | ✅ `b8a8ce3` = 队友后端改动 + **前端全量**（`55bb0a0`）+ **协作文档**；**master 未动**（`4fcccad`） |
+| 前端（合并候选） | ✅ 分支 `chore/merge-frontend-into-master` = 前端合并提交 `9623be1` + 一条「协作文档入库」提交。**2026-09-20 前端已推到 `dev`**（`dev` = `b8a8ce3`）；该候选分支保留本地备用（要进 master 时 `dev → master` 是干净快进） |
+| 前端（当前迭代） | 🚧 `feat/frontend-iteration-3` @ `55bb0a0`：Codex 21 个提交（地图分级、故事线、陈寿常驻栏、探索志、视觉令牌…，15 组回归 + 桌面/375px 浏览器验收）。**已并入 `dev`** |
+| 交付快照 | ✅ 见下节（**前端挂载源已改指迭代 worktree**，见「前端分支与工作树」） |
 
 ### 📦 快照（当前交付物）
 
@@ -61,7 +64,7 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 `Dockerfile.backend` + `docker-compose.backend.yml`（**不使用**仓库里的 Docker 配置），
 目录内 `SNAPSHOT.md` 有完整说明。当前跑在 **http://localhost:8001**（容器 `sgt-snapshot-api`）。
 
-### 🚧 前端两分支 + 三个工作树（2026-09-12 本轮变更）
+### 🚧 前端分支与工作树（2026-09-12 建立，2026-09-20 推送后更新）
 
 **本轮起团队只做前端**（协调者 2026-09-12 决定）：前端已解冻开新分支，合并候选已做好，等人 review；
 `src/**`、`data/**`、`prompts/**` 的缺口一律写进任务板交人，不归前端组动手。
@@ -69,22 +72,27 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 | 工作树 | 分支 / 提交 | 用途 |
 |---|---|---|
 | `D:\DSH Workspace\agent_threekingdom` | `feat/frontend-iteration-2` @ `827adc8` | **主工作树 = 冻结基线**；带 1100 项 `.venv` 本地改动 → **别切分支、别 pull、别清 `.venv`** |
-| `D:\DSH Workspace\sgt-merge-frontend` | `chore/merge-frontend-into-master` @ `9623be1` | 合并候选（稀疏检出，只物化 `frontend/`）→ 待人 review 后进 `master` |
+| `D:\DSH Workspace\sgt-merge-frontend` | `chore/merge-frontend-into-master` @ `ad0f248` | 合并候选（稀疏检出 `frontend`）= 前端合并提交 `9623be1` + 文档入库提交；**保留备用** |
 | `D:\DSH Workspace\sgt-frontend-iter3` | `feat/frontend-iteration-3` @ `55bb0a0` | **前端迭代工作区：Codex 接手就在这里干活**（稀疏检出，只物化 `frontend/`） |
+| `D:\DSH Workspace\sgt-dev-integration` | `chore/frontend-into-dev` @ `b8a8ce3` | **2026-09-20 的 dev 整合分支**（稀疏检出 `frontend docs`）→ **已推送到 `origin/dev`**；任务完成后可 `git worktree remove`（分支仍在） |
 
 - 两个新 worktree 都是**稀疏检出**（`git sparse-checkout set frontend`）：只物化 `frontend/`，
   所以 `.venv` 一个文件都不落盘（0.02 MB，而不是几百 MB）。
-  `docs/` 的情况：2026-09-20 的「文档入库」提交之前它只存在于主工作树（untracked）；
-  **现在 `sgt-merge-frontend`（合并候选分支）里已经有 `docs/`**（一条独立提交，见「仍未入库」表），
+  `docs/` 的情况：`sgt-merge-frontend`（候选）与 `sgt-dev-integration`（**已推 dev**）里都有 `docs/`；
   但 `sgt-frontend-iter3`（迭代分支，基于更早的 `9623be1`）里**仍然没有**，要读请走主工作树绝对路径。
 - **合并候选 `9623be1`** 实测只有 `frontend/index.html` 一处 add/add 冲突，已解（取前端第二迭代版；
   `origin/master` 侧是早期「单文件版」）。验证：`frontend` 树哈希与 `827adc8` **完全相同**、
   17 文件 0 差异、改动面**只有 `frontend/**`**、`src`/`deploy` **零污染**。
-  **未 push、未合 master**（AGENTS 6.5：由人 review）。
+  **已随 2026-09-20 的 dev 推送生效**（`origin/dev` = `b8a8ce3`）；**`master` 未动**。
 - **迭代分支 `55bb0a0`** = 合并候选 + `aff0c37`（真实联调缺陷修复：后端 stops 无坐标且落不到位时
   不再清空地图，新增 `MapRouteCore.resolveRoute`）+ Codex 随后 20 个提交（市县分级地图、故事线与故事地图、
   万卷史官陈寿常驻栏、三国探索志、整站视觉令牌、已授权实景照片…；含浏览器验收与 15 组回归）。
-  **尚未 push**（推送已就绪，见上表）。
+  **已并入 `origin/dev`（`b8a8ce3`）**。
+- **2026-09-20 推送（协调者指令：不许推 master）**：从 `origin/dev`（`546cabf`）建
+  `chore/frontend-into-dev`，先合 `feat/frontend-iteration-3`、再合文档提交，得到 **`b8a8ce3`**，
+  以**纯快进**推到 `origin/dev`。验证：前端树与 `55bb0a0` **逐字节一致**、队友的
+  `src/**`/`prompts/**`/`README.md`/`.idea` **保留 dev 版本**、**零文件丢失**、
+  相对 dev 的改动面只有 `frontend/**` + `docs/**` + 3 个根 md、**15/15 前端回归通过**。
 - **联调环境变更**：快照 `docker-compose.backend.yml` 的前端挂载源已从主工作树改为
   **`D:\DSH Workspace\sgt-frontend-iter3\frontend`**，容器已重建（实测服务端 9 个文件与迭代分支逐字节一致）
   → 改前端刷新即生效，而且看到的就是**迭代分支**的内容。
@@ -136,7 +144,7 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 
 | 项 | 说明 | 建议 |
 |---|---|---|
-| ~~`AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/`~~ | ✅ **2026-09-20 已入库**：8 个文件作为一条独立提交放在 `chore/merge-frontend-into-master` 分支上（会随它进 master）。⚠️ 这些提交之前是 untracked，**只存在于主工作树**；从**旧分支**（如 `feat/frontend-iteration-3`）建的 worktree 里**仍然读不到**，要读请走主工作树绝对路径 | 已处理 |
+| ~~`AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/`~~ | ✅ **2026-09-20 已入库并推送**：8 个文件作为一条独立提交，现已在 **`origin/dev`（`b8a8ce3`）** 与本地候选分支 `chore/merge-frontend-into-master` 上。⚠️ `sgt-frontend-iter3`（基于更早的 `9623be1`）里**仍然读不到** `docs/`，要读请走主工作树绝对路径，或把前端工作区改从 `dev` 派生 | 已处理 |
 | 根目录 `Dockerfile`、`docker-compose.yml`、`docker-entrypoint.sh`（主工作树里未跟踪的那三个） | 是 DSH 早先做的**Web API 版**，与队友新增的根 MCP 版**同名不同用途**，会造成混淆 | 明确取舍后删掉其中一套 |
 | 主工作树里 5 个未跟踪的模块副本 | 队友已推送官方版本，本地这几份（内容不同）**已被备份**到 `D:\DSH Workspace\sgt-local-backup-20260911\` | 可删 |
 
@@ -235,5 +243,6 @@ cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
 | 前端迭代工作区 | `D:\DSH Workspace\sgt-frontend-iter3`（分支 `feat/frontend-iteration-3`，稀疏检出只含 `frontend/`） |
 | 给 Codex 的接手提示词 | `docs\HANDOFF-TO-CODEX.md`（自包含，可直接粘贴给新会话） |
 | 后端全部接口字典 | `docs\BACKEND-API-REFERENCE.md`（HTTP + MCP、逐字段、边界、错误码、源码索引） |
+| 前端当前问题清单 | `docs\FRONTEND-ISSUES.md`（F1–F9 前端自己改 / B1–B9 交后端队友 / C1–C4 内容 / D1–D4 协作流程） |
 | 前端对接协议 / 缺口清单 | `docs\BACKEND-API.md` |
 | 部署 | 快照目录 `sgt-snapshot-4fcccad-827adc8\`（DSH 自建的 `Dockerfile.backend` + `docker-compose.backend.yml`）；仓库自带的 `deploy/` 与根目录 Docker 配置目前都有问题，见第 3 节 |

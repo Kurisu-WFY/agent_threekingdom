@@ -50,7 +50,7 @@
 | 8 | 后端意图识别增强 | DSH | `src/agent/intent_router.py`、`orchestrator.py` | TODO | 目前是关键词规则，口语/同义词易漏判（如"陈寿跟南充有啥关系"可能漏）。**2026-09-12 前端组实测补充**：「阆中古城门票多少钱」只回酒店预算 220–420 CNY、**没有任何门票信息** |
 | 21 | 协作文档入库（`AGENTS.md`/`ARCHITECTURE.md`/`TESTING.md`/`docs/`） | 人 | 同名文件 | TODO | 现在只在主工作树里、从未提交；任何 worktree / 全新克隆都读不到，违背"共同读取"的初衷 |
 | 22 | 清理根目录重复 Docker 文件 | 人 | 根 `Dockerfile`、`docker-compose.yml`、`docker-entrypoint.sh` | TODO | 主工作树里未跟踪的那三个是 DSH 早先做的 **Web API 版**；队友新增的根版是 **MCP 版**，同名不同用途 → 必须明确取舍 |
-| 31 | 人 review 后把前端合入 `master` | 人 | `frontend/**` | **待确认** | 两个本地候选：`chore/merge-frontend-into-master`（= 前端合并提交 **`9623be1`** + **文档入库提交**）；`feat/frontend-iteration-3` = **`55bb0a0`**（Codex 在其上又完成 21 个提交：地图分级/故事线/陈寿常驻/探索志/视觉令牌…）。**推送已就绪**：凭据 OK、`push --dry-run` 通过，且从 `origin/master` 到候选分支是**干净的 fast-forward**。**2026-09-20 协调者决定：先不推**（保持就绪，随时可推） |
+| 31 | 人 review 后把前端合入 `master` | 人 | `frontend/**` | TODO | **前端已按协调者指令推到 `dev`（不是 master）**：`origin/dev` = **`b8a8ce3`**；`master` 仍是 `4fcccad`、**未动**。以后要进 master 时，`dev → master` 现在是**干净的快进**；本地另有合并候选分支 `chore/merge-frontend-into-master`（`9623be1` + 文档提交）备用 |
 | 32 | 前端浏览器视觉验收（桌面 + 手机） | 人 / DSH | `frontend/**` | DONE | Codex 已完成，证据与限制见 #34 及 frontend/HANDOFF.md |
 | 33 | 后端补两个 P0 缺口：`stops[].coordinates` + 价格 `data_status`/`sources` | 后端 / 人 | `src/**`、`data/**` | TODO | 实测证据见 `docs/HANDOFF.md` 2026-09-12 条：`stops` 无坐标；票价实测回 `0.0 - 0.0 CNY（manual_demo）`（未知写成 0，前端照实显示会像"免费"）；结构化字段无 `data_status`/`sources`/`updated_at`。**前端已就绪：坐标一补上地图自动对齐（已实测对照）** |
 
@@ -67,7 +67,9 @@
 
 | # | 任务 | 完成方 | 备注 |
 |---|---|---|---|
-| 41 | **协作文档入库** | DSH（前端组） | 按协调者 2026-09-20 决定，`AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/`（共 8 个 md）已作为**一条独立提交**放在 `chore/merge-frontend-into-master` 分支上，会随它进 master。**未 push**（见 #31）|
+| 42 | **把前端推送到远端 `dev`**（协调者指令：不许推 master） | DSH（前端组） | `origin/dev`：`546cabf` → **`b8a8ce3`（纯快进，无强推）**。整合方式：从 `origin/dev` 建 `chore/frontend-into-dev`，先合 `feat/frontend-iteration-3`（Codex 最新前端），再合文档提交。验证：前端树与 `55bb0a0` **逐字节一致**、`src`/`prompts`/`README.md`/`.idea` 保留 dev 版本、**零丢失**、相对 dev 的改动面只有 `frontend/**`+`docs/**`+3 个根 md、**15/15 回归通过**。**master 未动**（仍 `4fcccad`） |
+| 43 | **整理当前前端问题清单** | DSH（前端组） | 新增 `docs/FRONTEND-ISSUES.md`：**F1–F9** 前端自己改（首屏 13 个脚本无压缩/地图数据 3.37 MB 懒加载/图片 537 KB 未压/偶发长帧/移动端触摸与无障碍未系统验收/localStorage 边界/四接口开关/验收截图只在本地/前端文档 tip 过期）、**B1–B9** 交后端队友（坐标缺 SQL 取出、价格 `data_status`+未知 0、意图漏判、硬约束、ID 映射、米仓道缺坐标、四接口未实现、上下文压缩、dev 待合 master）、**C1–C4** 内容、**D1–D4** 协作流程 |
+| 41 | **协作文档入库** | DSH（前端组） | `AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/`（共 8 个 md）作为**一条独立提交**入库。**2026-09-20 已随 dev 推送生效**（`origin/dev` = `b8a8ce3`）；合并候选分支 `chore/merge-frontend-into-master` 上也有同一份 |
 | 40 | **后端所有接口整理成文档** | DSH | 新增 `docs/BACKEND-API-REFERENCE.md`：HTTP（`/health`、`/chat` 四意图多态矩阵、静态挂载、`/docs`/`/openapi.json`、错误码、CORS）+ MCP（7 个工具 + dev 上 8 个与 stdio 入口），逐字段与边界**全部对运行中的容器实测**。**关键发现**：①`route.stops` 缺坐标其实是 `get_route_detail` 没 SELECT `scenic_spots.lat/lng`（**数据本来就有**，一行 SQL 的事）；②`REDIS_ENABLED` 环境变量**无效**（`Settings` 没这个字段）；③`spot_tickets.data_status=manual_demo` **不在协议允许集**里 |
 | 25 | **把 Codex 前端分支并进 `master`（产出合并候选）** | DSH（前端组） | `9623be1`：实测只有 `frontend/index.html` 一处 add/add 冲突，解冲突取前端分支版本（`origin/master` 那份是早期单文件版；**#1 的 `[hidden]` 修复在 `styles.css` 中未丢**）。验证：合并后的 `frontend` 树哈希与 `827adc8` **完全相同**、17 个文件 0 差异、改动面只有 `frontend/**`、`src`/`deploy` 零污染。**未 push、未合 master**（见 #31） |
 | 7 | **前端对真实后端联调 + 修真实缺陷** | DSH（前端组） | `aff0c37`：后端 stops 无坐标且落不到位时不再清空地图（新增 `resolveRoute`）。验证：真实响应回放（冻结版 0 个已定位点 → 修复版保留「南充市」）+ 含 GCJ-02 坐标对照与冻结版行为一致 + 前端回归全过；浏览器验收见 #32 |
