@@ -10,7 +10,7 @@
 面向 **川东北（南充 / 阆中 / 广元）三国文化旅游**的智能体后端 + Web 前端。
 
 - **后端**：Python 3.11 服务。意图识别 → 分流到「文化问答（RAG）/ 路线规划 / 预算票价」；
-  对外提供 HTTP API（`/health`、`/chat`）与 MCP 服务器（`/sse`，7 个工具）。
+  对外提供 HTTP API（`/health`、`/chat`）与 MCP 服务器（`/sse`，**8 个工具**，另有 stdio 入口 `src/mcp_stdio_server.py`）。
 - **前端**：单页 Web UI（无框架、无依赖），由后端挂载在 `/` 根路径，调用同源 `/chat`。
 - **设计理念**：静态内容（文化知识、景区、票价维护数据、路线模板、酒店预算档位）入库；
   动态信息（实时票价、班次、天气）交给外部 MCP 工具，不写死进知识库。
@@ -30,17 +30,22 @@
 
 ## 3. ⚠️ 当前状态（重要，务必先看）
 
-**远端 `origin/master` = `4fcccad`；`origin/dev` = `edcf97e`（2026-09-20：前端全量 + 协作文档 + 前端问题清单都已推上 dev）。**
+**远端 `origin/master` = `4fcccad`（未动）；`origin/dev` = 当前开发线（前端全量 + 协作文档 + 后端改动都在这里）。**
+<!-- tip 会随提交前进：用 git -C <repo> log --oneline origin/dev 查，不要照抄本文里的 SHA -->
 队友已把补齐的 5 个实现模块推上去了（`7537459 补充`，随 `4fcccad` 合入 master），**远端 master 现在是一个完整可跑的后端**。
-⛔ **协调者 2026-09-20 明确：不许直接推 master。** master 仍是 `4fcccad`，**未动**。
-`dev` 现在包含三部分：① 队友的 MCP 侧改动（工具 7→8 个、新增 `src/mcp_stdio_server.py` stdio 入口）、
-`src/planning/route_planner.py` +31 行、`prompts/*`；② **前端全量成果**（Codex 的 21 个提交，前端 `55bb0a0`）；
-③ **协作文档入库 + 前端问题清单**（`AGENTS.md`/`ARCHITECTURE.md`/`TESTING.md`/`docs/`）。
-接口差异见 `docs/BACKEND-API-REFERENCE.md` 第 5.2 节；前端遗留问题见 `docs/FRONTEND-ISSUES.md`。
+⛔ **协调者 2026-09-20 明确：不许直接推 master。** master 仍是 `4fcccad`。
+`dev` 现在包含：① 队友的后端改动（MCP **8 个工具**、`src/mcp_stdio_server.py` 的 stdio 入口、`route_planner`、`prompts/*`）；
+② **前端全量成果**（Codex 的 21 个提交）；③ **协作文档与问题清单**（`AGENTS.md`/`ARCHITECTURE.md`/`TESTING.md`/`docs/`）。
+接口差异见 `docs/BACKEND-API-REFERENCE.md` 第 5.2 节；前端遗留问题见 `docs/FRONTEND-ISSUES.md`；
+**后端待办见 `docs/BACKEND-TODO.md`**。
 
 > 🔁 **如果你是新开的会话 / 新 agent**：先读
 > `D:\DSH Workspace\HANDOFF-threekingdom-20260912.md`（**自包含交接**，含全部路径、命令、坑与禁令），
 > 再回到本文件看协作边界。
+>
+> 🧑💻 **如果你是后端同事**：直接看 **`docs/BACKEND-TODO.md`**（工作单：P0/P1/P2 + 实测证据 + 改哪里 + 验收 + 自测命令）；
+> 接口字典见 `docs/BACKEND-API-REFERENCE.md`，前端协议见 `docs/BACKEND-API.md`，
+> `TESTING.md` 已按本机实情修正（**不要照旧命令跑 `create_vector_collection.py`，会崩**）。
 
 ### ✅ 现状（2026-09-12）
 
@@ -49,7 +54,7 @@
 | 缺实现模块 | ✅ 队友已推送（`7537459`）。DSH 那份实现了同一批模块但**不要推**，见文末遗留分支 |
 | 后端可跑 | ✅ 已用全新克隆 + Docker 实测：入库 8 条演示知识，`/health` 与三条意图全过 |
 | 前端（冻结基线） | ⏸️ `feat/frontend-iteration-2` @ `827adc8`（功能代码最后提交 `adccd3c`）。现在只是**本地分支**；旧副本整份保留在 `agent_threekingdom-frozen-20260920`，新主仓库停在 `dev` |
-| 远端 dev | ✅ `edcf97e` = 队友后端改动 + **前端全量**（`55bb0a0`）+ **协作文档与前端问题清单**；**master 未动**（`4fcccad`） |
+| 远端 dev | ✅ 当前开发线（队友后端改动 + **前端全量** + **协作文档/问题清单/后端工作单**）；**master 未动**（`4fcccad`） |
 | 前端（合并候选） | ✅ 分支 `chore/merge-frontend-into-master` = 前端合并提交 `9623be1` + 一条「协作文档入库」提交。**2026-09-20 前端已推到 `dev`**（dev tip 见上）；该候选分支保留本地备用（要进 master 时 `dev → master` 是干净快进） |
 | 前端（当前迭代） | 🚧 `feat/frontend-iteration-3` @ `55bb0a0`：Codex 21 个提交（地图分级、故事线、陈寿常驻栏、探索志、视觉令牌…，15 组回归 + 桌面/375px 浏览器验收）。**已并入 `dev`** |
 | 交付快照 | ✅ 见下节（**前端挂载源 = 主仓库 `frontend/`**，见「仓库与工作区布局」） |
@@ -66,14 +71,14 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 
 ### 🗂 仓库与工作区布局（2026-09-20 重置后）
 
-**本轮起团队只做前端**（协调者 2026-09-12 决定）：`src/**`、`data/**`、`prompts/**` 的缺口写进任务板交人，
-不归前端组动手。
+**当前分工**：**前端**继续做（唯一工作区 = 主仓库，分支 `dev`）；**后端缺口交给队友**，
+已整理成工作单 `docs/BACKEND-TODO.md`（不要在文档里硬编码 tip，**用 `git log --oneline origin/dev` 查**）。
 
 2026-09-20 按协调者要求，**用最新仓库的干净克隆替换了旧工作副本**（旧副本保留为回滚点）：
 
 | 路径 | 内容 | 说明 |
 |---|---|---|
-| `D:\DSH Workspace\agent_threekingdom` | **主仓库 = 干净克隆，停在 `dev` @ `edcf97e`** | **唯一工作区**：`frontend/**`、`docs/**`、`src/**` 都在里面；文档已是**被跟踪文件**，前端与文档同源，**不会再出现「worktree 里读不到 docs」** |
+| `D:\DSH Workspace\agent_threekingdom` | **主仓库 = 干净克隆，停在 `dev`** | **唯一工作区**：`frontend/**`、`docs/**`、`src/**` 都在里面；文档已是**被跟踪文件**，前端与文档同源，**不会再出现「worktree 里读不到 docs」** |
 | `D:\DSH Workspace\agent_threekingdom-frozen-20260920` | 旧工作副本（194 MB） | **回滚点**：含冻结基线 `feat/frontend-iteration-2`、旧 `.venv` 状态与旧 worktree 注册。确认无误后可删 |
 | `D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8` | 部署快照（28 MB） | **容器数据卷 + 镜像构建上下文，不能删**（见下节） |
 | `D:\DSH Workspace\backup-agent_threekingdom-20260920.bundle` | 全引用 bundle（9.7 MB） | 备份**唯一未推送的** 5 个遗留提交（`chore/commit-missing-modules`），已在新仓库恢复为本地分支 |
@@ -210,14 +215,14 @@ cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
 
 | 负责方 | 范围 |
 |---|---|
-| **Codex** | `frontend/**`（界面、交互、样式） |
-| **DSH（我）** | `src/**`、`deploy/**`、Docker 相关 |
-| **人（协调者）** | `data/**`、`prompts/**`、`docs/**` 的决策；review 与合并 |
+| **队友（后端）** | `src/**`、`data/**`、`prompts/**`、`deploy/**` 与 Docker 配置。**开工先读 `docs/BACKEND-TODO.md`**（工作单：优先级 + 实测证据 + 改哪里 + 验收 + 自测命令） |
+| **Codex / 前端** | `frontend/**`（界面、交互、样式） |
+| **DSH** | 部署快照与 Docker 环境、联调脚本、协作文档维护（`docs/**` 的最终决策归人） |
+| **人（协调者）** | `data/**`、`prompts/**`、`docs/**` 的决策；review 与合并；**推送目标** |
 
-> 🔸 **2026-09-12 本轮起：团队只做前端。** `src/**`、`data/**`、`prompts/**` 的缺口不再由本组动手，
-> 一律写进 `docs/TASKS.md`（如 #33）交人转给后端/队友。
-> 前端组内同样**不要多人同时改同一文件**：现在**唯一工作区就是主仓库**
-> `D:\DSH Workspace\agent_threekingdom`（分支 `dev`），直接在里面改 `frontend/**`。
+> 🔸 **2026-09-20 现状**：**前端**继续做，唯一工作区就是主仓库 `D:\DSH Workspace\agent_threekingdom`（分支 `dev`）；
+> **后端的缺口交给队友**，已经整理成工作单 **`docs/BACKEND-TODO.md`**。
+> 两边在同一仓库、同一条 `dev` 分支上干活：**改别人负责的文件前先写进任务板**，也别多人同时改同一文件。
 
 ## 6. 协作规则
 
@@ -251,6 +256,7 @@ cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
 | 前端工作区（唯一） | `D:\DSH Workspace\agent_threekingdom`（干净克隆，分支 `dev`；直接改 `frontend/**`） |
 | 给 Codex 的接手提示词 | `docs\HANDOFF-TO-CODEX.md`（自包含，可直接粘贴给新会话） |
 | 后端全部接口字典 | `docs\BACKEND-API-REFERENCE.md`（HTTP + MCP、逐字段、边界、错误码、源码索引） |
+| **后端工作单（队友）** | `docs\BACKEND-TODO.md`（P0/P1/P2、实测证据、改哪里、验收标准、自测命令） |
 | 前端当前问题清单 | `docs\FRONTEND-ISSUES.md`（F1–F9 前端自己改 / B1–B9 交后端队友 / C1–C4 内容 / D1–D4 协作流程） |
 | 前端对接协议 / 缺口清单 | `docs\BACKEND-API.md` |
 | 部署 | 快照目录 `sgt-snapshot-4fcccad-827adc8\`（DSH 自建的 `Dockerfile.backend` + `docker-compose.backend.yml`）；仓库自带的 `deploy/` 与根目录 Docker 配置目前都有问题，见第 3 节 |

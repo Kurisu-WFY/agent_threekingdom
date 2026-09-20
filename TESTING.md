@@ -7,33 +7,39 @@
 
 ## 0. 准备工作
 
-### 本地（Python 3.11 venv）
+### 本地（推荐：后端自测就靠它）
 ```powershell
-cd D:\DSH Workspace\agent_threekingdom
-$python = "D:\DSH Workspace\agent_threekingdom\.venv\Scripts\python.exe"
-$env:PYTHONPATH = "D:\DSH Workspace\agent_threekingdom\src"
+$repo   = "D:\DSH Workspace\agent_threekingdom"
+$python = "C:\Python\Python311\python.exe"      # 3.11.4
+$env:PYTHONPATH = "$repo\src"
+$env:VECTOR_BACKEND = "local"                   # ⚠️ 必须！默认 milvus 而本机不装 pymilvus → 直接崩
 
-# 初始化业务库（第2步）
-& $python src\ingest\seed_business_db.py
-# 创建向量 collection（第3步）
-& $python src\ingest\create_vector_collection.py
-# 导入知识文档（第4步）
-& $python src\ingest\ingest_pipeline.py
-# 启动 API（第5步，另开一个终端）
-cd src
-& $python -m uvicorn api:app --reload --app-dir src
+& $python src\ingest\seed_business_db.py        # 初始化业务库
+# ⛔ 不要跑 src\ingest\create_vector_collection.py：它只认 Milvus 且没有兜底（见 docs/BACKEND-TODO.md 4.4）
+& $python src\ingest\ingest_pipeline.py         # 导入知识文档
+& $python -m uvicorn api:app --host 127.0.0.1 --port 8010 --app-dir src   # 另开一个终端
 ```
+> `.venv\Scripts\python.exe` 也能用，但仓库里那份**被 git 跟踪的 `.venv` 是 Python 3.12 建的**，
+> 而项目文档写的是 3.11；混用会出现 `__pycache__`/依赖不一致，建议统一用上面的 `C:\Python\Python311\python.exe`。
 
-### Docker（推荐，数据卷持久化）
+### Docker（⚠️ 先读这段：仓库自带的配置目前**不能直接跑 Web API**）
 ```powershell
-cd D:\DSH Workspace\agent_threekingdom
 $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
-& $docker compose up --build -d        # 启动
-& $docker ps --filter name=agent-threekingdom   # 看是否 healthy
-& $docker compose down                  # 停止
+& $docker ps -a --format '{{.Names}} | {{.Status}}'      # 看现有容器
 ```
-> 本机若 8000 被占，compose 已映射到 `8001`，访问 `http://localhost:8001`。
-> 一键重置数据：`& $docker compose down -v`（删数据卷后再 up）。
+- **根 `docker-compose.yml` 跑的是 MCP 服务**（`container_name: san-guo-mcp`、只开 `127.0.0.1:8000`、
+  `CMD python src/mcp_server.py`）——**没有前端，也不是 Web API**。要联调 MCP 才用这套。
+- **`deploy/docker-compose.yml` 才是 Web API 版，但它有三处问题**（`context: .` 会被解析成 `deploy/`，
+  于是 `deploy/deploy/Dockerfile` 不存在 → **构建必失败**；没设 `VECTOR_BACKEND=local`；`*.sh` 是 CRLF），
+  修法见 **`docs/BACKEND-TODO.md` 第 4.6 节**。
+- **现在真正在跑**的是交付快照容器（镜像内容是 `master@4fcccad`，**不含 `dev` 上的新改动**）：
+  ```powershell
+  cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
+  & $docker compose -f docker-compose.backend.yml up -d    # 已在跑；只有改了镜像内容才需要 --build
+  & $docker compose -f docker-compose.backend.yml logs -f
+  ```
+  访问 `http://localhost:8001`（宿主 8001 → 容器 8000，容器名 `sgt-snapshot-api`）。
+  数据卷 = 该快照目录里的 `data/`（业务库 + 向量库），**不能删**。
 
 ---
 
@@ -45,7 +51,9 @@ $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
 # Docker
 try { Invoke-RestMethod -Uri 'http://localhost:8001/health' -Method GET } catch { $_.Exception.Message }
 ```
-**预期**：返回 `{"status": "ok", "vector_backend": "milvus", "milvus_collection": "san_guo_culture_chunks", "redis": {...}}`。
+**预期**：返回 `{"status": "ok", "vector_backend": "local", "milvus_collection": "san_guo_culture_chunks", "redis": {...}}`。
+> ⚠️ **`vector_backend` 就是 `local`**：只有装了 `pymilvus` 才会是 `milvus`。旧文档写「预期 `milvus`」是错的，
+> 照着判会误报失败。`redis.available=false` 也属正常（Redis 是可选项）。
 
 ---
 
@@ -122,9 +130,13 @@ Post-Chat '三国志和三国演义有什么区别'              # intent=histor
 
 | 检查项 | 通过标准 |
 |---|---|
-| 健康检查 | `/health` 返回 `status=ok` |
+| 健康检查 | `/health` 返回 `status=ok`；`vector_backend=local`（本镜像） |
 | 预算票价 | intent 正确，answer 含预算与说明 |
 | 路线规划 | intent 正确，含路线与站点 |
 | 文化问答 | intent 正确，检索式回答，retrieval.passed=true |
 | 数据库 | 三个查询函数返回值符合预期 |
 | 容器 | `docker ps` 显示 `healthy` |
+| **校验与错误** | 缺 `message` → **422**（不是 200/500）；`GET /chat` → 404；`POST /health` → 405 |
+| **多态响应** | 四条意图的顶层字段符合 `docs/BACKEND-API-REFERENCE.md` 第 3.2.3 节矩阵（`culture_qa`/`history_vs_romance` **没有 `route` 键**，`budget_ticket` 的 `route` 是 `null`） |
+| **MCP** | `dev` 上 `src/mcp_server.py` 应有 **8 个工具**（`plan_cultural_route` 是新增的），另有 stdio 入口 `src/mcp_stdio_server.py` |
+| **前端不被接口改动打破** | `Get-ChildItem frontend\*.test.cjs` → **15/15 通过**；`node --check` 全部 JS 通过 |

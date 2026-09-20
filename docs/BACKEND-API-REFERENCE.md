@@ -13,9 +13,13 @@
 > **被测后端版本**：`origin/master @ 4fcccad`（= 交付快照 `sgt-snapshot-4fcccad-827adc8` 里那份后端）。
 > 复现脚本：`D:\DSH Workspace\.tmp-e2e\probe_all.py`（证据 JSON：`api-probes.json`、`openapi.json`）。
 >
-> ⚠️ **版本口径**：远端 **`origin/dev` 已前进到 `546cabf`**（队友又推了 5 个提交），其中
-> **MCP 侧已有新接口（工具 7 → 8 个）并新增 stdio 入口**，只是**尚未合进 master**。
-> 所以本文的 HTTP 部分以 `4fcccad` 实测为准，MCP 部分额外用 **5.2 节**记录 dev 上的差异。
+> 📌 **要动手改后端 → 先看 `docs/BACKEND-TODO.md`**（工作单：优先级 + 实测证据 + 改哪里 + 验收标准 + 自测命令）。
+> 本文回答「**现在有什么、怎么调、返回什么**」，工作单回答「**该改哪里、改成什么样**」。
+>
+> ⚠️ **版本口径**：HTTP 部分是**对运行中的容器（= `4fcccad`）实测**；而 `origin/dev` 上
+> **MCP 侧已经有新接口（工具 7 → 8 个）并新增 stdio 入口**，且这批改动**已经在 `dev` 分支里**
+> （`frontend/`、`docs/` 也都在 `dev`），只是**尚未合进 `master`**。差异见 **5.2 节**。
+> 远端 tip 会随提交前进，**别照抄 SHA**：用 `git log --oneline origin/dev` 看当前值。
 
 ---
 

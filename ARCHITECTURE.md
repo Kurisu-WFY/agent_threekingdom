@@ -1,6 +1,9 @@
 # 三国文化旅游智能服务 — 架构说明
 
 > 面向团队阅读的架构与编排说明。目标：让不熟悉代码的人也能看懂"一次请求是怎么被编排起来的"，以及"该往哪里增加内容 / 优化逻辑"。
+>
+> 📌 **要动手改后端时，先读 `docs/BACKEND-TODO.md`**（待办 + 实测证据 + 验收标准 + 自测命令）；
+> 接口字段与边界细节见 `docs/BACKEND-API-REFERENCE.md`。
 
 ## 1. 一句话定位
 
@@ -9,7 +12,9 @@
 它本身**不做界面**，而是给「女娲 / Dify / Coze 这类智能体平台」提供能力。有两种对外暴露方式：
 
 - **HTTP API**：`POST /chat`（直接调用），`GET /health`（健康检查）。
-- **MCP 服务器**：`/sse`，暴露 7 个工具，供智能体平台以"工具"方式调用。
+- **MCP 服务器**：`/sse`（SSE 传输），当前 **8 个工具**（`plan_cultural_route` 是 `dev` 上新增的），供智能体平台以"工具"方式调用；
+  另有 **stdio 入口** `src/mcp_stdio_server.py`（不开端口，协议走 `stdin/stdout`，复用同一个 server 实例，
+  给能直接拉起本地命令的客户端用）。
 
 ## 2. 核心设计理念
 
@@ -48,7 +53,7 @@
 
 | 层 | 文件 | 职责 | 类比 |
 |---|---|---|---|
-| 接口层 | `src/api.py`、`src/mcp_server.py` | HTTP /chat、健康检查；MCP 7 工具 | 前台 / 门面 |
+| 接口层 | `src/api.py`、`src/mcp_server.py`、`src/mcp_stdio_server.py` | HTTP /chat、健康检查；MCP 8 工具（SSE + stdio 两种传输） | 前台 / 门面 |
 | 编排层 | `src/agent/orchestrator.py`、`intent_router.py` | 意图识别、分支调度 | 大脑 / 大堂经理 |
 | 检索层 | `src/rag/*`（`hybrid_retriever`、`reranker`、`recall_checker`、`embeddings`、`tokenizer`、`query_expansion`、`vector_store`） | 混合召回、重排、召回质量检查 | 记忆检索 |
 | 规划层 | `src/planning/route_planner.py`、`dynamic_scheduler.py` | 路线模板选择、动态调度占位 | 行程策划 |
@@ -61,7 +66,8 @@
 ```text
 src/
   api.py                 FastAPI：/health / /chat
-  mcp_server.py          MCP SSE 服务器（7 个工具）
+  mcp_server.py          MCP 服务器（8 个工具；SSE 传输）
+  mcp_stdio_server.py    MCP stdio 入口（复用同一个 server，不开端口）
   cli.py                 交互式命令行 REPL
   config.py / domain.py  对 san_guo_core 的 re-export
   db.py                  SQLite 建表 + 迁移（11 张表）
@@ -102,7 +108,14 @@ src/
 
 **来源分级**：`source_level` ∈ {A, B, C}；C 级不能支撑史实结论（`recall_checker` 会据此告警）。
 
-**动态数据标记**：票价等维护数据带 `data_status`（`verified` / `manual_pending` / `simulated` / `manual_demo`），并记录 `source_url`、`updated_at`。正式展示前需核验。
+**动态数据标记**：票价等维护数据带 `data_status`，并记录 `source_url`、`updated_at`。正式展示前需核验。
+
+> ⚠️ **`data_status` 的词表目前三套不一致，必须挑一套并用到底**（见 `docs/BACKEND-TODO.md` P0-2）：
+> 本文 ранее写的是 `verified` / `manual_pending` / `simulated` / `manual_demo`；
+> `docs/BACKEND-API.md` 用的是 `sample` / `maintained` / `live` / `pending` / `stale`；
+> 而**数据库里实际存的是** `manual_demo` / `manual_demo_table` / `manual_fixed`。
+> 另外各表的 `updated_at` 现在是 `date.today()` 兜底（= 入库当天），**不是真实维护时间**。
+> 未知金额目前被写成 `0`（会显示得像"免费"），应改为 `null`。
 
 **向量**：知识块进入 Milvus（本地演示用 `hash` 嵌入 + 本地向量存储，见 `vector_store.py`），collection 名为 `san_guo_culture_chunks`。
 
@@ -120,7 +133,15 @@ src/
 ## 8. 两种运行 / 接入方式
 
 - **本地直跑**：见 README（`seed_business_db` → `create_vector_collection` → `ingest_pipeline` → `uvicorn api:app --app-dir src`）。
-- **Docker**：`docker compose up --build -d`（入口 `docker-entrypoint.sh` 会自动执行上面的初始化再启动 uvicorn，见 `Dockerfile`、`docker-compose.yml`）。本机端口被占用时映射到 `8001`。
+- **Docker**：⚠️ **现状与本节原先的描述不同，别照跑**。根 `docker-compose.yml` + 根 `Dockerfile` 跑的是 **MCP 服务**
+  （`container_name: san-guo-mcp`、只开 `127.0.0.1:8000`、`CMD python src/mcp_server.py`）；
+  `deploy/docker-compose.yml` 才是 Web API 版，但它有三处问题：① `context: .` 会被 Compose 解析为
+  **compose 文件所在目录**（`deploy/`），于是 `dockerfile: deploy/Dockerfile` 变成 `deploy/deploy/Dockerfile`
+  → **构建必失败**；② 没设 `VECTOR_BACKEND=local` → 默认 `milvus`，无 `pymilvus` 时崩；
+  ③ `deploy/docker-entrypoint.sh` 在 Windows 上检出成 CRLF 且仓库无 `.gitattributes` → 容器报
+  `exec /docker-entrypoint.sh: no such file or directory`。
+  修法（`context: ..`、补 `VECTOR_BACKEND`、加 `.gitattributes` 写 `*.sh text eol=lf`）与**当前正在跑的**快照容器
+  见 **`docs/BACKEND-TODO.md` 第 4.6 节**与 `TESTING.md`。
 - **接入女娲/Dify/Coze**：默认启动的是 HTTP `/chat`；若要给平台当工具，改跑 `python src/mcp_server.py`（`/sse`），并在平台侧把该地址注册为 MCP 服务器。云端平台无法访问本机 `localhost`，需公网部署/内网穿透，并配鉴权、IP 白名单、调用日志。
 
 ## 9. 已知限制与后续方向
@@ -130,3 +151,13 @@ src/
 - 路线规划基于模板选择，不含实时交通/排队/天气动态优化（`dynamic_scheduler` 为占位）。
 - 票价为样例数据，正式服务需接 OTA/官方接口。
 - 本地向量存储适合演示，多人并发应换 Milvus Server。
+
+### 2026-09-20 实测补充（**都写在 `docs/BACKEND-TODO.md` 里，带验收标准**）
+
+- **意图漏判有具体反例**：`"从南充出发，去阆中、剑阁，再到广元旅游"` 实测落成 `culture_qa`，进不了 `route_planning`；
+  `"阆中古城门票多少钱"` 只回酒店预算、完全不提门票（`_answer_budget()` 里的景区名是**硬编码 6 个**）。
+- **`route.stops[]` 不返回坐标，而数据其实已经有了**：`scenic_spots` 表有 `lat`/`lng`（万卷楼 `30.792/106.067` 等），
+  是 `get_route_detail()` 的 SELECT 没取这两列。**坐标系必须先核实**（前端底图是 GCJ-02）。
+- **价格类缺结构化元数据**，且未知金额写成 `0`；`updated_at` 是入库当天而非维护时间。
+- **`/chat` 未定义响应模型**，`/openapi.json` 里响应 schema 为空；`route.found=false` 时 `route.route`/`stops` 键直接消失。
+- **四个 `/api/travel/*` 接口仍未实现**（实测 `GET` → 404、`POST` → 405）。

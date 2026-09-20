@@ -708,3 +708,46 @@
 - **下一步**：① 前端按 `docs/FRONTEND-ISSUES.md` 的 **F 组**自改；② **B 组**交后端队友；
   ③ 确认无误后可删旧副本与 bundle；④ `dev → master` 的时机由人决定（协调者当前明确不推 master）。
 - **卡点**：无阻塞。
+
+### 2026-09-20 DSH · 补齐后端接手文档（让队友能接着干）
+- **起因**：协调者问「远端推的 md 是否支持队友继续工作」。审查结论：**部分支持 —— 缺关键一份，且 `TESTING.md` 会把人带沟里。**
+- **审查发现（都已在文档里改掉）**：
+  1. **`TESTING.md` 照着跑会崩**：第一步就让人跑 `src/ingest/create_vector_collection.py` —— 那脚本只认 Milvus
+     且**没有兜底**，镜像不装 `pymilvus` → `RuntimeError`；§1 又写「预期 `vector_backend: milvus`」，
+     而**本机实际是 `local`**（照旧判会误报失败）；Docker 段让人在仓库根跑 `docker compose up --build -d` ——
+     那套跑的是 **MCP 服务**（`san-guo-mcp`，只开 `127.0.0.1:8000`），**不是 Web API + 前端**。
+  2. **`ARCHITECTURE.md` 停在旧状态**：MCP 写「7 个工具」（dev 已是 **8 个**，另有 stdio 入口
+     `src/mcp_stdio_server.py`）；`data_status` 写的词表（`verified`/`manual_pending`/…）与
+     `docs/BACKEND-API.md`（`sample`/`maintained`/…）以及**数据库实际值**（`manual_demo`/`manual_demo_table`）
+     **三套互不一致**；§8 Docker 描述的是那套坏配置。
+  3. **`AGENTS.md` 里没有「队友」这个角色**：分工表只有 Codex / DSH / 人，而且通篇是前端协作视角。
+  4. **没有一份「后端工作单」**：后端待办散在 `docs/FRONTEND-ISSUES.md` 的 B 组里 —— 名字就叫 FRONTEND 的问题清单，
+     后端同事很可能根本不看。
+- **做了什么**：
+  1. **新增 `docs/BACKEND-TODO.md`（核心交付：后端工作单）**：P0/P1/P2 分级，每条带
+     **实测证据 + 改哪里（含确切 SQL / 文件）+ 验收标准 + 可复制自测命令**；另有
+     「怎么把后端跑起来（本地直跑 & Docker 实情）」「改完怎么自证（后端链路 + **前端 15 组回归**）」、
+     协作约定（进 `dev`、不推 `master`、先 dry-run）与文档索引。
+     其中特别点明 **P0-1 坐标「数据其实已经有了」**：`scenic_spots.lat/lng` 五个景区都有值（万卷楼 `30.792/106.067` 等），
+     是 `get_route_detail()` 的 SELECT **没取这两列** —— 一行 SQL 的事；
+     并强调**坐标系必须先核实再标 GCJ-02**（不能确认就标 `WGS84` 或走降级，**宁可降级也不要骗前端**）。
+  2. **修正 `TESTING.md`**：去掉致崩的建表步骤、改用 `C:\Python\Python311\python.exe` 并要求
+     `VECTOR_BACKEND=local`、把 `vector_backend` 预期改成 `local`、Docker 段改成实话（根 compose 是 MCP；
+     `deploy/` 那套有三处问题）、验收表补 422 / 多态字段 / MCP 8 工具 / **前端 15 组回归**。
+  3. **修正 `ARCHITECTURE.md`**：8 工具 + stdio 入口、`data_status` 三套词表冲突与 `updated_at` 兜底问题、
+     Docker 现状与修法指向、新增「2026-09-20 实测补充」（意图漏判反例、坐标已有但未输出、`/chat` 无响应模型…）。
+  4. **`AGENTS.md`**：分工表加入 **队友（后端）** 角色与范围；顶部加「后端同事从这里开始」的入口；
+     去掉会过期的硬编码 tip；§8 加「后端工作单」索引；顺带把「7 个工具」改成 8 个。
+  5. **`docs/TASKS.md`**：新增 **「后端待办（队友）」** 小节（#45–#52，并把 #27/#28/#33 归并进去），本项记为 #53。
+  6. **交叉链接**：`docs/BACKEND-API-REFERENCE.md`、`docs/BACKEND-API.md` 顶部都加了指向工作单的指引。
+- **怎么验证的**：所有「数据/接口」类结论都在 `dev` 上**重新核实过** ——
+  `get_route_detail()` 仍未 `SELECT s.lat, s.lng`；`data/examples/scenic_spots_*.json` 五个点都有 `lat`/`lng`；
+  `src/api.py` 仍只有 `/health`、`/chat`、静态挂载（四个 `/api/travel/*` 仍缺）；
+  根 `docker-compose.yml` = `san-guo-mcp`；`deploy/docker-compose.yml` 的 `context: .` 与缺 `VECTOR_BACKEND` 仍在。
+- **改了哪些文件**：新增 `docs/BACKEND-TODO.md`；修改 `TESTING.md`、`ARCHITECTURE.md`、`AGENTS.md`、
+  `docs/TASKS.md`、`docs/BACKEND-API-REFERENCE.md`、`docs/BACKEND-API.md`、`docs/HANDOFF.md`（本条）。
+  **`src/**`、`frontend/**` 一行未改**（本轮只动文档）。
+- **下一步**：队友按 `docs/BACKEND-TODO.md` 从 **P0 三条**开始（坐标 / 价格元数据 / 意图漏判）；
+  前端按 `docs/FRONTEND-ISSUES.md` 的 **F 组**自改。
+- **卡点**：**`data_status` 词表要由协调者拍板选一套**（现在三套并存：两份文档各一套 + 数据库实际一套），
+  否则后端改了前端也不知道认哪个。
