@@ -751,3 +751,20 @@
   前端按 `docs/FRONTEND-ISSUES.md` 的 **F 组**自改。
 - **卡点**：**`data_status` 词表要由协调者拍板选一套**（现在三套并存：两份文档各一套 + 数据库实际一套），
   否则后端改了前端也不知道认哪个。
+  → ✅ **已于同日拍板：用第一套 `sample|maintained|live|pending|stale`，见下一条记录。**
+
+### 2026-09-20 DSH · `data_status` 词表拍板（协调者：**用第一套**）
+- **决定**：全项目统一用 **`sample` / `maintained` / `live` / `pending` / `stale`**（= `docs/BACKEND-API.md` 那套，**唯一口径**）。
+  另两套**作废/待迁移**：`ARCHITECTURE.md` 旧版的 `verified`/`manual_pending`/`simulated`/`manual_demo`；
+  数据库与样例数据里实际的 `manual_demo` / `manual_demo_table` / `manual_fixed`。
+- **依据（为什么选它）**：**前端已经把这一套硬编码实现在四处** ——
+  `frontend/app.js`（`statuses`）、`frontend/travel-modules.js`（`names`）、`frontend/story-map.js`（`statuses`）、
+  以及 `frontend/character-chat.js` / `cultural-node.js` 的"可靠"判定；`frontend/API-CONTRACT.md` 写的也是这套。
+  换别的词表要动前端，而且前端判定还**绑定** `updated_at`（须带时区）与 `sources[]`（须有 A/B 级来源）。
+- **落地（已同步 6 个文件）**：`ARCHITECTURE.md`、`docs/BACKEND-API.md`（标为唯一口径）、
+  `docs/BACKEND-API-REFERENCE.md`（§6.2 顶部）、`docs/BACKEND-TODO.md`（P0-2：给出**迁移映射表** + 前端判定规则）、
+  `docs/TASKS.md`（#46 备注）、`docs/HANDOFF.md`（本条）。`frontend/API-CONTRACT.md` 本来就是这套，**无需改**。
+- **迁移映射（队友照这个改种子数据与 DB）**：`manual_demo`→`sample`、`manual_demo_table`→`sample`、
+  `manual_fixed`→`maintained`；未知/未核验（米仓道坐标、待核验票价…）用 `pending`；外部 MCP 实时数据用 `live`；超期用 `stale`。
+  另注意：`scenic_spots.ticket_source_status` 与 `hotel_budget_tiers.source_type` **不是** `data_status`（名字像但不同用途，建议改名）。
+- **改了哪些文件**：上述 6 个 md；**`src/**`、`frontend/**` 一行未改**（本轮仍只动文档）。

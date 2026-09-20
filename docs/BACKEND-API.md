@@ -198,7 +198,11 @@ string。纯文本，**含换行**。文化问答最长（实测 1029 字符）�
   }
   ```
 
-  `data_status` 取值约定：`sample` / `maintained` / `live` / `pending` / `stale`。
+  `data_status` 取值约定（**✅ 协调者 2026-09-20 拍板：这就是全项目唯一口径**）：
+  `sample` / `maintained` / `live` / `pending` / `stale`。
+  > 旧词表（`verified`/`manual_pending`/`simulated`/`manual_demo`）与数据库现值
+  > （`manual_demo`/`manual_demo_table`/`manual_fixed`）的迁移映射、以及"前端在什么条件下才认为数据可靠"，
+  > 见 `docs/BACKEND-TODO.md` P0-2。
   金额未知用 `null`，**不要用 0**（现在实测返回的 `0.0 - 0.0 CNY` 就是"未知"被表达成了 0，前端会误显示为免费）。
   `source_level`：A/B/C，C 级不得用于史实结论。
 

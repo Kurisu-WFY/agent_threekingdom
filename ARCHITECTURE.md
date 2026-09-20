@@ -110,12 +110,13 @@ src/
 
 **动态数据标记**：票价等维护数据带 `data_status`，并记录 `source_url`、`updated_at`。正式展示前需核验。
 
-> ⚠️ **`data_status` 的词表目前三套不一致，必须挑一套并用到底**（见 `docs/BACKEND-TODO.md` P0-2）：
-> 本文 ранее写的是 `verified` / `manual_pending` / `simulated` / `manual_demo`；
-> `docs/BACKEND-API.md` 用的是 `sample` / `maintained` / `live` / `pending` / `stale`；
-> 而**数据库里实际存的是** `manual_demo` / `manual_demo_table` / `manual_fixed`。
-> 另外各表的 `updated_at` 现在是 `date.today()` 兜底（= 入库当天），**不是真实维护时间**。
-> 未知金额目前被写成 `0`（会显示得像"免费"），应改为 `null`。
+> ✅ **`data_status` 词表已拍板（协调者 2026-09-20）：`sample` / `maintained` / `live` / `pending` / `stale`**
+> —— 全项目以这一套为**唯一口径**（定义见 `docs/BACKEND-API.md`，前端已按它实现）。
+> 本文早先写的 `verified` / `manual_pending` / `simulated` / `manual_demo` **作废**；
+> 数据库与样例数据里现有的 `manual_demo` / `manual_demo_table` / `manual_fixed` **需要迁移**
+> （映射表、以及"前端只在什么条件下才认为是可靠数据"见 `docs/BACKEND-TODO.md` P0-2）。
+> 另外各表的 `updated_at` 现在是 `date.today()` 兜底（= 入库当天），**不是真实维护时间**；
+> 未知金额目前被写成 `0`（显示得像"免费"），应改为 `null`。
 
 **向量**：知识块进入 Milvus（本地演示用 `hash` 嵌入 + 本地向量存储，见 `vector_store.py`），collection 名为 `san_guo_culture_chunks`。
 

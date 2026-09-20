@@ -70,7 +70,7 @@
 | # | 任务 | 涉及文件 | 优先级 | 状态 | 备注 |
 |---|---|---|---|---|---|
 | 45 | `route.stops[]` 补 `coordinates` + `coordinate_system` | `src/tools/travel_business_tools.py`（`get_route_detail`） | **P0** | TODO | **数据已存在**：`scenic_spots.lat/lng` 五个景区都有值，只差 SELECT 两列 + 输出（**经度在前**）；坐标系务必先核实再标，前端底图是 GCJ-02 |
-| 46 | 价格类补 `data_status`/`sources`/`updated_at`，未知金额改 `null` | `src/tools/*`、`data/examples/*`、`src/ingest/seed_business_db.py` | **P0** | TODO | 实测未知票价写成 `0.0`；`data_status` **三套词表不一致**（见工作单）需统一；`updated_at` 现在是 `date.today()` 兜底 |
+| 46 | 价格类补 `data_status`/`sources`/`updated_at`，未知金额改 `null` | `src/tools/*`、`data/examples/*`、`src/ingest/seed_business_db.py` | **P0** | TODO | 实测未知票价写成 `0.0` → 改 `null`；`data_status` 词表**已拍板**用 `sample\|maintained\|live\|pending\|stale`（`manual_demo`/`manual_demo_table`→`sample`、`manual_fixed`→`maintained`，映射表见工作单）；`updated_at` 现在是 `date.today()` 兜底；**前端只在 `maintained`/`live` + 带时区 `updated_at` + A/B 来源时才显示"可靠"** |
 | 47 | 意图识别增强（出行句式） | `src/agent/intent_router.py`、`orchestrator.py` | **P0** | TODO | 实测「从南充出发，去阆中、剑阁，再到广元旅游」落 `culture_qa`；「阆中古城门票多少钱」不提门票 |
 | 48 | 路线硬约束（时长/已完成过滤 + 逐节点理由） | `src/planning/route_planner.py`、`route_templates` | P1 | TODO | 实测南充"半天"仍回 8 小时模板、且重复安排已完成昭化古城 |
 | 49 | 故事 `placeId` ↔ 后端 `spot_id` 稳定映射 | `src/tools/*`、`data/**` | P1 | TODO | 「剑门关」vs「剑门蜀道剑门关旅游景区」 |

@@ -477,6 +477,12 @@ if _frontend.exists():
 
 ### 6.2 🔴 P0：价格类缺结构化 `data_status`/`sources`/`updated_at`，且未知金额写成 `0`
 
+> ✅ **词表已拍板（协调者 2026-09-20）：`sample` / `maintained` / `live` / `pending` / `stale`** ——
+> **全项目唯一口径**，前端 `app.js` / `travel-modules.js` / `story-map.js` 已按这套硬编码实现。
+> 数据库里现有的 `manual_demo` / `manual_demo_table` / `manual_fixed` 需按
+> **`docs/BACKEND-TODO.md` P0-2 的映射表**迁移；前端只在 `maintained`/`live`
+> **且** `updated_at` 带时区、`sources[]` 含 A/B 来源时才视为"可靠数据"。
+
 - **现象【实测】**：`/chat` 的 `budget_ticket` 只把价格写在 `answer` 散文里，结构化字段里没有状态/来源/更新时间。
 - **真相【实测 DB】**：
 

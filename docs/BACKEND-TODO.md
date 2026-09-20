@@ -138,10 +138,28 @@ WHERE rs.route_id = ? ORDER BY rs.stop_order
 1. **未知金额用 `null`，不要用 `0`**（`0` 只该表示"确实免费"）。
 2. 含价格/时间/动态信息的记录带齐：
    `data_status` + `updated_at`（**带时区** ISO8601，如 `2026-09-20T10:00:00+08:00`）+ `sources[]({title, source_url, source_level})`。
-3. **统一 `data_status` 词表** —— 现在项目里有**三套互不相同的取值**，必须挑一套（建议由协调者拍板后写进协议）：
-   - `docs/BACKEND-API.md`：`sample | maintained | live | pending | stale`
-   - `ARCHITECTURE.md`：`verified | manual_pending | simulated | manual_demo`
-   - 数据库实际值：`manual_demo` / `manual_demo_table` / `manual_fixed`
+3. **`data_status` 词表已拍板（协调者 2026-09-20）：`sample` / `maintained` / `live` / `pending` / `stale`**
+   —— 以 `docs/BACKEND-API.md` 的定义为**唯一口径**，全项目照这套改。
+   数据库与样例数据里现有的旧值按下面迁移：
+
+   | 现有值（DB / 样例数据） | 迁移为 | 说明 |
+   |---|---|---|
+   | `manual_demo` | `sample` | 人工演示数据（现在用于 `spot_tickets.data_status`） |
+   | `manual_demo_table` | `sample` | 来自档位表的演示数据 |
+   | `manual_fixed` | `maintained` | 人工维护且视为已核验 —— **注意下面的前端判定规则** |
+   | （未知/未核验：米仓道坐标、待核验票价…） | `pending` | 前端显示"待接入 / 待确认" |
+   | （外部 MCP 实时返回：天气、班次…） | `live` | 前端显示"实时数据" |
+   | （维护数据已超期） | `stale` | 前端显示"已过期" |
+
+   ⚠️ **前端是怎么判的（决定你必须补哪些字段）**：这 5 个值前端已经**硬编码**在
+   `frontend/app.js`（`statuses`）、`frontend/travel-modules.js`（`names`）、`frontend/story-map.js`（`statuses`）里；
+   而且只有 **`maintained` / `live`** 会被当成"可靠"，**并且还要同时满足两个条件**：
+   ① `updated_at` 是**带时区**的 ISO8601（前端正则要求以 `Z` 或 `±HH:MM` 结尾且可解析）；
+   ② `sources[]` 里**至少有一条 `source_level` 为 `A` 或 `B`** 的来源（`title` 与合法 http/https 链接齐备）。
+   只改了 `data_status` 而 `updated_at`/`sources` 不到位，前端**依旧显示"待核验"**。
+
+   ⚠️ 另外两个**名字像但不是它**的字段：`scenic_spots.ticket_source_status` 与
+   `hotel_budget_tiers.source_type` **不是**协议里的 `data_status`，别混用（建议改名以免误读）。
 4. `updated_at` 不要再用 `date.today()` 兜底，否则每次重建都"最新"。
 
 **验收**：结构化字段里能拿到 `data_status` + `updated_at` + `sources`；未知票价的 `price_min/max` 是 `null` 而不是 `0`。
