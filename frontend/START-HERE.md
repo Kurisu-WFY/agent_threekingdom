@@ -38,7 +38,7 @@ styles.css 已统一令牌、组件状态、可信度提示与响应式。后续
 已实现故事线列表筛选、详情章节轴、浏览器本地进度、手选章节压缩与三讲解模式。用户确认继续模板和缺项提示，不编造完整故事内容。主导航现在为 welcome / map / story 三项；早先“两项”说明已过时。story-progress.js 在 stories.js 前加载，地图与列表/详情共用状态。测试为九组（新增 story-progress.test.cjs），运行所有 frontend/*.test.cjs。详情及取舍见 HANDOFF.md 最后需求12记录；唯一开发区和后端边界不变。
 
 ---
-> 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/sgt-frontend-iter3/frontend 开发。先检查 git status / git log 与 http://127.0.0.1:8001/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
+> 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/agent_threekingdom/frontend 开发（主仓库，分支 `dev`）。先检查 git status / git log 与 http://127.0.0.1:8001/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
 # 最新接手增量 · 2026-09-17 三国故事地图
 
 本轮已完成故事图层、章节进度与文化节点卡，详见 HANDOFF.md 最后记录。story-map.js 叠加在 travel-map.js 上，复用 MapRouteCore；不得重写地图核心。后端适配口为 StoryMap.setData({story, places})，协议见 API-CONTRACT.md；所有缺后端数据继续标待确认，/api/travel/* 仍关闭。昭化古城/剑门关使用县级驻地示意，米仓道待定位，导航不可用。回归现为八组（新增 story-map.test.cjs），全部 JS 语法及八组测试已通过，桌面/375px 浏览器检查已完成。实际提交以 git log 为准。
@@ -48,7 +48,7 @@ styles.css 已统一令牌、组件状态、可信度提示与响应式。后续
 
 首页已改为五条故事线模板发现入口，具体审查、文件变更和验证见 HANDOFF.md 最后记录。用户确认内容缺项先标待补充/待核验，不能自行编造章节、时长或坐标。新增 stories.js 在页面最后加载；通过 SGTJourney.ask 复用对话与草稿。story 详情走 showContentView，主导航仍为两项。
 
-当前回归为七组：新增 stories.test.cjs；另外运行 landing/app/travel-api/map-route/travel-map/navigation.test.cjs 和全部 JS 语法检查。后端仍为演示资料服务，提问不等于已有完整故事匹配能力。只在 sgt-frontend-iter3/frontend 继续，不修改冻结主工作树前端。
+当前回归为七组：新增 stories.test.cjs；另外运行 landing/app/travel-api/map-route/travel-map/navigation.test.cjs 和全部 JS 语法检查。后端仍为演示资料服务，提问不等于已有完整故事匹配能力。只在 agent_threekingdom/frontend（分支 `dev`）继续；旧的 worktree 与冻结工作副本均已退役。
 
 ---
 
@@ -70,14 +70,18 @@ styles.css 已统一令牌、组件状态、可信度提示与响应式。后续
 
 ## 唯一开发位置与边界
 
-- 唯一工作目录：`D:\DSH Workspace\sgt-frontend-iter3`，仅改 `frontend/**`。
-- 这是稀疏检出的 git worktree，只有 frontend 是正常现象。
-- 主工作树 `D:\DSH Workspace\agent_threekingdom` 是冻结基线且有大量 .venv 改动。不要在那里切分支、pull、提交或清理 .venv。
-- 不改 src、deploy、data、prompts，不自行合并，不 push，不改 Docker 配置。
-- 公共文档是主工作树的未跟踪文件：AGENTS.md、docs/TASKS.md、docs/HANDOFF.md、docs/BACKEND-API.md。可以按协作规则回填 TASKS/HANDOFF，但不要把它们混入前端提交。
-- 旧 AGENTS/交接中的 tip 和“没有浏览器验收”等是历史状态，以本文件和 frontend/HANDOFF.md 后面的记录为准。
-- Git 不在 PATH：`C:\Program Files\Git\cmd\git.exe`。命令必须在迭代 worktree 执行，可加 `-c safe.directory='D:/DSH Workspace/sgt-frontend-iter3'`。不要改全局 safe.directory。
-- 如沙箱仅允许主工作树写入，应申请工具级提权写指定迭代目录；不要因此在冻结目录开发。
+- **唯一工作目录**：`D:\DSH Workspace\agent_threekingdom`（**2026-09-20 已换成最新仓库的干净克隆**），
+  分支 **`dev`**（= `origin/dev`）。仅改 `frontend/**`。
+- 这是**完整克隆**：`docs/`、`AGENTS.md`、`src/` 都在同一个仓库里，而且**文档现在是已跟踪文件**——
+  不再需要按主工作树绝对路径去找。
+- 旧的三个 worktree（`sgt-frontend-iter3`、`sgt-merge-frontend`、`sgt-dev-integration`）**已删除**；
+  旧工作副本整份保留在 `D:\DSH Workspace\agent_threekingdom-frozen-20260920`（**只作回滚，别在里面干活**）。
+- 可以正常 `git status` / `git pull`（工作区是干净的）。`.venv` 仍被 git 跟踪，但克隆出来就是干净的——**别去动它**。
+- 不改 src、deploy、data、prompts；不自行合并；⛔ **不推 master**（协调者 2026-09-20 明确），推送只到 `dev`。
+- 公共文档现在是**已跟踪文件**：`AGENTS.md`、`docs/TASKS.md`、`docs/HANDOFF.md`、`docs/BACKEND-API.md`、
+  `docs/BACKEND-API-REFERENCE.md`、`docs/FRONTEND-ISSUES.md`。按协作规则回填 TASKS/HANDOFF（与前端同仓，可一起提交）。
+- 旧 AGENTS/交接里的 tip、"没有浏览器验收"等是历史状态，以本文件与 `frontend/HANDOFF.md` 最新记录为准。
+- Git 不在 PATH：`C:\Program Files\Git\cmd\git.exe`。不要改全局 `safe.directory`。
 
 ## 已完成，勿重复实现
 
@@ -110,7 +114,7 @@ travel-api.js 的 enabled=false 保持；四个 /api/travel 接口是待后端�
 最近已通过五组回归和所有 frontend/*.js 语法检查：
 
 ```powershell
-# Working directory: D:\DSH Workspace\sgt-frontend-iter3
+# Working directory: D:\DSH Workspace\agent_threekingdom
 Get-ChildItem frontend/*.js | ForEach-Object { node --check $_.FullName }
 node frontend/landing.test.cjs
 node frontend/app.test.cjs

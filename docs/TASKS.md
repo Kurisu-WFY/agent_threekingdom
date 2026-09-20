@@ -13,11 +13,11 @@
 > **均已提交并实测验证；都在本地、都未 push、都未合 master**，等 review（AGENTS 6.5）。
 
 > 🔸 **2026-09-12 起：团队只做前端。** `src/**`、`data/**`、`prompts/**` 的缺口不归本组，写进本板交人转给后端/队友。
-> - 联调环境已对准前端：容器 `sgt-snapshot-api` 的前端挂载源改为
->   `D:\DSH Workspace\sgt-frontend-iter3\frontend`（= 迭代分支 `feat/frontend-iteration-3`），
->   改前端刷新即生效，不需要重建镜像。
-> - **前端唯一工作区**：`D:\DSH Workspace\sgt-frontend-iter3`（分支 `feat/frontend-iteration-3`）。
->   主工作树 `agent_threekingdom` 是**冻结基线**（`827adc8`），别在它上面切分支/提交/pull。
+> - **工作区（2026-09-20 重置后）**：唯一工作区 = `D:\DSH Workspace\agent_threekingdom`
+>   —— 最新仓库的**干净克隆**，停在 `dev`（当前 `edcf97e`）。**不再有 worktree**（旧的 3 个已删除，
+>   旧副本保留在 `agent_threekingdom-frozen-20260920` 作回滚）。
+> - 联调：容器 `sgt-snapshot-api` 的前端挂载源 = **主仓库 `frontend/`**，改完刷新即生效。
+> - ⛔ **不许推 master**（协调者 2026-09-20 明确）；推送目标只到 `dev`，且先 dry-run 确认是快进。
 > - 📌 交接提示词（给 Codex，自包含可直接粘）：`docs/HANDOFF-TO-CODEX.md`。
 
 ## 前端待办（Codex · 本轮起只做前端）
@@ -67,6 +67,7 @@
 
 | # | 任务 | 完成方 | 备注 |
 |---|---|---|---|
+| 44 | **用最新仓库的干净克隆替换旧工作副本** | DSH | 旧副本（1100 项 `.venv` 本地改动 + 4 个 worktree + 冻结分支）→ **干净克隆停在 `dev`**。保住了三样东西：① 唯一未推送的 5 个遗留提交（打成 bundle + 恢复为本地分支）；② `.env`（与模板一致，无机密）；③ DSH 版根 Docker 三件套（存进 `sgt-local-backup-20260911`）。删掉 3 个失效 worktree；容器挂载改指主仓库并**逐字节校验**、`/health` ok；旧副本保留为 `agent_threekingdom-frozen-20260920` |
 | 42 | **把前端推送到远端 `dev`**（协调者指令：不许推 master） | DSH（前端组） | `origin/dev`：`546cabf` → **`b8a8ce3`（纯快进，无强推）**。整合方式：从 `origin/dev` 建 `chore/frontend-into-dev`，先合 `feat/frontend-iteration-3`（Codex 最新前端），再合文档提交。验证：前端树与 `55bb0a0` **逐字节一致**、`src`/`prompts`/`README.md`/`.idea` 保留 dev 版本、**零丢失**、相对 dev 的改动面只有 `frontend/**`+`docs/**`+3 个根 md、**15/15 回归通过**。**master 未动**（仍 `4fcccad`） |
 | 43 | **整理当前前端问题清单** | DSH（前端组） | 新增 `docs/FRONTEND-ISSUES.md`：**F1–F9** 前端自己改（首屏 13 个脚本无压缩/地图数据 3.37 MB 懒加载/图片 537 KB 未压/偶发长帧/移动端触摸与无障碍未系统验收/localStorage 边界/四接口开关/验收截图只在本地/前端文档 tip 过期）、**B1–B9** 交后端队友（坐标缺 SQL 取出、价格 `data_status`+未知 0、意图漏判、硬约束、ID 映射、米仓道缺坐标、四接口未实现、上下文压缩、dev 待合 master）、**C1–C4** 内容、**D1–D4** 协作流程 |
 | 41 | **协作文档入库** | DSH（前端组） | `AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/`（共 8 个 md）作为**一条独立提交**入库。**2026-09-20 已随 dev 推送生效**（`origin/dev` = `b8a8ce3`）；合并候选分支 `chore/merge-frontend-into-master` 上也有同一份 |

@@ -20,25 +20,22 @@
 
 ## 1. 你的工作区（照这个来，别用别的）
 
-- 你的工作目录：`D:\DSH Workspace\sgt-frontend-iter3`，分支 `feat/frontend-iteration-3`（当前 tip `bccae1f`）。
-- 这是个 **git worktree + 稀疏检出**：只物化了 `frontend/`，所以目录里**看不到 `src/`、`docs/`**，这是正常的。
-  需要放宽时用 `git sparse-checkout set frontend docs`（但见下一条：docs 是 untracked，放不出来）。
-- ⛔ **不要**去主工作树 `D:\DSH Workspace\agent_threekingdom` 切分支或提交：它冻结在
-  `feat/frontend-iteration-2 @ 827adc8`，还带着 1100 项 `.venv` 本地改动，切分支/`pull` 都会炸
-  （协调者已决定不处理 `.venv`，别去清）。你的提交只在 `sgt-frontend-iter3` 里做。
-- 公共文档只存在于主工作树的绝对路径下（它们是 untracked，任何 worktree 里都没有）：
-  - `D:\DSH Workspace\agent_threekingdom\AGENTS.md`
-  - `D:\DSH Workspace\agent_threekingdom\docs\TASKS.md`
-  - `D:\DSH Workspace\agent_threekingdom\docs\HANDOFF.md`
-  - `D:\DSH Workspace\agent_threekingdom\docs\BACKEND-API.md`
-  - `D:\DSH Workspace\agent_threekingdom\docs\HANDOFF-TO-CODEX.md`（本文件）
+- **唯一工作区**：`D:\DSH Workspace\agent_threekingdom` —— **2026-09-20 已换成最新仓库的干净克隆**，
+  分支 **`dev`**（= `origin/dev`，当前 `edcf97e`）。
+- 这是**完整克隆**（不是 worktree、不做稀疏检出）：`frontend/**`、`docs/**`、`src/**` 都在同一个仓库里，
+  文档是**被跟踪文件**，所以你在同一处就能读到代码和协作/交接文档。
+- 旧的三个 worktree（`sgt-frontend-iter3`、`sgt-merge-frontend`、`sgt-dev-integration`）**已删除**，
+  别再往那些路径写东西；分支名都还在本地（`feat/frontend-iteration-3`、`chore/merge-frontend-into-master` 等）。
+- 旧工作副本整份保留在 `D:\DSH Workspace\agent_threekingdom-frozen-20260920`（**只作回滚，别在里面干活**）。
+- 主仓库现在**可以正常 `git status` / `git pull`**：工作区是干净的。`.venv` 仍被 git 跟踪，但克隆出来就是干净的，
+  **不要去改动或清理 `.venv`**。
 - 工具全路径：git = `C:\Program Files\Git\cmd\git.exe`（不在 PATH）；docker = `C:\Program Files\Docker\Docker\resources\bin\docker.exe`；
   Node = `node`（v24，可直接跑前端测试，**不需要 npm install、没有打包步骤**）。
 
 ## 2. 联调环境（已就绪，直接用）
 
 - 后端容器 `sgt-snapshot-api` → **http://localhost:8001**（healthy）。后端代码 = `origin/master @ 4fcccad`（完整可跑）。
-- 容器已把 **`D:\DSH Workspace\sgt-frontend-iter3\frontend` 只读挂载**到 `/app/frontend`：
+- 容器已把 **`D:\DSH Workspace\agent_threekingdom\frontend` 只读挂载**到 `/app/frontend`：
   **你改前端文件 → 浏览器刷新即生效**，不需要重建镜像、不需要本地 Python/venv（刷新没变化就 `Ctrl+F5`）。
 - 端口别动：宿主 8000 被别的项目（inventree）占着，本项目固定映射 **8001**。
 - 三条 `/chat` 意图 2026-09-12 实测：`route_planning` 置信度 0.82、`culture_qa` 0.55（**默认兜底值，不是真识别出来的**）、
@@ -108,7 +105,7 @@
 - 语法：对 `frontend/*.js` 逐个 `node --check`
 - 回归：`node frontend/app.test.cjs`、`node frontend/travel-api.test.cjs`、`node frontend/map-route.test.cjs`
 - **真实响应回放**（没有浏览器也能验地图逻辑）：
-  `node "D:\DSH Workspace\.tmp-e2e\replay-map.cjs" "D:\DSH Workspace\sgt-frontend-iter3\frontend"`
+  `node "D:\DSH Workspace\.tmp-e2e\replay-map.cjs" "D:\DSH Workspace\agent_threekingdom\frontend"`
   （用最小 DOM 桩加载**真实 `travel-map.js`**，喂实测 `/chat` 响应，打印地图状态与已定位点数）
 - **容器是否真在服务你改的字节**：`Invoke-WebRequest http://127.0.0.1:8001/map-route-core.js -OutFile $env:TEMP\x.js`
   然后 `Get-FileHash` 与你本地的 `frontend\map-route-core.js` 对比（应一致）
@@ -142,8 +139,8 @@
 
 1. **review 并合并**：先 `chore/merge-frontend-into-master`（`9623be1`）进 `master`，再合
    `feat/frontend-iteration-3`（分支 tip 会随 Codex 继续前进）。两个分支**都还在本地、都没 push**。
-2. **决定协作文档是否入库**：`AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、`docs/` 至今 **untracked**，
-   所以任何 worktree / 全新克隆都读不到，Codex 只能按绝对路径读主工作树（任务板 #21）。
+2. ~~**决定协作文档是否入库**~~ → ✅ **已完成（2026-09-20）**：`AGENTS.md`、`ARCHITECTURE.md`、`TESTING.md`、
+   `docs/` 现在都是**被跟踪文件**，随 `dev` 走；主仓库克隆下来就有，不再需要按绝对路径找。
 3. **把两个 P0 缺口转给后端/队友**：`route.stops[].coordinates` + `coordinate_system`，
    以及价格类 `data_status`/`sources`/`updated_at` 与"未知金额用 `null`"（任务板 #33；实测证据在 `docs/HANDOFF.md`）。
 

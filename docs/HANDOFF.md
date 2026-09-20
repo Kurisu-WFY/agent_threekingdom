@@ -679,3 +679,32 @@
   ② **B 组**交后端队友；③ 决定 `dev → master` 时机（现在是干净快进）；
   ④ `sgt-dev-integration` worktree 可 `git worktree remove`（分支保留）。
 - **卡点**：无阻塞。注意 `master` 仍落后于 `dev`（协调者要求不推 master）。
+
+### 2026-09-20 DSH · 用最新仓库的干净克隆替换旧工作副本
+- **协调者指令**：把最新仓库克隆下来，替换先前的克隆。
+- **先备份「无法从远端恢复」的三样**：
+  1. 本地 **5 个遗留提交**（`chore/commit-missing-modules`）打成
+     `D:\DSH Workspace\backup-agent_threekingdom-20260920.bundle`（9.7 MB，`git bundle verify` 通过）；
+  2. `.env` —— 与 `.env.example` **逐字节一致**，确认不含机密，仍复制到新仓库；
+  3. **DSH 版根 Docker 三件套**（`Dockerfile`、`docker-compose.yml`、`docker-entrypoint.sh`，任务 #22 待决策）
+     → 存入 `D:\DSH Workspace\sgt-local-backup-20260911\dsh-webapi-docker-20260920\`。
+- **克隆与验证**：`git clone -b dev https://gitee.com/wwffyyy/agent_threekingdom.git`（1267 个文件，
+  **含被跟踪的 `.venv` 1120 个文件 / 20.4 MB**）。验证：工作区**干净**、`frontend` 树与 `55bb0a0`
+  **逐字节一致**、`docs/` 与 `AGENTS.md` 齐全、**15/15 前端回归 + 全部 JS 语法通过**。
+- **替换**：旧副本改名 `agent_threekingdom-frozen-20260920`（**保留作回滚点，未删除**），新克隆接管
+  `D:\DSH Workspace\agent_threekingdom`；从 bundle 恢复 `chore/commit-missing-modules`，
+  并按已知 SHA 重建 `feat/frontend-iteration-2/3`、`chore/merge-frontend-into-master`、`chore/frontend-into-dev`。
+  新克隆没有本地 git 身份，已从旧副本取回 `user.name`/`user.email` 配好。
+- **删除 3 个失效 worktree**：`sgt-merge-frontend`、`sgt-frontend-iter3`、`sgt-dev-integration` ——
+  它们的内容都已在 `origin/dev` 里验证过（前端树逐字节一致），删目录不损失历史。
+- **容器挂载改回主仓库**：快照 `docker-compose.backend.yml` 的前端挂载源 →
+  `D:/DSH Workspace/agent_threekingdom/frontend`，重建容器后抽样实测服务端 7 个文件与主仓库
+  **逐字节一致**、`/health` = `ok`（服务仍在 http://localhost:8001）。
+- **文档同步**：`AGENTS.md`（新增「仓库与工作区布局」，替换全部旧 worktree 路径）、`docs/TASKS.md`、
+  `docs/HANDOFF-TO-CODEX.md`（工作区章节重写）、`frontend/START-HERE.md`、`docs/FRONTEND-ISSUES.md`
+  （D1/D4 标记为已解决）。文档更新已提交并推送到 `dev`。
+- **结果**：工作区只剩 **4 项** —— 主仓库（干净、停在 `dev`）、部署快照、旧副本（回滚）、bundle 备份；
+  **不再有 worktree、不再有稀疏检出，文档与代码同源**。
+- **下一步**：① 前端按 `docs/FRONTEND-ISSUES.md` 的 **F 组**自改；② **B 组**交后端队友；
+  ③ 确认无误后可删旧副本与 bundle；④ `dev → master` 的时机由人决定（协调者当前明确不推 master）。
+- **卡点**：无阻塞。
