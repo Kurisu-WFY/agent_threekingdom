@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css?v=visual-system-1">
 </head>
 <body>
@@ -22,6 +23,7 @@
           <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
           <button type="button" data-content-view="story" aria-pressed="false" aria-controls="story-view">故事线</button>
           <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
+          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地与行程</button>
         </nav>
       </div>
 
@@ -245,7 +247,7 @@
           <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
           <label>预算下限（元 / 全团）<input name="budget_min" type="number" min="0" step="1" placeholder="可不填"></label>
           <label>预算上限（元 / 全团）<input name="budget_max" type="number" min="0" step="1" placeholder="可不填"></label>
-          <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option>高档型</option></select></label>
+          <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option value="品质型">高档型</option></select></label>
           <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
           <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
           <button class="module-button primary" type="submit">规划 / 重绘路线</button>

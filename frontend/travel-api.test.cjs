@@ -7,6 +7,8 @@ const context = vm.createContext({ window: {}, AbortSignal, fetch: async (url, o
 vm.runInContext(fs.readFileSync(__dirname + '/travel-api.js', 'utf8'), context);
 const api = context.window.TravelApi;
 (async () => {
+  assert.equal(api.config.enabled, true);
+  api.config.enabled = false;
   assert.equal((await api.listSpots('南充')).status, 'unavailable');
   assert.equal(calls.length, 0);
   api.config.enabled = true;

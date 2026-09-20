@@ -1,6 +1,8 @@
 # 前端内容与接口契约（需求20，2026-09-18）
 
-本文替代此前按迭代追加的说明。只有 `/health` 与 `/chat` 已有真实服务；以下结构除已实现部分外均是适配约定，不代表数据库、接口或资料已到位。没有新增依赖或网络接口，`travel-api.js` 保持 `enabled: false`。
+2026-09-20 本机联调更新：用户授权接入后端，`travel-api.js` 已启用。四个 `/api/travel/*` 地址已实现：景区、路线预览、住宿预算使用业务演示库，天气交通明确返回 unavailable，不代表实时服务已接通。下文“待实现/默认关闭”为前端交接时的历史基线；以本段及 `docs/LOCAL-INTEGRATION.md` 为准。
+
+`POST /chat` 新增可选 `route_preferences`（Preferences + excluded_place_ids）；有该字段时按结构化城市、天数和排除站点规划，不再由整段表单文案猜城市。date 接受空串/null；days 支持0.5–14。预算可选 amount_min/amount_max 为演示区间，未知单价仍为null。未补齐的故事正文、证据、坐标不自动生成。
 
 ## 1. 故事线与章节
 

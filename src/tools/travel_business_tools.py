@@ -55,6 +55,13 @@ def get_spot_ticket(spot_name_or_id: str) -> dict:
         return {"found": False, "message": "未找到该景区，需在 scenic_spots 表维护基础信息。"}
     data = row_to_dict(row)
     data["found"] = True
+    data["data_status"] = {"manual_demo": "sample", "manual_pending": "pending"}.get(data.get("data_status"), data.get("data_status") or "pending")
+    data["sources"] = []
+    data["updated_at"] = None
+    if data["data_status"] in ("sample", "pending"):
+        for field in ("price_min", "price_max"):
+            if data.get(field) == 0:
+                data[field] = None
     if data.get("price_min") is None:
         data["warning"] = "当前只有景区记录，没有已核实票价；正式展示前需补充官方或 OTA 来源。"
     return data
@@ -129,14 +136,29 @@ def get_route_detail(route_id: str) -> dict:
     return {"found": True, "route": row_to_dict(route), "stops": [row_to_dict(row) for row in stops]}
 
 
-def recommend_route(city: str = "南充", hours: float | None = None, target_user: str | None = None) -> dict:
+def recommend_route(city: str = "南充", hours: float | None = None, target_user: str | None = None,
+                    excluded_place_ids: list[str] | None = None) -> dict:
     routes = list_route_templates(city=city, target_user=target_user)
     if not routes:
-        return {"found": False, "message": "未找到匹配路线，需维护 route_templates 和 route_stops。"}
+        return {"found": False, "message": "未找到匹配路线，需维护 route_templates 和 route_stops。", "route": None, "stops": []}
     if hours:
+        routes = [r for r in routes if float(r["duration_hours"]) <= hours]
         routes = sorted(routes, key=lambda r: abs(float(r["duration_hours"]) - float(hours)))
+    if not routes:
+        message = "没有满足时长上限的文化路线模板，请增加时间或选择其他目的地。"
+        return {"found": False, "message": message, "selection_reason": message, "route": None, "stops": []}
     detail = get_route_detail(routes[0]["route_id"])
-    detail["selection_reason"] = "按城市、用户类型和时长接近度选择。"
+    mapping = {"wanjuanlou": "nanchong_xishan_wanjuanlou", "hanhuanhouci": "nanchong_langzhong_huanhouci",
+               "jianmenguan": "guangyuan_jianmen_shudao", "zhaohua": "guangyuan_zhaohua_ancient_city"}
+    excluded = {mapping.get(value, value) for value in (excluded_place_ids or [])}
+    detail["stops"] = [s for s in detail["stops"] if s["spot_id"] not in excluded]
+    if not detail["stops"]:
+        message = "模板景点均已完成或本次跳过，暂无其他可安排的站点。"
+        return {"found": False, "message": message, "selection_reason": message, "route": None, "stops": []}
+    for index, stop in enumerate(detail["stops"], 1):
+        stop["stop_order"] = index
+    detail["route"].update(data_status="sample", updated_at=None, sources=[])
+    detail["selection_reason"] = "按城市与用户类型筛选，在时长上限内选择最接近的模板；交通与兴趣尚未用于路线优化。"
     return detail
 
 

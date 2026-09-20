@@ -48,6 +48,9 @@ class TravelAgentService:
             if name in message:
                 ticket = get_spot_ticket(name)
                 if ticket.get("found"):
+                    if ticket.get('price_min') is None or ticket.get('price_max') is None:
+                        ticket_lines.append(f"{ticket['name']}：票价待核验，不能视为免费。")
+                        continue
                     ticket_lines.append(
                         f"{ticket['name']}：{ticket.get('price_min')} - {ticket.get('price_max')} "
                         f"{ticket.get('currency')}（{ticket.get('data_status')}）"

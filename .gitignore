@@ -35,3 +35,5 @@ Thumbs.db
 .ruff_cache/
 .coverage
 htmlcov/
+.playwright-cli/
+output/playwright/

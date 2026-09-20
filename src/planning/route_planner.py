@@ -23,6 +23,9 @@ CITY_ALIASES = {
 
 
 def _guess_city(user_message: str) -> str:
+    explicit = re.search(r"目的地[：:]\s*([^；;。]+)", user_message)
+    if explicit:
+        return explicit.group(1).strip()
     for city_alias, city_name in CITY_ALIASES.items():
         if city_alias in user_message:
             return city_name
@@ -30,7 +33,7 @@ def _guess_city(user_message: str) -> str:
 
 
 def _guess_duration_hours(user_message: str) -> float | None:
-    if "半天" in user_message or "4小时" in user_message:
+    if "半天" in user_message or "半日" in user_message or "4小时" in user_message:
         return 4
     if "一天" in user_message or "一日" in user_message:
         return 8
@@ -59,6 +62,7 @@ def plan_route(
     target_user: str | None = None,
     interests: list[str] | None = None,
     transport_mode: str | None = None,
+    excluded_place_ids: list[str] | None = None,
 ) -> dict:
     """Return the closest curated Demo route and its cultural interpretation.
 
@@ -73,6 +77,7 @@ def plan_route(
         city=city_name,
         hours=duration_hours,
         target_user=target_user,
+        excluded_place_ids=excluded_place_ids,
     )
     hotel_poi_request = search_hotel_poi_request(city=city_name, near_spot=None)
 
@@ -115,6 +120,6 @@ def plan_route(
             "interests": interests or [],
             "transport_mode": transport_mode or route_template.get("transport_mode", ""),
         },
-        "data_status": "demo_template",
+        "data_status": "sample",
         "notice": "路线顺序和停留时间来自 Demo 模板；实时交通、天气、营业时间和导航需接入地图/天气服务后确认。",
     }

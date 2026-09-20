@@ -16,7 +16,7 @@ const window={TravelApi:{listSpots:unavailable,createPlan:()=>{throw Error('must
  StoryProgress:{get:s=>states.get(s.id)||{mode:'大众体验版',completed:new Set(),skipped:new Set()},save(){}},
  StoryMap:{getPlaces:()=>[{id:'a',name:'昭化古城'},{id:'b',name:'剑门关'},{id:'c',name:'米仓道'}]},
  SGTStoryUI:{openStory(){}},TravelMap:{showPlan:async r=>{mapCalls.push(r);return true;}},
- SGTChat:{request:q=>new Promise((resolve,reject)=>requests.push({q,resolve,reject}))}};
+ SGTChat:{request:(q,preferences)=>new Promise((resolve,reject)=>requests.push({q,preferences,resolve,reject}))}};
 const context={window,URL,crypto:{randomUUID:()=>String(Math.random())},localStorage:{getItem:k=>saved[k]||null,setItem:(k,v)=>saved[k]=v},
  document:{querySelector:get,querySelectorAll:()=>[],createElement:t=>new Element(t)},
  FormData:class{constructor(){return Object.entries(fields).map(([k,v])=>[k,v.value]);}},showContentView:v=>views.push(v),toggleChat(){}};
@@ -28,6 +28,7 @@ const response={answer:'示例路线',intent:{intent:'route_planning'},route:{fo
  fields.origin.value='   ';await form.requestSubmit();assert.equal(requests.length,0);
  fields.origin.value='南充';fields.budget_min.value='2000';await form.requestSubmit();assert.equal(requests.length,0);fields.budget_min.value='100';
  const pending=form.requestSubmit();assert.equal(button.disabled,true);form.requestSubmit();assert.equal(requests.length,1);
+ assert.equal(requests[0].preferences.city,'广元');assert.equal(requests[0].preferences.days,0.5);assert.equal(requests[0].preferences.explanation,'亲子');assert.equal(requests[0].preferences.date,null);assert.equal(JSON.stringify(requests[0].preferences.excluded_place_ids),JSON.stringify(['a','c']));
  assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
  requests[0].resolve(response);await pending;assert.equal(views.at(-1),'plan');
  const output=text(get('#plan-results'));for(const value of ['了解关隘主题','90 分钟','120 分钟','需核验路况','2026-09-17','优先保留第二幕','本次跳过','待定位','不一致'])assert.ok(output.includes(value),value);

@@ -1,7 +1,7 @@
 /* 仅本文件负责旅游模块网络请求。与现有 /chat 独立。 */
 window.TravelApi = (() => {
   const config = {
-    enabled: false,
+    enabled: true,
     baseUrl: '/api/travel',
     timeoutMs: 15000
   };

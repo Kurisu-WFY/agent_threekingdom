@@ -173,18 +173,21 @@
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
     $('#planner-status').textContent='正在按故事章节与现实约束规划；上一份方案保留。';
     try {
-      const data=await window.SGTChat.request(attempt.question);
+      const data=await window.SGTChat.request(attempt.question, {...attempt.preferences,
+        date: attempt.preferences.date || null,
+        explanation: {'亲子故事版':'亲子','大众体验版':'大众','学术探索版':'学术'}[attempt.preferences.explanation] || attempt.preferences.explanation || '大众',
+        excluded_place_ids: (attempt.choices || []).filter(c=>c.status!=='本次保留').map(c=>c.placeId)});
       if(version!==planRequest)return;
       if(data.intent?.intent!=='route_planning') {
         $('#planner-status').textContent='本次未返回路线（'+(data.intent?.intent==='budget_ticket'?'预算票价':'文化回答 / 意图待确认')+'），未替换上一份方案。'+data.answer;
         $('#planner-retry').hidden=false;return;
       }
       const result=data.route;
-      if(result?.found===false){$('#planner-status').textContent='暂无匹配路线：'+text(result.selection_reason)+'。请调整条件后重试；上一份方案保留。';$('#planner-retry').hidden=false;return;}
+      if(result?.found===false){$('#planner-status').textContent='暂无匹配路线：'+text(result.selection_reason || result.message)+'。请调整条件后重试；上一份方案保留。';$('#planner-retry').hidden=false;return;}
       if(result?.found!==true || !result.route || typeof result.route!=='object' || Array.isArray(result.route) || !Array.isArray(result.stops) || !result.stops.length || result.stops.some(s=>!s||typeof s.name!=='string'||!s.name.trim()))throw new Error('路线数据不完整，请重试或调整条件。');
       current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
         chatRoute:result,plan:{title:result.route.name,days:[]},draft:false};
-      renderPlan();empty($('#budget-results'),'预算服务待接入；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'天气与交通服务待接入。');
+      renderPlan();empty($('#budget-results'),'可查询住宿演示预算；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'天气与交通服务待接入。');
       $('#planner-status').textContent='已收到后端路线，约束与来源仍需核验。';$('#plan-status').textContent='已更新路线，已寻迹章节记录保持。';showContentView('plan');
     } catch(error) {if(version===planRequest){$('#planner-status').textContent=error.name==='TimeoutError'?'等待路线超时，可重试；上一份方案保留。':'请求失败：'+error.message+' 可重试；上一份方案保留。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
@@ -263,7 +266,8 @@
     if (!Array.isArray(data.items)) throw new Error('预算数据缺少费用明细。');
     if (!data.items.length) return empty(target, '暂无费用明细，不能计算预算总额。');
     data.items.forEach(item => {
-      const amount = typeof item.amount === 'number' && Number.isFinite(item.amount) && item.amount > 0 ? `${item.amount} 元` : '待核验 / 暂无数据';
+      const range = Number.isFinite(item.amount_min) && Number.isFinite(item.amount_max) && item.amount_min > 0 && item.amount_max >= item.amount_min;
+      const amount = typeof item.amount === 'number' && Number.isFinite(item.amount) && item.amount > 0 ? `${item.amount} 元` : range ? `${item.amount_min}–${item.amount_max} 元（估算）` : '待核验 / 暂无数据';
       const card = node('article', null, 'result-card');
       card.append(node('h3', `${item.label}：${amount}`), node('p', item.basis || '计算依据未提供'), node('p', dataStatus(item), 'map-note'));
       sources(card, item.sources); target.append(card);

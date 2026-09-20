@@ -310,12 +310,12 @@ document.querySelector('#new-chat').onclick = () => {
 };
 
 /* ---------------- 调用后端 ---------------- */
-function ask(text, history, mode = '大众') {
+function ask(text, history, mode = '大众', routePreferences) {
   return fetch(API, {
     signal: AbortSignal.timeout(60000),
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text, mode, history })
+    body: JSON.stringify({ message: text, mode, history, ...(routePreferences ? {route_preferences: routePreferences} : {}) })
   }).then(response => {
     if (!response.ok) throw new Error('HTTP ' + response.status);
     return response.json();
@@ -323,12 +323,12 @@ function ask(text, history, mode = '大众') {
 }
 
 // Shared /chat transport for the existing trip form; its results stay in the plan view.
-window.SGTChat = { async request(text) {
+window.SGTChat = { async request(text, routePreferences) {
   const message = typeof text === 'string' ? text.trim() : '';
   if (!message) throw new Error('请先填写出行需求。');
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
     .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text}));
-  const data = await ask(message, history, window.CharacterChat?.backendMode() || '大众');
+  const data = await ask(message, history, routePreferences?.explanation || window.CharacterChat?.backendMode() || '大众', routePreferences);
   if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
   return data;
 } };
