@@ -5,8 +5,9 @@
 >
 > **当前焦点（2026-09-12 · 前端组接手）**：队友已把 5 个缺失模块补齐并推送，`master@4fcccad` 是**完整可跑的后端**；
 > Codex 的前端已按协调者指令**暂停冻结**在 `feat/frontend-iteration-2@827adc8`。
-> DSH 已产出交付快照 `D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\`（后端 + 前端 + 自建 Docker 配置），
-> 跑在 **http://localhost:8001**。**下一步是把两条线并回仓库主线。**
+> 交付快照目录 `D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\` 仍在（含数据卷与构建配置，可随时重建），
+> 但**它的容器与镜像已于 2026-09-20 停用删除**；现在跑的是**用最新仓库构建的容器** `sanguo-latest-api`
+> → **http://localhost:8002**（唯一容器，跑当前 `dev` 代码 + 只读挂载主仓库 `frontend/`）。
 > **本轮（前端组）已做**：#25 合并候选、#7 真实联调 + 缺陷修复 —— 都在**隔离 worktree** 里做
 > （主工作树脏、1100 项 `.venv`；绝不切主工作树分支、不 pull）。
 > 结果：合并候选 `9623be1`（前端并入 master）与迭代分支 `feat/frontend-iteration-3`（`aff0c37` 缺陷修复）
@@ -85,7 +86,8 @@
 
 | # | 任务 | 完成方 | 备注 |
 |---|---|---|---|
-| 54 | **用最新仓库构建可运行容器并验收** | DSH | 新增 `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`（`context` = 主仓库、`dockerfile_inline`，**不碰仓库自带 Docker 配置**）；镜像 `sanguo-latest:dev`（440MB），容器 `sanguo-latest-api` @ **http://localhost:8002**（healthy，与 8001 的联调容器并存）。验收：`/health`=ok、四条意图全过、缺 message→422、`/docs` 与 `/openapi.json` 可用、前端 6 个资源与仓库**逐字节一致**、容器内 `src/*.py` 与仓库**逐字节一致**（含 `mcp_stdio_server.py`、MCP **8 个工具**）、`data/processed` 写入不影响 git 干净。顺带在最新容器上复测出：`route_planning` **新增 `notice`/`planning_preferences`/`data_status=demo_template`**（词表外，需改 `sample`），且 `duration_hours` 已解析但**未用于筛模板**；`stops[]` 仍无坐标（见 #45/#46/#48） |
+| 55 | **清理旧镜像 + 让队友「pull 后能直接开发」** | DSH | ① 删旧镜像：`sgt-preview-threekingdom-api`（433MB）+ 一个 2.03GB 悬空层 + `sgt-snapshot-…`（433MB，停掉 8001 容器后删）→ 镜像总量 5.98GB→3.90GB；② **实测全新 clone 全流程**：`clone → 独立 venv → pip install -r requirements.docker.txt（68 秒）→ seed → ingest（8 条）→ uvicorn → 四条意图 + 首页 200`；③ 把原先散在仓库外的证据脚本**移进仓库** `docs/tools/`（自动定位仓库根，4 个工具全部实测通过）；④ 文档补齐「装哪份依赖」「Python 版本歧义（pyproject 写 ≥3.12 但 3.11 实测可跑）」「别用被跟踪的 .venv，venv 建到仓库外」「绝对路径是本机约定」 |
+| 54 | **用最新仓库构建可运行容器并验收** | DSH | 新增 `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`（`context` = 主仓库、`dockerfile_inline`，**不碰仓库自带 Docker 配置**）；镜像 `sanguo-latest:dev`（440MB），容器 `sanguo-latest-api` @ **http://localhost:8002**（**2026-09-20 起是唯一的项目容器**：旧 8001 快照容器与镜像已删除，联调职责挪到 8002 并加了 `frontend/` 只读挂载）。验收：`/health`=ok、四条意图全过、缺 message→422、`/docs` 与 `/openapi.json` 可用、前端 6 个资源与仓库**逐字节一致**、容器内 `src/*.py` 与仓库**逐字节一致**（含 `mcp_stdio_server.py`、MCP **8 个工具**）、`data/processed` 写入不影响 git 干净。顺带在最新容器上复测出：`route_planning` **新增 `notice`/`planning_preferences`/`data_status=demo_template`**（词表外，需改 `sample`），且 `duration_hours` 已解析但**未用于筛模板**；`stops[]` 仍无坐标（见 #45/#46/#48） |
 | 53 | **补齐后端接手文档**（让队友能接着干） | DSH | 新增 `docs/BACKEND-TODO.md`（后端工作单：P0/P1/P2 + 实测证据 + 改哪里 + 验收 + 自测）；**修正 `TESTING.md`**（照旧命令会崩的三处：`create_vector_collection.py`、`vector_backend` 预期、Docker 用错配置）；修正 `ARCHITECTURE.md`（7→8 工具 + stdio 入口、`data_status` 三套词表冲突、Docker 现状）；`AGENTS.md` 补上「队友（后端）」角色与入口 |
 | 44 | **用最新仓库的干净克隆替换旧工作副本** | DSH | 旧副本（1100 项 `.venv` 本地改动 + 4 个 worktree + 冻结分支）→ **干净克隆停在 `dev`**。保住了三样东西：① 唯一未推送的 5 个遗留提交（打成 bundle + 恢复为本地分支）；② `.env`（与模板一致，无机密）；③ DSH 版根 Docker 三件套（存进 `sgt-local-backup-20260911`）。删掉 3 个失效 worktree；容器挂载改指主仓库并**逐字节校验**、`/health` ok；旧副本保留为 `agent_threekingdom-frozen-20260920` |
 | 42 | **把前端推送到远端 `dev`**（协调者指令：不许推 master） | DSH（前端组） | `origin/dev`：`546cabf` → **`b8a8ce3`（纯快进，无强推）**。整合方式：从 `origin/dev` 建 `chore/frontend-into-dev`，先合 `feat/frontend-iteration-3`（Codex 最新前端），再合文档提交。验证：前端树与 `55bb0a0` **逐字节一致**、`src`/`prompts`/`README.md`/`.idea` 保留 dev 版本、**零丢失**、相对 dev 的改动面只有 `frontend/**`+`docs/**`+3 个根 md、**15/15 回归通过**。**master 未动**（仍 `4fcccad`） |

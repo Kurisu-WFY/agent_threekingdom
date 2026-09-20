@@ -26,7 +26,7 @@
 | 远端 | `https://gitee.com/wwffyyy/agent_threekingdom.git` |
 | 主分支 | `master`；开发分支 `dev` |
 | git 可执行文件 | `C:\Program Files\Git\cmd\git.exe`（不在 PATH，需用全路径） |
-| Python | `C:\Python\Python311\python.exe`（3.11.4），venv 在 仓库根 `.venv` |
+| Python | `C:\Python\Python311\python.exe`（3.11.4，实测可跑）。**依赖装 `requirements.docker.txt`**（轻量、约 68 秒；`requirements.txt` 会拖 torch）。仓库根那份 `.venv` 是被 git 跟踪的、**别用**，venv 建到仓库外 |
 
 ## 3. ⚠️ 当前状态（重要，务必先看）
 
@@ -67,7 +67,8 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 
 = **后端 `master@4fcccad` + 前端 `827adc8`** 的合并快照，自带 DSH 自建的
 `Dockerfile.backend` + `docker-compose.backend.yml`（**不使用**仓库里的 Docker 配置），
-目录内 `SNAPSHOT.md` 有完整说明。当前跑在 **http://localhost:8001**（容器 `sgt-snapshot-api`）。
+目录内 `SNAPSHOT.md` 有完整说明。**⚠️ 它对应的容器与镜像已于 2026-09-20 停用删除**
+（当时的联调容器跑在 8001）；现在跑的是**最新仓库代码**的容器 → **http://localhost:8002**（见第 4 节）。
 
 ### 🗂 仓库与工作区布局（2026-09-20 重置后）
 
@@ -91,7 +92,7 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 - **不再需要稀疏检出**：主仓库是完整克隆（1267 个文件，含被跟踪的 `.venv` 1120 个文件 / 20.4 MB）。
   `.venv` 依然被 git 跟踪（任务 #27 未解决），但**克隆出来就是干净的**——别再去改它。
 - **前端怎么改**：直接在 `D:\DSH Workspace\agent_threekingdom\frontend` 改（不是 worktree），
-  改完刷新 http://localhost:8001 即生效（容器挂载的就是这个目录）。
+  改完刷新 **http://localhost:8002** 即生效（容器把主仓库 `frontend/` 只读挂进去了）。
 - **合并候选 `9623be1`** 实测只有 `frontend/index.html` 一处 add/add 冲突，已解（取前端第二迭代版；
   `origin/master` 侧是早期「单文件版」）。验证：`frontend` 树哈希与 `827adc8` **完全相同**、
   17 文件 0 差异、改动面**只有 `frontend/**`**、`src`/`deploy` **零污染**。
@@ -105,10 +106,9 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
   以**纯快进**推到 `origin/dev`。验证：前端树与 `55bb0a0` **逐字节一致**、队友的
   `src/**`/`prompts/**`/`README.md`/`.idea` **保留 dev 版本**、**零文件丢失**、
   相对 dev 的改动面只有 `frontend/**` + `docs/**` + 3 个根 md、**15/15 前端回归通过**。
-- **联调环境（2026-09-20 现状）**：快照 `docker-compose.backend.yml` 的前端挂载源 =
-  **`D:\DSH Workspace\agent_threekingdom\frontend`**（= 这份干净克隆，停在 `dev`）；容器已重建，
-  实测服务端文件与主仓库**逐字节一致** → 改前端刷新即生效，看到的就是 `dev` 上的前端。
-  想回到「只看镜像里那份封版前端（`827adc8`）」：把那行挂载注释掉再 `up -d`。
+- **联调环境（2026-09-20 最新）**：**唯一容器** `sanguo-latest-api` @ **http://localhost:8002**
+  （配置在 `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`：构建自本仓库 + 只读挂载主仓库 `frontend/`）。
+  实测服务端文件与主仓库**逐字节一致**；旧快照容器（8001）与它的镜像**已删除**。
 - 📌 **给 Codex 的接手提示词**（自包含、可直接粘）：`docs\HANDOFF-TO-CODEX.md`。
 
 ### ✅ `.venv`：已决定不管它（2026-09-12 协调者决策）
@@ -121,7 +121,7 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 
 - ⛔ 不要清理或改动 `.venv`（现在本来就没有本地改动了，别自己制造）。新主仓库**可以正常 `git pull`**。
 - ✅ 前端开发环境 = **Docker 后端 + 挂载前端目录**，**完全不需要本地 Python / venv**。
-  后端跑在 http://localhost:8001（容器 `sgt-snapshot-api`）。
+  后端跑在 http://localhost:8002（容器 `sanguo-latest-api`）。
 - ✅ 前后端对接靠接口协议，不靠"环境一致"：
   - `docs/BACKEND-API.md` —— DSH 对真实后端**实测**出来的协议（现状 + 缺口清单）
   - `frontend/API-CONTRACT.md` —— Codex 写的**前端提案**（4 个待实现接口 + `map_route`）
@@ -166,56 +166,46 @@ D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\
 
 ### 本地（推荐用于快速验证）
 ```powershell
-$dest = "D:\DSH Workspace\agent_threekingdom"
-$py   = "$dest\.venv\Scripts\python.exe"
-$env:PYTHONPATH = "$dest\src"
+$repo = "D:\DSH Workspace\agent_threekingdom"
+$py   = "C:\Python\Python311\python.exe"   # 3.11.4（实测可跑）；别用仓库里被跟踪的 .venv，见第 2 节
+# 依赖只装一次（约 68 秒）：& $py -m pip install -r "$repo\requirements.docker.txt" -i https://pypi.tuna.tsinghua.edu.cn/simple
+$env:PYTHONPATH = "$repo\src"
 $env:VECTOR_BACKEND = "local"      # ⚠️ 必须：不装 pymilvus 时 milvus 后端会崩
 
-& $py src\ingest\seed_business_db.py           # 初始化业务库
-# & $py src\ingest\create_vector_collection.py # ⚠️ 跳过：只认 Milvus 且无兜底，本地后端不需要它
-& $py src\ingest\ingest_pipeline.py            # 导入知识（写入 data/processed/vector_store.json）
-& $py -m uvicorn api:app --host 127.0.0.1 --port 8010 --app-dir src
+& $py "$repo\src\ingest\seed_business_db.py"      # 初始化业务库
+# ⛔ 跳过 "$repo\src\ingest\create_vector_collection.py"：只认 Milvus 且无兜底
+& $py "$repo\src\ingest\ingest_pipeline.py"       # 导入知识（写入 data/processed/vector_store.json）
+& $py -m uvicorn api:app --host 127.0.0.1 --port 8010 --app-dir "$repo\src"
 ```
 
-### Docker（推荐：用快照）
+### Docker（推荐：用最新仓库起的那个容器）
 ```powershell
 $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
-cd "D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8"
-& $docker compose -f docker-compose.backend.yml up -d --build
+cd "D:\DSH Workspace\sgt-latest-dev"
+& $docker compose -f docker-compose.latest.yml up -d --build   # 上下文 = 主仓库；后端代码改了要 --build
+& $docker compose -f docker-compose.latest.yml logs -f          # 看 seed / ingest 与访问日志
+& $docker compose -f docker-compose.latest.yml down             # 停止并删容器（数据目录保留）
 ```
-访问 `http://localhost:8001`（宿主 8001 → 容器 8000，容器名 `sgt-snapshot-api`）。
-快照说明见该目录下 `SNAPSHOT.md`。
+访问 **http://localhost:8002**（宿主 8002 → 容器 8000，容器名 `sanguo-latest-api`）。
+它把主仓库的 `frontend/` **只读挂进去** → 改前端刷新即生效；**后端改了要 `--build` 重建**。
+> 早先那个「交付快照容器」（8001，后端 `master@4fcccad` + 旧前端）**已于 2026-09-20 停用并删除**，镜像也删了；
+> 快照目录 `sgt-snapshot-4fcccad-827adc8\` 保留，需要时在该目录 `up -d --build` 即可重建。
 
 > ⚠️ **不要**拿仓库里的 Docker 配置构建：
 > `deploy/docker-compose.yml` 的 `context: .` 会被 Compose 解析成 `deploy/` 目录 → 构建必失败；
 > 根目录 `Dockerfile`/`docker-compose.yml` 跑的是 MCP 服务、不是 Web API。
 > 两者的问题详见第 3 节「已知问题 4」。
 
-### 前端联调（2026-09-20 重置后：挂载的是主仓库）
+### 前端联调（2026-09-20 起：只有一个容器，挂载主仓库）
 ```powershell
-# 容器已在跑：sgt-snapshot-api @ http://localhost:8001
-# 挂载源 = 主仓库（干净克隆，停在 dev）：
+# 容器已在跑：sanguo-latest-api @ http://localhost:8002  （跑的是当前 dev 代码）
+# 挂载源 = 主仓库：
 #   D:\DSH Workspace\agent_threekingdom\frontend  ->  /app/frontend (ro)
-# → 改 frontend/** 之后浏览器刷新即生效（Ctrl+F5 兜底），
-#   不需要重建镜像，也不需要本地 Python / venv。
-# 想回到「只看镜像里那份封版前端（827adc8）」：把 compose 里那行挂载注释掉，再 up -d。
+# → 改 frontend/** 之后浏览器刷新即生效（Ctrl+F5 兜底），不需要重建镜像。
+#   后端改了要重建：cd D:\DSH Workspace\sgt-latest-dev && docker compose -f docker-compose.latest.yml up -d --build
 # 校验容器是否真在服务你改的字节：Get-FileHash 对比
-#   http://127.0.0.1:8001/xxx.js 与本地的 frontend/xxx.js（应一致）。
+#   http://127.0.0.1:8002/xxx.js 与本地的 frontend/xxx.js（应一致）。
 ```
-
-### 用「最新仓库」起一个独立容器（2026-09-20 起，DSH 自建）
-```powershell
-$docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
-cd "D:\DSH Workspace\sgt-latest-dev"
-& $docker compose -f docker-compose.latest.yml up -d --build    # 构建 + 启动（上下文 = 主仓库）
-& $docker compose -f docker-compose.latest.yml logs -f          # 看 seed/ingest 与访问日志
-& $docker compose -f docker-compose.latest.yml down             # 停止并删容器（数据目录保留）
-```
-- 访问 **http://localhost:8002**（宿主 8002 → 容器 8000）；容器名 `sanguo-latest-api`，镜像 `sanguo-latest:dev`（约 440MB）。
-- 与 8001 上那个联调快照容器**并存互不干扰**：8001 = 快照（`master@4fcccad`）+ 实时挂载前端；
-  8002 = **当前 `dev` 代码**烘焙进镜像（**验证"最新仓库能不能跑"用这个**）。
-- 数据卷 = 主仓库的 `data/`（`data/processed/*` 已被 `.gitignore` 忽略，不会弄脏 git）。
-- 这个配置**不使用**仓库自带的 Docker 文件（那两套都有问题，见第 3 节「已知问题 4」与 `docs/BACKEND-TODO.md` 4.6）。
 
 ### 验收标准
 - `GET /health` → `{"status":"ok", ...}`
@@ -272,6 +262,7 @@ cd "D:\DSH Workspace\sgt-latest-dev"
 | 后端全部接口字典 | `docs\BACKEND-API-REFERENCE.md`（HTTP + MCP、逐字段、边界、错误码、源码索引） |
 | **后端工作单（队友）** | `docs\BACKEND-TODO.md`（P0/P1/P2、实测证据、改哪里、验收标准、自测命令） |
 | 前端当前问题清单 | `docs\FRONTEND-ISSUES.md`（F1–F10 前端自己改 / B1–B9 交后端队友 / C1–C4 内容 / D1–D4 协作流程） |
-| 用最新仓库起容器（8002） | `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`（见第 4 节「用最新仓库起一个独立容器」） |
+| 用最新仓库起的容器（8002） | `D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`（见第 4 节；唯一容器） |
+| 联调与验收小工具 | `docs\tools\`（`probe_api.py` 接口全量探针、`inspect_db.py` 看库、`measure_frontend.py` 量前端、`replay_frontend_map.cjs` 无浏览器回放地图） |
 | 前端对接协议 / 缺口清单 | `docs\BACKEND-API.md` |
 | 部署 | 快照目录 `sgt-snapshot-4fcccad-827adc8\`（DSH 自建的 `Dockerfile.backend` + `docker-compose.backend.yml`）；仓库自带的 `deploy/` 与根目录 Docker 配置目前都有问题，见第 3 节 |

@@ -38,7 +38,7 @@ styles.css 已统一令牌、组件状态、可信度提示与响应式。后续
 已实现故事线列表筛选、详情章节轴、浏览器本地进度、手选章节压缩与三讲解模式。用户确认继续模板和缺项提示，不编造完整故事内容。主导航现在为 welcome / map / story 三项；早先“两项”说明已过时。story-progress.js 在 stories.js 前加载，地图与列表/详情共用状态。测试为九组（新增 story-progress.test.cjs），运行所有 frontend/*.test.cjs。详情及取舍见 HANDOFF.md 最后需求12记录；唯一开发区和后端边界不变。
 
 ---
-> 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/agent_threekingdom/frontend 开发（主仓库，分支 `dev`）。先检查 git status / git log 与 http://127.0.0.1:8001/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
+> 新对话请先读本文件，再读本目录 HANDOFF.md 最后「2026-09-17 三国故事地图交付」和 API-CONTRACT.md 的故事地图适配协议；仓库规则与任务板位于 D:/DSH Workspace/agent_threekingdom/AGENTS.md、docs/TASKS.md。只在 D:/DSH Workspace/agent_threekingdom/frontend 开发（主仓库，分支 `dev`）。先检查 git status / git log 与 http://127.0.0.1:8002/health，确认实际状态后等待新需求，不重复实现本轮功能，也不补造尚缺数据。
 # 最新接手增量 · 2026-09-17 三国故事地图
 
 本轮已完成故事图层、章节进度与文化节点卡，详见 HANDOFF.md 最后记录。story-map.js 叠加在 travel-map.js 上，复用 MapRouteCore；不得重写地图核心。后端适配口为 StoryMap.setData({story, places})，协议见 API-CONTRACT.md；所有缺后端数据继续标待确认，/api/travel/* 仍关闭。昭化古城/剑门关使用县级驻地示意，米仓道待定位，导航不可用。回归现为八组（新增 story-map.test.cjs），全部 JS 语法及八组测试已通过，桌面/375px 浏览器检查已完成。实际提交以 git log 为准。
@@ -101,7 +101,7 @@ b8beadc 修复高倍拖动边缘缺块（visibleBounds 考虑 SVG 留白）、�
 
 ## 运行、协议与真实限制
 
-后端 Docker 容器 sgt-snapshot-api；访问 http://127.0.0.1:8001/。前端由迭代目录只读挂载到 /app/frontend，修改后刷新即生效，缓存时 Ctrl+F5。最近一次联调在 2026-09-13 成功；新会话需重新检查运行状态，不把上次健康当作当前事实。宿主 8000 属于其他项目，不改端口。
+后端 Docker 容器 `sanguo-latest-api`（跑的是当前 `dev` 代码）；访问 http://127.0.0.1:8002/。主仓库的 `frontend/` 被只读挂载到 `/app/frontend`，修改后刷新即生效，缓存时 Ctrl+F5。宿主 8000 属于其他项目，不改端口。（旧的 8001 快照容器已于 2026-09-20 删除。）
 
 /chat 响应多态：culture_qa 没有 route 键；budget_ticket 的 route 为 null；route_planning 才有路线对象。非 2xx、超时、非法 JSON 必须报错可重试。缺 message 应为422，前端空输入禁发。
 

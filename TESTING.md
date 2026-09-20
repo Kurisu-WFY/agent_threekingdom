@@ -10,17 +10,19 @@
 ### 本地（推荐：后端自测就靠它）
 ```powershell
 $repo   = "D:\DSH Workspace\agent_threekingdom"
-$python = "C:\Python\Python311\python.exe"      # 3.11.4
+$python = "C:\Python\Python311\python.exe"      # 3.11.4（实测可跑）
+# 依赖只装一次（轻量那份，约 68 秒；requirements.txt 会拖 torch，演示不需要）：
+# & $python -m pip install -r "$repo\requirements.docker.txt" -i https://pypi.tuna.tsinghua.edu.cn/simple
 $env:PYTHONPATH = "$repo\src"
 $env:VECTOR_BACKEND = "local"                   # ⚠️ 必须！默认 milvus 而本机不装 pymilvus → 直接崩
 
 & $python src\ingest\seed_business_db.py        # 初始化业务库
 # ⛔ 不要跑 src\ingest\create_vector_collection.py：它只认 Milvus 且没有兜底（见 docs/BACKEND-TODO.md 4.4）
-& $python src\ingest\ingest_pipeline.py         # 导入知识文档
+& $python src\ingest\ingest_pipeline.py         # 导入知识文档（应打印 Indexed 8 chunks）
 & $python -m uvicorn api:app --host 127.0.0.1 --port 8010 --app-dir src   # 另开一个终端
 ```
-> `.venv\Scripts\python.exe` 也能用，但仓库里那份**被 git 跟踪的 `.venv` 是 Python 3.12 建的**，
-> 而项目文档写的是 3.11；混用会出现 `__pycache__`/依赖不一致，建议统一用上面的 `C:\Python\Python311\python.exe`。
+> ⚠️ **别用仓库根那份 `.venv`**：它是**被 git 跟踪的 Python 3.12 环境**、而且 `pyvenv.cfg` 里写着
+> 上次生成它的那台机器的路径。把 venv 建在**仓库外**（如 `D:\venvs\sanguo`），仓库才能保持干净（任务板 #27）。
 
 ### Docker（⚠️ 先读这段：仓库自带的配置目前**不能直接跑 Web API**）
 ```powershell
@@ -38,7 +40,7 @@ $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
   & $docker compose -f docker-compose.backend.yml up -d    # 已在跑；只有改了镜像内容才需要 --build
   & $docker compose -f docker-compose.backend.yml logs -f
   ```
-  访问 `http://localhost:8001`（宿主 8001 → 容器 8000，容器名 `sgt-snapshot-api`）。
+  访问 `http://localhost:8002`（宿主 8002 → 容器 8000，容器名 `sanguo-latest-api`）。
   数据卷 = 该快照目录里的 `data/`（业务库 + 向量库），**不能删**。
 
 ---
@@ -49,7 +51,7 @@ $docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
 # 本地
 & $python -c "from api import health; print(health())"
 # Docker
-try { Invoke-RestMethod -Uri 'http://localhost:8001/health' -Method GET } catch { $_.Exception.Message }
+try { Invoke-RestMethod -Uri 'http://localhost:8002/health' -Method GET } catch { $_.Exception.Message }
 ```
 **预期**：返回 `{"status": "ok", "vector_backend": "local", "milvus_collection": "san_guo_culture_chunks", "redis": {...}}`。
 > ⚠️ **`vector_backend` 就是 `local`**：只有装了 `pymilvus` 才会是 `milvus`。旧文档写「预期 `milvus`」是错的，
@@ -101,7 +103,7 @@ try { Invoke-RestMethod -Uri 'http://localhost:8001/health' -Method GET } catch 
 
 用 UTF-8 编码发送中文，避免乱码：
 ```powershell
-$base='http://localhost:8001'
+$base='http://localhost:8002'
 function Post-Chat($msg){
   $body = @{ message=$msg } | ConvertTo-Json -Compress
   $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)

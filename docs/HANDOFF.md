@@ -798,3 +798,39 @@
   **`src/**`、`frontend/**` 一行未改。**
 - **下一步**：直接开 http://localhost:8002 目视验收（前端与接口都在这一个容器里）；要换端口或改成"改完刷新即生效"见 `AGENTS.md` 第 4 节。
 - **卡点**：无。
+
+### 2026-09-20 DSH · 删旧镜像 + 容器合并到 8002 + 让队友「pull 后能直接开发」
+- **① 删旧镜像（协调者指令）**：镜像总量 **5.98GB → 3.90GB**。
+  - `sgt-preview-threekingdom-api:latest`（433MB，8 天前，无容器引用）→ 删；
+  - 悬空镜像 `<none> a8764d4b6f74`（**2.03GB**，8 个月前）→ 删；
+  - `sgt-snapshot-4fcccad-827adc8-threekingdom-api:latest`（433MB）→ 按协调者选择：
+    **先停掉并删除 8001 容器**，再删镜像。（inventree/postgres/redis 的镜像**一个字都没动**。）
+- **② 联调能力搬到 8002（成为唯一容器）**：给 `sgt-latest-dev\docker-compose.latest.yml` 加了
+  **主仓库 `frontend/` 的只读挂载**并重建容器 → 现在 8002 同时是「跑最新 `dev` 代码」+「改前端刷新即生效」。
+  验证：放一个临时标记文件进仓库 `frontend/`，容器内立刻能读到、删掉即消失，且**仓库 git 仍干净**。
+  快照目录与它的 `Dockerfile.backend`/`compose` 仍保留，需要时可一键重建。
+- **③ 队友「pull 后能直接开发」——实测通过（这是本轮重点）**：
+  全新 `git clone -b dev` → 建**独立 venv**（不用仓库里被跟踪的 `.venv`）→
+  `pip install -r requirements.docker.txt`（**68 秒**）→ `seed`（Business database seeded）→
+  `ingest`（Indexed 8 chunks）→ `uvicorn` → **四条意图全过 + 首页 200**。整条链路只用 3 条命令。
+- **④ 为此补齐的文档缺口**（原来是真会让队友踩坑的）：
+  1. **没说装哪份依赖** → `requirements.txt` 含 `sentence-transformers`/`pymilvus`，会拖 torch（几个 GB）；
+     实测够用的是 **`requirements.docker.txt`**。已写进 `docs/BACKEND-TODO.md` 新增的 **§1.0「从零到能跑」**、
+     `TESTING.md`、`AGENTS.md` 第 2/4 节。
+  2. **Python 版本自相矛盾**：`pyproject.toml` 写 `requires-python = ">=3.12"`，但**实测 3.11.4 完全能跑**
+     （容器基底也是 3.11）→ 已写明"别用 `pip install -e .`"，并指出 DSH 遗留分支里的 `a370553` 可放宽。
+  3. **文档引用的复现脚本全在仓库外**（`D:\DSH Workspace\.tmp-e2e\`）→ 队友克隆后拿不到。
+     已**移进仓库** `docs/tools/`（`probe_api.py`、`inspect_db.py`、`measure_frontend.py`、`replay_frontend_map.cjs`）
+     并改成**自动定位仓库根**（换机器不用改代码），4 个工具**全部实测通过**（含无浏览器回放地图）。
+  4. **被跟踪的 `.venv`**（3.12、路径是上次那台机器的）克隆时会被带下来 → 已写明"别用、venv 建到仓库外"。
+  5. **绝对路径是本机约定** → 已在 `BACKEND-TODO.md` §1.0 加说明。
+- **⑤ 连带更新**：`AGENTS.md`（§1–§4/§8：容器改 8002、合并重复段落、本地运行改为系统 Python + 依赖说明、
+  新增 `docs/tools` 导航）、`TESTING.md`、`frontend/START-HERE.md`、`docs/HANDOFF-TO-CODEX.md`、
+  `docs/BACKEND-API.md`、`docs/BACKEND-API-REFERENCE.md`、`docs/TASKS.md`（#54 更新 + 新增 #55）、
+  `D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\SNAPSHOT.md`、`D:\DSH Workspace\sgt-latest-dev\README.md`。
+- **改了哪些文件**：仓库内 8 个 md + 新增 `docs/tools/`（4 脚本 + README）；仓库外 2 个 md。
+  **`src/**` 一行未改**（前端只动了 `frontend/START-HERE.md` 这一处指针说明）。
+- **结论（回答协调者的问题）**：**现在队友 `pull` 之后可以直接开工** ——
+  `clone → pip install -r requirements.docker.txt → seed → ingest → uvicorn`，实测约 2 分钟；
+  待办、协议、证据、验收标准、自测脚本都在仓库里。
+- **卡点**：无。

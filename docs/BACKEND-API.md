@@ -1,7 +1,8 @@
 # 后端接口协议 · BACKEND-API
 
 > **用途**：前端 ↔ 后端的接口凭据。内容全部由 DSH 于 2026-09-12 **对着真实运行的后端实测**得到
-> （后端 = 交付快照 `sgt-snapshot-4fcccad-827adc8`，容器 `sgt-snapshot-api`，http://localhost:8001）。
+> （当时后端 = 交付快照 `sgt-snapshot-4fcccad-827adc8`，容器 `sgt-snapshot-api`，http://localhost:8001；
+> **2026-09-20 起**该容器与镜像已删除，现在跑的是**用最新仓库构建的容器** `sanguo-latest-api` → **http://localhost:8002**）。
 > 凡是标「实测」的都是抓下来的真实响应，不是推测；标「提案」的是前端需要、后端尚未实现的部分。
 >
 > 前端侧的对应提案见 `frontend/API-CONTRACT.md`（Codex 写），本文是它的**后端落地版 + 现状补全**。
@@ -254,7 +255,7 @@ Codex 在 `frontend/API-CONTRACT.md` 里提了 4 个接口，前端开关 `confi
 $env:PYTHONIOENCODING='utf-8'
 & "C:\Python\Python311\python.exe" -c "import json,urllib.request;
 d=json.dumps({'message':'南充一天三国文化路线'},ensure_ascii=False).encode();
-r=urllib.request.Request('http://localhost:8001/chat',data=d,headers={'Content-Type':'application/json'});
+r=urllib.request.Request('http://localhost:8002/chat',data=d,headers={'Content-Type':'application/json'});
 print(json.dumps(json.loads(urllib.request.urlopen(r,timeout=60).read().decode()),ensure_ascii=False,indent=2))"
 ```
 

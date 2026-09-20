@@ -11,7 +11,7 @@
 > - 标 **【未实测】** 的是读了源码但没有跑起来验证的（MCP 工具属于这类，原因见第 5 节）。
 >
 > **被测后端版本**：`origin/master @ 4fcccad`（= 交付快照 `sgt-snapshot-4fcccad-827adc8` 里那份后端）。
-> 复现脚本：`D:\DSH Workspace\.tmp-e2e\probe_all.py`（证据 JSON：`api-probes.json`、`openapi.json`）。
+> 复现脚本：**`docs/tools/probe_api.py`**（仓库内自带；`--out` 指定证据 JSON 的输出目录）。
 >
 > 📌 **要动手改后端 → 先看 `docs/BACKEND-TODO.md`**（工作单：优先级 + 实测证据 + 改哪里 + 验收标准 + 自测命令）。
 > 本文回答「**现在有什么、怎么调、返回什么**」，工作单回答「**该改哪里、改成什么样**」。
@@ -576,7 +576,7 @@ start http://localhost:8001/docs        # Swagger UI
 & $py -c "import json,urllib.request;print(list(json.loads(urllib.request.urlopen('http://127.0.0.1:8001/openapi.json',timeout=15).read().decode())['paths']))"
 ```
 
-一键全量探针（本次文档所用）：`& $py "D:\DSH Workspace\.tmp-e2e\probe_all.py"`
+一键全量探针（本次文档所用，仓库内自带）：`& $py "$repo\docs\tools\probe_api.py" --base http://localhost:8002`
 
 ---
 

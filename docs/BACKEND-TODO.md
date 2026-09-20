@@ -4,8 +4,9 @@
 > 接口字典在 `docs/BACKEND-API-REFERENCE.md`，协议口径在 `docs/BACKEND-API.md`。
 >
 > **口径（别当推测）**：下面每条都写明**证据**。HTTP 相关结论来自**对运行中的容器实测**
-> （`http://localhost:8001`，后端 = 本仓库 `dev` 分支的 `src/**`）；SQL/字段来自**源码与 SQLite 实查**；
-> 复现脚本在 `D:\DSH Workspace\.tmp-e2e\`（`probe_all.py`、`inspect_db.py`、`dump_openapi.py`）。
+> （`http://localhost:8002` = 用本仓库最新代码构建的容器，见 1.0；后端 = 本仓库 `dev` 分支的 `src/**`）；SQL/字段来自**源码与 SQLite 实查**；
+> 复现脚本**已移进仓库**：`docs/tools/`（`probe_api.py`、`inspect_db.py`、`measure_frontend.py`、`replay_frontend_map.cjs`，
+> 用法见该目录 README）—— 之前散在仓库外，队友克隆下来拿不到。
 > **写成这份文档时的基线**：`origin/dev`（前端 + 文档 + 你的 MCP 改动都在里面）。
 > 远端随时会前进，**别照抄 SHA，用 `git log --oneline origin/dev` 看当前 tip**。
 
@@ -23,6 +24,48 @@
 ---
 
 ## 1. 你的工作区与怎么把它跑起来
+
+### 1.0 从零到能跑（全新 clone 实测 **≈2 分钟**）
+
+**2026-09-20 实测**：全新 `git clone -b dev` → 建独立 venv → 装依赖（**68 秒**）→ 初始化 → 起服务 →
+四条意图 + 首页全部正常。照下面做即可：
+
+```powershell
+$git  = "C:\Program Files\Git\cmd\git.exe"
+$py   = "C:\Python\Python311\python.exe"              # 3.11.4（实测可跑）
+$repo = "D:\DSH Workspace\agent_threekingdom"         # ← 换成你的克隆目录
+
+& $git clone -b dev https://gitee.com/wwffyyy/agent_threekingdom.git $repo
+
+# ⚠️ 别用仓库里那份被 git 跟踪的 .venv（3.12 建的、路径指向上次生成它的机器）。
+#    把 venv 建在仓库外，仓库才能保持干净：
+& $py -m venv "D:\venvs\sanguo"
+$vpy = "D:\venvs\sanguo\Scripts\python.exe"
+
+# ⚠️ 装「轻量那份」requirements.docker.txt（68 秒，实测）。
+#    requirements.txt 含 sentence-transformers / pymilvus → 会拖 torch（几个 GB），
+#    而那几个包在代码里都有兜底，跑演示不需要：
+& $vpy -m pip install -r "$repo\requirements.docker.txt" -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+$env:PYTHONPATH = "$repo\src"
+$env:VECTOR_BACKEND = "local"                         # ⚠️ 必须！默认 milvus 而没装 pymilvus
+Set-Location $repo
+& $vpy src\ingest\seed_business_db.py                 # 业务库
+# ⛔ 跳过 src\ingest\create_vector_collection.py（只认 Milvus、无兜底，见 4.4）
+& $vpy src\ingest\ingest_pipeline.py                  # 知识入库（应打印 Indexed 8 chunks）
+& $vpy -m uvicorn api:app --host 127.0.0.1 --port 8010 --app-dir src
+```
+
+**两个已知小坑**（都记录在案，不影响开工）：
+
+1. **`pyproject.toml` 写的是 `requires-python = ">=3.12"`，但实测 3.11.4 完全能跑**（镜像基底也是 3.11）。
+   所以**别用 `pip install -e .`**（会因版本要求被拒），直接用上面的 `-r requirements.docker.txt`。
+   要不要放宽成 `>=3.11` 由你定 —— DSH 本地分支 `chore/commit-missing-modules` 里的 `a370553` 就是干这个的。
+2. **`.venv` 被 git 跟踪**（1120 个文件 / 20.4 MB，克隆会带下来）—— 别用它、也别改它，见 4.5。
+
+> 📌 本文里的绝对路径（`D:\DSH Workspace\...`、`C:\Python\Python311\python.exe`）都是**本机约定**；
+> 换机器就把 `$repo` 换成你的克隆目录、`$py` 换成你的解释器（≥3.11 即可）。
+> `docs/tools/` 下的脚本已改成自动定位仓库根，**不用改代码**。
 
 ### 1.1 代码
 
@@ -63,17 +106,22 @@ try: urllib.request.urlopen(r,timeout=15)
 except urllib.error.HTTPError as e: print('HTTP',e.code,e.read().decode()[:120])"
 ```
 
-### 1.3 已经跑着的联调容器（前端在用，可直接打）
+### 1.3 已经跑着的容器（可直接打，不用自己起）
 
-```powershell
-$docker = "C:\Program Files\Docker\Docker\resources\bin\docker.exe"
-& $docker ps --format '{{.Names}} | {{.Status}} | {{.Ports}}'   # 期望看到 sgt-snapshot-api | Up (healthy) | 0.0.0.0:8001->8000/tcp
-```
-
-- 访问 **http://localhost:8001**；`/` 是前端页面、`/chat` 与 `/health` 是接口、`/docs` 与 `/openapi.json` 也在。
-- **注意**：这个容器是**交付快照**（`D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8`），
-  它跑的后端镜像内容是 `master@4fcccad`，**不含你 `dev` 上的新改动**。要验证你的新代码，
-  用 1.2 的本地直跑，或把快照的 `Dockerfile.backend` 指向你的代码后重建。
+- **`http://localhost:8002`** = 容器 `sanguo-latest-api`，镜像 `sanguo-latest:dev`，
+  构建自**本仓库当前代码**（`D:\DSH Workspace\sgt-latest-dev\docker-compose.latest.yml`），
+  并且把本仓库的 `frontend/` **只读挂载**了进去 → 前端改完刷新即生效。
+- 自检：`& $docker ps --format '{{.Names}} | {{.Status}} | {{.Ports}}'`，期望看到
+  `sanguo-latest-api | Up (healthy) | 0.0.0.0:8002->8000/tcp`。
+  一键全量探针：`python docs\tools\probe_api.py --base http://localhost:8002`
+- 容器里的代码**是否等于你改后的仓库**：`docker exec sanguo-latest-api sha256sum src/api.py`，与本地比对 sha256。
+- 改了后端代码后要**重建**才生效：
+  ```powershell
+  cd "D:\DSH Workspace\sgt-latest-dev"
+  & $docker compose -f docker-compose.latest.yml up -d --build
+  ```
+- 历史：早先 8001 上那个「交付快照容器」（后端 `master@4fcccad` + 旧前端）**已于 2026-09-20 停用并删除**，
+  它的镜像也删了；快照目录 `D:\DSH Workspace\sgt-snapshot-4fcccad-827adc8\` 仍在，需要时可 `up -d --build` 重建。
 
 ---
 
@@ -250,6 +298,8 @@ handler 直接返回 `dict`，所以 `/openapi.json` 里 `/chat` 的 `responses`
 `dev` 上跟了 **1120 个文件 / 20.4 MB**（还是 cpython-312 的），已经多次阻断 `pull`/合并。
 DSH 本地分支 `chore/commit-missing-modules` 里有个 **`3b69bfd`：`git rm -r --cached .venv` + `.gitignore`**，
 可以直接摘进 `dev`（那个分支的其它提交**不要**推：`35333dc` 和你的实现撞车）。
+> 在它被摘掉之前：**别用仓库里那份 `.venv`**（3.12 建的、路径是上次那台机器的），
+> 把 venv 建在仓库外（见 1.0）；去改 `.venv` 只会让 `git status` 变脏。
 
 ### 4.6 仓库自带的 Docker 配置：两套都不是"Web API + 前端"
 | 配置 | 实际行为 | 结论 |
@@ -268,7 +318,9 @@ DSH 本地分支 `chore/commit-missing-modules` 里有个 **`3b69bfd`：`git rm 
 $py = "C:\Python\Python311\python.exe"
 $repo = "D:\DSH Workspace\agent_threekingdom"
 
-# ① 后端自己的链路（本地直跑，见 1.2；docker 起的容器在 8001）
+# ① 后端自己的链路（本地直跑见 1.2；容器在 8002）
+#    全量接口探针（推荐，仓库内自带）：会打四条意图 + 多态字段 + 边界 + /docs + CORS
+& $py "$repo\docs\tools\probe_api.py" --base http://localhost:8002
 & $py "$repo\src\eval_retrieval.py"                 # 检索评估：期望覆盖度 1.0 / passed
 # 三条意图 + 边界（README/TESTING.md 里也有，但注意 TESTING.md 已按 1.2 修正过）
 #   route_planning / culture_qa / history_vs_romance / budget_ticket、空串→200、缺 message→422
@@ -277,8 +329,11 @@ $repo = "D:\DSH Workspace\agent_threekingdom"
 Get-ChildItem "$repo\frontend\*.test.cjs" | ForEach-Object { node $_.FullName; if ($LASTEXITCODE -ne 0) { "✗ $($_.Name)" } }
 Get-ChildItem "$repo\frontend\*.js" | ForEach-Object { node --check $_.FullName }
 
-# ③ 真实响应回放（不用浏览器，验证地图/协议降级没被破坏）
-node "D:\DSH Workspace\.tmp-e2e\replay-map.cjs" "$repo\frontend"
+# ③ 真实响应回放（不用浏览器，验证地图/协议降级没被破坏；仓库内自带，会实时取 8002 的响应）
+node "$repo\docs\tools\replay_frontend_map.cjs" "$repo\frontend" --base http://localhost:8002
+
+# ④ 看数据到底写进了什么（改 data/** 或 seed 之后）
+& $py "$repo\docs\tools\inspect_db.py"
 ```
 
 **接口改动的验收要点**（更全的在 `docs/BACKEND-API.md` 第五节）：

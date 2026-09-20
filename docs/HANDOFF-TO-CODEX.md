@@ -15,7 +15,7 @@
 
 ## 0. 一句话
 
-你接手本项目的**前端**，只改 `frontend/**`。后端已完整可用（Docker 容器跑在 http://localhost:8001），
+你接手本项目的**前端**，只改 `frontend/**`。后端已完整可用（Docker 容器跑在 http://localhost:8002，跑的是当前 `dev` 代码），
 **本轮起团队只做前端**，后端/部署/内容的缺口写进任务板交给人处理，不归你。
 
 ## 1. 你的工作区（照这个来，别用别的）
@@ -34,10 +34,10 @@
 
 ## 2. 联调环境（已就绪，直接用）
 
-- 后端容器 `sgt-snapshot-api` → **http://localhost:8001**（healthy）。后端代码 = `origin/master @ 4fcccad`（完整可跑）。
+- 后端容器 `sanguo-latest-api` → **http://localhost:8002**（healthy）。它构建自**本仓库当前代码**（含队友的后端改动）。
 - 容器已把 **`D:\DSH Workspace\agent_threekingdom\frontend` 只读挂载**到 `/app/frontend`：
   **你改前端文件 → 浏览器刷新即生效**，不需要重建镜像、不需要本地 Python/venv（刷新没变化就 `Ctrl+F5`）。
-- 端口别动：宿主 8000 被别的项目（inventree）占着，本项目固定映射 **8001**。
+- 端口别动：宿主 8000 被别的项目（inventree）占着，本项目固定映射 **8002**（旧快照容器用的 8001 已退役）。
 - 三条 `/chat` 意图 2026-09-12 实测：`route_planning` 置信度 0.82、`culture_qa` 0.55（**默认兜底值，不是真识别出来的**）、
   `budget_ticket` 0.78；空串 `message` → 200 落 `culture_qa`；**缺 `message` → HTTP 422**。
 
@@ -105,9 +105,9 @@
 - 语法：对 `frontend/*.js` 逐个 `node --check`
 - 回归：`node frontend/app.test.cjs`、`node frontend/travel-api.test.cjs`、`node frontend/map-route.test.cjs`
 - **真实响应回放**（没有浏览器也能验地图逻辑）：
-  `node "D:\DSH Workspace\.tmp-e2e\replay-map.cjs" "D:\DSH Workspace\agent_threekingdom\frontend"`
+  `node "D:\DSH Workspace\agent_threekingdom\docs\tools\replay_frontend_map.cjs" "D:\DSH Workspace\agent_threekingdom\frontend" --base http://localhost:8002`
   （用最小 DOM 桩加载**真实 `travel-map.js`**，喂实测 `/chat` 响应，打印地图状态与已定位点数）
-- **容器是否真在服务你改的字节**：`Invoke-WebRequest http://127.0.0.1:8001/map-route-core.js -OutFile $env:TEMP\x.js`
+- **容器是否真在服务你改的字节**：`Invoke-WebRequest http://127.0.0.1:8002/map-route-core.js -OutFile $env:TEMP\x.js`
   然后 `Get-FileHash` 与你本地的 `frontend\map-route-core.js` 对比（应一致）
 - 后端协议自测：`/health` = ok；三条意图；**缺 `message` 应回 422**
 
