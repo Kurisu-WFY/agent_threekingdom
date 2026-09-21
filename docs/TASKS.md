@@ -1,5 +1,7 @@
 # 任务板 · TASKS
 
+- DOING（2026-09-21，Codex，用户授权）：女娲会话 API 转接现有前端，隔离会话、流式状态、错误提示及真实联调；分支 feat/nuwax-web-chat，不推送或改 master。
+
 - DONE（2026-09-21，Codex，用户授权）：本地BGE接入、老师PDF首批13篇/346片段入库、5组真实检索、8项单测及8011真实问答验证；原库与原PDF保留。19篇待精校/OCR，未合并其他分支。见 docs/TEACHER-RAG.md。
 
 > 规则：动手前先认领并把状态改为 `DOING`；收工改成 `DONE` 并在 `docs/HANDOFF.md` 留交接。

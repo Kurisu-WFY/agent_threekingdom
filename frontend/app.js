@@ -121,7 +121,11 @@ function metaNode(data) {
   const intent = data && data.intent && data.intent.intent;
   if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
   meta.append(trustNode(data));
-  if (data?.generation) meta.append(tag((data.generation.kind === 'llm' ? '模型回答 · ' : '检索兜底 · ') + data.generation.reason));
+  if (data?.generation) meta.append(tag(({llm:'模型回答 · ', nuwax:'女娲智能体 · '}[data.generation.kind] || '检索兜底 · ') + data.generation.reason));
+  if (data?.connection_warning) meta.append(tag(data.connection_warning));
+  if (Array.isArray(data?.tool_calls)) data.tool_calls.forEach(call => {
+    meta.append(tag('工具 · ' + call.name + ' · ' + ({EXECUTING:'执行中', FINISHED:'执行结束'}[call.status] || call.status)));
+  });
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
@@ -142,7 +146,7 @@ function bubbleNode(message) {
   if (message.pending) {
     bubble.className = 'bubble typing';
     bubble.setAttribute('aria-label', '陈寿正在查阅史料，请稍候');
-    bubble.textContent = /路线|半天|规划/.test(message.question || '') ? '陈寿正在展开行旅图，核对章节与时间…' : '陈寿正在查阅史料，核对出处…';
+    bubble.textContent = message.streamText || message.progress || '正在连接智能体；本地模型首次加载可能较慢，请稍候…';
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
@@ -311,7 +315,10 @@ document.querySelector('#new-chat').onclick = () => {
 };
 
 /* ---------------- 调用后端 ---------------- */
-function ask(text, history, mode = '大众', routePreferences) {
+function ask(text, history, mode = '大众', routePreferences, sessionId, onEvent) {
+  if (!routePreferences) {
+    return window.SGTChatTransport.request({message:text, history, mode, session_id:sessionId || null}, onEvent);
+  }
   return fetch(API, {
     signal: AbortSignal.timeout(60000),
     method: 'POST',
@@ -364,9 +371,22 @@ function requestReply(chat, reply) {
   chat.pending = true;
   reply.pending = true;
   reply.error = false;
+  reply.streamText = '';
+  reply.progress = '';
   render();
 
-  ask(reply.question, reply.history, reply.mode)
+  ask(reply.question, reply.history, reply.mode, null, chat.sessionId, event => {
+    if (event.type === 'session') chat.sessionId = event.session_id;
+    if (event.type === 'delta') reply.streamText += event.text;
+    if (event.type === 'tool') reply.progress = '工具 ' + event.name + ' · ' + (event.status === 'FINISHED' ? '执行结束' : '执行中…');
+    if (chats[active] === chat && ['session','delta','tool'].includes(event.type)) {
+      // Update only the pending bubble, preserving composer focus and map state.
+      const index = chat.messages.indexOf(reply);
+      const bubble = messages.children[index]?.querySelector('.bubble');
+      if (bubble) bubble.textContent = reply.streamText || reply.progress || '女娲会话已连接，正在等待回答…';
+      messages.scrollTop = messages.scrollHeight;
+    }
+  })
     .then(data => {
       if (!data || typeof data.answer !== 'string' || !data.answer.trim()) {
         throw new Error('服务未返回有效回答');
@@ -374,14 +394,16 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.text = data.answer;
       reply.data = data;
+      if (data.session_id) chat.sessionId = data.session_id;
       if (!reply.preserveMap && (!reply.persona || data?.intent?.intent === 'route_planning')) window.TravelMap?.fromResponse(chat, reply.originalQuestion || reply.question, data);
     })
     .catch(error => {
       reply.pending = false;
       reply.error = true;
       reply.text = error.name === 'TimeoutError'
-        ? '此番查阅等候太久，尚未取得可靠回答。请让我再查一次。'
-        : '书卷暂未送达，尚未取得有效回答。请检查连接，再让我查一次。';
+        ? '回答等待超时，平台任务可能仍在执行，请先检查女娲会话再决定是否重试。'
+        : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');
+      if (reply.streamText) reply.text += '\n\n以下为未完成的片段（不代表成功回答）：\n' + reply.streamText;
     })
     .finally(() => {
       chat.pending = false;
@@ -431,15 +453,19 @@ render();
 async function checkHealth() {
   let connected = false;
   let modelConfigured = false;
+  let chatMode = '';
+  let chatWarning = '';
   try {
     const response = await fetch('/health', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
     const health = await response.json();
     connected = response.ok && health.status === 'ok';
     modelConfigured = health.chat?.configured === true;
+    chatMode = health.chat?.mode || '';
+    chatWarning = health.chat?.warning || '';
   } catch { /* 将不可达状态显示在界面中 */ }
   document.querySelectorAll('[data-service-status]').forEach(node => {
-    node.textContent = connected ? (modelConfigured ? '模型已配置' : '检索演示模式') : '服务暂不可达';
-    node.title = connected ? '模型已配置不代表连接测试通过；请查看每条回答的模型/兜底标记。' : '请检查后端是否启动。';
+    node.textContent = connected ? (chatMode === 'nuwax' ? '女娲智能体已配置' : modelConfigured ? '模型已配置' : '检索演示模式') : '服务暂不可达';
+    node.title = connected ? (chatWarning || '已配置不代表连接测试通过；请查看每条回答的来源与工具记录。') : '请检查后端是否启动。';
     node.dataset.state = connected ? 'online' : 'offline';
   });
 }

@@ -4,8 +4,11 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=PROJECT_ROOT / ".env", env_file_encoding="utf-8", extra="ignore")
 
     app_env: str = "dev"
     data_dir: Path = Path("data")
@@ -29,6 +32,11 @@ class Settings(BaseSettings):
     llm_model: str = "deepseek-chat"
     llm_api_key: str | None = None
     llm_base_url: str | None = None
+    nuwax_base_url: str = "https://agent.nuwax.com"
+    nuwax_api_key: str | None = None
+    nuwax_agent_id: str = ""
+    nuwax_sandbox_id: str = ""
+    nuwax_timeout_seconds: int = Field(default=240, ge=10, le=600)
 
     recall_top_k: int = Field(default=30, ge=1)
     rerank_top_k: int = Field(default=8, ge=1)
