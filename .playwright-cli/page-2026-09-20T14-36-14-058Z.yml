@@ -1,0 +1,95 @@
+- generic [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f1e5]: 南充 · 阆中 · 广元/规划行程
+    - status [ref=f1e6]: 服务可用
+  - main [ref=f1e7]:
+    - region "主内容区" [ref=f1e8]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f1e11]:
+          - button "与蜀汉对话" [ref=f1e12] [cursor=pointer]
+          - button "行旅地图" [ref=f1e13] [cursor=pointer]
+          - button "故事线" [ref=f1e14] [cursor=pointer]
+          - button "探索志" [ref=f1e15] [cursor=pointer]
+          - button "目的地与行程" [ref=f1e16] [cursor=pointer]
+      - generic [ref=f1e330]:
+        - paragraph [ref=f1e331]: 把想法整理成行程
+        - heading "规划你的川东北之旅" [active] [level=2] [ref=f1e332]
+        - paragraph [ref=f1e333]: 通过文化向导规划路线；交通、开放时间与费用仍需核验。调整条件不会清空已寻迹记录。
+        - paragraph [ref=f1e334]: 尚未选择故事线，可填写普通行程需求。
+        - button "返回故事线调整章节" [ref=f1e335] [cursor=pointer]
+        - generic [ref=f1e336]:
+          - generic [ref=f1e337]:
+            - text: 目的地
+            - combobox "目的地" [ref=f1e338]:
+              - option "南充" [selected]
+              - option "阆中"
+              - option "广元"
+          - generic [ref=f1e339]:
+            - text: 出发地
+            - textbox "出发地" [ref=f1e340]:
+              - /placeholder: 例如：南充市
+          - generic [ref=f1e341]:
+            - text: 出发日期
+            - textbox "出发日期" [ref=f1e342]
+          - generic [ref=f1e343]:
+            - text: 可用时间
+            - combobox "可用时间" [ref=f1e344]:
+              - option "半天"
+              - option "一天" [selected]
+              - option "两天"
+          - generic [ref=f1e345]:
+            - text: 人数
+            - spinbutton "人数" [ref=f1e346]: "2"
+          - generic [ref=f1e347]:
+            - text: 同行人群
+            - combobox "同行人群" [ref=f1e348]:
+              - option "独行"
+              - option "家庭" [selected]
+              - option "亲子"
+              - option "研学"
+          - generic [ref=f1e349]:
+            - text: 交通方式
+            - combobox "交通方式" [ref=f1e350]:
+              - option "公共交通" [selected]
+              - option "自驾"
+          - generic [ref=f1e351]:
+            - text: 讲解偏好
+            - combobox "讲解偏好" [ref=f1e352]:
+              - option "大众体验版" [selected]
+              - option "亲子故事版"
+              - option "学术探索版"
+          - generic [ref=f1e353]:
+            - text: 预算下限（元 / 全团）
+            - spinbutton "预算下限（元 / 全团）" [ref=f1e354]
+          - generic [ref=f1e355]:
+            - text: 预算上限（元 / 全团）
+            - spinbutton "预算上限（元 / 全团）" [ref=f1e356]
+          - generic [ref=f1e357]:
+            - text: 住宿档位
+            - combobox "住宿档位" [ref=f1e358]:
+              - option "经济型"
+              - option "舒适型" [selected]
+              - option "高档型"
+          - generic [ref=f1e359]:
+            - text: 房间数
+            - spinbutton "房间数" [ref=f1e360]: "1"
+          - generic [ref=f1e361]:
+            - text: 补充需求
+            - textbox "补充需求" [ref=f1e362]:
+              - /placeholder: 例如：少走路、想多了解陈寿
+          - button "规划 / 重绘路线" [ref=f1e363] [cursor=pointer]
+        - paragraph [ref=f1e364]: 时间预算按半天4小时、一天8小时、两天16小时计算，含游览与交通；具体出发时刻、开放时段和班次仍待核验。预算为全团范围。
+        - button "查看上一份方案" [ref=f1e365] [cursor=pointer]
+        - status
+      - generic [ref=f1e283]:
+        - generic [ref=f1e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f1e285]:
+          - generic "影像来源" [ref=f1e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f1e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f1e288]:
+      - generic [ref=f1e304]: 已寻迹
+    - generic [ref=f1e307]: 陈寿伴行

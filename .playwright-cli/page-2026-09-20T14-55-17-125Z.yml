@@ -1,0 +1,157 @@
+- generic [ref=f3e1]:
+  - banner [ref=f3e2]:
+    - generic [ref=f3e3]:
+      - generic [ref=f3e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f3e5]: 南充 · 阆中 · 广元/对话界面
+    - status "模型已配置不代表连接测试通过；请查看每条回答的模型/兜底标记。" [ref=f3e6]: 模型已配置
+  - main [ref=f3e7]:
+    - region "主内容区" [ref=f3e8]:
+      - navigation "主内容视图" [ref=f3e11]:
+        - button "与蜀汉对话" [ref=f3e12] [cursor=pointer]
+        - button "行旅地图" [ref=f3e13] [cursor=pointer]
+        - button "故事线" [ref=f3e14] [cursor=pointer]
+        - button "探索志" [ref=f3e15] [cursor=pointer]
+        - button "目的地与行程" [pressed] [ref=f3e16] [cursor=pointer]
+      - generic [ref=f3e308]:
+        - paragraph [ref=f3e309]: 从目的地开始
+        - heading "探索川东北" [level=2] [ref=f3e310]
+        - paragraph [ref=f3e311]: 选择目的地，查看景区资料或带入行程规划。
+        - generic [ref=f3e312]:
+          - button "南充" [pressed] [ref=f3e313] [cursor=pointer]
+          - button "阆中" [ref=f3e314] [cursor=pointer]
+          - button "广元" [ref=f3e315] [cursor=pointer]
+        - generic [ref=f3e316]:
+          - article [ref=f3e317]:
+            - heading "鹤鸣山景区·王平墓" [level=3] [ref=f3e318]
+            - paragraph [ref=f3e319]: 四川省南充市高坪区鹤鸣山片区
+            - paragraph [ref=f3e320]: 示例数据 · 更新：未提供
+            - paragraph [ref=f3e321]: 文化主题：王平、蜀汉将领、地方遗迹
+            - paragraph [ref=f3e322]: 适合人群：学术、文化深度游
+            - paragraph [ref=f3e323]: 建议停留约 60 分钟（演示参考）
+            - paragraph [ref=f3e324]: 开放时间：以当地公告为准
+            - paragraph [ref=f3e325]: 数据库坐标尚未核验，不能用于精确落点或导航。
+            - button "向导讲讲这里" [ref=f3e326] [cursor=pointer]
+            - button "规划这座城市" [ref=f3e327] [cursor=pointer]
+            - group [ref=f3e328]:
+              - generic "参考资料与来源" [ref=f3e329] [cursor=pointer]
+          - article [ref=f3e330]:
+            - heading "西山风景区·万卷楼" [level=3] [ref=f3e331]
+            - paragraph [ref=f3e332]: 四川省南充市顺庆区西山风景区
+            - paragraph [ref=f3e333]: 示例数据 · 更新：未提供
+            - paragraph [ref=f3e334]: 文化主题：陈寿、三国志、蜀汉记忆
+            - paragraph [ref=f3e335]: 适合人群：大众、亲子、学术
+            - paragraph [ref=f3e336]: 建议停留约 90 分钟（演示参考）
+            - paragraph [ref=f3e337]: 开放时间：以景区当日公告为准
+            - paragraph [ref=f3e338]: 数据库坐标尚未核验，不能用于精确落点或导航。
+            - button "向导讲讲这里" [ref=f3e339] [cursor=pointer]
+            - button "规划这座城市" [ref=f3e340] [cursor=pointer]
+            - group [ref=f3e341]:
+              - generic "参考资料与来源" [ref=f3e342] [cursor=pointer]
+        - button "规划南充行程" [ref=f3e343] [cursor=pointer]
+      - generic [ref=f3e283]:
+        - generic [ref=f3e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f3e285]:
+          - generic "影像来源" [ref=f3e286] [cursor=pointer]
+  - button "关闭对话" [expanded] [ref=f3e344] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f3e288]:
+      - generic [ref=f3e304]: 已寻迹
+    - generic [ref=f3e307]: 陈寿伴行
+  - complementary "对话面板" [ref=f3e345]:
+    - navigation "历史对话" [ref=f3e346]:
+      - button "新建对话" [ref=f3e347] [cursor=pointer]: ＋ 新对话
+      - button "请介绍西山风景区·万" [pressed] [ref=f3e350] [cursor=pointer]
+    - generic [ref=f3e351]:
+      - generic [ref=f3e352]:
+        - generic [ref=f3e353]:
+          - img [ref=f3e355]:
+            - generic [ref=f3e371]: 已寻迹
+          - strong [ref=f3e374]: 万卷史官 · 陈寿
+          - status [ref=f3e375]: 展卷相伴 · 有据说史，无据留白
+          - strong [ref=f3e376]: 请介绍西山风景区·万
+          - generic "模型已配置不代表连接测试通过；请查看每条回答的模型/兜底标记。" [ref=f3e377]: 模型已配置
+        - button "关闭对话" [ref=f3e378] [cursor=pointer]: ×
+      - group [ref=f3e379]:
+        - generic "此刻行至 · 从南充少年到三国史家" [ref=f3e380] [cursor=pointer]
+        - paragraph [ref=f3e381]: 从南充少年到三国史家 / 章节待关联 / 地点待关联 / 大众体验版 / 已寻迹（本地手动记录，非实际到访证明）：暂无
+        - status
+      - region "人物视角" [ref=f3e382]:
+        - text: 当前人物视角
+        - combobox "当前人物视角" [ref=f3e383]:
+          - option "陈寿" [selected]
+          - option "诸葛亮"
+          - option "张飞"
+        - group [ref=f3e384]:
+          - generic "人物依据与相关故事" [ref=f3e385] [cursor=pointer]
+        - text: 讲解模式
+        - combobox "讲解模式" [ref=f3e386]:
+          - option "大众体验版" [selected]
+          - option "亲子故事版"
+          - option "学术探索版"
+        - paragraph [ref=f3e387]: AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志
+        - status
+      - log [ref=f3e388]:
+        - generic [ref=f3e389]:
+          - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f3e391]:
+            - generic [ref=f3e407]: 已寻迹
+          - generic [ref=f3e410]: 展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。
+        - generic [ref=f3e412]:
+          - generic [ref=f3e413]: 你
+          - generic [ref=f3e414]: 请介绍西山风景区·万卷楼与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。
+        - generic [ref=f3e416]:
+          - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f3e418]:
+            - generic [ref=f3e434]: 已寻迹
+          - generic [ref=f3e437]:
+            - generic [ref=f3e439]:
+              - strong [ref=f3e440]: 陈寿视角 · AI解读，非人物原话
+              - generic [ref=f3e441]:
+                - heading "史料记载 · 无可靠依据" [level=4] [ref=f3e442]
+                - paragraph [ref=f3e443]: 当前资料中未找到可靠记载
+                - group [ref=f3e444]:
+                  - generic "展开来源 · 待核验" [ref=f3e445]
+              - generic [ref=f3e446]:
+                - heading "合理推断 · 非史料原文" [level=4] [ref=f3e447]
+                - paragraph [ref=f3e448]:
+                  - text: "-"
+                  - button "万卷楼" [ref=f3e449] [cursor=pointer]
+                  - text: 作为
+                  - button "南充" [ref=f3e450] [cursor=pointer]
+                  - text: 西山风景区一带的纪念性空间，其文旅意义在于把“陈寿著史”与“地方文化记忆”连起来。游客到此，重点不是看一座楼，而是理解：这里承载的是陈寿、
+                  - button "南充" [ref=f3e451] [cursor=pointer]
+                  - text: 与蜀汉记忆之间的连接。 - 依据：
+                  - button "南充" [ref=f3e452] [cursor=pointer]
+                  - text: 西山风景区/
+                  - button "南充" [ref=f3e453] [cursor=pointer]
+                  - text: 文旅公开介绍；人民日报海外版关于
+                  - button "南充" [ref=f3e454] [cursor=pointer]
+                  - button "万卷楼" [ref=f3e455] [cursor=pointer]
+                  - text: 与陈寿文化的报道。 - 来源等级：B。 - 边界：这是面向游客的概括性解读，不是对楼体沿革的考证。
+                - group [ref=f3e456]:
+                  - generic "展开来源 · pending" [ref=f3e457]
+              - generic [ref=f3e458]:
+                - heading "演义 · 文学表达，不是亲历史实" [level=4] [ref=f3e459]
+                - paragraph [ref=f3e460]: "- 游客熟悉的三国精彩桥段，多来自《三国演义》及后世戏曲、民间叙事，属文学加工，不是陈寿亲历或《三国志》原文。 - 依据：《三国志》正史文本与《三国演义》小说传统的区别。 - 来源等级：B。 - 提醒：讲诸葛亮、刘备、张飞、关羽时，应说明哪些来自正史，哪些是演义强化。"
+                - group [ref=f3e461]:
+                  - generic "展开来源 · pending" [ref=f3e462]
+              - group [ref=f3e463]:
+                - generic "查看后端原回答 · 未逐项核验，可能含推断或演义" [ref=f3e464]
+              - paragraph [ref=f3e465]: 正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。
+              - paragraph [ref=f3e466]: 万卷楼 · 坐标待核验，暂不能定位
+              - button "查看地点：万卷楼" [ref=f3e467] [cursor=pointer]
+              - button "为万卷楼规划路线" [ref=f3e468] [cursor=pointer]
+            - generic [ref=f3e469]:
+              - generic [ref=f3e470]: 意图 · 文化问答
+              - generic [ref=f3e471]:
+                - generic [ref=f3e472]: 回答 · 待核验
+                - generic [ref=f3e473]: 更新时间 · 待核验
+                - generic [ref=f3e474]: 来源 · 待核验
+              - generic [ref=f3e475]: 模型回答 · 模型基于本次检索资料生成，史料仍需核验。
+              - generic [ref=f3e476]: 召回覆盖 100%
+      - generic [ref=f3e477]:
+        - generic [ref=f3e478]: 输入消息
+        - textbox "输入消息" [active] [ref=f3e479]:
+          - /placeholder: 问陈寿：这一章讲什么？我只有半天…
+        - generic [ref=f3e480]:
+          - generic [ref=f3e481]: Enter 发送 · Shift + Enter 换行
+          - button "发送消息" [disabled] [ref=f3e482]: ↑
+      - paragraph [ref=f3e483]: 川东北三国文化旅游智能服务 · 动态信息请核验

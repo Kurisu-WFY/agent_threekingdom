@@ -1,0 +1,85 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=e5]: 南充 · 阆中 · 广元/故事线
+    - status [ref=e6]: 服务可用
+  - main [ref=e7]:
+    - region "主内容区" [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=e11]:
+          - button "与蜀汉对话" [ref=e12] [cursor=pointer]
+          - button "行旅地图" [ref=e13] [cursor=pointer]
+          - button "故事线" [active] [pressed] [ref=e14] [cursor=pointer]
+          - button "探索志" [ref=e15] [cursor=pointer]
+      - generic [ref=e307]:
+        - button "← 返回故事线推荐" [ref=e308] [cursor=pointer]
+        - paragraph [ref=e309]: 故事线 · 主题模板
+        - heading "蜀汉北境·蜀道寻踪" [level=2] [ref=e310]
+        - generic [ref=e311]:
+          - paragraph [ref=e312]: 主题模板 · 内容待接入，史料待核验
+          - generic [ref=e314]:
+            - term [ref=e315]: 章节数量
+            - definition [ref=e316]: 3 章
+          - paragraph [ref=e317]: 史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。
+          - paragraph [ref=e318]: 探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。
+          - paragraph [ref=e319]: 未开始 · 已寻迹 0 / 3
+          - heading "讲解模式" [level=3] [ref=e320]
+          - button "按现实条件规划路线" [ref=e321] [cursor=pointer]
+          - generic [ref=e322]:
+            - button "大众体验版" [pressed] [ref=e323] [cursor=pointer]
+            - button "亲子故事版" [ref=e324] [cursor=pointer]
+            - button "学术探索版" [ref=e325] [cursor=pointer]
+          - paragraph [ref=e326]: 仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。
+          - group [ref=e327]:
+            - generic "史料依据 · 资料状态：pending · 待核验" [ref=e328] [cursor=pointer]
+          - heading "章节轴 · 逐幕寻迹" [level=3] [ref=e329]
+          - list [ref=e330]:
+            - listitem [ref=e331]:
+              - heading "第一幕｜昭化古城 · 待探索" [level=4] [ref=e332]
+              - paragraph [ref=e333]: 地点 / 建筑：昭化古城 / 城楼
+              - paragraph [ref=e334]: 章节内容待接入 · 史料待核验
+              - group [ref=e335]:
+                - generic "史料依据 · 资料状态：pending · 待核验" [ref=e336] [cursor=pointer]
+              - button "进入这一章" [ref=e337] [cursor=pointer]
+            - listitem [ref=e338]:
+              - heading "第二幕｜剑门天险 · 待探索" [level=4] [ref=e339]
+              - paragraph [ref=e340]: 地点 / 建筑：剑门关 / 关楼
+              - paragraph [ref=e341]: 章节内容待接入 · 史料待核验
+              - group [ref=e342]:
+                - generic "史料依据 · 资料状态：pending · 待核验" [ref=e343] [cursor=pointer]
+              - button "进入这一章" [ref=e344] [cursor=pointer]
+            - listitem [ref=e345]:
+              - heading "第三幕｜米仓道 · 待探索" [level=4] [ref=e346]
+              - paragraph [ref=e347]: 地点 / 建筑：米仓道 / 古道
+              - paragraph [ref=e348]: 章节内容待接入 · 史料待核验
+              - group [ref=e349]:
+                - generic "史料依据 · 资料状态：pending · 待核验" [ref=e350] [cursor=pointer]
+              - button "进入这一章" [ref=e351] [cursor=pointer]
+          - group "我只有半天 · 选择本次保留的核心章节" [ref=e352]:
+            - generic [ref=e354]:
+              - checkbox "第一幕｜昭化古城" [checked] [ref=e355]
+              - generic [ref=e356]: 第一幕｜昭化古城
+            - generic [ref=e357]:
+              - checkbox "第二幕｜剑门天险" [checked] [ref=e358]
+              - generic [ref=e359]: 第二幕｜剑门天险
+            - generic [ref=e360]:
+              - checkbox "第三幕｜米仓道" [checked] [ref=e361]
+              - generic [ref=e362]: 第三幕｜米仓道
+            - button "压缩后重绘路线" [ref=e363] [cursor=pointer]
+            - button "应用本次选取" [ref=e364] [cursor=pointer]
+            - button "恢复全部章节" [ref=e365] [cursor=pointer]
+            - status [ref=e366]: 核心章节尚待编辑确认，由你选择；交通和游览时长待核验，不保证半天可完成。
+        - button "开始探索 →" [ref=e367] [cursor=pointer]
+        - button "与陈寿向导讨论这个主题 ↗" [ref=e368] [cursor=pointer]
+        - status [ref=e369]: 当前为主题模板，尚未形成可执行行程。
+      - generic [ref=e261]:
+        - generic [ref=e262]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=e263]:
+          - generic "影像来源" [ref=e264] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=e265] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=e266]:
+      - generic [ref=e282]: 已寻迹
+    - generic [ref=e285]: 陈寿伴行

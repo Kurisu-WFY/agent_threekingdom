@@ -1,0 +1,57 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f1e5]: 南充 · 阆中 · 广元/预算明细
+    - status [ref=f1e6]: 服务可用
+  - main [ref=f1e7]:
+    - region "主内容区" [ref=f1e8]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f1e11]:
+          - button "与蜀汉对话" [ref=f1e12] [cursor=pointer]
+          - button "行旅地图" [ref=f1e13] [cursor=pointer]
+          - button "故事线" [ref=f1e14] [cursor=pointer]
+          - button "探索志" [ref=f1e15] [cursor=pointer]
+          - button "目的地与行程" [ref=f1e16] [cursor=pointer]
+      - generic [ref=f1e420]:
+        - button "返回路线方案" [ref=f1e421] [cursor=pointer]
+        - paragraph [ref=f1e422]: 费用分开看
+        - heading "预算明细" [level=2] [ref=f1e423]
+        - paragraph [ref=f1e424]: 根据当前行程的人数、住宿晚数和房间数估算。没有数据的费用不会按零元计入。
+        - button "查询当前行程预算" [ref=f1e425] [cursor=pointer]
+        - generic [ref=f1e426]:
+          - article [ref=f1e428]:
+            - heading "住宿预算区间：待核验 / 暂无数据" [level=3] [ref=f1e429]
+            - paragraph [ref=f1e430]: 1晚 × 1间：380.0–650.0元（演示估算，非锁价）
+            - paragraph [ref=f1e431]: 示例数据 · 更新：未提供
+            - group [ref=f1e432]:
+              - generic "参考资料与来源" [ref=f1e433] [cursor=pointer]
+          - article [ref=f1e434]:
+            - heading "门票：待核验 / 暂无数据" [level=3] [ref=f1e435]
+            - paragraph [ref=f1e436]: 2人；尚无可核验报价，未计入总额。
+            - paragraph [ref=f1e437]: 待接入 · 更新：未提供
+            - group [ref=f1e438]:
+              - generic "参考资料与来源" [ref=f1e439] [cursor=pointer]
+          - article [ref=f1e440]:
+            - heading "交通：待核验 / 暂无数据" [level=3] [ref=f1e441]
+            - paragraph [ref=f1e442]: 2人；尚无可核验报价，未计入总额。
+            - paragraph [ref=f1e443]: 待接入 · 更新：未提供
+            - group [ref=f1e444]:
+              - generic "参考资料与来源" [ref=f1e445] [cursor=pointer]
+          - article [ref=f1e446]:
+            - heading "餐饮：待核验 / 暂无数据" [level=3] [ref=f1e447]
+            - paragraph [ref=f1e448]: 2人；尚无可核验报价，未计入总额。
+            - paragraph [ref=f1e449]: 待接入 · 更新：未提供
+            - group [ref=f1e450]:
+              - generic "参考资料与来源" [ref=f1e451] [cursor=pointer]
+          - paragraph [ref=f1e452]: 以上为分项估算；未计入项目不代表免费，不作为完整旅行总价。
+      - generic [ref=f1e283]:
+        - generic [ref=f1e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f1e285]:
+          - generic "影像来源" [ref=f1e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f1e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f1e288]:
+      - generic [ref=f1e304]: 已寻迹
+    - generic [ref=f1e307]: 陈寿伴行
