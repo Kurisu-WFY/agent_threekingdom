@@ -1,6 +1,7 @@
 # 任务板 · TASKS
 
-- DOING（2026-09-21，Codex，用户授权）：女娲会话 API 转接现有前端，隔离会话、流式状态、错误提示及真实联调；分支 feat/nuwax-web-chat，不推送或改 master。
+- DONE（2026-09-21，Codex，用户授权）：女娲会话 API 转接现有前端，完成隔离会话、流式状态、错误提示；26 项后端与 16 组前端回归通过。分支 feat/nuwax-web-chat，不推送或改 master。
+- TODO（用户上线后联验）：真实浏览器请求已到女娲，但返回“智能体客户端已离线”；当前 NUWAX_SANDBOX_ID 非数字，已忽略而非误传。需本地 NuwaClaw 在线并确认数字电脑 ID，再验 API → 本机 MCP → RAG；不能以客户端配置测试成功代替此验收。见 docs/NUWAX-WEB-CHAT.md。
 
 - DONE（2026-09-21，Codex，用户授权）：本地BGE接入、老师PDF首批13篇/346片段入库、5组真实检索、8项单测及8011真实问答验证；原库与原PDF保留。19篇待精校/OCR，未合并其他分支。见 docs/TEACHER-RAG.md。
 

@@ -7,6 +7,7 @@ const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,new Element());ret
 const c={story:{id:'test',title:'蜀道寻踪',chapters:[{name:'第二幕',placeId:'pass'}]},chapter:{name:'第二幕'},place:{name:'剑门关'}};
 const ctx=vm.createContext({document:{querySelector:get,querySelectorAll:()=>[],createElement:t=>new Element(t),createElementNS:(ns,t)=>new Element(t),body:new Element(),addEventListener(){}},window:{addEventListener(){},SGT_STORIES:[{id:'chenshou',title:'陈寿线'},{id:'zhangfei',title:'镇守阆中·寻迹张飞'}],SGT_PLACES:[{id:'jianmenguan',name:'剑门关'}],CulturalNode:{getContext:()=>c,compare:()=>actions.push('compare'),openPlace:id=>actions.push(id)},StoryMap:{isActive:()=>true,exit:()=>actions.push('exit')},SGTStoryUI:{openStory:id=>actions.push(id)},TravelMap:{syncChat(){},fromMessage:()=>actions.push('fromMessage'),fromResponse:()=>actions.push('fromResponse'),focusMention:(name,options)=>actions.push(options?.reveal===false?'预选:'+name:name)},SGTJourney:{ask:q=>actions.push(q)}},URL,AbortSignal,fetch:(url,options)=>url==='/health'?Promise.resolve({ok:true,json:async()=>({status:'ok'})}):new Promise((resolve,reject)=>requests.push({resolve,reject,body:JSON.parse(options.body)}))});
 const run=s=>vm.runInContext(s,ctx),flush=()=>new Promise(r=>setImmediate(r));
+require('./chat-test-double.cjs')(ctx);
 for(const f of ['app.js','story-progress.js','character-chat.js'])run(fs.readFileSync(__dirname+'/'+f,'utf8'));
 const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=>all(n).map(x=>x.textContent).join(' ');
 (async()=>{
@@ -22,6 +23,10 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  rendered=ctx.window.CharacterChat.answer({persona:'张飞',text:'测试原回答',data:{evidence_segments:[record]}});assert.ok(all(rendered).some(n=>n.className==='character-evidence history'));
  record.sources[0].source_level='C';assert.equal(ctx.window.CharacterChat.reliable(record),false);record.sources[0].source_level='A';record.sources[0].source_url='javascript:alert(1)';assert.equal(ctx.window.CharacterChat.reliable(record),false);
  rendered=ctx.window.CharacterChat.answer({persona:'张飞',text:'原回答',data:{sources:record.sources}});assert.equal(all(rendered).filter(n=>n.tag==='a').length,0);
+ rendered=ctx.window.CharacterChat.answer({persona:'陈寿',text:'女娲实际正文',data:{generation:{kind:'nuwax'}}});
+ assert.ok(all(rendered).some(n=>n.className==='character-raw'&&Object.hasOwn(n.attrs,'open')&&text(n).includes('女娲实际正文')));
+ assert.ok(text(rendered).includes('不代表知识库没有命中'));
+ assert.ok(!text(rendered).includes('当前资料中未找到可靠记载'));
  ctx.window.CharacterChat.selectPersona('诸葛亮');
  run("send('我想了解张飞\\n\\n请区分史实与推测')");assert.ok(!actions.includes('zhangfei'));assert.ok(!actions.includes('exit'));assert.ok(actions.includes('预选:阆中市'));assert.equal(run('chats[active].persona'),'诸葛亮');assert.equal(requests.at(-1).body.mode,'学术');assert.ok(requests.at(-1).body.history.at(-1).content.includes('半天/一天/两天'));assert.ok(requests.at(-1).body.history.some(m=>m.content.startsWith('【人物视角：诸葛亮】')));
  requests.at(-1).resolve({ok:true,json:async()=>({answer:'阆中与剑门关',intent:{intent:'budget_ticket'},route:null})});await flush();rendered=ctx.window.CharacterChat.answer(run('chats[0].messages.at(-1)'));assert.ok(text(rendered).includes('故事线推荐'));assert.ok(text(rendered).includes('定位阆中'));assert.ok(text(rendered).includes('为剑门关规划路线'));

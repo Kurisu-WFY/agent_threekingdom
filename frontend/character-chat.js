@@ -55,11 +55,12 @@
     if(!records.length){const parts=message.text.split(/【(史料记载|合理推断|演义|无依据)】/);for(let i=1;i<parts.length;i+=2){if(['合理推断','演义'].includes(parts[i])&&parts[i+1]?.trim())records.push({type:parts[i]==='演义'?'romance':'inference',text:parts[i+1].trim(),data_status:'pending'});}}
     const historic=records.filter(r=>r?.type==='history'&&typeof r.text==='string'&&reliable(r)&&!/(三国演义|演义情节)/.test(r.text));
     const section=(label,text,cls)=>{const s=node('section','character-evidence '+cls);s.append(node('h4','',label),placeText(text));box.append(s);return s;};
-    if(!historic.length)section('史料记载 · 无可靠依据',missing,'unverified').append(provenance(message.data));
+    const isNuwax=message.data?.generation?.kind==='nuwax';
+    if(!historic.length)section(isNuwax?'来源核验提示':'史料记载 · 无可靠依据',isNuwax?'智能体回答尚未提供前端可核验的逐项来源字段；不代表知识库没有命中。':missing,'unverified').append(provenance(message.data));
     historic.forEach(r=>section('史料记载',r.text,'history').append(provenance(r)));
     records.filter(r=>r&&['inference','romance'].includes(r.type)&&typeof r.text==='string').forEach(r=>section(r.type==='inference'?'合理推断 · 非史料原文':'演义 · 文学表达，不是亲历史实',r.text,r.type).append(provenance(r)));
     // Labels in model prose cannot establish provenance. Keep the original available but outside the factual layer.
-    const raw=node('details','character-raw');raw.append(node('summary','','查看后端原回答 · 未逐项核验，可能含推断或演义'),placeText(message.text),provenance(message.data));box.append(raw);
+    const raw=node('details','character-raw');if(isNuwax)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),placeText(message.text),provenance(message.data));box.append(raw);
     if(!records.some(r=>r?.type==='inference'))section('合理推断','尚无已分层的推断内容；原回答中的推测不作为史实。','inference');
     if(!records.some(r=>r?.type==='romance'))section('演义对照','尚无可靠的逐项对照；文学情节不能作为人物亲历。','romance');
     if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];section('故事线推荐',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？','story');box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city)),button('切换到'+name+'视角',()=>selectPersona(name)));}

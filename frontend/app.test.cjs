@@ -19,6 +19,14 @@ const context = vm.createContext({
   window: { addEventListener() {} }, AbortSignal, URL,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
+// App-state tests use a transport double; byte-level SSE parsing is tested separately.
+context.window.SGTChatTransport = {request: (payload, onEvent = () => {}) =>
+  context.fetch('/chat/stream', {body:JSON.stringify(payload)}).then(async response => {
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (data.session_id) onEvent({type:'session',session_id:data.session_id});
+    return data;
+  })};
 vm.runInContext(fs.readFileSync(__dirname + '/app.js', 'utf8'), context);
 const run = code => vm.runInContext(code, context);
 const flush = () => new Promise(resolve => setImmediate(resolve));
@@ -40,9 +48,11 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   get('#new-chat').onclick();
   run("send('文化问题')");
   assert.equal(requests.length, 2);
-  requests[0].resolve({ ok: true, json: async () => ({ answer: '南充路线' }) });
+  requests[0].resolve({ ok: true, json: async () => ({ answer: '南充路线', session_id:'session-a' }) });
   await flush();
   assert.equal(run('chats[1].messages[2].text'), '南充路线');
+  assert.equal(run('chats[1].sessionId'), 'session-a');
+  assert.equal(requests[1].body.session_id, null);
   assert.equal(run('chats[0].pending'), true);
   get('#history-list').children[1].children[0].onclick();
   assert.equal(get('#message').value, '保留的草稿');

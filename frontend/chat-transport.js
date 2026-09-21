@@ -24,9 +24,9 @@
         const {value, done} = await reader.read();
         pending += decoder.decode(value, {stream: !done});
         let boundary;
-        while ((boundary = pending.indexOf('\n\n')) >= 0) {
-          record(pending.slice(0, boundary).replace(/\r/g, ''));
-          pending = pending.slice(boundary + 2);
+        while ((boundary = /\r?\n\r?\n/.exec(pending))) {
+          record(pending.slice(0, boundary.index).replace(/\r/g, ''));
+          pending = pending.slice(boundary.index + boundary[0].length);
         }
         if (done) break;
       }
