@@ -1,0 +1,47 @@
+- generic [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f1e5]: 南充 · 阆中 · 广元/目的地
+    - status [ref=f1e6]: 服务可用
+  - main [ref=f1e7]:
+    - region "主内容区" [ref=f1e8]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f1e11]:
+          - button "与蜀汉对话" [ref=f1e12] [cursor=pointer]
+          - button "行旅地图" [ref=f1e13] [cursor=pointer]
+          - button "故事线" [ref=f1e14] [cursor=pointer]
+          - button "探索志" [ref=f1e15] [cursor=pointer]
+          - button "目的地与行程" [active] [pressed] [ref=f1e16] [cursor=pointer]
+      - generic [ref=f1e308]:
+        - paragraph [ref=f1e309]: 从目的地开始
+        - heading "探索川东北" [level=2] [ref=f1e310]
+        - paragraph [ref=f1e311]: 选择目的地，查看景区资料或带入行程规划。
+        - generic [ref=f1e312]:
+          - button "南充" [pressed] [ref=f1e313] [cursor=pointer]
+          - button "阆中" [ref=f1e314] [cursor=pointer]
+          - button "广元" [ref=f1e315] [cursor=pointer]
+        - generic [ref=f1e316]:
+          - article [ref=f1e317]:
+            - heading "鹤鸣山景区·王平墓" [level=3] [ref=f1e318]
+            - paragraph [ref=f1e319]: 四川省南充市高坪区鹤鸣山片区
+            - paragraph [ref=f1e320]: 示例数据 · 更新：未提供
+            - group [ref=f1e321]:
+              - generic "参考资料与来源" [ref=f1e322] [cursor=pointer]
+          - article [ref=f1e323]:
+            - heading "西山风景区·万卷楼" [level=3] [ref=f1e324]
+            - paragraph [ref=f1e325]: 四川省南充市顺庆区西山风景区
+            - paragraph [ref=f1e326]: 示例数据 · 更新：未提供
+            - group [ref=f1e327]:
+              - generic "参考资料与来源" [ref=f1e328] [cursor=pointer]
+        - button "规划南充行程" [ref=f1e329] [cursor=pointer]
+      - generic [ref=f1e283]:
+        - generic [ref=f1e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f1e285]:
+          - generic "影像来源" [ref=f1e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f1e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f1e288]:
+      - generic [ref=f1e304]: 已寻迹
+    - generic [ref=f1e307]: 陈寿伴行

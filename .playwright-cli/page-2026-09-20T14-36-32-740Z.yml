@@ -1,0 +1,82 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - generic [ref=f1e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f1e5]: 南充 · 阆中 · 广元/出行方案
+    - status [ref=f1e6]: 服务可用
+  - main [ref=f1e7]:
+    - region "主内容区" [ref=f1e8]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f1e11]:
+          - button "与蜀汉对话" [ref=f1e12] [cursor=pointer]
+          - button "行旅地图" [ref=f1e13] [cursor=pointer]
+          - button "故事线" [ref=f1e14] [cursor=pointer]
+          - button "探索志" [ref=f1e15] [cursor=pointer]
+          - button "目的地与行程" [ref=f1e16] [cursor=pointer]
+      - generic [ref=f1e366]:
+        - paragraph [ref=f1e367]: 我的行程
+        - heading "出行方案" [level=2] [ref=f1e368]
+        - generic [ref=f1e369]:
+          - heading "陈寿笔下的蜀汉记忆·南充一日线" [level=3] [ref=f1e370]
+          - paragraph [ref=f1e371]: 关联故事：普通行程
+          - paragraph [ref=f1e372]: 你的约束：成都出发 · 两天 · 公共交通 · 家庭 · 2人
+          - paragraph [ref=f1e373]: 后端路线模板 / 现实可行性待核验；不是道路导航，尚不能保证满足所有条件。
+          - paragraph [ref=f1e374]: 路线简介：以陈寿和地方蜀汉遗迹为主线，适合展示文化解释、路线推荐和预算估算能力。
+          - paragraph [ref=f1e375]: 总体取舍：按城市与用户类型筛选，在时长上限内选择最接近的模板；交通与兴趣尚未用于路线优化。
+          - paragraph [ref=f1e376]: 风险提示：王平墓开放状态和讲解资料需核验。
+          - paragraph [ref=f1e377]: 更新时间：待核验 · 来源与时效待核验
+          - paragraph [ref=f1e378]: 后端时长：8 小时；交通：打车/公交
+          - paragraph [ref=f1e379]: 约束待确认：后端交通方式与所选方式不一致，请调整需求或核验。
+          - paragraph [ref=f1e380]: 总预算：待核验 / 暂无完整费用数据；未知金额不按零元或免费处理。
+          - list [ref=f1e381]:
+            - listitem [ref=f1e382]:
+              - heading "1 · 西山风景区·万卷楼" [level=3] [ref=f1e383]
+              - paragraph [ref=f1e384]: 为什么推荐：用陈寿与《三国志》建立核心叙事。
+              - paragraph [ref=f1e385]: 安排停留：120 分钟；建议游览：90 分钟
+              - paragraph [ref=f1e386]: 开放时间：以景区当日公告为准 · 待核验
+              - paragraph [ref=f1e387]: 地址：四川省南充市顺庆区西山风景区
+              - paragraph [ref=f1e388]: 位置示意 / 待定位：无已核验景区入口，地图仅尝试按地址匹配县级驻地。
+              - paragraph [ref=f1e389]: 故事中的作用：章节关联待核验
+            - listitem [ref=f1e390]:
+              - heading "2 · 鹤鸣山景区·王平墓" [level=3] [ref=f1e391]
+              - paragraph [ref=f1e392]: 为什么推荐：补充蜀汉人物在川东北的地方记忆。
+              - paragraph [ref=f1e393]: 安排停留：60 分钟；建议游览：60 分钟
+              - paragraph [ref=f1e394]: 开放时间：以当地公告为准 · 待核验
+              - paragraph [ref=f1e395]: 地址：四川省南充市高坪区鹤鸣山片区
+              - paragraph [ref=f1e396]: 位置示意 / 待定位：无已核验景区入口，地图仅尝试按地址匹配县级驻地。
+              - paragraph [ref=f1e397]: 故事中的作用：章节关联待核验
+          - paragraph [ref=f1e398]: 交通耗时、开放时段、费用与章节匹配未全部核验前，本方案仅供讨论。
+          - group [ref=f1e399]:
+            - generic "参考资料与来源" [ref=f1e400] [cursor=pointer]
+        - generic [ref=f1e401]:
+          - button "查看位置示意 / 待定位" [ref=f1e402] [cursor=pointer]
+          - button "预算明细（待接入）" [ref=f1e403] [cursor=pointer]
+          - button "天气与交通（待接入）" [ref=f1e404] [cursor=pointer]
+          - button "返回故事线" [ref=f1e405] [cursor=pointer]
+        - generic [ref=f1e406]:
+          - generic [ref=f1e407]:
+            - text: 途中剩余时间
+            - combobox "途中剩余时间" [ref=f1e408]:
+              - option "半天" [selected]
+              - option "一天"
+              - option "两天"
+          - button "重绘剩余路线" [ref=f1e409] [cursor=pointer]
+          - paragraph [ref=f1e410]: 沿用已完成记录，只请求调整剩余章节；后端是否满足约束会在结果中说明。
+        - generic [ref=f1e411]:
+          - button "保存到本机" [ref=f1e412] [cursor=pointer]
+          - button "复制方案" [ref=f1e413] [cursor=pointer]
+          - button "调整需求" [ref=f1e414] [cursor=pointer]
+        - status [ref=f1e415]: 已更新路线，已寻迹章节记录保持。
+        - heading "本机保存的方案" [level=3] [ref=f1e416]
+        - paragraph [ref=f1e418]: 尚未保存方案。
+        - paragraph [ref=f1e419]: 仅保存在当前浏览器，不会同步到其他设备。
+      - generic [ref=f1e283]:
+        - generic [ref=f1e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f1e285]:
+          - generic "影像来源" [ref=f1e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f1e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f1e288]:
+      - generic [ref=f1e304]: 已寻迹
+    - generic [ref=f1e307]: 陈寿伴行

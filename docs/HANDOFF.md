@@ -846,3 +846,11 @@
   `clone → pip install -r requirements.docker.txt → seed → ingest → uvicorn`，实测约 2 分钟；
   待办、协议、证据、验收标准、自测脚本都在仓库里。
 - **卡点**：无。
+# 2026-09-21 Codex：老师资料 BGE RAG 首批
+
+- 工作目录为用户本机 `D:\agent_threekingdom`，分支 `feat/bge-teacher-rag`；与本文其他 DSH 机器路径不同。
+- 已接入 `E:\bge-large-zh` 实际本地 1024 维模型，离线加载，显式拒绝新旧模型索引混用；PDF 首批 13 篇 / 346 段已完成嵌入。
+- 产物与逐文件清单位于 `E:\codex_workplace\sanguo-rag\teacher-bge-v1`；旧 hash 库未改，原PDF未改，1篇重复跳过、19篇待后续清洗/OCR。
+- 8项 unittest 通过，5组真实混合检索命中预期论文；故里专题蔡东洲/刘敏两方同时召回。8011 `/health` 确认 bge/1024，`/chat` 实际调用现有LLM返回周国林论文相关答案和PDF页码。未经全量事实/引文人工评测。
+- `.env` 仅更改本地嵌入配置，不提交；密钥未改。8010 老进程保留，8011 独立新验证服务由 `scripts/start_teacher_rag.ps1` 启动。新启动MCP会读取新配置，已运行MCP需用户重新加载。
+- 未合并昨日其他分支，未推送。重启8010前须协调前端/后端集成分支；本轮不承诺旧前端REST缺口已处理。详细使用与边界见 `docs/TEACHER-RAG.md`。

@@ -25,6 +25,8 @@ class LocalVectorStore:
     def load(self) -> None:
         if self.path.exists():
             self.records = json.loads(self.path.read_text(encoding="utf-8"))
+            if not isinstance(self.records, list):
+                raise ValueError("Hash backend cannot open a BGE index; select the matching backend")
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -146,6 +148,11 @@ class MilvusVectorStore:
 
 def get_vector_store():
     settings = get_settings()
+    if settings.embedding_backend.lower() == "bge":
+        if settings.vector_backend.lower() != "local":
+            raise ValueError("BGE currently requires VECTOR_BACKEND=local; no silent hash fallback")
+        from rag.bge_store import BGEVectorStore
+        return BGEVectorStore(settings.vector_store_path)
     if settings.vector_backend.lower() == "milvus":
         try:
             return MilvusVectorStore()

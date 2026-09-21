@@ -1,0 +1,262 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f2e5]: 南充 · 阆中 · 广元/主界面
+    - status [ref=f2e6]: 服务可用
+  - main [ref=f2e7]:
+    - region "主内容区" [ref=f2e8]:
+      - generic [ref=f2e9]:
+        - generic [ref=f2e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f2e11]:
+          - button "与蜀汉对话" [pressed] [ref=f2e12] [cursor=pointer]
+          - button "行旅地图" [ref=f2e13] [cursor=pointer]
+          - button "故事线" [ref=f2e14] [cursor=pointer]
+          - button "探索志" [ref=f2e15] [cursor=pointer]
+          - button "目的地与行程" [ref=f2e16] [cursor=pointer]
+      - generic [ref=f2e17]:
+        - generic [ref=f2e18]:
+          - generic [ref=f2e19]:
+            - paragraph [ref=f2e20]:
+              - generic [aria-hidden] [ref=f2e21]: 蜀
+              - text: 寻迹三国 · 陈寿文化向导
+            - heading "一段旅程， 读懂三国。" [level=1] [ref=f2e22]: 一段旅程，读懂三国。
+            - paragraph [ref=f2e23]: 沿着《三国志》，走进陈寿笔下的蜀汉记忆。
+            - generic [ref=f2e24]:
+              - generic [ref=f2e25]: 南充
+              - generic [aria-hidden] [ref=f2e26]: —
+              - generic [ref=f2e27]: 阆中
+              - generic [aria-hidden] [ref=f2e28]: —
+              - generic [ref=f2e29]: 剑阁
+              - generic [aria-hidden] [ref=f2e30]: —
+              - generic [ref=f2e31]: 广元
+            - link "开始我的三国之旅" [ref=f2e32] [cursor=pointer]:
+              - /url: "#story-discovery"
+              - text: 开始我的三国之旅
+              - generic [aria-hidden] [ref=f2e33]: ↓
+            - generic [ref=f2e34]: 寻源 → 读史 → 探秘 → 传承
+          - figure "第一站，从好奇开始 剑门关 / 广元 · 剑阁" [ref=f2e35]:
+            - img "剑门关关楼与两侧山崖，石阶通向关门" [ref=f2e36]
+            - generic [aria-hidden] [ref=f2e37]: 循蜀道 · 见三国
+            - generic [ref=f2e38]:
+              - generic [ref=f2e39]: 第一站，从好奇开始
+              - strong [ref=f2e40]: 剑门关 / 广元 · 剑阁
+            - generic [aria-hidden] [ref=f2e41]: 01 / 蜀道寻踪
+        - region [ref=f2e42]:
+          - generic [ref=f2e43]:
+            - generic [ref=f2e44]:
+              - text: STORIES · 循史而行
+              - heading "选择一条三国文化故事线" [level=2] [ref=f2e45]
+            - paragraph [ref=f2e46]: 先选一个想探索的主题。
+          - paragraph [ref=f2e47]: 首批主题模板 · 后端数据待确认，缺项待补充；史料与行程待核验。
+          - group "按故事框架筛选" [ref=f2e48]:
+            - button "全部" [pressed] [ref=f2e49] [cursor=pointer]
+            - button "寻源" [ref=f2e50] [cursor=pointer]
+            - button "读史" [ref=f2e51] [cursor=pointer]
+            - button "探秘" [ref=f2e52] [cursor=pointer]
+            - button "传承" [ref=f2e53] [cursor=pointer]
+          - status
+          - generic [ref=f2e54]:
+            - article [ref=f2e55]:
+              - button "查看故事线：从南充少年到三国史家" [ref=f2e56] [cursor=pointer]:
+                - generic [ref=f2e57]: 壹
+                - strong [ref=f2e58]: 从南充少年到三国史家
+                - generic [ref=f2e59]: 主题模板 · 内容待接入 / 史料待核验 ↗
+                - generic [ref=f2e60]: 未开始
+              - button "在故事地图中探索：从南充少年到三国史家" [ref=f2e61] [cursor=pointer]: 在故事地图中探索 →
+            - article [ref=f2e62]:
+              - button "查看故事线：镇守阆中·寻迹张飞" [ref=f2e63] [cursor=pointer]:
+                - generic [ref=f2e64]: 贰
+                - strong [ref=f2e65]: 镇守阆中·寻迹张飞
+                - generic [ref=f2e66]: 主题模板 · 内容待接入 / 史料待核验 ↗
+                - generic [ref=f2e67]: 未开始
+              - button "在故事地图中探索：镇守阆中·寻迹张飞" [ref=f2e68] [cursor=pointer]: 在故事地图中探索 →
+            - article [ref=f2e69]:
+              - button "查看故事线：蜀汉北境·蜀道寻踪" [ref=f2e70] [cursor=pointer]:
+                - generic [ref=f2e71]: 叁
+                - strong [ref=f2e72]: 蜀汉北境·蜀道寻踪
+                - generic [ref=f2e74]:
+                  - generic [ref=f2e75]: 章节数量
+                  - generic [ref=f2e76]: 3 章
+                - generic [ref=f2e77]: 主题模板 · 内容待接入 / 史料待核验 ↗
+                - generic [ref=f2e78]: 未开始
+              - button "在故事地图中探索：蜀汉北境·蜀道寻踪" [ref=f2e79] [cursor=pointer]: 在故事地图中探索 →
+            - article [ref=f2e80]:
+              - button "查看故事线：从史书到现场" [ref=f2e81] [cursor=pointer]:
+                - generic [ref=f2e82]: 肆
+                - strong [ref=f2e83]: 从史书到现场
+                - generic [ref=f2e84]: 主题模板 · 内容待接入 / 史料待核验 ↗
+                - generic [ref=f2e85]: 未开始
+              - button "在故事地图中探索：从史书到现场" [ref=f2e86] [cursor=pointer]: 在故事地图中探索 →
+            - article [ref=f2e87]:
+              - button "查看故事线：正史里的三国" [ref=f2e88] [cursor=pointer]:
+                - generic [ref=f2e89]: 伍
+                - strong [ref=f2e90]: 正史里的三国
+                - generic [ref=f2e91]: 主题模板 · 内容待接入 / 史料待核验 ↗
+                - generic [ref=f2e92]: 未开始
+              - button "在故事地图中探索：正史里的三国" [ref=f2e93] [cursor=pointer]: 在故事地图中探索 →
+        - region [ref=f2e94]:
+          - generic [ref=f2e95]:
+            - text: STORY ATLAS · 山河之间
+            - heading "故事将走向哪里？" [level=2] [ref=f2e96]
+            - paragraph [ref=f2e97]: 从南充少年到三国史家 · 空间走向待补充
+            - paragraph [ref=f2e98]: 先看章节顺序，再将地点放回地图。位置与史料尚待核验。
+            - paragraph [ref=f2e99]: 轮廓示意图 · 2026-09-12 地理快照不代表景区位置、交通路线或实时数据。
+            - button "探索这条故事地图 →" [ref=f2e100] [cursor=pointer]
+          - generic [ref=f2e101]:
+            - img "四川地理轮廓示意图，故事路线待补充" [ref=f2e102]
+            - status [ref=f2e124]: 四川轮廓示意 · 故事章节地点待确认，未绘制路线。
+        - region [ref=f2e125]:
+          - img "手持史册的陈寿艺术化形象，并非历史肖像" [ref=f2e126]:
+            - generic [ref=f2e138]: 史
+          - generic [ref=f2e139]:
+            - text: 万卷史官 · 陈寿
+            - heading "从你的好奇，找到故事的开篇。" [level=2] [ref=f2e140]
+            - paragraph [ref=f2e141]: 说说你喜欢谁、有几天、从哪里出发，与文化向导一起探索主题。
+            - generic [ref=f2e142]:
+              - button "我喜欢的人物… ↗" [ref=f2e143] [cursor=pointer]
+              - link "我有几天 · 从哪里出发" [ref=f2e144] [cursor=pointer]:
+                - /url: "#journey-desk"
+            - generic [ref=f2e145]: AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料，主题建议以现有资料为限。
+        - region [ref=f2e146]:
+          - generic [ref=f2e147]:
+            - generic [ref=f2e148]:
+              - text: YOUR JOURNEY · 你的旅程
+              - heading "你想怎样走进三国？" [level=2] [ref=f2e149]
+            - paragraph [ref=f2e150]: 不必准备完整计划，先说一个想法。
+          - generic [ref=f2e151]:
+            - generic [ref=f2e152]:
+              - group "选择对话主题" [ref=f2e153]:
+                - button "规划行程" [pressed] [ref=f2e154] [cursor=pointer]: 01 规划行程
+                - button "听文化" [ref=f2e155] [cursor=pointer]: 02 听文化
+                - button "问人物" [ref=f2e156] [cursor=pointer]: 03 问人物
+                - button "调整旅程" [ref=f2e157] [cursor=pointer]: 04 调整旅程
+              - generic [ref=f2e158]:
+                - generic [ref=f2e159]: 想去哪里，和谁一起出发？
+                - paragraph [ref=f2e160]: 告诉我时间、出发地和兴趣，一起梳理游览顺序。
+                - textbox "想去哪里，和谁一起出发？" [ref=f2e161]:
+                  - /placeholder: 例如：带孩子从南充出发，玩两天，想去阆中，少走路、多听三国故事。
+                - generic [ref=f2e162]:
+                  - generic [ref=f2e163]:
+                    - text: 同行方式
+                    - combobox "同行方式" [ref=f2e164]:
+                      - option "暂不限定" [selected]
+                      - option "普通初访"
+                      - option "亲子同行"
+                      - option "研学寻史"
+                      - option "人物追踪"
+                  - generic [ref=f2e165]:
+                    - text: 讲解偏好
+                    - combobox "讲解偏好" [ref=f2e166]:
+                      - option "自然讲解" [selected]
+                      - option "大众讲解"
+                      - option "亲子故事版"
+                      - option "学术探索版"
+                - generic [ref=f2e167]:
+                  - generic [ref=f2e168]: 进入同一段对话，随时追问
+                  - button "与向导对话" [disabled] [ref=f2e169]: 与向导对话 ↗
+              - status [ref=f2e170]: 主题切换会保留本页草稿。
+              - generic [ref=f2e171]:
+                - generic [ref=f2e172]: 灵感起点 · 直接问向导
+                - generic [ref=f2e173]:
+                  - button "陈寿与南充 ↗" [ref=f2e174] [cursor=pointer]
+                  - button "南充一日游 ↗" [ref=f2e175] [cursor=pointer]
+                  - button "票价与预算 ↗" [ref=f2e176] [cursor=pointer]
+            - complementary "智能向导如何陪伴你" [ref=f2e177]:
+              - generic [aria-hidden] [ref=f2e178]: 旅
+              - heading "一个向导，陪你一路探索" [level=3] [ref=f2e179]
+              - list [ref=f2e180]:
+                - listitem [ref=f2e181]:
+                  - generic [ref=f2e182]: "01"
+                  - generic [ref=f2e183]:
+                    - strong [ref=f2e184]: 先懂你的旅程
+                    - paragraph [ref=f2e185]: 时间、同行人、兴趣与预算。
+                - listitem [ref=f2e186]:
+                  - generic [ref=f2e187]: "02"
+                  - generic [ref=f2e188]:
+                    - strong [ref=f2e189]: 再串联三国遗迹
+                    - paragraph [ref=f2e190]: 地点有顺序，停留有理由。
+                - listitem [ref=f2e191]:
+                  - generic [ref=f2e192]: "03"
+                  - generic [ref=f2e193]:
+                    - strong [ref=f2e194]: 边走边讲人物
+                    - paragraph [ref=f2e195]: 联系史实、演义与眼前山河。
+                - listitem [ref=f2e196]:
+                  - generic [ref=f2e197]: "04"
+                  - generic [ref=f2e198]:
+                    - strong [ref=f2e199]: 一路追问调整
+                    - paragraph [ref=f2e200]: 继续提问，让行程更合心意。
+              - paragraph [ref=f2e201]: 本页对话可回看；问题记录另存于此浏览器的探索志，换设备不随行。讲解偏好会随问题发送，实际回答以当前服务为准。
+        - region [ref=f2e202]:
+          - generic [ref=f2e203]:
+            - generic [ref=f2e204]:
+              - text: PLACES · 故事发生的空间
+              - heading "让建筑成为故事节点" [level=2] [ref=f2e205]
+            - paragraph [ref=f2e206]: 节点与章节的对应关系待确认。
+          - generic [ref=f2e207]:
+            - article [ref=f2e208]:
+              - heading "万卷楼" [level=3] [ref=f2e213]
+              - paragraph [ref=f2e214]: 故事章节待核验 · 坐标待核验
+              - button "读懂万卷楼" [ref=f2e215] [cursor=pointer]
+            - article [ref=f2e216]:
+              - heading "汉桓侯祠" [level=3] [ref=f2e221]
+              - paragraph [ref=f2e222]: 故事章节待核验 · 坐标待核验
+              - button "读懂汉桓侯祠" [ref=f2e223] [cursor=pointer]
+            - article [ref=f2e224]:
+              - heading "剑门关" [level=3] [ref=f2e229]
+              - paragraph [ref=f2e230]: 故事章节待核验 · 坐标待核验
+              - button "读懂剑门关" [ref=f2e231] [cursor=pointer]
+            - article [ref=f2e232]:
+              - heading "昭化古城" [level=3] [ref=f2e237]
+              - paragraph [ref=f2e238]: 故事章节待核验 · 坐标待核验
+              - button "读懂昭化古城" [ref=f2e239] [cursor=pointer]
+            - article [ref=f2e240]:
+              - heading "米仓道" [level=3] [ref=f2e245]
+              - paragraph [ref=f2e246]: 故事章节待核验 · 坐标待核验
+              - button "读懂米仓道" [ref=f2e247] [cursor=pointer]
+          - paragraph [ref=f2e248]: 建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。
+        - region [ref=f2e249]:
+          - generic [ref=f2e250]:
+            - generic [ref=f2e251]:
+              - text: READ THE LAND · 山河有迹
+              - heading "不只到过，更读懂过" [level=2] [ref=f2e252]
+            - paragraph [ref=f2e253]: 从人物、著作与遗迹，找到你的文化线索。
+          - generic [ref=f2e254]:
+            - article [ref=f2e255]:
+              - generic [ref=f2e256]: 壹 / 陈寿与《三国志》
+              - heading "在南充，读一部三国" [level=3] [ref=f2e257]
+              - paragraph [ref=f2e258]: 从陈寿的故乡出发，聊聊史家的观察与《三国志》的书写。
+              - button "循着陈寿去了解" [ref=f2e259] [cursor=pointer]: 循着陈寿去了解 ↗
+            - article [ref=f2e260]:
+              - generic [ref=f2e261]: 贰 / 正史与演义
+              - heading "熟悉的故事，哪段是史实？" [level=3] [ref=f2e262]
+              - paragraph [ref=f2e263]: 把史书记载、文学加工与地方传说分开来看，保留疑问与依据。
+              - button "听听两种讲述" [ref=f2e264] [cursor=pointer]: 听听两种讲述 ↗
+            - article [ref=f2e265]:
+              - generic [ref=f2e266]: 叁 / 人物与地点
+              - heading "如果能问古人一个问题" [level=3] [ref=f2e267]
+              - paragraph [ref=f2e268]: 从诸葛亮、张飞或陈寿切入，探索他们与蜀地的关系。
+              - button "写下想问的话" [ref=f2e269] [cursor=pointer]: 写下想问的话 ↗
+              - generic [ref=f2e270]: AI 基于资料解读；不视为历史人物原话。
+        - region [ref=f2e271]:
+          - img "嘉陵江环绕阆中古城的远景" [ref=f2e272]
+          - generic [ref=f2e273]:
+            - text: EXPLORE SICHUAN · 行旅地图
+            - heading "把故事，放回山河之间。" [level=2] [ref=f2e274]
+            - paragraph [ref=f2e275]: 21 个市州 · 183 个县级地点选一座城，慢慢走进它的三国记忆。
+            - button "展开四川地图" [ref=f2e276] [cursor=pointer]: 展开四川地图 →
+        - generic [ref=f2e277]:
+          - generic [ref=f2e278]:
+            - strong [ref=f2e279]: 这一程之后，还有下一次出发。
+            - paragraph [ref=f2e280]: 把喜欢的故事、走过的地方或想调整的节奏告诉向导。
+          - button "回顾与调整" [ref=f2e281] [cursor=pointer]: 回顾与调整 ↗
+        - paragraph [ref=f2e282]: 内容有据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。
+      - generic [ref=f2e283]:
+        - generic [ref=f2e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f2e285]:
+          - generic "影像来源" [ref=f2e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f2e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f2e288]:
+      - generic [ref=f2e304]: 已寻迹
+    - generic [ref=f2e307]: 陈寿伴行
