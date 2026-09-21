@@ -20,6 +20,12 @@ class KnowledgeChunk(BaseModel):
     source_level: SourceLevel
     risk_note: str = ""
     version: str = "v1"
+    document_id: str = ""
+    source_file: str = ""
+    pdf_page: int | None = None
+    category: str = ""
+    claim_type: str = ""
+    extraction_status: str = ""
 
 
 class RetrievalHit(BaseModel):

@@ -36,6 +36,8 @@ def health() -> dict:
     return {
         "status": "ok",
         "vector_backend": settings.vector_backend,
+        "embedding_backend": settings.embedding_backend,
+        "embedding_dimension": settings.embedding_dimension,
         "milvus_collection": settings.milvus_collection,
         "redis": redis_health(),
     }

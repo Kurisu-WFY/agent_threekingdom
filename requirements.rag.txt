@@ -1,0 +1,4 @@
+# Optional local PDF/BGE processing; use alongside the project's API dependencies.
+pypdf>=5.0
+sentence-transformers>=5.0
+torch>=2.6

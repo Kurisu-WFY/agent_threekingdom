@@ -34,7 +34,7 @@ def build_guarded_answer(
         "基于当前知识库生成的检索式回答如下。\n\n"
         f"用户问题：{message}\n"
         f"识别意图：{intent.intent}\n\n"
-        f"可依据事实：\n{facts}\n"
+        f"检索到的资料摘录（作者观点不等于已证实史实）：\n{facts}\n"
         f"{risk}\n"
         f"来源：\n{source_lines}"
     )
