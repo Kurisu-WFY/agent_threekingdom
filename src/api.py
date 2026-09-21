@@ -44,6 +44,8 @@ def health() -> dict:
                  "mode": "model_configured" if service.answer_chain.llm.available() else "retrieval_only",
                  "connection_verified": False},
         "vector_backend": settings.vector_backend,
+        "embedding_backend": settings.embedding_backend,
+        "embedding_dimension": settings.embedding_dimension,
         "milvus_collection": settings.milvus_collection,
         "redis": redis_health(),
     }

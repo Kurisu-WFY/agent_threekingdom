@@ -1,0 +1,61 @@
+- generic [ref=f3e1]:
+  - banner [ref=f3e2]:
+    - generic [ref=f3e3]:
+      - generic [ref=f3e4]: 蜀
+      - text: 寻迹三国
+    - generic [ref=f3e5]: 南充 · 阆中 · 广元/目的地
+    - status "模型已配置不代表连接测试通过；请查看每条回答的模型/兜底标记。" [ref=f3e6]: 模型已配置
+  - main [ref=f3e7]:
+    - region "主内容区" [ref=f3e8]:
+      - generic [ref=f3e9]:
+        - generic [ref=f3e10]: 陈寿笔下的蜀汉记忆
+        - navigation "主内容视图" [ref=f3e11]:
+          - button "与蜀汉对话" [ref=f3e12] [cursor=pointer]
+          - button "行旅地图" [ref=f3e13] [cursor=pointer]
+          - button "故事线" [ref=f3e14] [cursor=pointer]
+          - button "探索志" [ref=f3e15] [cursor=pointer]
+          - button "目的地与行程" [active] [pressed] [ref=f3e16] [cursor=pointer]
+      - generic [ref=f3e308]:
+        - paragraph [ref=f3e309]: 从目的地开始
+        - heading "探索川东北" [level=2] [ref=f3e310]
+        - paragraph [ref=f3e311]: 选择目的地，查看景区资料或带入行程规划。
+        - generic [ref=f3e312]:
+          - button "南充" [pressed] [ref=f3e313] [cursor=pointer]
+          - button "阆中" [ref=f3e314] [cursor=pointer]
+          - button "广元" [ref=f3e315] [cursor=pointer]
+        - generic [ref=f3e316]:
+          - article [ref=f3e317]:
+            - heading "鹤鸣山景区·王平墓" [level=3] [ref=f3e318]
+            - paragraph [ref=f3e319]: 四川省南充市高坪区鹤鸣山片区
+            - paragraph [ref=f3e320]: 示例数据 · 更新：未提供
+            - paragraph [ref=f3e321]: 文化主题：王平、蜀汉将领、地方遗迹
+            - paragraph [ref=f3e322]: 适合人群：学术、文化深度游
+            - paragraph [ref=f3e323]: 建议停留约 60 分钟（演示参考）
+            - paragraph [ref=f3e324]: 开放时间：以当地公告为准
+            - paragraph [ref=f3e325]: 数据库坐标尚未核验，不能用于精确落点或导航。
+            - button "向导讲讲这里" [ref=f3e326] [cursor=pointer]
+            - button "规划这座城市" [ref=f3e327] [cursor=pointer]
+            - group [ref=f3e328]:
+              - generic "参考资料与来源" [ref=f3e329] [cursor=pointer]
+          - article [ref=f3e330]:
+            - heading "西山风景区·万卷楼" [level=3] [ref=f3e331]
+            - paragraph [ref=f3e332]: 四川省南充市顺庆区西山风景区
+            - paragraph [ref=f3e333]: 示例数据 · 更新：未提供
+            - paragraph [ref=f3e334]: 文化主题：陈寿、三国志、蜀汉记忆
+            - paragraph [ref=f3e335]: 适合人群：大众、亲子、学术
+            - paragraph [ref=f3e336]: 建议停留约 90 分钟（演示参考）
+            - paragraph [ref=f3e337]: 开放时间：以景区当日公告为准
+            - paragraph [ref=f3e338]: 数据库坐标尚未核验，不能用于精确落点或导航。
+            - button "向导讲讲这里" [ref=f3e339] [cursor=pointer]
+            - button "规划这座城市" [ref=f3e340] [cursor=pointer]
+            - group [ref=f3e341]:
+              - generic "参考资料与来源" [ref=f3e342] [cursor=pointer]
+        - button "规划南充行程" [ref=f3e343] [cursor=pointer]
+      - generic [ref=f3e283]:
+        - generic [ref=f3e284]: AI 伴你读史行旅 · 动态信息请核验
+        - group [ref=f3e285]:
+          - generic "影像来源" [ref=f3e286] [cursor=pointer]
+  - button "打开对话，可拖动调整位置" [ref=f3e287] [cursor=pointer]:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像" [ref=f3e288]:
+      - generic [ref=f3e304]: 已寻迹
+    - generic [ref=f3e307]: 陈寿伴行

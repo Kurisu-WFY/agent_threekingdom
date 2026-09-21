@@ -55,8 +55,26 @@ class HybridRetriever:
                 if current is None or (hit.vector_score + hit.lexical_score) > (current.vector_score + current.lexical_score):
                     merged[hit.chunk.id] = hit
 
+        # For this explicitly disputed topic, retrieve both approved papers rather
+        # than allowing many chunks of one author's paper to crowd out the other.
+        hometown_dispute = '陈寿' in query and '故里' in query
+        if hometown_dispute:
+            for chunk in self.vector_store.all_chunks():
+                if chunk.category == 'dispute' and chunk.id not in merged:
+                    merged[chunk.id] = RetrievalHit(chunk=chunk, matched_query=query)
         candidates = list(merged.values())
-        reranked = rerank(query, candidates, top_n=self.settings.rerank_top_k)
+        if hometown_dispute:
+            ranked = rerank(query, candidates, top_n=len(candidates))
+            selected, documents = [], set()
+            for hit in ranked:
+                if hit.chunk.category == 'dispute' and hit.chunk.document_id not in documents:
+                    if hit.rerank_score >= self.settings.min_rerank_score:
+                        selected.append(hit)
+                        documents.add(hit.chunk.document_id)
+            ids = {h.chunk.id for h in selected}
+            reranked = selected + [h for h in ranked if h.chunk.id not in ids]
+        else:
+            reranked = rerank(query, candidates, top_n=self.settings.rerank_top_k)
         final_hits = [hit for hit in reranked if hit.rerank_score >= self.settings.min_rerank_score][: self.settings.final_top_k]
         report = inspect_recall(query, candidates, final_hits)
         return final_hits, report
@@ -69,6 +87,8 @@ def format_context(hits: list[RetrievalHit]) -> str:
         blocks.append(
             f"[chunk {index} | id={chunk.id} | source_level={chunk.source_level} | "
             f"vector={hit.vector_score:.3f} | lexical={hit.lexical_score:.3f} | rerank={hit.rerank_score:.3f}]\n"
-            f"title: {chunk.title}\nsource: {chunk.source}\nrisk: {chunk.risk_note or '无'}\n{chunk.content}"
+            f"title: {chunk.title}\nsource: {chunk.source}\n"
+            f"category: {chunk.category}\nclaim_type: {chunk.claim_type}\n"
+            f"extraction_status: {chunk.extraction_status}\nrisk: {chunk.risk_note or '无'}\n{chunk.content}"
         )
     return "\n\n".join(blocks)

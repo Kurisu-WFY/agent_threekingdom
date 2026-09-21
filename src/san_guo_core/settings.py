@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     embedding_backend: str = "hash"
     embedding_model: str = "BAAI/bge-large-zh-v1.5"
     embedding_dimension: int = Field(default=384, ge=1)
+    embedding_device: str = "cpu"
+    embedding_batch_size: int = Field(default=4, ge=1)
     vector_store_path: Path = Path("data/processed/vector_store.json")
     milvus_lite_uri: Path = Path("data/processed/milvus_lite.db")
     milvus_collection: str = "san_guo_culture_chunks"
