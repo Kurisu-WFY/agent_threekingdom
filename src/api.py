@@ -38,6 +38,7 @@ class ChatRequest(BaseModel):
     history: list[dict[str, str]] = Field(default_factory=list)
     route_preferences: RoutePreferences | None = None
     session_id: str | None = Field(default=None, max_length=128)
+    story_id: str | None = Field(default=None, max_length=64)
 
 
 @app.get("/health")
@@ -63,7 +64,7 @@ def chat(request: ChatRequest) -> dict:
         return chat_route(request.route_preferences, request.mode)
     if nuwax.configured:
         try:
-            return nuwax.chat(request.message, request.mode, request.session_id, request.history)
+            return nuwax.chat(request.message, request.mode, request.session_id, request.history, request.story_id)
         except NuwaxError as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from None
     return service.answer(request.message, mode=request.mode, history=request.history or None)
@@ -73,7 +74,7 @@ def chat(request: ChatRequest) -> dict:
 def chat_stream(request: ChatRequest):
     def stream():
         if nuwax.configured and request.route_preferences is None:
-            events = nuwax.events(request.message, request.mode, request.session_id, request.history)
+            events = nuwax.events(request.message, request.mode, request.session_id, request.history, request.story_id)
         else:
             events = [{'type': 'result', 'data': chat(request)}]
         for event in events:

@@ -32,7 +32,7 @@
     const persona=profiles[chat.persona]?chat.persona:'陈寿',c=context();
     const snapshot='【人物视角：'+persona+'】'+profiles[persona].style+' 讲解模式：'+getMode()+'；当前故事线：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';
     if(compare&&window.CulturalNode?.getContext())window.CulturalNode.compare();
-    const rules='这是AI人物解读，不是本人原话。分段使用【史料记载】【合理推断】【演义】【无依据】；史料逐项提供出处和来源等级，C级不能支撑史实。无可靠资料说“'+missing+'”。不能编造引文或把演义当亲历。';
+    const rules='这是AI人物解读，不是本人原话。按问题需要区分史料、推断与演义，不机械输出空栏目；史料有出处时提供实际来源，C级不能独立支撑史实。不编造引文或把演义当亲历。背景只作辅助，当前用户问题优先，不要复述内部背景。';
     return {persona,discovered,storyId:c.story?.id,mode:backendMode(),context:snapshot+rules+(window.ChenshouGuide?.requestContext(text)||'')+(discover?' 请介绍“'+(theme?.title||'人物故事主题')+'”主题，说明章节和史料仍待补充，并询问游客可用时间（半天/一天/两天）。':''),question:text,preserveMap:compare||discover,action:discover?'discover':compare?'compare':null};
   }
   function url(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}

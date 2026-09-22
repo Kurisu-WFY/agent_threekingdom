@@ -315,9 +315,9 @@ document.querySelector('#new-chat').onclick = () => {
 };
 
 /* ---------------- 调用后端 ---------------- */
-function ask(text, history, mode = '大众', routePreferences, sessionId, onEvent) {
+function ask(text, history, mode = '大众', routePreferences, sessionId, onEvent, storyId) {
   if (!routePreferences) {
-    return window.SGTChatTransport.request({message:text, history, mode, session_id:sessionId || null}, onEvent);
+    return window.SGTChatTransport.request({message:text, history, mode, session_id:sessionId || null, story_id:storyId || null}, onEvent);
   }
   return fetch(API, {
     signal: AbortSignal.timeout(60000),
@@ -386,7 +386,7 @@ function requestReply(chat, reply) {
       if (bubble) bubble.textContent = (window.AgentAnswer ? window.AgentAnswer.clean(reply.streamText) : reply.streamText) || reply.progress || '女娲会话已连接，正在等待回答…';
       messages.scrollTop = messages.scrollHeight;
     }
-  })
+  }, reply.storyId)
     .then(data => {
       if (!data || typeof data.answer !== 'string' || !data.answer.trim()) {
         throw new Error('服务未返回有效回答');

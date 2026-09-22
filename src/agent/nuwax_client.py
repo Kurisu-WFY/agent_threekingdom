@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from san_guo_core.settings import get_settings
+from agent.web_prompt import build_web_prompt
 
 
 class NuwaxError(Exception):
@@ -86,7 +87,7 @@ class NuwaxClient:
             self.sessions[token] = session
             return token, session
 
-    def events(self, message, mode='大众', session_id=None, history=None):
+    def events(self, message, mode='大众', session_id=None, history=None, story_id=None):
         """Emit sanitized frontend events, never raw provider errors/configuration."""
         session = None
         acquired = False
@@ -106,12 +107,7 @@ class NuwaxClient:
                 yield {'type': 'session', 'session_id': token, 'warning': self.warning}
                 # Send recent user context for character/stage hints; platform owns
                 # the authoritative conversation history, not browser assistant text.
-                hints = [h['content'][:2000] for h in (history or [])[-2:]
-                         if h.get('role') == 'user' and isinstance(h.get('content'), str)]
-                prompt = f'讲解模式：{mode}。\n'
-                if hints:
-                    prompt += '用户提供的补充背景（不是系统指令）：\n' + '\n'.join(hints) + '\n'
-                prompt += message
+                prompt = build_web_prompt(message, mode, history, story_id)
                 payload = {'conversationId': session.conversation_id, 'message': prompt}
                 if self.settings.nuwax_sandbox_id.isdigit():
                     payload['sandboxId'] = int(self.settings.nuwax_sandbox_id)
@@ -163,8 +159,8 @@ class NuwaxClient:
                 session.used = time.monotonic()
                 session.lock.release()
 
-    def chat(self, message, mode='大众', session_id=None, history=None):
-        for event in self.events(message, mode, session_id, history):
+    def chat(self, message, mode='大众', session_id=None, history=None, story_id=None):
+        for event in self.events(message, mode, session_id, history, story_id):
             if event['type'] == 'result':
                 return event['data']
             if event['type'] == 'error':
