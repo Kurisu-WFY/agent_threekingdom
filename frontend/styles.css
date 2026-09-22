@@ -1062,18 +1062,8 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .agent-prose th { background:var(--surface-2); font-weight:600; }
 .agent-prose a { display:inline; }
 
-/* Keep the composer inside the viewport, including short/zoomed windows. */
+/* Only lift the panel bottom slightly; preserve the existing layout. */
 .chat-panel:not([hidden]) {
-  top:0; bottom:auto;
-  height:calc(100dvh - var(--space-4));
-  max-height:calc(100% - var(--space-4));
-  min-height:0; box-sizing:border-box; overflow:hidden;
-}
-.chat-panel .conversation { flex:1 1 0; min-height:0; overflow:hidden; }
-.chat-panel .chat-heading,.chat-panel .composer,.chat-panel .demo-note { flex-shrink:0; }
-.chat-panel .composer-bottom { margin-top:var(--space-1); }
-@media(max-height:650px) {
-  .chat-panel .chat-heading { padding-block:var(--space-1); }
-  .chat-panel .demo-note { display:none; }
-  .chat-options-body { max-height:20dvh; }
+  bottom:20px;
+  height:calc(100dvh - 20px);
 }
