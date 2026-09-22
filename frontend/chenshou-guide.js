@@ -45,6 +45,7 @@
     remembered=c;narratedKey=[c.story?.id,c.chapter?.name,c.place?.id].join('|');const chapters=c.story?.chapters||[],i=c.index??0,s=c.story&&window.StoryProgress?.get(c.story);
     const previous=chapters[i-1],next=chapters.find((_,j)=>j>i&&!s?.skipped.has(j)&&!s?.completed.has(j));
     $('#guide-note').hidden=false;$('#guide-note').open=true;
+    const options=document.querySelector('.chat-options');if(options)options.open=true;
     const text=finished?'这一章“'+(c.chapter?.name||'当前节点')+'”已记为寻迹完成。'+(next?'下一卷可接“'+next.name+'”。':'本次选取中没有待继续的后续章节；可回故事查看跳过或未完成章节。'):(previous?'上章“'+previous.name+'”之后，':'我们从这里展卷。')+'现在来到“'+(c.chapter?.name||c.place?.name||'待关联章节')+'”。';
     const box=$('#guide-narration');box.replaceChildren(node('p',text));
     // Only records with explicit reliable provenance enter the factual layer.

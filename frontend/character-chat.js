@@ -50,6 +50,12 @@
   }
   function answer(message){
     const box=node('div','character-answer'+(message.characterAction==='compare'?' character-comparison':''));box.append(node('strong','',message.persona+'视角 · AI解读，非人物原话'));
+    // Agent prose is not the legacy evidence_segments schema. Display it as prose,
+    // without inventing missing evidence, route geometry, or retrieval failures.
+    if(message.data?.generation?.kind==='nuwax'&&window.AgentAnswer){
+      box.append(window.AgentAnswer.render(message.text));
+      const evidence=node('details','character-sources');evidence.append(node('summary','','来源与数据说明'),node('p','','回答中的来源由智能体提供，尚未逐项核验；未返回结构化来源不代表知识库没有命中。'),provenance(message.data));box.append(evidence);
+    } else {
     const records=Array.isArray(message.data?.evidence_segments)?message.data.evidence_segments.filter(r=>r&&typeof r==='object'):[];
     // Only explicit inference/literature labels can be extracted from prose, never promoted to historical evidence.
     if(!records.length){const parts=message.text.split(/【(史料记载|合理推断|演义|无依据)】/);for(let i=1;i<parts.length;i+=2){if(['合理推断','演义'].includes(parts[i])&&parts[i+1]?.trim())records.push({type:parts[i]==='演义'?'romance':'inference',text:parts[i+1].trim(),data_status:'pending'});}}
@@ -63,7 +69,9 @@
     const raw=node('details','character-raw');if(isNuwax)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),placeText(message.text),provenance(message.data));box.append(raw);
     if(!records.some(r=>r?.type==='inference'))section('合理推断','尚无已分层的推断内容；原回答中的推测不作为史实。','inference');
     if(!records.some(r=>r?.type==='romance'))section('演义对照','尚无可靠的逐项对照；文学情节不能作为人物亲历。','romance');
-    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];section('故事线推荐',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？','story');box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city)),button('切换到'+name+'视角',()=>selectPersona(name)));}
+    }
+    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？'));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city)),button('切换到'+name+'视角',()=>selectPersona(name)));}
+    if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
     if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','压缩需由你选择保留章节；现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选择保留章节并重绘路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     const places=(window.SGT_PLACES||[]).filter(p=>message.text.includes(p.name));

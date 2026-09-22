@@ -1,5 +1,7 @@
 # 任务板 · TASKS
 
+- DONE（2026-09-22，Codex）：修复女娲回答协议展示（安全 Markdown、过程标签、进度去重）和聊天面板空间分配；背景/人物设置默认折叠，保留原人物/路线操作，不把自然语言字段误当结构化证据。真实 MCP 网页表格及 375/684/1440 宽度检查通过，17 组前端回归通过。
+
 - DONE（2026-09-21，Codex，用户授权）：女娲会话 API 转接现有前端，完成隔离会话、流式状态、错误提示；26 项后端与 16 组前端回归通过。分支 feat/nuwax-web-chat，不推送或改 master。
 - DONE（2026-09-22，Codex）：恢复 8010 和 NuwaClaw，真实网页查询南充景点成功，并显示 `san-guo-travel-agent__list_scenic_spots` FINISHED；文化检索经同源 API 首次失败、平台重试后 FINISHED，回答报告 5 段命中。当前非数字 NUWAX_SANDBOX_ID 仍被忽略，但平台当前默认绑定已能调用 MCP，数字 ID 不是这次成功的前置条件。遗留：冷启动超时、正文平台标签/Markdown 表格呈现和重复进度提示；见 docs/NUWAX-WEB-CHAT.md。
 

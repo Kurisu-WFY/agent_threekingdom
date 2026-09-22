@@ -1032,3 +1032,32 @@ img,svg,textarea,select { max-width:100%; }
 a { min-height:var(--target-size); display:inline-flex; align-items:center; overflow-wrap:anywhere; }
 .image-credits > div { width:min(400px,calc(100vw - 32px)); max-width:calc(100vw - 32px); right:0; }
 .image-credits a { min-width:var(--target-size); }
+
+/* Conversation-first layout: optional context occupies one line until requested. */
+.chat-options { flex:none; min-width:0; border-bottom:1px solid var(--line); font-size:var(--text-sm); }
+.chat-options > summary { cursor:pointer; padding:var(--space-2) var(--space-4); min-height:var(--target-size); box-sizing:border-box; color:var(--ink-soft); }
+.chat-options-body { max-height:28dvh; overflow:auto; padding-bottom:var(--space-2); }
+.chat-panel .chat-options .character-panel,
+.chat-panel .chat-options .historian-context,
+.chat-panel .chat-options .historian-note { max-height:none; overflow:visible; }
+.chat-panel .chat-heading { padding:var(--space-2) var(--space-3); }
+.chat-panel #historian-heading #conversation-title { display:none; }
+.chat-panel #historian-heading > strong:first-of-type { font-size:var(--text-base); }
+.chat-panel #historian-state { display:none; }
+.chat-panel #historian-portrait .historian-svg { height:44px; width:42px; }
+.chat-panel .messages { flex:1 1 0; min-height:0; }
+.chat-panel .composer { padding:var(--space-2) var(--space-3); }
+.chat-panel .composer textarea { min-height:var(--target-size); height:54px; max-height:100px; }
+.chat-panel .demo-note { margin:0; padding:0 var(--space-3) var(--space-2); }
+.agent-prose { min-width:0; line-height:var(--leading-body); overflow-wrap:anywhere; }
+.agent-prose p { margin:var(--space-2) 0; white-space:pre-wrap; }
+.agent-prose h4 { margin:var(--space-4) 0 var(--space-2); font-size:var(--text-base); }
+.agent-prose ul,.agent-prose ol { padding-left:var(--space-5); }
+.agent-prose li { margin:var(--space-1) 0; }
+.agent-prose code { font-size:var(--text-sm); background:var(--surface-2); overflow-wrap:anywhere; }
+.agent-prose pre { white-space:pre-wrap; overflow:auto; padding:var(--space-2); background:var(--surface-2); }
+.agent-table-scroll { overflow-x:auto; max-width:100%; margin:var(--space-3) 0; }
+.agent-prose table { width:100%; border-collapse:collapse; font-size:var(--text-sm); }
+.agent-prose th,.agent-prose td { border:1px solid var(--line); padding:var(--space-2); text-align:left; vertical-align:top; min-width:7em; }
+.agent-prose th { background:var(--surface-2); font-weight:600; }
+.agent-prose a { display:inline; }

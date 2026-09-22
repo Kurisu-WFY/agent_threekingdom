@@ -34,5 +34,10 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  const before=run('chats[active]');get('#new-chat').onclick();get('#character-select').value='陈寿';get('#character-select').handlers.change();run('deleteChat(chats[active])');get('#undo-delete').onclick();assert.equal(run('chats[active].persona'),'陈寿');assert.equal(before.persona,'张飞');
  const paths=['陈寿','诸葛亮','张飞'].map(n=>ctx.window.CharacterChat.portrait(n).children.at(-1).attrs.d);assert.equal(new Set(paths).size,3);
  assert.equal(JSON.stringify(c),baseline);
+ run(fs.readFileSync(__dirname+'/answer-format.js','utf8'));
+ rendered=ctx.window.CharacterChat.answer({persona:'陈寿',text:'| 名称 | 状态 |\n| --- | --- |\n| 剑门关 | 待核验 |',data:{generation:{kind:'nuwax'}}});
+ assert.ok(all(rendered).some(n=>n.tag==='table'));
+ assert.ok(!text(rendered).includes('当前资料中未找到可靠记载'));
+ assert.ok(text(rendered).includes('查看地点：剑门关'));
  console.log('PASS: persona/context isolation, history prefix, pending drafts, immutable retry, evidence and C/URL gating, explicit inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo');
 })();
