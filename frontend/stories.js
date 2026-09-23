@@ -141,7 +141,7 @@
   $('#story-map-open').addEventListener('click', () => window.StoryMap.open(selected.id));
   $('#preview-story-open').addEventListener('click', () => window.StoryMap.open(selected.id));
   $('#story-ask').addEventListener('click', () => {
-    window.SGTJourney.ask('我对“' + selected.title + '”这个故事线主题感兴趣。模板的章节、地点和时长尚未确认，请先询问我的兴趣、出发地和可用天数，再基于现有资料讨论；不要假定已有完整故事线，区分史实与推测并说明来源。');
+    window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事线，适合怎么游览？');
     $('#story-action-status').textContent = '已交给向导；如正在回答，问题会保留在对话草稿中。';
   });
   const silhouettes = {

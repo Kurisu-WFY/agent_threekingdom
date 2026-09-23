@@ -28,7 +28,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
   test.get('#story-map-open').handlers.click();assert.equal(test.mapCalls[1],'shudao-xunzong');
-  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,1);assert.ok(test.questions[0].includes('蜀道寻踪'));assert.ok(test.questions[0].includes('尚未确认'));
+  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,1);assert.equal(test.questions[0],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[0].includes('模板'));
   const story=test.window.SGT_STORIES[2],progress=test.window.StoryProgress;
   const state=progress.get(story);state.started=true;state.completed=new Set([0,1,2]);progress.save(story);
   assert.ok(contents(test.get('#story-detail-content')).includes('一卷读罢'));
