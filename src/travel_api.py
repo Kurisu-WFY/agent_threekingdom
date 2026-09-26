@@ -10,6 +10,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field, field_validator
 
 from planning.route_planner import plan_route
+from tools.free_travel_tools import get_travel_weather, get_road_route, RoadRequest
 from tools.travel_business_tools import list_scenic_spots, estimate_hotel_budget
 
 router = APIRouter(prefix="/api/travel")
@@ -125,4 +126,9 @@ def budget(p: Preferences):
 
 @router.post("/travel-info")
 def travel_info(p: Preferences):
-    return envelope("unavailable", f"{p.city}的实时天气、班次与道路导航尚未接入，暂无可核验的实时结果。")
+    return get_travel_weather(p.city, p.date.isoformat() if p.date else None)
+
+
+@router.post("/road-route")
+def road_route(p: RoadRequest):
+    return get_road_route(**p.model_dump())

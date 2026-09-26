@@ -56,7 +56,8 @@ class TravelApiTests(unittest.TestCase):
         self.assertEqual(data['status'], 'ok')
         self.assertTrue(all(i['amount'] is None for i in data['data']['items']))
         self.assertNotIn('total', data['data'])
-        self.assertEqual(self.client.post('/api/travel/travel-info', json=p).json()['status'], 'unavailable')
+        with patch('travel_api.get_travel_weather', return_value={'status': 'unavailable', 'message': 'offline', 'data': None}):
+            self.assertEqual(self.client.post('/api/travel/travel-info', json=p).json()['status'], 'unavailable')
 
     def test_invalid_preferences(self):
         for field, value in [('days',0),('rooms',0),('people',51),('date','bad')]:

@@ -261,7 +261,7 @@
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">出行方案</h2>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细（待接入）</button><button class="module-button" data-content-view="travel">天气与交通（待接入）</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细（待接入）</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
         <div class="route-replan"><label>途中剩余时间<select id="remaining-time"><option value="0.5">半天</option><option value="1">一天</option><option value="2">两天</option></select></label><button id="replan-remaining" class="module-button">重绘剩余路线</button><p class="map-note">沿用已完成记录，只请求调整剩余章节；后端是否满足约束会在结果中说明。</p></div>
         <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <p id="plan-status" role="status"></p>
@@ -279,8 +279,8 @@
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
         <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
-        <p class="welcome-kicker">出发前再确认</p><h2>天气与交通</h2>
-        <p>按当前行程目的地和出发日期查询。接入后显示来源与查询时间。</p>
+        <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
+        <p>按行程目的地查询出发日期天气预报与当前空气质量，显示来源与查询时间。空气质量为模型估计，不是现场实测；交通班次尚未接入。</p>
         <button id="load-travel" class="module-button">查询出行信息</button>
         <div id="travel-results" class="module-results" aria-live="polite"></div>
       </section>

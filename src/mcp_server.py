@@ -1,4 +1,5 @@
 import json
+import asyncio
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -16,6 +17,7 @@ from starlette.routing import Mount, Route
 
 from agent.orchestrator import TravelAgentService
 from planning.route_planner import plan_route
+from tools.free_travel_tools import get_travel_weather, lookup_travel_city, get_road_route, RoadRequest
 from rag.hybrid_retriever import HybridRetriever, format_context
 from tools.travel_business_tools import (
     estimate_hotel_budget,
@@ -32,6 +34,12 @@ server = Server("san-guo-travel-agent")
 @server.list_tools()
 async def list_tools():
     return [
+        Tool(name="get_travel_weather", description="免费查询南充、阆中、广元未来7天天气预报及当前空气质量模型估计。可指定YYYY-MM-DD日期；超出范围不替代。非商业Demo，无实测保证。",
+             inputSchema={"type": "object", "properties": {"city": {"type": "string"}, "travel_date": {"type": "string", "description": "可选出行日期YYYY-MM-DD"}}, "required": ["city"]}),
+        Tool(name="lookup_travel_city", description="查询南充、阆中、广元城市中心WGS84坐标。只用于城市定位/天气，不代表景点、酒店或入口，不能冒充精准POI。",
+             inputSchema={"type": "object", "properties": {"city": {"type": "string"}}, "required": ["city"]}),
+        Tool(name="get_road_route", description="根据用户提供或可靠来源核实的WGS84起终点，查询步行/驾车道路参考路线。不能使用未经核验的景点坐标或GCJ02坐标；无实时路况，不是公共交通班次。",
+             inputSchema=RoadRequest.model_json_schema()),
         Tool(
             name="retrieve_culture_knowledge",
             description="检索三国文化、陈寿、《三国志》、南充/川东北三国景区相关知识，并返回 rerank 和召回检查上下文。",
@@ -156,6 +164,12 @@ def as_text(data) -> list[TextContent]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
+    if name == "get_travel_weather":
+        return as_text(await asyncio.to_thread(get_travel_weather, arguments.get("city", ""), arguments.get("travel_date")))
+    if name == "lookup_travel_city":
+        return as_text(await asyncio.to_thread(lookup_travel_city, arguments.get("city", "")))
+    if name == "get_road_route":
+        return as_text(await asyncio.to_thread(get_road_route, **arguments))
     if name == "retrieve_culture_knowledge":
         hits, report = HybridRetriever().retrieve(arguments["query"], arguments.get("intent"))
         return as_text({"context": format_context(hits), "recall_report": report.model_dump()})

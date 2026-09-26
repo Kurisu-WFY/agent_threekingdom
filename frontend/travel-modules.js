@@ -43,8 +43,8 @@
     target.append(details);
   }
   function dataStatus(record) {
-    const names = { sample: '示例数据', maintained: '维护数据', live: '实时查询', pending: '待接入', stale: '已过期' };
-    return `${names[record.data_status] || '状态未标注'} · 更新：${record.updated_at || '未提供'}`;
+    const names = { sample: '示例数据', maintained: '维护数据', live: '实时查询', forecast: '模型天气预报', model: '模型估计（非实测）', external: '外部查询', reference_route: '道路参考（非实时路况）', pending: '暂无有效数据', stale: '已过期' };
+    return `${names[record.data_status] || '状态未标注'} · ${record.fetched_at ? '查询时间（可能为缓存）' : '更新'}：${record.fetched_at || record.updated_at || '未提供'}`;
   }
   async function loadCity(nextCity) {
     city = nextCity;
@@ -192,7 +192,7 @@
       if(result?.found!==true || !result.route || typeof result.route!=='object' || Array.isArray(result.route) || !Array.isArray(result.stops) || !result.stops.length || result.stops.some(s=>!s||typeof s.name!=='string'||!s.name.trim()))throw new Error('路线数据不完整，请重试或调整条件。');
       current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
         chatRoute:result,plan:{title:result.route.name,days:[]},draft:false};
-      renderPlan();empty($('#budget-results'),'可查询住宿演示预算；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'天气与交通服务待接入。');
+        renderPlan();empty($('#budget-results'),'可查询住宿演示预算；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'可查询出发日期的天气预报和当前空气质量；交通班次尚未接入。');
       $('#planner-status').textContent='已收到后端路线，约束与来源仍需核验。';$('#plan-status').textContent='已更新路线，已寻迹章节记录保持。';showContentView('plan');
     } catch(error) {if(version===planRequest){$('#planner-status').textContent=error.name==='TimeoutError'?'等待路线超时，可重试；上一份方案保留。':'请求失败：'+error.message+' 可重试；上一份方案保留。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
@@ -290,5 +290,5 @@
   });
   renderPlan(); renderSaved(); loadCity(city);
   empty($('#budget-results'), '费用资料待接入。可先生成行程草稿。');
-  empty($('#travel-results'), '天气与交通服务待接入。');
+    empty($('#travel-results'), '生成行程后可查询天气预报与当前空气质量。免费公共服务可能暂时不可用；交通班次尚未接入。');
 })();
