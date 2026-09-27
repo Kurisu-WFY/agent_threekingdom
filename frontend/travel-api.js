@@ -24,6 +24,8 @@ window.TravelApi = (() => {
     listSpots: city => request('/spots?city=' + encodeURIComponent(city), null, 'GET'),
     createPlan: preferences => request('/plans/preview', preferences),
     estimateBudget: preferences => request('/budget/estimate', preferences),
-    getTravelInfo: preferences => request('/travel-info', preferences)
+    getTravelInfo: preferences => request('/travel-info', preferences),
+    lookupCity: city => request('/city-location?city=' + encodeURIComponent(city), null, 'GET'),
+    roadRoute: points => request('/road-route', points)
   };
 })();

@@ -175,6 +175,17 @@ function messageNode(message) {
     body.append(retry);
   }
   if (message.data) body.append(metaNode(message.data));
+  if (window.TravelAssistant?.canOpen(message)) {
+    const sourceChat = chats[active];
+    const open = document.createElement('button');
+    open.className = 'module-button'; open.textContent = '查看出行方案';
+    open.onclick = () => window.TravelAssistant.open(message, () => {
+      const index = chats.indexOf(sourceChat);
+      if (index < 0) return false;
+      saveDraft(); active = index; input.value = sourceChat.draft || ''; render(); toggleChat(true); return true;
+    });
+    body.append(open);
+  }
   row.append(avatar, body);
   return row;
 }
@@ -488,6 +499,7 @@ function showContentView(view) {
     sections.forEach(section => { section.hidden = section !== target; });
     currentContentView = view;
     const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地', planner: '规划行程', plan: '出行方案', budget: '预算明细', travel: '天气与交通' };
+    labels.outing = '出行助手';
     const label = document.querySelector('#view-label');
     if (label) label.textContent = labels[view] || '主界面';
     document.querySelectorAll('[data-content-view]').forEach(option => {

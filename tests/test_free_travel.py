@@ -85,6 +85,7 @@ class FreeTravelTests(unittest.TestCase):
             response = client.post('/api/travel/travel-info', json={'city': '南充', 'date': '2026-09-26'})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()['status'], 'ok')
+            self.assertEqual(client.get('/api/travel/city-location?city=南充').json()['status'], 'ok')
             content = asyncio.run(call_tool('get_travel_weather', {'city': '南充'}))
             self.assertEqual(json.loads(content[0].text)['status'], 'ok')
             self.assertEqual(client.post('/api/travel/road-route', json={}).status_code, 422)

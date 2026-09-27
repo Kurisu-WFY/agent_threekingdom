@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="outing.css?v=1">
   <link rel="stylesheet" href="styles.css?v=nuwax-offset-4">
 </head>
 <body>
@@ -24,9 +25,48 @@
           <button type="button" data-content-view="story" aria-pressed="false" aria-controls="story-view">故事线</button>
           <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
           <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地与行程</button>
+          <button type="button" data-content-view="outing" aria-pressed="false" aria-controls="outing-view">出行助手</button>
         </nav>
       </div>
 
+      <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
+        <header><h1 id="outing-title" tabindex="-1">出行助手</h1><p>天气有来源，路线有依据。查询无需女娲在线。</p></header>
+        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
+        <div class="outing-columns">
+          <section aria-labelledby="outing-weather-title" class="outing-weather">
+            <h2 id="outing-weather-title">天气查询</h2>
+            <form id="outing-weather-form">
+              <label>目的地<select id="outing-city" required><option value="">请选择城市</option><option>南充</option><option>阆中</option><option>广元</option></select></label>
+              <label>出行日期（可选）<input id="outing-date" type="date"></label>
+              <button type="submit" class="outing-primary">查询天气</button>
+            </form>
+            <p id="outing-weather-status" role="status">选择城市，查看未来七天预报。</p>
+            <p class="outing-note">未来七天 · 可横向滚动查看</p>
+            <div id="outing-forecast" class="outing-forecast" tabindex="0" role="region" aria-label="七日天气预报"></div>
+            <h3>空气质量</h3><div id="outing-air">查询后显示当前模型估计，非监测站实测。</div>
+            <div id="outing-weather-source" class="outing-source"></div>
+          </section>
+          <section aria-labelledby="outing-route-title" class="outing-route">
+            <h2 id="outing-route-title">路线规划</h2>
+            <form id="outing-route-form">
+              <fieldset class="outing-modes"><legend>出行方式</legend><label><input type="radio" name="outing-mode" value="walking" checked>步行</label><label><input type="radio" name="outing-mode" value="driving">驾车</label></fieldset>
+              <div class="outing-endpoints">
+                <label>起点<select id="outing-start" required><option value="">请选择已知位置</option><option value="南充">南充 · 城市中心</option><option value="阆中">阆中 · 城市中心</option><option value="广元">广元 · 城市中心</option><option value="manual">手动 WGS84 坐标</option></select></label>
+                <label>终点<select id="outing-end" required><option value="">请选择已知位置</option><option value="南充">南充 · 城市中心</option><option value="阆中">阆中 · 城市中心</option><option value="广元">广元 · 城市中心</option><option value="manual">手动 WGS84 坐标</option></select></label>
+              </div>
+              <div id="outing-start-coords" class="outing-coords" hidden><label>起点经度<input id="outing-start-lon" type="number" min="-180" max="180" step="any"></label><label>起点纬度<input id="outing-start-lat" type="number" min="-90" max="90" step="any"></label></div>
+              <div id="outing-end-coords" class="outing-coords" hidden><label>终点经度<input id="outing-end-lon" type="number" min="-180" max="180" step="any"></label><label>终点纬度<input id="outing-end-lat" type="number" min="-90" max="90" step="any"></label></div>
+              <label id="outing-confirm-row" class="outing-check" hidden><input id="outing-confirm" type="checkbox">我已核实手动坐标为 WGS84，不是高德或百度坐标。</label>
+              <p class="outing-note">城市中心不是景区入口。查询会将起终点坐标发送到公共路线服务，请勿填写敏感地址。</p>
+              <button type="submit" class="outing-primary">查询道路路线</button>
+            </form>
+            <p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
+            <div id="outing-route-preview" class="outing-route-preview"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>
+            <div id="outing-route-metrics" class="outing-metrics"></div><div id="outing-route-source" class="outing-source"></div>
+            <section class="outing-draft"><h3>行程草案</h3><p id="outing-draft-note">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id="outing-stops"></ol><details id="outing-original" hidden><summary>查看带入的回答原文</summary><pre id="outing-original-text"></pre></details></section>
+          </section>
+        </div>
+      </section>
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
         <header class="journal-heading"><p class="welcome-kicker">山河有迹 · 我的文化旅行史</p><h1 tabindex="-1">我的三国探索志</h1><p id="journal-local-notice" role="status"></p><p>记录保存在此浏览器，换设备不会同步；不是账号档案，也不代表实际到访。</p></header>
         <div id="journal-empty"></div>
@@ -342,6 +382,7 @@
 
   <script src="chat-transport.js?v=nuwax-1"></script>
   <script src="answer-format.js?v=nuwax-2"></script>
+  <script src="outing-core.js?v=1"></script>
   <script src="app.js?v=story-prompt-1"></script>
   <script src="landing.js?v=story-discovery-1"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
@@ -355,5 +396,6 @@
   <script src="character-chat.js?v=story-prompt-1"></script>
   <script src="journal.js?v=fix20-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
+  <script src="outing.js?v=1"></script>
 </body>
 </html>

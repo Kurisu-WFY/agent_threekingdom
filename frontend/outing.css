@@ -1,0 +1,48 @@
+/* Scoped to the approved outing view; no changes to the chat shell. */
+.outing {container-type:inline-size;font-family:"Microsoft YaHei",system-ui,sans-serif;color:var(--ink);font-size:1rem;line-height:1.65}
+.outing h1 {font:normal 1.75rem/1.4 var(--font-display);margin:0}
+.outing h2 {font:normal 1.4rem/1.4 var(--font-display);margin:0 0 1rem}
+.outing h3 {font-size:1.05rem;margin:1.5rem 0 .75rem}
+.outing p {max-width:70ch;margin:.75rem 0}
+.outing-handoff {display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--jade-soft);padding:1rem;margin:1.5rem 0;border:1px solid var(--line);border-radius:8px}
+.outing-columns {display:grid;grid-template-columns:minmax(0, .8fr) minmax(0,1.35fr);gap:1.5rem;align-items:start}
+.outing-weather,.outing-route {min-width:0;padding:1.5rem;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.outing form {display:grid;gap:1rem}
+.outing label {display:grid;gap:.5rem;font-size:.95rem}
+.outing input,.outing select,.outing button {font:inherit;color:inherit;min-width:0;min-height:44px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);padding:.6rem .75rem;max-width:100%}
+.outing input:not([type=radio]):not([type=checkbox]),.outing select {width:100%;box-sizing:border-box}
+.outing button {cursor:pointer}
+.outing button:hover {background:var(--jade-soft)}
+.outing button.outing-primary {background:var(--jade-deep);color:var(--surface);border-color:var(--jade-deep)}
+.outing button.outing-primary:hover {background:var(--jade)}
+.outing button:disabled {opacity:.6;cursor:wait}
+.outing :is(input,select,button,summary):focus-visible {outline:2px solid var(--jade);outline-offset:3px}
+.outing-endpoints,.outing-coords {display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.outing [hidden] {display:none!important}
+.outing-modes {display:flex;gap:1.5rem;border:0;padding:0;margin:0}
+.outing-modes legend {font-size:.9rem;margin-bottom:.5rem}
+.outing-modes label,.outing-check {display:flex!important;align-items:center;gap:.5rem}
+.outing input:is([type=radio],[type=checkbox]) {width:1.1rem;height:1.1rem;min-height:0;accent-color:var(--jade)}
+.outing-note,.outing-source {font-size:.875rem;color:var(--muted);overflow-wrap:anywhere}
+.outing-source a {color:var(--jade-deep);text-decoration:underline;display:inline-block;padding:.25rem 0}
+.outing-forecast {display:flex;overflow-x:auto;gap:.75rem;margin-top:1rem;padding:.25rem .25rem .75rem;scroll-snap-type:x proximity}
+.outing-forecast:focus-visible {outline:2px solid var(--jade);outline-offset:2px}
+.outing-day {display:flex;flex-direction:column;flex:0 0 6.75rem;gap:.5rem;border-bottom:1px solid var(--line);padding:.75rem .25rem;scroll-snap-align:start}
+.outing-day strong {font-size:.9rem;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+.outing-day small {font-size:.875rem;color:var(--muted)}
+.outing-day[data-selected=true] {background:var(--jade-soft);outline:1px solid var(--line);padding:.75rem .5rem}
+.outing-air-values,.outing-metrics {display:flex;flex-wrap:wrap;gap:1rem 2rem;font-variant-numeric:tabular-nums}
+.outing-air-values span {display:block;color:var(--muted);font-size:.875rem}
+.outing-air-values strong {font-size:1.25rem;font-weight:500}
+.outing-route-preview {min-height:220px;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;margin:1rem 0;text-align:center;padding:.75rem}
+.outing-route-preview svg {width:100%;height:auto;max-height:300px;display:block}
+.outing-route-preview polyline {stroke:var(--jade);fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.outing-route-preview circle {fill:var(--surface);stroke:var(--jade-deep);stroke-width:3}
+.outing-draft {border-top:1px solid var(--line);margin-top:1.5rem;padding-top:.5rem}
+.outing-draft li {margin:.5rem 0}
+.outing pre {white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;max-height:360px;overflow:auto;background:var(--surface-2);padding:1rem}
+.outing summary {cursor:pointer;min-height:44px;padding:.5rem 0}
+.outing [role=status] {font-size:.9rem;overflow-wrap:anywhere}
+.outing [aria-busy=true] {opacity:.7}
+@container (max-width:850px) {.outing-columns {grid-template-columns:1fr}.outing-weather,.outing-route {padding:1rem}}
+@container (max-width:420px) {.outing-endpoints,.outing-coords {grid-template-columns:1fr}.outing-handoff {align-items:start;flex-direction:column}.outing-day {grid-template-columns:5rem 1fr}}

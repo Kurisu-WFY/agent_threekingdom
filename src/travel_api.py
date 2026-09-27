@@ -10,7 +10,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field, field_validator
 
 from planning.route_planner import plan_route
-from tools.free_travel_tools import get_travel_weather, get_road_route, RoadRequest
+from tools.free_travel_tools import get_travel_weather, get_road_route, lookup_travel_city, RoadRequest
 from tools.travel_business_tools import list_scenic_spots, estimate_hotel_budget
 
 router = APIRouter(prefix="/api/travel")
@@ -132,3 +132,8 @@ def travel_info(p: Preferences):
 @router.post("/road-route")
 def road_route(p: RoadRequest):
     return get_road_route(**p.model_dump())
+
+
+@router.get("/city-location")
+def city_location(city: str):
+    return lookup_travel_city(city)

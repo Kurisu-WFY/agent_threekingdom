@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const {draft,canOpen,routePoints}=require('./outing-core.js');
+const m={role:'assistant',text:'南充 2026-09-28 一日行程。<script>alert(1)</script>',data:{generation:{kind:'nuwax'}}};
+assert.equal(canOpen(m),true);assert.equal(canOpen({...m,pending:true}),false);assert.equal(canOpen({...m,error:true}),false);
+assert.equal(draft(m).city,'南充');assert.equal(draft(m).date,'2026-09-28');assert.deepEqual(draft(m).stops,[]);
+assert.equal(draft({...m,text:'南充出发到广元'}).city,'');
+assert.equal(draft({...m,text:'2026-02-30 南充'}).date,'');
+const d=draft({...m,data:{route:{stops:[{name:'万卷楼',latitude:1,longitude:1}]}}});
+assert.deepEqual(d.stops,[{name:'万卷楼'}]);
+assert.equal(routePoints(null),null);assert.equal(routePoints({type:'LineString',coordinates:[[190,30],[106,30]]}),null);
+const pts=routePoints({type:'LineString',coordinates:[[106,30],[106.2,30.1],[106.3,30.2]]});assert.equal(pts.length,3);assert.ok(pts.every(p=>p.every(Number.isFinite)));
+console.log('PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection');
