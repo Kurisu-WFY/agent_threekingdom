@@ -29,11 +29,15 @@ from tools.travel_business_tools import (
 
 
 server = Server("san-guo-travel-agent")
+from san_guo_core.models import NanchongPlanRequest
+from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nanchong_itinerary
 
 
 @server.list_tools()
 async def list_tools():
     return [
+        Tool(name="get_nanchong_travel_catalog", description="南充公开页面地点及住宿候选目录；不是实时票价、空房或已核验入口。", inputSchema={"type": "object", "properties": {}}),
+        Tool(name="plan_nanchong_itinerary", description="南充半日/一日/两日草案，含逐段免Key地图跳转、住宿候选、自填预算。先问出发地；交通时间与开放条件未知，不得宣称可行或已预订。", inputSchema=NanchongPlanRequest.model_json_schema()),
         Tool(name="get_travel_weather", description="免费查询南充、阆中、广元未来7天天气预报及当前空气质量模型估计。可指定YYYY-MM-DD日期；超出范围不替代。非商业Demo，无实测保证。",
              inputSchema={"type": "object", "properties": {"city": {"type": "string"}, "travel_date": {"type": "string", "description": "可选出行日期YYYY-MM-DD"}}, "required": ["city"]}),
         Tool(name="lookup_travel_city", description="查询南充、阆中、广元城市中心WGS84坐标。只用于城市定位/天气，不代表景点、酒店或入口，不能冒充精准POI。",
@@ -164,6 +168,10 @@ def as_text(data) -> list[TextContent]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
+    if name == "get_nanchong_travel_catalog":
+        return as_text(get_nanchong_travel_catalog())
+    if name == "plan_nanchong_itinerary":
+        return as_text(plan_nanchong_itinerary(NanchongPlanRequest.model_validate(arguments)))
     if name == "get_travel_weather":
         return as_text(await asyncio.to_thread(get_travel_weather, arguments.get("city", ""), arguments.get("travel_date")))
     if name == "lookup_travel_city":

@@ -15,6 +15,19 @@ from tools.travel_business_tools import list_scenic_spots, estimate_hotel_budget
 
 router = APIRouter(prefix="/api/travel")
 
+from san_guo_core.models import NanchongPlanRequest
+from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nanchong_itinerary
+
+
+@router.get("/nanchong/catalog")
+def nanchong_catalog():
+    return {"status": "ok", "data": get_nanchong_travel_catalog()}
+
+
+@router.post("/nanchong/plan")
+def nanchong_plan(request: NanchongPlanRequest):
+    return {"status": "ok", "data": plan_nanchong_itinerary(request)}
+
 
 class Preferences(BaseModel):
     city: str = Field(min_length=1, max_length=100)

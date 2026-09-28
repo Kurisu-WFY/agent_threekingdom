@@ -6,6 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=1">
+  <link rel="stylesheet" href="itinerary.css?v=2">
   <link rel="stylesheet" href="styles.css?v=nuwax-offset-4">
 </head>
 <body>
@@ -30,8 +31,31 @@
       </div>
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">出行助手</h1><p>天气有来源，路线有依据。查询无需女娲在线。</p></header>
+        <header><h1 id="outing-title" tabindex="-1">南充行程规划</h1><p>先安排行程，再确认交通、住宿与预算。无需地图 Key。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
+        <section id="nanchong-planner" class="itinerary" aria-label="南充行程规划器">
+          <form id="itinerary-form">
+            <div class="itinerary-fields">
+              <label>从哪里出发<input name="origin" required maxlength="120" placeholder="如：南充站（请填公共地点）"></label>
+              <label>出行日期<input name="travel_date" type="date"></label>
+              <label>游玩时间<select name="days"><option value="0.5">半日</option><option value="1" selected>一日</option><option value="2">两日</option></select></label>
+              <label>交通方式<select name="mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
+              <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
+            </div>
+            <fieldset><legend>想去的地方</legend><label><input type="checkbox" name="places" value="wanjuanlou" checked>万卷楼 · 文化主题</label><label><input type="checkbox" name="places" value="beihu" checked>北湖公园 · 休闲</label></fieldset>
+            <details><summary>预算与住宿设置（选填，不是实时报价）</summary><div class="itinerary-fields">
+              <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
+              <label>每间每晚额度（元）<input name="hotel_per_room" type="number" min="0" max="100000" step="0.01"></label>
+              <label>每人每日餐饮（元）<input name="meals_per_person_day" type="number" min="0" max="100000" step="0.01"></label>
+              <label>全程交通额度（元）<input name="transport_total" type="number" min="0" max="1000000" step="0.01"></label>
+              <label>全员总预算上限（元）<input name="budget_limit" type="number" min="0" max="1000000" step="0.01"></label>
+            </div></details>
+            <button type="submit" class="outing-primary">生成行程草案</button>
+          </form>
+          <p id="itinerary-status" role="status">南充市内试用：先填出发地。地点入口、开放时间和票价出行前需再确认。</p>
+          <div id="itinerary-result" class="itinerary-result" tabindex="-1" aria-label="行程草案结果"></div>
+        </section>
+        <details class="itinerary-utilities"><summary>天气、空气与已核验坐标道路查询</summary>
         <div class="outing-columns">
           <section aria-labelledby="outing-weather-title" class="outing-weather">
             <h2 id="outing-weather-title">天气查询</h2>
@@ -66,6 +90,7 @@
             <section class="outing-draft"><h3>行程草案</h3><p id="outing-draft-note">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id="outing-stops"></ol><details id="outing-original" hidden><summary>查看带入的回答原文</summary><pre id="outing-original-text"></pre></details></section>
           </section>
         </div>
+        </details>
       </section>
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
         <header class="journal-heading"><p class="welcome-kicker">山河有迹 · 我的文化旅行史</p><h1 tabindex="-1">我的三国探索志</h1><p id="journal-local-notice" role="status"></p><p>记录保存在此浏览器，换设备不会同步；不是账号档案，也不代表实际到访。</p></header>
@@ -396,6 +421,7 @@
   <script src="character-chat.js?v=story-prompt-1"></script>
   <script src="journal.js?v=fix20-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
-  <script src="outing.js?v=1"></script>
+  <script src="outing.js?v=2"></script>
+  <script src="itinerary.js?v=2"></script>
 </body>
 </html>

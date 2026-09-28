@@ -21,6 +21,7 @@ window.TravelApi = (() => {
   }
   return {
     config,
+    nanchongPlan: preferences => request('/nanchong/plan', preferences),
     listSpots: city => request('/spots?city=' + encodeURIComponent(city), null, 'GET'),
     createPlan: preferences => request('/plans/preview', preferences),
     estimateBudget: preferences => request('/budget/estimate', preferences),

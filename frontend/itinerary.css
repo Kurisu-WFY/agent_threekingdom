@@ -1,0 +1,14 @@
+.itinerary{font-family:"Microsoft YaHei",system-ui,sans-serif;margin:1.5rem 0;color:var(--ink,#263f38)}
+.itinerary form{padding:1.25rem;background:var(--surface-2,#faf6ee);border:1px solid var(--line,#ddd8ca);border-radius:12px}
+.itinerary-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1rem}
+.itinerary label{display:flex;flex-direction:column;gap:.4rem;font-size:.875rem}
+.itinerary input:not([type=checkbox]),.itinerary select{width:100%;box-sizing:border-box;min-height:44px;padding:.6rem;border:1px solid var(--line-strong,#8b8e7d);border-radius:6px;background:var(--surface,#fffdf9);color:inherit;font:inherit}
+.itinerary fieldset{display:flex;flex-wrap:wrap;gap:1rem;border:0;padding:0;margin:1rem 0}.itinerary fieldset label{flex-direction:row;align-items:center;min-height:44px}
+.outing .itinerary form{gap:.5rem}.itinerary form>.outing-primary{justify-self:start;padding:.65rem 1.5rem}.itinerary-result{scroll-margin-top:6rem}.itinerary-result:focus{outline:none}
+.itinerary summary,.itinerary-utilities>summary{cursor:pointer;padding:1rem 0;min-height:44px;box-sizing:border-box}
+.itinerary-result{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(230px,1fr);gap:1.5rem;align-items:start}
+.itinerary-day,.itinerary-side{background:var(--surface,#fffdf9);border:1px solid var(--line,#ddd8ca);border-radius:12px;padding:1.25rem;margin-bottom:1rem;overflow-wrap:anywhere}
+.itinerary-day h2,.itinerary-side h2{font-size:1.2rem;margin-top:0}.itinerary-stop{border-top:1px solid var(--line,#ddd8ca);padding:1rem 0}.itinerary-stop h3{font-size:1.1rem;margin:.25rem 0}.itinerary p{line-height:1.7}
+.itinerary-leg{padding:.75rem;background:var(--jade-soft,#e6ece2);border-radius:6px;font-size:.9rem;margin:.5rem 0}.itinerary a{color:var(--jade-deep,#284b3d);text-decoration:underline;display:inline-flex;align-items:center;min-height:44px}.itinerary dl{display:grid;grid-template-columns:1fr auto;gap:.8rem}.itinerary dd{margin:0}.itinerary small{line-height:1.7;display:block}.itinerary-result[data-stale=true]{opacity:.6}
+@container (max-width: 760px){.itinerary-result{grid-template-columns:1fr}}
+@media(max-width:600px){.itinerary-result{grid-template-columns:1fr}.itinerary-fields{grid-template-columns:1fr 1fr}.itinerary-fields label:first-child{grid-column:1/-1}}

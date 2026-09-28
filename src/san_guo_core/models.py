@@ -1,9 +1,25 @@
 from typing import Literal
+from datetime import date
 from pydantic import BaseModel, Field
 
 
 SourceLevel = Literal["A", "B", "C"]
 NarrativeStage = Literal["寻源", "读史", "探迹", "传承", "未分类"]
+
+
+class NanchongPlanRequest(BaseModel):
+    """Allowances are user inputs, never provider quotes."""
+    origin: str = Field(min_length=1, max_length=120, pattern=r"\S")
+    days: Literal[0.5, 1, 2] = 1
+    travel_date: date | None = None
+    mode: Literal["walking", "driving", "transit"] = "transit"
+    people: int = Field(default=1, ge=1, le=50)
+    rooms: int = Field(default=1, ge=1, le=50)
+    places: list[Literal["wanjuanlou", "beihu"]] = Field(default_factory=lambda: ["wanjuanlou", "beihu"], min_length=1, max_length=2)
+    hotel_per_room: float | None = Field(default=None, ge=0, le=100000, allow_inf_nan=False)
+    meals_per_person_day: float | None = Field(default=None, ge=0, le=100000, allow_inf_nan=False)
+    transport_total: float | None = Field(default=None, ge=0, le=1000000, allow_inf_nan=False)
+    budget_limit: float | None = Field(default=None, ge=0, le=1000000, allow_inf_nan=False)
 
 
 class KnowledgeChunk(BaseModel):
