@@ -1,8 +1,17 @@
 /* Small Markdown subset, built with DOM/textContent only: no model HTML executes. */
 (function(root) {
+  const labels={retrieve_culture_knowledge:'文化知识检索',answer_travel_question:'旅游问题解答',plan_cultural_route:'文化路线规划',list_scenic_spots:'景点查询',get_spot_ticket:'门票信息查询',estimate_hotel_budget:'住宿预算估算',search_hotel_poi_request:'住宿地点查询',plan_budget:'行程预算估算',get_travel_weather:'天气查询',lookup_travel_city:'城市位置查询',get_road_route:'道路路线查询',get_nanchong_travel_catalog:'南充出行资料查询',plan_nanchong_itinerary:'南充行程规划',WaitForMcpServers:'连接旅游工具'};
+  const names=new RegExp('(?<![\\w-])(?:[\\w-]+__)?('+Object.keys(labels).join('|')+')(?![\\w])','g');
+  const metric=/^(?:chunk(?:\s*(?:数|id))?|召回率|召回覆盖率?|命中数|候选数|重排分数|rerank(?:\s*最高分|_score)?|total_candidates|final_hits|coverage|passed|missing_entities)$/i;
+  function present(text){
+    return text.replace(/```(?:json)?\s*\n[\s\S]*?```/g,block=>/"recall_report"\s*:|"total_candidates"\s*:/.test(block)?'':block)
+      .split('\n').filter(line=>!/^\s*(?:#{1,6}\s*|[-*]\s*)?(?:召回率|召回覆盖率?|检索诊断|召回报告|检索统计|total_candidates|final_hits|coverage|rerank_score|chunk\s*(?:数|id))\s*[:：]/i.test(line.replace(/\*\*/g,'')))
+      .filter(line=>!/^\s*(?:[-*]\s*)?(?:本次|此次|共|已)?(?:检索)?(?:命中|召回)\s*\d+\s*(?:个|条)?\s*(?:chunks?|片段)/i.test(line)).join('\n')
+      .split(/(```[\s\S]*?```|https?:\/\/[^\s)<>]+)/g).map((part,i)=>i%2?part:part.replace(names,(_,key)=>labels[key])).join('');
+  }
   function clean(text) {
-    return String(text || '').replace(/<div>\s*<markdown-custom-process\b[^>]*>[\s\S]*?<\/markdown-custom-process>\s*<\/div>/gi,'')
-      .replace(/<markdown-custom-process\b[^>]*>[\s\S]*?<\/markdown-custom-process>/gi,'').trim();
+    return present(String(text || '').replace(/<div>\s*<markdown-custom-process\b[^>]*>[\s\S]*?<\/markdown-custom-process>\s*<\/div>/gi,'')
+      .replace(/<markdown-custom-process\b[^>]*>[\s\S]*?<\/markdown-custom-process>/gi,'')).trim();
   }
   function element(tag,text) {const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;}
   function inline(parent,text) {
@@ -29,9 +38,9 @@
       if(line.includes('|')&&i+1<lines.length&&cells(lines[i+1]).every(c=>/^:?-{3,}:?$/.test(c))) {
         const wrapper=element('div');wrapper.className='agent-table-scroll';wrapper.setAttribute('tabindex','0');wrapper.setAttribute('role','region');wrapper.setAttribute('aria-label','回答数据表，可横向滚动');
         const table=element('table'),head=element('thead'),row=element('tr'),body=element('tbody');
-        const headings=cells(line);headings.forEach(c=>{const th=element('th');th.setAttribute('scope','col');inline(th,c);row.append(th);});head.append(row);i+=2;
-        while(i<lines.length&&lines[i].includes('|')&&lines[i].trim()) {const tr=element('tr'),values=cells(lines[i++]);headings.forEach((_,n)=>{const td=element('td');inline(td,values[n]||'');tr.append(td);});body.append(tr);}
-        table.append(head,body);wrapper.append(table);box.append(wrapper);continue;
+        const headings=cells(line),visible=headings.map((c,n)=>metric.test(c.replace(/[*`]/g,'').trim())?-1:n).filter(n=>n>=0);visible.forEach(n=>{const th=element('th');th.setAttribute('scope','col');inline(th,headings[n]);row.append(th);});head.append(row);i+=2;
+        while(i<lines.length&&lines[i].includes('|')&&lines[i].trim()) {const tr=element('tr'),values=cells(lines[i++]);visible.forEach(n=>{const td=element('td');inline(td,values[n]||'');tr.append(td);});body.append(tr);}
+        if(visible.length){table.append(head,body);wrapper.append(table);box.append(wrapper);}continue;
       }
       const heading=/^#{1,6}\s+(.+)$/.exec(line);
       if(heading){const h=element('h4');inline(h,heading[1]);box.append(h);i++;continue;}

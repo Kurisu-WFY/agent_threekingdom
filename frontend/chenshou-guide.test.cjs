@@ -23,7 +23,7 @@ const guide=ctx.window.ChenshouGuide,progress=ctx.window.StoryProgress;
  current={story,chapter:story.chapters[1],place:places[1],index:1};guide.enter(current);assert.match(text(get('#guide-narration')),/上章“第1幕”之后/);assert.match(text(get('#guide-transition')),/第 2 幕/);
  const baseline=JSON.stringify(current);ctx.window.CharacterChat.selectPersona('诸葛亮');ctx.window.CharacterChat.setMode('学术探索版');assert.equal(JSON.stringify(current),baseline);assert.match(text(get('#guide-context')),/学术探索版/);
  progress.get(story).completed.add(0);progress.save(story);
- run("send('我只有半天')");assert.equal(requests.length,1);assert.equal(get('#chat-panel').dataset.guideState,'planning');assert.match(text(run('bubbleNode(chats[active].messages.at(-1))')),/正在连接智能体/);
+ run("send('我只有半天')");assert.equal(requests.length,1);assert.equal(get('#chat-panel').dataset.guideState,'planning');assert.match(text(run('bubbleNode(chats[active].messages.at(-1))')),/正在整理回答/);
  assert.match(requests[0].body.history.at(-1).content,/已寻迹节点.*昭化古城/);assert.match(requests[0].body.history.at(-1).content,/核心章节由游客选择/);assert.equal(requests[0].body.mode,'学术');
  const snapshot=JSON.stringify(requests[0].body);current={story,chapter:story.chapters[2],place:places[2],index:2};guide.enter(current);run("send('新的问题')");assert.equal(requests.length,1);assert.match(get('#message').value,/新的问题/);assert.equal(JSON.stringify(requests[0].body),snapshot);
  requests[0].reject(Object.assign(new Error('timeout'),{name:'TimeoutError'}));await flush();assert.match(run('chats[active].messages.at(-1).text'),/超时/);run('requestReply(chats[active],chats[active].messages.at(-1))');assert.equal(JSON.stringify(requests[1].body),snapshot);

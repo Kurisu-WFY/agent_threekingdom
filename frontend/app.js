@@ -119,24 +119,11 @@ function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
   const intent = data && data.intent && data.intent.intent;
-  if (intent) meta.append(tag('意图 · ' + (INTENT_LABELS[intent] || intent), 'shu'));
   if(data?.generation?.kind!=='nuwax')meta.append(trustNode(data));
-  if (data?.generation) meta.append(tag(({llm:'模型回答 · ', nuwax:'女娲智能体 · '}[data.generation.kind] || '检索兜底 · ') + data.generation.reason));
-  if (data?.connection_warning) meta.append(tag(data.connection_warning));
-  if (Array.isArray(data?.tool_calls)) (window.AgentAnswer?.latestCalls(data.tool_calls)||data.tool_calls).forEach(call => {
-    meta.append(tag('工具 · ' + call.name + ' · ' + ({EXECUTING:'执行中', FINISHED:'执行结束',FAILED:'执行失败'}[call.status] || call.status)));
-  });
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
     meta.append(routeCard(route, data.route.stops), trustNode(route, '路线'));
-  }
-  const retrieval = data && data.retrieval;
-  if (retrieval) {
-    meta.append(tag('召回覆盖 ' + Math.round((retrieval.coverage || 0) * 100) + '%'));
-    if (Array.isArray(retrieval.missing_entities) && retrieval.missing_entities.length) {
-      meta.append(tag('未覆盖：' + retrieval.missing_entities.join('、')));
-    }
   }
   return meta;
 }
@@ -146,11 +133,11 @@ function bubbleNode(message) {
   if (message.pending) {
     bubble.className = 'bubble typing';
     bubble.setAttribute('aria-label', '陈寿正在查阅史料，请稍候');
-    bubble.textContent = (window.AgentAnswer ? window.AgentAnswer.clean(message.streamText) : message.streamText) || message.progress || '正在连接智能体；本地模型首次加载可能较慢，请稍候…';
+    bubble.textContent = '正在整理回答，请稍候…';
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
-    else bubble.textContent = message.text;
+    else bubble.textContent = message.role==='assistant'&&window.AgentAnswer ? window.AgentAnswer.clean(message.text) : message.text;
   }
   return bubble;
 }
@@ -390,12 +377,12 @@ function requestReply(chat, reply) {
   ask(reply.question, reply.history, reply.mode, null, chat.sessionId, event => {
     if (event.type === 'session') chat.sessionId = event.session_id;
     if (event.type === 'delta') reply.streamText += event.text;
-    if (event.type === 'tool') reply.progress = '工具 ' + event.name + ' · ' + (event.status === 'FINISHED' ? '执行结束' : '执行中…');
+    if (event.type === 'tool') reply.progress = '正在整理回答，请稍候…';
     if (chats[active] === chat && ['session','delta','tool'].includes(event.type)) {
       // Update only the pending bubble, preserving composer focus and map state.
       const index = chat.messages.indexOf(reply);
       const bubble = messages.children[index]?.querySelector('.bubble');
-      if (bubble) bubble.textContent = (window.AgentAnswer ? window.AgentAnswer.clean(reply.streamText) : reply.streamText) || reply.progress || '女娲会话已连接，正在等待回答…';
+      if (bubble) bubble.textContent = '正在整理回答，请稍候…';
       messages.scrollTop = messages.scrollHeight;
     }
   }, reply.storyId)
