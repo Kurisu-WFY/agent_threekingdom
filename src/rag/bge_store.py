@@ -1,4 +1,3 @@
-"""Offline BGE store. Separate versioned index; never falls back to hash."""
 from __future__ import annotations
 
 import hashlib
