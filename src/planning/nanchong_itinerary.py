@@ -51,19 +51,27 @@ def plan_nanchong_itinerary(request: NanchongPlanRequest) -> dict:
                      "feasibility": "pending_transport_and_opening",
                      "note": "按主题顺序编排，未做最短路径优化；预留餐饮/休息，交通耗时与开放时间确认后才能判断可行。"})
     nights = 1 if request.days == 2 else 0
+    charged_days = 2 if request.days == 2 else 1
+    # Explicit demo reserves requested by the user; not researched market prices.
+    hotel_rate = request.hotel_per_room if request.hotel_per_room is not None else 200
+    meal_rate = request.meals_per_person_day if request.meals_per_person_day is not None else 60
     allowances = {
-        "住宿": round(request.hotel_per_room * request.rooms * nights, 2) if nights and request.hotel_per_room is not None else (0 if not nights else None),
-        "餐饮": round(request.meals_per_person_day * request.people * (2 if request.days == 2 else 1), 2) if request.meals_per_person_day is not None else None,
-        "交通": request.transport_total,
-        "门票": None,
+        "住宿": round(hotel_rate * request.rooms * nights, 2),
+        "餐饮": round(meal_rate * request.people * charged_days, 2),
+        "交通": request.transport_total if request.transport_total is not None else 30 * request.people * charged_days,
+        "门票": 30 * request.people * len(selected),
     }
+    item_status = {"住宿": ("not_needed" if not nights else "user_allowance" if request.hotel_per_room is not None else "demo_estimate"),
+                   "餐饮": "user_allowance" if request.meals_per_person_day is not None else "demo_estimate",
+                   "交通": "user_allowance" if request.transport_total is not None else "demo_estimate",
+                   "门票": "demo_estimate"}
     subtotal = round(sum(v for v in allowances.values() if v is not None), 2)
     return {"city": "南充", "request": request.model_dump(mode="json"), "days": days,
             "lodging": {"nights": nights, "candidate": HOTEL if nights else None,
                         "notice": "两日路线暂以北湖宾馆为候选落脚点，未预订；更换住宿后需在地图修改起终点。" if nights else "不安排过夜住宿。"},
-            "budget": {"data_status": "user_allowance_not_quote", "items": allowances, "subtotal": subtotal,
-                       "total": None, "over_limit": request.budget_limit is not None and subtotal > request.budget_limit,
-                       "notice": "仅合计已填预算额度，不是实际报价；门票及未填项未知，不能认定总预算足够。半日餐饮也按1个出行日额度计算。"},
+            "budget": {"data_status": "demo_estimate_with_user_allowances", "items": allowances, "item_status": item_status, "subtotal": subtotal,
+                       "estimated_total": subtotal, "total": None, "over_limit": request.budget_limit is not None and subtotal > request.budget_limit,
+                       "notice": "演示估算，非实际报价：未填住宿按200元/间夜、餐饮60元/人天、市内交通30元/人天；门票统一预留30元/人/地点（不代表地点收费）。半日按1个出行日额度计算。你填写的额度优先；不含城际往返、购物等费用，不保证实际够用。"},
             "catalog": get_nanchong_travel_catalog(), "frontend_path": "/?v=outing#outing",
             "warnings": ["点击地图才将起终点名称交给百度，请确认同名地点和景区入口；没有抓取返回路线或实时班次。",
                          "当前仅覆盖南充两个目的地；两日为宽松草案，不代表已补齐全城景点。"]}

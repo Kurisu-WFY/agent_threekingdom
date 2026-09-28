@@ -43,7 +43,7 @@
               <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
             </div>
             <fieldset><legend>想去的地方</legend><label><input type="checkbox" name="places" value="wanjuanlou" checked>万卷楼 · 文化主题</label><label><input type="checkbox" name="places" value="beihu" checked>北湖公园 · 休闲</label></fieldset>
-            <details><summary>预算与住宿设置（选填，不是实时报价）</summary><div class="itinerary-fields">
+            <details><summary>预算与住宿设置（选填，留空使用演示估算）</summary><p>演示默认：住宿200元/间夜、餐饮60元/人天、市内交通30元/人天、门票预留30元/人/地点。不是实际收费；你填写的额度优先。</p><div class="itinerary-fields">
               <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
               <label>每间每晚额度（元）<input name="hotel_per_room" type="number" min="0" max="100000" step="0.01"></label>
               <label>每人每日餐饮（元）<input name="meals_per_person_day" type="number" min="0" max="100000" step="0.01"></label>
@@ -422,6 +422,6 @@
   <script src="journal.js?v=fix20-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
   <script src="outing.js?v=2"></script>
-  <script src="itinerary.js?v=2"></script>
+  <script src="itinerary.js?v=3"></script>
 </body>
 </html>
