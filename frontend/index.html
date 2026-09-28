@@ -31,18 +31,20 @@
       </div>
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">南充行程规划</h1><p>先安排行程，再确认交通、住宿与预算。无需地图 Key。</p></header>
+        <header><h1 id="outing-title" tabindex="-1">三国文化行程规划</h1><p>填写条件，交给智能体规划。覆盖川东北及四川其他三国文化目的地，资料不足会说明。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
-        <section id="nanchong-planner" class="itinerary" aria-label="南充行程规划器">
+        <section id="nanchong-planner" class="itinerary" aria-label="智能体行程需求">
           <form id="itinerary-form">
             <div class="itinerary-fields">
               <label>从哪里出发<input name="origin" required maxlength="120" placeholder="如：南充站（请填公共地点）"></label>
+              <label>目的地（可多城市）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="如：成都，或南充、阆中"></label>
+              <datalist id="itinerary-cities"><option value="南充"><option value="阆中"><option value="广元"><option value="成都"><option value="绵阳"><option value="德阳"><option value="巴中"><option value="达州"></datalist>
               <label>出行日期<input name="travel_date" type="date"></label>
               <label>游玩时间<select name="days"><option value="0.5">半日</option><option value="1" selected>一日</option><option value="2">两日</option></select></label>
               <label>交通方式<select name="mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
               <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
             </div>
-            <fieldset><legend>想去的地方</legend><label><input type="checkbox" name="places" value="wanjuanlou" checked>万卷楼 · 文化主题</label><label><input type="checkbox" name="places" value="beihu" checked>北湖公园 · 休闲</label></fieldset>
+            <label>想去的景点（选填）<input name="place_names" maxlength="500" placeholder="填写景点名称；留空让智能体根据文化资料推荐"></label>
             <details><summary>预算与住宿设置（选填，留空使用演示估算）</summary><p>演示默认：住宿200元/间夜、餐饮60元/人天、市内交通30元/人天、门票预留30元/人/地点。不是实际收费；你填写的额度优先。</p><div class="itinerary-fields">
               <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
               <label>每间每晚额度（元）<input name="hotel_per_room" type="number" min="0" max="100000" step="0.01"></label>
@@ -50,9 +52,9 @@
               <label>全程交通额度（元）<input name="transport_total" type="number" min="0" max="1000000" step="0.01"></label>
               <label>全员总预算上限（元）<input name="budget_limit" type="number" min="0" max="1000000" step="0.01"></label>
             </div></details>
-            <button type="submit" class="outing-primary">生成行程草案</button>
+            <button type="submit" class="outing-primary">交给智能体规划路线</button>
           </form>
-          <p id="itinerary-status" role="status">南充市内试用：先填出发地。地点入口、开放时间和票价出行前需再确认。</p>
+          <p id="itinerary-status" role="status">点击后打开智能体对话，并带入这些条件。不限南充；资料和工具覆盖范围不等于目的地输入范围。</p>
           <div id="itinerary-result" class="itinerary-result" tabindex="-1" aria-label="行程草案结果"></div>
         </section>
         <details class="itinerary-utilities"><summary>天气、空气与已核验坐标道路查询</summary>
@@ -289,9 +291,11 @@
         <p class="map-note">景区入口、道路导航与实时旅游工具待接入。</p><p id="node-feedback" role="status"></p>
       </section>
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
-        <p class="welcome-kicker">从目的地开始</p><h2>探索川东北</h2>
+        <p class="welcome-kicker">从目的地开始</p><h2>探索四川三国文化目的地</h2>
         <p>选择目的地，查看景区资料或带入行程规划。</p>
         <div class="module-actions"><button class="module-button" data-city="南充" aria-pressed="true">南充</button><button class="module-button" data-city="阆中" aria-pressed="false">阆中</button><button class="module-button" data-city="广元" aria-pressed="false">广元</button></div>
+        <div class="module-actions"><button class="module-button" data-city="成都" aria-pressed="false">成都</button><button class="module-button" data-city="绵阳" aria-pressed="false">绵阳</button><button class="module-button" data-city="德阳" aria-pressed="false">德阳</button><button class="module-button" data-city="巴中" aria-pressed="false">巴中</button><button class="module-button" data-city="达州" aria-pressed="false">达州</button></div>
+        <p class="map-note">范围：川东北及四川其他三国文化目的地。景点库未覆盖的城市仍可交给智能体检索规划，不代表当地没有相关景点。</p>
         <div id="destination-results" aria-live="polite" class="module-results"></div>
         <button class="module-button" id="plan-destination">规划南充行程</button>
       </section>
@@ -302,7 +306,7 @@
         <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
         <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
         <form id="trip-form" class="module-form">
-          <label>目的地<select name="city"><option>南充</option><option>阆中</option><option>广元</option></select></label>
+          <label>目的地<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
           <label>出发地<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
           <label>出发日期<input name="date" type="date"></label>
           <label>可用时间<select name="days"><option value="0.5">半天</option><option value="1" selected>一天</option><option value="2">两天</option></select></label>
@@ -407,21 +411,22 @@
 
   <script src="chat-transport.js?v=nuwax-1"></script>
   <script src="answer-format.js?v=nuwax-2"></script>
-  <script src="outing-core.js?v=1"></script>
-  <script src="app.js?v=story-prompt-1"></script>
-  <script src="landing.js?v=story-discovery-1"></script>
+  <script src="outing-core.js?v=2"></script>
+  <script src="app.js?v=agent-planning-2"></script>
+  <script src="landing.js?v=agent-planning-2"></script>
   <script src="travel-api.js?v=agent-home-1"></script>
-  <script src="travel-modules.js?v=story-route-1"></script>
+  <script src="travel-modules.js?v=agent-planning-2"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
   <script src="travel-map.js?v=historian-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
   <script src="stories.js?v=story-prompt-2"></script>
   <script src="story-map.js?v=historian-1"></script>
   <script src="cultural-node.js?v=visual-system-1"></script>
-  <script src="character-chat.js?v=story-prompt-1"></script>
+  <script src="character-chat.js?v=agent-planning-2"></script>
   <script src="journal.js?v=fix20-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
   <script src="outing.js?v=2"></script>
-  <script src="itinerary.js?v=3"></script>
+  <script src="itinerary-agent-core.js?v=1"></script>
+  <script src="itinerary.js?v=5"></script>
 </body>
 </html>

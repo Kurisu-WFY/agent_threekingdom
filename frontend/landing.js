@@ -23,7 +23,7 @@
     $('#journey-feedback').textContent = field.value ? '已恢复这个主题的草稿。' : '已切换主题，其他主题的草稿仍在本页保留。';
     update();
   }
-  function ask(question) {
+  function ask(question, options = {}) {
     if (!question.trim()) return;
     toggleChat(true);
     if (chats[active].pending) {
@@ -31,7 +31,7 @@
       input.value = input.value.trim() ? input.value + '\n\n' + question : question;
       saveDraft(); updateComposer();
       $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';
-    } else { send(question); $('#journey-feedback').textContent = '已交给向导，可以在对话中继续追问。'; }
+    } else { send(question, options); $('#journey-feedback').textContent = '已交给向导，可以在对话中继续追问。'; }
   }
   window.SGTJourney = { ask };
   field.addEventListener('input', update);

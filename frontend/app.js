@@ -352,7 +352,7 @@ window.SGTChat = { async request(text, routePreferences) {
   return data;
 } };
 
-function send(text) {
+function send(text, options = {}) {
   const trimmed = (text || '').trim();
   if (!trimmed) return;
   if (chats[active].pending) {
@@ -370,7 +370,8 @@ function send(text) {
   chat.messages.push({ role: 'user', text: trimmed, persona: prepared?.persona });
   const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
   chat.messages.push(reply);
-  if (!prepared?.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
+  if (options.preserveMap) reply.preserveMap = true;
+  if (!reply.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
   input.value = '';
   chat.draft = '';

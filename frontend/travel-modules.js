@@ -67,13 +67,14 @@
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));
         if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));
         card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));
-        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('规划这座城市', () => chooseCity(spot.city || city)));
+        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('让智能体规划路线', () => chooseCity(spot.city || city, spot.name)));
         sources(card, spot.sources);
         target.append(card);
       });
     } catch (error) { if (version === cityRequest) empty(target, error.message); }
   }
-  function chooseCity(nextCity) {
+  function chooseCity(nextCity, spot = '') {
+    if(window.SGTJourney?.ask){window.SGTJourney.ask('请规划'+nextCity+'三国文化旅游路线。'+(spot?'希望包含：'+spot+'。':'')+'先确认出发地、时间、交通方式与人数，再检索文化资料并安排交通、游览、住宿和预算。缺少本地模板不代表该城市没有文化景点；资料不足请说明。',{preserveMap:true});return;}
     ++planRequest; planningStory=null; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false; storyLabel();
     $('#trip-form').elements.city.value = nextCity;
     showContentView('planner');
@@ -174,6 +175,7 @@
     sources(target,route.sources); $('#save-plan').disabled=$('#copy-plan').disabled=false; $('#plan-map').disabled=false;
   }
   async function requestPlan(attempt) {
+    if(window.SGTJourney?.ask){++planRequest;lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开智能体；若正在回答，本次需求保留在对话草稿中。';window.SGTJourney.ask(attempt.question,{preserveMap:true});return;}
     const version=++planRequest, button=$('#trip-form').querySelector('[type="submit"]');
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
     $('#planner-status').textContent='正在按故事章节与现实约束规划；上一份方案保留。';
