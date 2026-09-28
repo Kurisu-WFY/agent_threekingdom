@@ -57,7 +57,7 @@
     const notice = $('.story-map-memory'); if(notice && window.StoryProgress)notice.textContent=window.StoryProgress.notice();
     $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';
     $('#story-map-badge').textContent = $('#story-map-progress').textContent;
-    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '前端章节模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。道路导航待接入。' : '这条故事线尚无章节数据，等待后端接入。可以退出故事模式继续浏览地图。';
+    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '前端章节模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。到达路线请交给智能体规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
     resolved.forEach((item, index) => {
       const status = currentStatus(index);
       const li = node('li', 'chapter-list-item');
@@ -193,9 +193,9 @@
       const id=nonempty(story?.id)?story.id:active?.id;
       if(window.SGT_STORIES.some(s=>s.id===id)) {
         overrides.delete(id);
-        if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；资料待接入。';return false; });
+        if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；可向陈寿继续了解。';return false; });
       }
-      $('#map-route-status').textContent='故事资料不完整，保留当前内容；资料待接入。';
+      $('#map-route-status').textContent='故事资料不完整，保留当前内容；可向陈寿继续了解。';
       return Promise.resolve(false);
     };
     if(!story||!nonempty(story.id)||!nonempty(story.title)||!Array.isArray(story.chapters)||!story.chapters.length||!Array.isArray(places))return fallback();

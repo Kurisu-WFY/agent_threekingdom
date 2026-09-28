@@ -88,7 +88,7 @@ function routeCard(route, stops) {
 function trustNode(record, label = '回答') {
   const box = document.createElement('div');
   box.className = 'trust-info';
-  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'待接入', stale:'已过期'};
+  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'请以官方公告确认', stale:'请确认最新公告'};
   const status = record && Object.hasOwn(statuses, record.data_status) ? statuses[record.data_status] : null;
   box.append(tag(label + ' · ' + (status || '待核验')));
   const date = record && record.updated_at;

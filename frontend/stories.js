@@ -47,7 +47,7 @@
     $('#story-title').textContent = text(story.title);
     $('#preview-selection').textContent = text(story.title) + (story.chapters.length ? ' · 章节顺序已设定，位置待核验' : ' · 空间走向待补充');
     const detail = $('#story-detail-content');
-    detail.replaceChildren(node('p', 'story-disclosure', '主题模板 · 内容待接入，史料待核验'), facts(story));
+    detail.replaceChildren(node('p', 'story-disclosure', '文化探索主题 · 向陈寿了解故事与出处'), facts(story));
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
       if (value) detail.append(node('h3', '', heading), node('p', '', text(value)));
     }
@@ -75,7 +75,7 @@
   function renderSystem(story, detail) {
     const s=progress.get(story), chapters=story.chapters || [];
     const places=window.StoryMap?.getPlaces ? window.StoryMap.getPlaces(story.id) : window.SGT_PLACES;
-    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',chapters.length?progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length:'尚未开始 · 章节待接入'));
+    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',chapters.length?progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length:'尚未开始 · 可先向陈寿了解主题'));
     detail.append(node('h3','','讲解模式'));
     const modes=node('div','story-controls');
     ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
@@ -91,7 +91,7 @@
       const place=places.find(p=>p.id===c.placeId), li=node('li','');
       const status=s.skipped.has(i)?'本次跳过':s.completed.has(i)?'已完成 · 已寻迹':s.started&&s.current===i?'当前':'待探索';
       li.dataset.state=status; li.append(node('h4','',c.name+' · '+status),node('p','','地点 / 建筑：'+(place?place.name+' / '+({wall:'城楼',pass:'关楼',road:'古道',tower:'楼阁',shrine:'祠庙'}[place.building]||'形制待补充'):'待补充')),
-        node('p','story-disclosure','章节内容待接入 · 史料待核验'));
+        node('p','story-disclosure','向陈寿了解本章故事与出处'));
       [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));
       if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
       if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
@@ -114,7 +114,7 @@
   }
   const filters=$('#story-phase-filters');
   ['全部','寻源','读史','探秘','传承'].forEach(phase=>{
-    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{const story=window.SGT_STORIES.find(item=>item.id===shell.dataset.storyId);shell.hidden=!story||!matchesPhase(story,phase);});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));$('#story-filter-status').textContent=Array.from($('#story-cards').children).some(shell=>!shell.hidden)?'':'这个阶段的主题待接入，可先查看其他阶段。';});
+    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{const story=window.SGT_STORIES.find(item=>item.id===shell.dataset.storyId);shell.hidden=!story||!matchesPhase(story,phase);});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));$('#story-filter-status').textContent=Array.from($('#story-cards').children).some(shell=>!shell.hidden)?'':'可先浏览其他阶段，或向陈寿询问这个主题。';});
     b.setAttribute('aria-pressed',String(phase==='全部'));filters.append(b);
   });
   progress.subscribe(()=>{if(selected)select(selected,false);});
@@ -124,7 +124,7 @@
     card.dataset.contentView = 'story'; card.setAttribute('aria-controls', 'story-view'); card.setAttribute('aria-pressed', 'false');
     card.setAttribute('aria-label', '查看故事线：' + story.title);
     if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));
-    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '主题模板 · 内容待接入 / 史料待核验　↗'));
+    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '查看文化主题与故事线　↗'));
     if(story.summary)card.append(node('span','story-summary',story.summary));
     card.addEventListener('click', () => select(story, true));
     const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id; shell.dataset.phase = story.phase || "";

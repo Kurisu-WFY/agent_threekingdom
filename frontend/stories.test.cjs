@@ -23,7 +23,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   assert.equal(test.window.SGT_STORIES.find(s=>s.id==='history-to-place').phase,'探秘');
   assert.ok(!contents(cards[0]).includes('待补充'));assert.ok(contents(cards[2]).includes('3 章'));
   for(const place of test.window.SGT_PLACES)assert.equal(place.coordinates,null);
-  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');for(const key of ['主题模板','内容待接入','待核验'])assert.ok(contents(card).includes(key));}
+  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('文化主题与故事线'));}
   test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
@@ -43,7 +43,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   assert.equal(reordered.get('#story-cards').children.find(n=>n.dataset.storyId==='new').hidden,true);
   reordered.get('#story-phase-filters').children[0].handlers.click();assert.equal(reordered.get('#story-cards').children.find(n=>n.dataset.storyId==='new').hidden,false);
   assert.equal(test.window.SGTStoryUI.matchesPhase({},'探秘'),false);assert.equal(test.window.SGTStoryUI.matchesPhase({},'全部'),true);
-  test.get('#story-phase-filters').children[4].handlers.click();assert.ok(test.get('#story-filter-status').textContent.includes('待接入'));cards[0].handlers.click();assert.ok(!contents(test.get('#story-detail-content')).includes('0 / 0'));
+  test.get('#story-phase-filters').children[4].handlers.click();assert.ok(test.get('#story-filter-status').textContent.includes('向陈寿询问'));cards[0].handlers.click();assert.ok(!contents(test.get('#story-detail-content')).includes('0 / 0'));
   const kinds=['tower','shrine','pass','wall','road'];
   const shapes=kinds.map(kind=>test.window.SGTStoryUI.icon(kind));
   assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);

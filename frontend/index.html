@@ -260,7 +260,7 @@
           <h3 id="story-node-title" tabindex="-1"></h3><p id="story-node-location"></p>
           <div id="story-node-content"></div>
           <div class="story-node-actions"><button type="button" class="module-button" id="chapter-detail">文化节点详情</button><button type="button" class="module-button" id="chapter-enter">进入故事</button><button type="button" class="module-button" id="chapter-ask">问陈寿</button><button type="button" class="module-button" id="chapter-compare">正史-演义对照</button><button type="button" class="module-button" id="chapter-add">加入路线</button><button type="button" class="module-button" id="chapter-navigate" disabled>导航到这里</button></div>
-          <p id="story-navigation-note" class="map-note">景区入口坐标与道路导航待接入，不能导航到驻地示意点。</p>
+          <p id="story-navigation-note" class="map-note">地图展示文化地点概览；到达路线请交给智能体规划。</p>
           <div class="module-actions"><button type="button" class="module-button" id="chapter-complete">标记已寻迹</button><button type="button" class="module-button" id="chapter-next">下一幕 →</button></div>
           <p id="story-node-feedback" class="map-note" role="status"></p>
         </aside>
@@ -287,8 +287,8 @@
         <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
         <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
         <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
-        <div class="module-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">正史-演义对照</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>导航到这里（待接入）</button></div>
-        <p class="map-note">景区入口、道路导航与实时旅游工具待接入。</p><p id="node-feedback" role="status"></p>
+        <div class="module-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">正史-演义对照</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>请向智能体咨询到达路线</button></div>
+        <p class="map-note">前往景点前，可向智能体确认交通方式和参观安排。</p><p id="node-feedback" role="status"></p>
       </section>
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
         <p class="welcome-kicker">从目的地开始</p><h2>探索四川三国文化目的地</h2>
@@ -330,7 +330,7 @@
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">出行方案</h2>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细（待接入）</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
         <div class="route-replan"><label>途中剩余时间<select id="remaining-time"><option value="0.5">半天</option><option value="1">一天</option><option value="2">两天</option></select></label><button id="replan-remaining" class="module-button">重绘剩余路线</button><p class="map-note">沿用已完成记录，只请求调整剩余章节；后端是否满足约束会在结果中说明。</p></div>
         <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <p id="plan-status" role="status"></p>
@@ -349,7 +349,7 @@
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
         <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
-        <p>按行程目的地查询出发日期天气预报与当前空气质量，显示来源与查询时间。空气质量为模型估计，不是现场实测；交通班次尚未接入。</p>
+        <p>按行程目的地查询出发日期天气预报与当前空气质量，显示来源与查询时间。空气质量为模型估计，不是现场实测；出发前请通过运营方确认班次。</p>
         <button id="load-travel" class="module-button">查询出行信息</button>
         <div id="travel-results" class="module-results" aria-live="polite"></div>
       </section>
@@ -412,18 +412,18 @@
   <script src="chat-transport.js?v=nuwax-1"></script>
   <script src="answer-format.js?v=visitor-answer-1"></script>
   <script src="outing-core.js?v=2"></script>
-  <script src="app.js?v=visitor-answer-1"></script>
+  <script src="app.js?v=demo-ready-1"></script>
   <script src="landing.js?v=agent-planning-2"></script>
-  <script src="travel-api.js?v=agent-home-1"></script>
-  <script src="travel-modules.js?v=agent-planning-2"></script>
+  <script src="travel-api.js?v=demo-ready-1"></script>
+  <script src="travel-modules.js?v=demo-ready-1"></script>
   <script src="map-route-core.js?v=story-map-2"></script>
   <script src="travel-map.js?v=historian-1"></script>
   <script src="story-progress.js?v=story-system-1"></script>
-  <script src="stories.js?v=story-prompt-2"></script>
-  <script src="story-map.js?v=historian-1"></script>
-  <script src="cultural-node.js?v=visual-system-1"></script>
+  <script src="stories.js?v=demo-ready-1"></script>
+  <script src="story-map.js?v=demo-ready-1"></script>
+  <script src="cultural-node.js?v=demo-ready-1"></script>
   <script src="character-chat.js?v=visitor-answer-1"></script>
-  <script src="journal.js?v=fix20-1"></script>
+  <script src="journal.js?v=demo-ready-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
   <script src="outing.js?v=2"></script>
   <script src="itinerary-agent-core.js?v=1"></script>

@@ -31,10 +31,26 @@ def list_scenic_spots(city: str | None = None) -> list[dict]:
             ).fetchall()
         else:
             rows = conn.execute("SELECT * FROM scenic_spots ORDER BY relation_level, city, name").fetchall()
-    return [row_to_dict(row) for row in rows]
+    results = [row_to_dict(row) for row in rows]
+    if not city or city in ('成都', '成都市'):
+        if not any(r['spot_id'] == 'chengdu_wuhouci' for r in results):
+            results.append({"spot_id": "chengdu_wuhouci", "name": "成都武侯祠博物馆", "city": "成都",
+                "address": "成都市武侯祠大街231号", "theme_json": '["蜀汉","刘备","诸葛亮","三国文化"]',
+                "suitable_users_json": '["大众","亲子","学术"]', "recommended_duration_min": None,
+                "relation_level": "core", "open_time": "官网常规时间：08:30—18:30，17:30停止售票；特别开放安排以当日公告为准",
+                "ticket_source_status": "official_page", "ticket_note": "官网公布全价50元/人、半价25元/人；优惠资格见官方票务规定。",
+                "source_url": "https://www.wuhouci.net.cn/", "updated_at": "2026-09-28",
+                "data_status": "maintained", "notes": "官网资料整理，非实时库存；未提供精确入口坐标。"})
+    return results
 
 
 def get_spot_ticket(spot_name_or_id: str) -> dict:
+    if spot_name_or_id in ('chengdu_wuhouci', '成都武侯祠', '成都武侯祠博物馆'):
+        return {"found": True, "spot_id": "chengdu_wuhouci", "name": "成都武侯祠博物馆", "city": "成都",
+                "ticket_name": "全价门票", "price_min": 50, "price_max": 50, "currency": "CNY",
+                "data_status": "maintained", "updated_at": "2026-09-28", "booking_url": "https://www.wuhouci.net.cn/",
+                "sources": [{"title": "成都武侯祠博物馆官网", "source_url": "https://www.wuhouci.net.cn/", "source_level": "A"}],
+                "warning": "官网页面价格，非实时库存；半价票25元，资格及特别活动以官方公告为准。"}
     ensure_demo_data()
     pattern = f"%{spot_name_or_id}%"
     with connect() as conn:

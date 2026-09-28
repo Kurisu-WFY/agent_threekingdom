@@ -91,7 +91,7 @@
     $('#plan-map').disabled = true;
     const { preferences: p, plan } = current;
     target.replaceChildren(node('h3', plan.title || `${p.city} ${p.days}天行程`), node('p', `${p.date}出发 · ${p.people}人 · ${p.group} · ${p.transport}`), node('p', `${p.hotel_tier} · ${p.rooms}间房 · ${Math.max(0, p.days - 1)}晚`));
-    target.append(node('p', current.draft ? '出行草稿 · 景区与路线待接入，不构成实际游览建议' : dataStatus(plan), 'data-banner'));
+    target.append(node('p', current.draft ? '出行草稿 · 可交给智能体进一步安排景点与交通' : dataStatus(plan), 'data-banner'));
     if (p.notes) target.append(node('p', '补充需求：' + p.notes));
     plan.days.forEach(day => {
       const card = node('article', null, 'result-card');
@@ -194,7 +194,7 @@
       if(result?.found!==true || !result.route || typeof result.route!=='object' || Array.isArray(result.route) || !Array.isArray(result.stops) || !result.stops.length || result.stops.some(s=>!s||typeof s.name!=='string'||!s.name.trim()))throw new Error('路线数据不完整，请重试或调整条件。');
       current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
         chatRoute:result,plan:{title:result.route.name,days:[]},draft:false};
-        renderPlan();empty($('#budget-results'),'可查询住宿演示预算；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'可查询出发日期的天气预报和当前空气质量；交通班次尚未接入。');
+        renderPlan();empty($('#budget-results'),'可查询住宿演示预算；费用待核验，未知金额不表示免费。');empty($('#travel-results'),'可查询出发日期的天气预报和当前空气质量；出发前请通过运营方确认班次。');
       $('#planner-status').textContent='已收到后端路线，约束与来源仍需核验。';$('#plan-status').textContent='已更新路线，已寻迹章节记录保持。';showContentView('plan');
     } catch(error) {if(version===planRequest){$('#planner-status').textContent=error.name==='TimeoutError'?'等待路线超时，可重试；上一份方案保留。':'请求失败：'+error.message+' 可重试；上一份方案保留。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
@@ -291,6 +291,6 @@
     });
   });
   renderPlan(); renderSaved(); loadCity(city);
-  empty($('#budget-results'), '费用资料待接入。可先生成行程草稿。');
-    empty($('#travel-results'), '生成行程后可查询天气预报与当前空气质量。免费公共服务可能暂时不可用；交通班次尚未接入。');
+  empty($('#budget-results'), '费用可向陈寿继续了解。可先生成行程草稿。');
+    empty($('#travel-results'), '生成行程后可查询天气预报与当前空气质量。免费公共服务可能暂时不可用；出发前请通过运营方确认班次。');
 })();

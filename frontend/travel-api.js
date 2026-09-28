@@ -6,7 +6,7 @@ window.TravelApi = (() => {
     timeoutMs: 15000
   };
   async function request(path, payload, method = 'POST') {
-    if (!config.enabled) return { status: 'unavailable', message: '资料服务待接入，目前没有可查询的数据。', data: null };
+    if (!config.enabled) return { status: 'unavailable', message: '资料查询当前已关闭，可向智能体咨询。', data: null };
     const response = await fetch(config.baseUrl + path, {
       method,
       headers: { 'Content-Type': 'application/json' },
