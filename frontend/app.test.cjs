@@ -125,6 +125,8 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 
 function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
 assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /待核验/);
+assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"},retrieval:{coverage:0.55,passed:true}})')), /意图 · 文化问答.*召回覆盖 · 55%（仅表示检索匹配）/);
+assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"unknown"},retrieval:{coverage:2}})')), /意图 ·|召回覆盖/);
 assert.match(textTree(run('metaNode({intent:{intent:"budget_ticket"},route:null})')), /不能认定为免费/);
 assert.match(textTree(run('trustNode({data_status:"live",updated_at:"2026-09-12T10:00:00+08:00",sources:[{title:"来源",source_url:"https://example.com",source_level:"C"}]})')), /不能支撑史实结论/);
 assert.match(textTree(run('trustNode({updated_at:"2026-09-12",sources:[{title:"不安全",source_url:"javascript:alert(1)",source_level:"A"}]})')), /来源链接待核验/);

@@ -119,6 +119,11 @@ function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
   const intent = data && data.intent && data.intent.intent;
+  if (typeof intent === 'string' && Object.hasOwn(INTENT_LABELS, intent)) meta.append(tag('意图 · ' + INTENT_LABELS[intent]));
+  const coverage = data?.retrieval?.coverage;
+  if (typeof coverage === 'number' && Number.isFinite(coverage) && coverage >= 0 && coverage <= 1) {
+    meta.append(tag('召回覆盖 · ' + Math.round(coverage * 100) + '%（仅表示检索匹配）'));
+  }
   if(data?.generation?.kind!=='nuwax')meta.append(trustNode(data));
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
