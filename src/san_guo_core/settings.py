@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=PROJECT_ROOT / ".env", env_file_encoding="utf-8", extra="ignore")
 
     app_env: str = "dev"
+    amap_web_service_key: str | None = None
     data_dir: Path = Path("data")
     raw_dir: Path = Path("data/raw")
     processed_dir: Path = Path("data/processed")

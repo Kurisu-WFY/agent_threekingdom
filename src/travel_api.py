@@ -15,6 +15,18 @@ from tools.travel_business_tools import list_scenic_spots, estimate_hotel_budget
 
 router = APIRouter(prefix="/api/travel")
 
+from tools.amap_tools import AmapSearch, AmapRoute, search_amap_places, get_amap_route
+
+
+@router.post('/amap/places')
+def amap_places(p: AmapSearch):
+    return search_amap_places(**p.model_dump())
+
+
+@router.post('/amap/route')
+def amap_route(p: AmapRoute):
+    return get_amap_route(**p.model_dump())
+
 from san_guo_core.models import NanchongPlanRequest
 from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nanchong_itinerary
 

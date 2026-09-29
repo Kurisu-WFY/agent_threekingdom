@@ -29,6 +29,7 @@ from tools.travel_business_tools import (
 
 
 server = Server("san-guo-travel-agent")
+from tools.amap_tools import AmapSearch, AmapRoute, search_amap_places, get_amap_route
 from san_guo_core.models import NanchongPlanRequest
 from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nanchong_itinerary
 
@@ -36,6 +37,8 @@ from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nancho
 @server.list_tools()
 async def list_tools():
     return [
+        Tool(name='search_amap_places', description='高德地点搜索：必须提供城市和地点名，返回候选地点ID及地址。同名、校区或入口有歧义时先让用户确认；不要编造坐标。', inputSchema=AmapSearch.model_json_schema()),
+        Tool(name='get_amap_route', description='高德公交、驾车或步行路线。先调用search_amap_places取得并确认起终点ID，再查询；不可编造ID。结果含距离、预计时间和步骤，不代表实时到站或购票成功。', inputSchema=AmapRoute.model_json_schema()),
         Tool(name="get_nanchong_travel_catalog", description="南充公开页面地点及住宿候选目录；不是实时票价、空房或已核验入口。", inputSchema={"type": "object", "properties": {}}),
         Tool(name="plan_nanchong_itinerary", description="南充半日/一日/两日草案，含逐段免Key地图跳转、住宿候选、自填预算。先问出发地；交通时间与开放条件未知，不得宣称可行或已预订。", inputSchema=NanchongPlanRequest.model_json_schema()),
         Tool(name="get_travel_weather", description="免费查询南充、阆中、广元未来7天天气预报及当前空气质量模型估计。可指定YYYY-MM-DD日期；超出范围不替代。非商业Demo，无实测保证。",
@@ -168,6 +171,12 @@ def as_text(data) -> list[TextContent]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
+    if name == 'search_amap_places':
+        p = AmapSearch(**arguments)
+        return as_text(await asyncio.to_thread(search_amap_places, **p.model_dump()))
+    if name == 'get_amap_route':
+        p = AmapRoute(**arguments)
+        return as_text(await asyncio.to_thread(get_amap_route, **p.model_dump()))
     if name == "get_nanchong_travel_catalog":
         return as_text(get_nanchong_travel_catalog())
     if name == "plan_nanchong_itinerary":

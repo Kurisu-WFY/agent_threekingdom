@@ -57,7 +57,7 @@
           <p id="itinerary-status" role="status">点击后打开智能体对话，并带入这些条件。不限南充；资料和工具覆盖范围不等于目的地输入范围。</p>
           <div id="itinerary-result" class="itinerary-result" tabindex="-1" aria-label="行程草案结果"></div>
         </section>
-        <details class="itinerary-utilities"><summary>天气、空气与已核验坐标道路查询</summary>
+        <details class="itinerary-utilities" open><summary>高德路线规划、天气与空气查询</summary>
         <div class="outing-columns">
           <section aria-labelledby="outing-weather-title" class="outing-weather">
             <h2 id="outing-weather-title">天气查询</h2>
@@ -74,6 +74,26 @@
           </section>
           <section aria-labelledby="outing-route-title" class="outing-route">
             <h2 id="outing-route-title">路线规划</h2>
+            <div id="amap-planner">
+              <p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p>
+              <form id="amap-search-form">
+                <label>搜索城市<input id="amap-city" value="南充" required maxlength="60"></label>
+                <div class="outing-endpoints">
+                  <label>出发地点<input id="amap-origin-query" placeholder="例如：西华师范大学北湖校区" required maxlength="100"></label>
+                  <label>目的地点<input id="amap-destination-query" placeholder="例如：万卷楼" required maxlength="100"></label>
+                </div>
+                <button type="submit">搜索起终点</button>
+              </form>
+              <form id="amap-route-form" hidden>
+                <label>确认出发地点<select id="amap-origin-id" required></select></label>
+                <label>确认目的地点<select id="amap-destination-id" required></select></label>
+                <label>出行方式<select id="amap-mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
+                <button type="submit" class="outing-primary">查询高德路线</button>
+              </form>
+              <p id="amap-status" role="status" aria-live="polite">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>
+              <div id="amap-results"></div>
+            </div>
+            <details><summary>其他道路参考：城市中心或手动坐标</summary>
             <form id="outing-route-form">
               <fieldset class="outing-modes"><legend>出行方式</legend><label><input type="radio" name="outing-mode" value="walking" checked>步行</label><label><input type="radio" name="outing-mode" value="driving">驾车</label></fieldset>
               <div class="outing-endpoints">
@@ -89,6 +109,7 @@
             <p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
             <div id="outing-route-preview" class="outing-route-preview"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>
             <div id="outing-route-metrics" class="outing-metrics"></div><div id="outing-route-source" class="outing-source"></div>
+            </details>
             <section class="outing-draft"><h3>行程草案</h3><p id="outing-draft-note">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id="outing-stops"></ol><details id="outing-original" hidden><summary>查看带入的回答原文</summary><pre id="outing-original-text"></pre></details></section>
           </section>
         </div>
@@ -426,6 +447,7 @@
   <script src="journal.js?v=demo-ready-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
   <script src="outing.js?v=2"></script>
+  <script src="amap-planner.js?v=1"></script>
   <script src="itinerary-agent-core.js?v=1"></script>
   <script src="itinerary.js?v=5"></script>
 </body>

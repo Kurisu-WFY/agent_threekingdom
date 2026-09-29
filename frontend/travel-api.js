@@ -11,7 +11,7 @@ window.TravelApi = (() => {
       method,
       headers: { 'Content-Type': 'application/json' },
       ...(method === 'POST' ? { body: JSON.stringify(payload) } : {}),
-      signal: AbortSignal.timeout(config.timeoutMs)
+      signal: AbortSignal.timeout(path.startsWith('/amap/') ? 45000 : config.timeoutMs)
     });
     if (!response.ok) throw new Error('服务暂时不可用，请稍后重试。');
     const result = await response.json();
@@ -21,6 +21,8 @@ window.TravelApi = (() => {
   }
   return {
     config,
+    amapPlaces: query => request('/amap/places', query),
+    amapRoute: query => request('/amap/route', query),
     nanchongPlan: preferences => request('/nanchong/plan', preferences),
     listSpots: city => request('/spots?city=' + encodeURIComponent(city), null, 'GET'),
     createPlan: preferences => request('/plans/preview', preferences),
