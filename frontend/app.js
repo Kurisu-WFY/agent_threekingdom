@@ -142,7 +142,8 @@ function bubbleNode(message) {
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
-    else bubble.textContent = message.role==='assistant'&&window.AgentAnswer ? window.AgentAnswer.clean(message.text) : message.text;
+    else if (!message.error && window.AgentAnswer) bubble.append(window.AgentAnswer.render(message.text,{preserve:message.role==='user'}));
+    else bubble.textContent = message.text;
   }
   return bubble;
 }
@@ -246,7 +247,6 @@ function toggleChat(open) {
   document.body.classList.toggle('chat-open', open);
   launcher.setAttribute('aria-expanded', String(open));
   launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');
-  viewLabel.textContent = open ? '对话界面' : ({ map: '行旅地图', story: '故事线' }[currentContentView] || '主界面');
   if (open) input.focus({ preventScroll: true });
   else {
     launcher.focus({ preventScroll: true });

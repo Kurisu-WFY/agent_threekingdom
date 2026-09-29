@@ -3,7 +3,7 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 class Element {
-  constructor() { this.value = ''; this.children = []; this.dataset = {}; this.style = {}; this.hidden = true; this.classList = { toggle() {}, add() {}, remove() {} }; }
+  constructor(tag) { this.tag = tag; this.value = ''; this.children = []; this.dataset = {}; this.style = {}; this.hidden = true; this.classList = { toggle() {}, add() {}, remove() {} }; }
   querySelector() { return get('submit'); }
   setAttribute() {}
   addEventListener() {}
@@ -15,7 +15,7 @@ const nodes = new Map();
 function get(id) { if (!nodes.has(id)) nodes.set(id, new Element()); return nodes.get(id); }
 const requests = [];
 const context = vm.createContext({
-  document: { querySelector: get, querySelectorAll: () => [], createElement: () => new Element(), body: new Element(), addEventListener() {} },
+  document: { querySelector: get, querySelectorAll: () => [], createElement: tag => new Element(tag), body: new Element(), addEventListener() {} },
   window: { addEventListener() {} }, AbortSignal, URL,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
@@ -124,6 +124,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 })().catch(error => { console.error(error); process.exitCode = 1; });
 
 function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
+function allNodes(node) { return [node,...(node.children||[]).flatMap(allNodes)]; }
 assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /待核验/);
 assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"},retrieval:{coverage:0.55,passed:true}})')), /意图 · 文化问答.*召回覆盖 · 55%（仅表示检索匹配）/);
 assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"unknown"},retrieval:{coverage:2}})')), /意图 ·|召回覆盖/);
@@ -132,6 +133,19 @@ assert.match(textTree(run('trustNode({data_status:"live",updated_at:"2026-09-12T
 assert.match(textTree(run('trustNode({updated_at:"2026-09-12",sources:[{title:"不安全",source_url:"javascript:alert(1)",source_level:"A"}]})')), /来源链接待核验/);
 assert.doesNotThrow(() => run('routeCard({name:"路线"},[null,{}, {name:"站点"}])'));
 console.log('PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops');
+
+run(fs.readFileSync(__dirname + '/answer-format.js', 'utf8'));
+context.testUserMessage={role:'user',text:'**粗体** 和 `代码`\n- 第一项\ncoverage: 0.5\n| coverage | 内容 |\n| --- | --- |\n| 50% | 原文 |\n<img src=x onerror=alert(1)>'};
+const userBubble=run('bubbleNode(testUserMessage)');
+const userNodes=allNodes(userBubble);
+assert.ok(userNodes.some(n=>n.tag==='strong'&&n.textContent==='粗体'));
+assert.ok(userNodes.some(n=>n.tag==='code'&&n.textContent==='代码'));
+assert.ok(userNodes.some(n=>n.tag==='ul'));
+assert.ok(textTree(userBubble).includes('coverage: 0.5'));
+assert.ok(userNodes.some(n=>n.tag==='th'&&textTree(n).includes('coverage')));
+assert.ok(!userNodes.some(n=>n.tag==='img'));
+context.testAssistantMessage={role:'assistant',text:'## 标题\n- 第一项'};
+assert.ok(allNodes(run('bubbleNode(testAssistantMessage)')).some(n=>n.tag==='h4'));
 
 const trusted = run('trustNode({data_status:"maintained",updated_at:"2026-09-12T10:00:00Z",sources:[{title:"官方",source_url:"https://example.com/info",source_level:"A"}]})');
 assert.match(textTree(trusted), /维护数据/);

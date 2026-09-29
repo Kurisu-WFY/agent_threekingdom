@@ -39,13 +39,17 @@
   function sources(record){return Array.isArray(record?.sources)?record.sources.filter(s=>s&&typeof s==='object'):[];}
   function reliable(record){return ['maintained','live'].includes(record?.data_status)&&typeof record.updated_at==='string'&&/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(record.updated_at)&&Number.isFinite(Date.parse(record.updated_at))&&sources(record).some(s=>['A','B'].includes(s.source_level)&&['maintained','live'].includes(s.data_status)&&s.title&&url(s.source_url));}
   function provenance(record){const d=node('details','character-sources');d.append(node('summary','','展开来源 · '+(record?.data_status||'待核验')),node('p','','更新时间：'+(record?.updated_at||'待核验')));if(!sources(record).length)d.append(node('p','','来源待核验'));sources(record).forEach(s=>{const u=url(s.source_url),a=node(u?'a':'span','',s.title||'标题待核验');if(u){a.href=u;a.target='_blank';a.rel='noopener noreferrer';}d.append(a,node('p','','来源等级：'+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验')+' · data_status：'+(s.data_status||'待核验')+(s.source_level==='C'?' · C级可信度不足，不能作为史实依据。':'')));});return d;}
-  function placeText(text){
-    const p=node('p'), places=(window.SGT_PLACES||[]).filter(item=>item&&typeof item.name==='string'&&item.name), names=[...new Set([...places.map(item=>item.name),'阆中','南充'])].sort((a,b)=>b.length-a.length);
-    let rest=window.AgentAnswer?.clean ? window.AgentAnswer.clean(text) : String(text||'');
-    while(rest){const matches=names.map(name=>({name,index:rest.indexOf(name)})).filter(item=>item.index>=0).sort((a,b)=>a.index-b.index||b.name.length-a.name.length),hit=matches[0];if(!hit){p.append(node('span','',rest));break;}if(hit.index)p.append(node('span','',rest.slice(0,hit.index)));
+  function placeInline(text){
+    const inline=node('span'), places=(window.SGT_PLACES||[]).filter(item=>item&&typeof item.name==='string'&&item.name), names=[...new Set([...places.map(item=>item.name),'阆中','南充'])].sort((a,b)=>b.length-a.length);
+    let rest=String(text||'');
+    while(rest){const matches=names.map(name=>({name,index:rest.indexOf(name)})).filter(item=>item.index>=0).sort((a,b)=>a.index-b.index||b.name.length-a.name.length),hit=matches[0];if(!hit){inline.append(node('span','',rest));break;}if(hit.index)inline.append(node('span','',rest.slice(0,hit.index)));
       const place=places.find(item=>item.name===hit.name),located=place&&window.StoryMap?.describePlace?.(place,{placeId:place.id});
-      const link=button(hit.name,()=>{if(located?.point)window.TravelMap.focusStoryPoint(located.point);else if(place)window.CulturalNode.openPlace(place.id);else window.TravelMap.focusMention(hit.name+'市');});link.className='character-place-link';link.title=place?(located?.point?'在地图查看 · '+(located.exact?'核验位置':'县级驻地示意'):'坐标待核验 · 查看地点资料'):'在地图查看 · '+(hit.name==='南充'?'市州范围示意':'县级驻地示意');p.append(link);rest=rest.slice(hit.index+hit.name.length);
+      const link=button(hit.name,()=>{if(located?.point)window.TravelMap.focusStoryPoint(located.point);else if(place)window.CulturalNode.openPlace(place.id);else window.TravelMap.focusMention(hit.name+'市');});link.className='character-place-link';link.title=place?(located?.point?'在地图查看 · '+(located.exact?'核验位置':'县级驻地示意'):'坐标待核验 · 查看地点资料'):'在地图查看 · '+(hit.name==='南充'?'市州范围示意':'县级驻地示意');inline.append(link);rest=rest.slice(hit.index+hit.name.length);
     }
+    return inline;
+  }
+  function placeText(text){
+    const p=node('p');p.append(placeInline(window.AgentAnswer?.clean?window.AgentAnswer.clean(text):text));
     return p;
   }
   function answer(message){
@@ -53,7 +57,7 @@
     // 智能体正文不属于旧的 evidence_segments 结构，应直接按正文展示，
     // 不凭空补充缺失的证据、路线几何信息或检索失败状态。
     if(message.data?.generation?.kind==='nuwax'&&window.AgentAnswer){
-      box.append(window.AgentAnswer.render(message.text));
+      box.append(window.AgentAnswer.render(message.text,{decorateText:placeInline}));
       const evidence=node('details','character-sources');evidence.append(node('summary','','来源与数据说明'),node('p','','回答中的来源由智能体提供，尚未逐项核验；未返回结构化来源不代表知识库没有命中。'),provenance(message.data));box.append(evidence);
     } else {
     const records=Array.isArray(message.data?.evidence_segments)?message.data.evidence_segments.filter(r=>r&&typeof r==='object'):[];
@@ -66,7 +70,7 @@
     historic.forEach(r=>section('史料记载',r.text,'history').append(provenance(r)));
     records.filter(r=>r&&['inference','romance'].includes(r.type)&&typeof r.text==='string').forEach(r=>section(r.type==='inference'?'合理推断 · 非史料原文':'演义 · 文学表达，不是亲历史实',r.text,r.type).append(provenance(r)));
     // 模型正文中的标签不能证明来源；保留原文，但不纳入史实层。
-    const raw=node('details','character-raw');if(isNuwax)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),placeText(message.text),provenance(message.data));box.append(raw);
+    const raw=node('details','character-raw');if(isNuwax||window.AgentAnswer)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),window.AgentAnswer?window.AgentAnswer.render(message.text,{decorateText:placeInline}):placeText(message.text),provenance(message.data));box.append(raw);
     if(!records.some(r=>r?.type==='inference'))section('合理推断','尚无已分层的推断内容；原回答中的推测不作为史实。','inference');
     if(!records.some(r=>r?.type==='romance'))section('演义对照','尚无可靠的逐项对照；文学情节不能作为人物亲历。','romance');
     }
