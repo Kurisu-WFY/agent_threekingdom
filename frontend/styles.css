@@ -522,7 +522,7 @@ body.chat-open #route-map { height: 260px; }
 .trust-info > div { width:100%; display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-1); }
 .trust-info a { color:var(--shu, var(--ink-soft)); text-decoration:underline; }
 
-/* Geography stays in map units; labels and markers retain their screen size. */
+/* 地理图形保持地图单位，标签和标记保持屏幕显示尺寸。 */
 .city-boundary { fill:var(--paper); stroke:var(--portrait-robe); stroke-width:1; vector-effect:non-scaling-stroke; }
 .city-boundary.boundary-selected { fill:var(--jade-soft); stroke:var(--muted); stroke-width:1.5; }
 .county-boundary { fill:none; stroke:var(--portrait-robe); stroke-width:.65; vector-effect:non-scaling-stroke; pointer-events:none; }
@@ -545,13 +545,13 @@ body.chat-open #route-map { height: 260px; }
 .county-boundary.county-area-selected { fill:color-mix(in srgb, var(--muted) 20%, transparent); stroke:var(--muted); stroke-width:1.4; }
 .county-label { pointer-events:auto; }
 
-/* Prevent native text selection during map gestures; map labels remain clickable. */
+/* 地图手势期间禁止浏览器原生文字选择，地图标签仍可点击。 */
 #route-map, #route-map * { user-select:none; -webkit-user-select:none; }
 .city-boundary { stroke:none; }
 .city-outline { fill:none; stroke:var(--portrait-robe); stroke-width:1; vector-effect:non-scaling-stroke; pointer-events:none; }
 .city-outline.boundary-selected { stroke:var(--muted); stroke-width:1.5; }
 
-/* Journey desk: a single conversation, with Sichuan as its spatial companion. */
+/* 旅程工作台：使用单一会话，并以四川地图辅助展示空间信息。 */
 html { scroll-behavior:smooth; scroll-padding-top:90px; }
 body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--paper); }
 .topbar { padding:0 calc(var(--space-1) * 10); background:color-mix(in srgb, var(--surface-2) 96%, transparent); }
@@ -702,7 +702,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .chat-panel:not([hidden]) { animation:none; } .content-switch button,.intent-switch button { transition:none; } }
 
-/* Story discovery reuses the existing paper, ink and seal palette. */
+/* 故事探索沿用现有纸色、墨色和印章配色。 */
 .story-discovery { margin-top:var(--space-5); scroll-margin-top:90px; }
 .story-discovery .desk-intro { margin-bottom:var(--space-2); }
 .story-disclosure { color:var(--muted); font-size:var(--text-xs); line-height:var(--leading-body); }
@@ -738,7 +738,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .story-facts .fact-label { color:var(--muted); }.story-facts .fact-value { color:var(--ink-soft); margin:0; }
 @media(min-width:1051px) { .welcome { padding-top:var(--space-5); }.hero-copy { padding:0; }.welcome h1 { font-size:var(--text-3xl); line-height:var(--leading-tight); }.hero-photo { height:255px; }.hero-footnote { margin-top:var(--space-2); }.story-discovery { margin-top:var(--space-4); }.story-card { padding-top:var(--space-3); }.story-number { margin-bottom:var(--space-1); }.story-card-title { font-size:var(--text-base); min-height:51px; }.story-facts { margin:var(--space-2) 0; }.story-card-end { margin-top:var(--space-2); padding-top:var(--space-2); } }
 
-/* Narrative overlay: all base map gestures and geometry remain intact. */
+/* 叙事叠加层：完整保留底图手势和几何信息。 */
 .story-card-shell { min-width:0; display:flex; flex-direction:column; }.story-card-shell .story-card { width:100%; flex:1; border-radius:3px 3px 0 0; }.story-map-entry { min-height:38px; padding:var(--space-2) var(--space-3); text-align:left; font-family:inherit; font-size:var(--text-xs); line-height:var(--leading-title); color:var(--jade); background:var(--surface-2); border:1px solid var(--line); border-top:0; border-radius:0 0 var(--radius) var(--radius); }
 .story-map-toolbar { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:var(--space-2) var(--space-4); margin:var(--space-4) 0; padding:var(--space-4) var(--space-5); background:var(--surface-2); border:1px solid var(--line); border-left:4px solid var(--shu); border-radius:var(--radius); }
 .story-map-toolbar h3 { margin:var(--space-2) 0; font:var(--text-xl)/1.5 'Songti SC','SimSun',serif; }.story-map-toolbar p { margin:var(--space-1) 0; }.story-map-memory { flex-basis:100%; font-size:var(--text-xs); color:var(--muted); line-height:var(--leading-body); }#story-map-progress { color:var(--shu); font-size:var(--text-xs); }
@@ -760,7 +760,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 @media(min-width:761px) { body.chat-open #map-view.story-mode .story-map-layout { grid-template-columns:minmax(0,1fr); } body.chat-open #map-view.story-mode #route-map { min-height:300px; } }
 .story-map-badge { position:absolute; top:12px; left:12px; max-width:calc(100% - 24px); padding:var(--space-2) var(--space-3); border:1px solid var(--line); border-left:3px solid var(--shu); border-radius:6px; background:var(--surface); color:var(--shu); font-size:var(--text-xs); line-height:var(--leading-title); box-shadow:var(--shadow-sm); pointer-events:none; }
 
-/* Story system: device-local progress and chapter choices. */
+/* 故事系统：在设备本地保存进度和章节选择。 */
 .story-controls { display:flex; flex-wrap:wrap; gap:var(--space-2); margin:var(--space-3) 0; }
 .story-controls [aria-pressed="true"] { background:var(--shu); color:var(--surface); border-color:var(--shu); }
 .story-card-shell[data-progress="探索中"] { outline:2px solid var(--shu); outline-offset:3px; border-radius:var(--radius); }
@@ -784,7 +784,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .route-replan select { margin:var(--space-2); padding:var(--space-2); max-width:100%; background:var(--surface); color:var(--ink); border:1px solid var(--line); }
 #planner-story,#planner-status { overflow-wrap:anywhere; }
 
-/* Cultural evidence and reading: all colors reuse the paper/ink palette. */
+/* 文化证据与阅读：所有颜色沿用纸色和墨色配色。 */
 .node-heading { display:grid; grid-template-columns:minmax(170px,30%) 1fr; gap:var(--space-5); align-items:center; }
 .node-heading .story-building-visual svg { height:230px; }
 .building-miniature .building-ground { fill:var(--line); opacity:.7; }
@@ -804,7 +804,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .cultural-node p { line-height:var(--leading-body); overflow-wrap:anywhere; }.node-question { color:var(--jade); }
 @media(max-width:760px) { .node-heading,.node-comparison { grid-template-columns:1fr; gap:var(--space-3); }.node-heading .story-building-visual svg { height:170px; }.node-reading { height:320px; padding:var(--space-3); }.node-tourism { padding:var(--space-3); } }
 
-/* Quiet portraits and visible evidence boundaries in the existing conversation. */
+/* 在现有会话中使用简洁的人物形象，并清楚展示证据边界。 */
 .character-panel { padding:var(--space-2) var(--space-4); border-bottom:1px solid var(--line); font-size:var(--text-xs); max-height:180px; overflow:auto; flex-shrink:0; }
 .character-panel select { margin-left:var(--space-2); padding:var(--space-1) var(--space-3); font:inherit; background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:6px; }
 .character-panel summary { cursor:pointer; margin-top:var(--space-1); }
@@ -827,7 +827,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .character-comparison > .romance { grid-column:2; grid-row:2; }
 @media(max-width:760px) { .character-comparison { display:block; } }
 
-/* Local exploration journal: numbered paper leaves and chapter seals. */
+/* 本地探索志：使用编号纸页和章节印章。 */
 .journal-heading h1,.journal-book h2,.journal-recommendation h2 { font-family:var(--font-display,serif); }
 .journal-heading p { color:var(--ink-soft); line-height:var(--leading-body); }.journal-heading h1 { margin-bottom:var(--space-3); }
 #journal-empty:not(:empty) { margin:var(--space-4) 0; padding:var(--space-5); border:1px dashed var(--brass); border-radius:var(--radius); background:var(--surface-2); }
@@ -1033,7 +1033,7 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .image-credits > div { width:min(400px,calc(100vw - 32px)); max-width:calc(100vw - 32px); right:0; }
 .image-credits a { min-width:var(--target-size); }
 
-/* Conversation-first layout: optional context occupies one line until requested. */
+/* 对话优先布局：可选背景信息在展开前仅占一行。 */
 .chat-options { flex:none; min-width:0; border-bottom:1px solid var(--line); font-size:var(--text-sm); }
 .chat-options > summary { cursor:pointer; padding:var(--space-2) var(--space-4); min-height:var(--target-size); box-sizing:border-box; color:var(--ink-soft); }
 .chat-options-body { max-height:28dvh; overflow:auto; padding-bottom:var(--space-2); }
@@ -1062,7 +1062,7 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .agent-prose th { background:var(--surface-2); font-weight:600; }
 .agent-prose a { display:inline; }
 
-/* Only lift the panel bottom slightly; preserve the existing layout. */
+/* 只将面板底部略微上提，保留现有布局。 */
 .chat-panel:not([hidden]) {
   bottom:20px;
   height:calc(100dvh - 20px);

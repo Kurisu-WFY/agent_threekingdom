@@ -1,4 +1,4 @@
-"""Server-owned story guidance; client IDs never become paths or system roles."""
+"""故事引导由服务端维护，客户端标识绝不直接用作路径或系统角色。"""
 from pathlib import Path
 from string import Template
 

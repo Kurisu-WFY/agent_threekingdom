@@ -57,7 +57,7 @@ console.log('PASS: backend stops without GCJ-02 coordinates keep the mention-bas
 console.log('PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels');
 console.log('PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation');
 
-// Dense labels must never overlap in screen space at any tested map zoom.
+// 在所有测试缩放级别下，密集标签都不应在屏幕上重叠。
 const viewCore=require('./map-route-core.js');
 for(const zoom of [1,2.5,5,10]){
  const labels=Array.from({length:30},(_,i)=>({id:i,x:450+i*.4,y:340+i*.3,name:'密集县区'+i,size:11}));
@@ -78,10 +78,10 @@ for(const city of geometry.cities){
 }
 console.log('PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1000%');
 
-// Letterboxed SVG exposes more geography than the nominal viewBox on wide/tall panels.
+// 在较宽或较高面板中，留边显示的 SVG 会露出比标称视口更多的地理区域。
 assert.deepEqual(core.visibleBounds([400,300,90,68],900,340),[355,300,535,368]);
 assert.deepEqual(core.visibleBounds([400,300,90,68],450,680),[400,266,490,402]);
-// City geometry must use exactly the same county paths rather than a second simplification.
+// 城市几何必须使用完全相同的区县路径，不能再次简化。
 for(const city of geometry.cities){assert.equal(city.d,geometry.counties.filter(c=>c.parent===city.name).map(c=>c.d).join(''));assert.ok(city.outline);}
 console.log('PASS: wide/tall visible bounds and shared city/county geometry');
 
@@ -94,7 +94,7 @@ for(const city of geometry.cities){
 }
 console.log('PASS: shared internal county edges removed from city outline');
 
-// Large cultural seals reserve space while ordinary county labels still use the same algorithm.
+// 为大型文化印章预留空间，普通区县标签仍使用同一布局算法。
 const markerLabels=[{id:'story',x:450,y:340,name:'剑门关',size:12,markerRadius:34},{id:'county',x:450,y:340,name:'剑阁县',size:11}];
 for(const label of core.labelLayout(markerLabels,[0,0,900,680],900,680)) {
  const box=label.box;assert.ok(!(box[0]<484&&box[2]>416&&box[1]<374&&box[3]>306));

@@ -1,4 +1,4 @@
-/* Story overlay only: base geometry, projection, picking and gestures stay in TravelMap. */
+/* 只负责故事叠加层；底图几何、投影、点选和手势仍由 TravelMap 处理。 */
 (() => {
   'use strict';
   const $ = selector => document.querySelector(selector);
@@ -185,7 +185,7 @@
     $('#story-map-badge').hidden = true; $('#story-map-toolbar').hidden = true; $('#story-map-chapters').hidden = true; $('#story-node-card').hidden = true;
     window.TravelMap.endStory(); $('#map-prefecture').focus({preventScroll:true});
   }
-  // Backend adapter: a future API client supplies data here; no endpoint is guessed or enabled.
+  // 后端适配入口：后续接口客户端在此提供数据，不猜测或擅自启用端点。
   function setData(payload) {
     const nonempty=v=>typeof v==='string'&&v.trim().length>0;
     const story=payload?.story,places=payload?.places;
@@ -204,7 +204,7 @@
     const arrays=(record,keys)=>keys.every(k=>record[k]==null||Array.isArray(record[k]));
     const meta=record=>record&&typeof record==='object'&&!Array.isArray(record)&&arrays(record,['sources']);
     if(!arrays(story,['people','events','areas','sources'])||places.some(p=>!arrays(p,['sources']))||story.chapters.some(c=>!arrays(c,['people','events','sources','disputes','inferences'])||['history','romance','differences','compilation','relationships'].some(k=>c[k]!=null&&!meta(c[k]))||['disputes','inferences'].some(k=>(c[k]||[]).some(r=>!meta(r)))))return fallback();
-    // Reject a malformed payload atomically; never install a half-valid override.
+    // 对格式错误的数据整体拒绝，不应用仅部分有效的覆盖内容。
     let copy;try{copy=JSON.parse(JSON.stringify(payload));}catch(_){return fallback();}
     overrides.set(story.id,copy);progress.delete(story.id);
     if(active?.id===story.id)return open(story.id);

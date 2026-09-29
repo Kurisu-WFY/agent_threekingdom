@@ -8,7 +8,7 @@ NarrativeStage = Literal["寻源", "读史", "探迹", "传承", "未分类"]
 
 
 class NanchongPlanRequest(BaseModel):
-    """Allowances are user inputs, never provider quotes."""
+    """预算额度来自用户输入，不代表服务商报价。"""
     origin: str = Field(min_length=1, max_length=120, pattern=r"\S")
     days: Literal[0.5, 1, 2] = 1
     travel_date: date | None = None

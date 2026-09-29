@@ -11,7 +11,7 @@ const submitForm=()=>form.handlers.submit({preventDefault(){}});
 assert.equal(submit.disabled,true);submitForm();assert.equal(calls.length,0);
 field.value='  南充一天路线  ';field.handlers.input();assert.equal(submit.disabled,false);submitForm();
 assert.deepEqual(calls,['open','南充一天路线']);assert.equal(field.value,'');assert.equal(submit.disabled,true);
-// Switching tasks keeps separate drafts and never makes a request.
+// 切换任务时保留各自的草稿，不发起请求。
 field.value='未完成的行程';const before=calls.length;modes[1].handlers.click();assert.equal(field.value,'');
 field.value='文化草稿';modes[0].handlers.click();assert.equal(field.value,'未完成的行程');
 modes[1].handlers.click();assert.equal(field.value,'文化草稿');assert.equal(calls.length,before);
@@ -19,7 +19,7 @@ assert.equal(modes[1].attrs['aria-pressed'],'true');assert.equal(modes[0].attrs[
 node('#journey-profile').value='亲子同行';node('#journey-style').value='亲子故事版';submitForm();
 assert.ok(calls.at(-1).includes('文化草稿'));assert.ok(calls.at(-1).includes('同行方式：亲子同行'));assert.ok(calls.at(-1).includes('讲解偏好：亲子故事版'));
 modes[2].handlers.click();field.value='张飞与阆中';submitForm();assert.ok(calls.at(-1).includes('不编造人物原话'));
-// Pending requests preserve the existing chat draft too.
+// 请求等待期间也应保留已有聊天草稿。
 chat.pending=true;input.value='原有对话草稿';question.handlers.click();assert.equal(input.value,'原有对话草稿\n\n阆中的故事');assert.equal(calls.at(-1),'draft');
 assert.equal(calls.filter(c=>c==='阆中的故事').length,0);
 node('[data-prepare-review]').handlers.click();assert.equal(modes[3].attrs['aria-pressed'],'true');assert.ok(field.focused);assert.ok(node('#journey-desk').scrolled);

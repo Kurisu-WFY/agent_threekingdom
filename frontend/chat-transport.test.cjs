@@ -4,7 +4,7 @@ const encoder = new TextEncoder();
 function response(events, crlf=false) {
   const bytes = encoder.encode(events.map(e=>'data: '+JSON.stringify(e)+(crlf?'\r\n\r\n':'\n\n')).join(''));
   return new Response(new ReadableStream({start(c) {
-    // Split inside UTF-8 characters and SSE separators.
+    // 在 UTF-8 字符和 SSE 分隔符内部拆分数据。
     for (let i=0;i<bytes.length;i+=3) c.enqueue(bytes.slice(i,i+3));
     c.close();
   }}));

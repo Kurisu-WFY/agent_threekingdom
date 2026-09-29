@@ -1,4 +1,4 @@
-/* Planning uses the existing agent conversation and /chat, not a local template. */
+/* 规划使用现有智能体会话和 /chat 接口，不使用本地固定模板。 */
 (() => {
   const form=document.getElementById('itinerary-form'),status=document.getElementById('itinerary-status');
   if(!form)return;

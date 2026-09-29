@@ -29,7 +29,7 @@ class NuwaxTests(unittest.TestCase):
             return httpx.Response(200,headers={'content-type':'text/event-stream'},
                 text=''.join('data: '+json.dumps(e,ensure_ascii=False)+'\n\n' for e in self.reply))
         self.client = httpx.Client(transport=httpx.MockTransport(handler))
-        # A real Client is intentionally replaced with a reusable context wrapper.
+        # 特意用可复用的上下文包装器替代真实客户端。
         class Wrapper:
             def __enter__(inner): return self.client
             def __exit__(inner,*args): pass

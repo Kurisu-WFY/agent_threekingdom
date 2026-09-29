@@ -328,7 +328,7 @@ function ask(text, history, mode = '大众', routePreferences, sessionId, onEven
   });
 }
 
-// Shared /chat transport for the existing trip form; its results stay in the plan view.
+// 现有行程表单共用 /chat 通信，结果仍显示在规划视图中。
 window.SGTChat = { async request(text, routePreferences) {
   const message = typeof text === 'string' ? text.trim() : '';
   if (!message) throw new Error('请先填写出行需求。');
@@ -379,7 +379,7 @@ function requestReply(chat, reply) {
     if (event.type === 'delta') reply.streamText += event.text;
     if (event.type === 'tool') reply.progress = '正在整理回答，请稍候…';
     if (chats[active] === chat && ['session','delta','tool'].includes(event.type)) {
-      // Update only the pending bubble, preserving composer focus and map state.
+      // 只更新等待中的消息气泡，保留输入框焦点和地图状态。
       const index = chat.messages.indexOf(reply);
       const bubble = messages.children[index]?.querySelector('.bubble');
       if (bubble) bubble.textContent = '正在整理回答，请稍候…';
@@ -493,7 +493,7 @@ function showContentView(view) {
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
-    // Restore the view's page position synchronously; never reset map or conversation state.
+    // 同步恢复视图滚动位置，不重置地图或会话状态。
     window.scrollTo({ top: contentScrollPositions.get(view) || 0, behavior: 'instant' });
     if (restoreFocus) (document.querySelector('.content-switch [data-content-view="' + view + '"]') || target.querySelector('[tabindex="-1"]'))?.focus({ preventScroll: true });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && target.animate) {

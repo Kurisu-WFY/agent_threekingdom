@@ -1,4 +1,4 @@
-// Shared JSON-shaped double for existing UI state tests; real SSE has its own tests.
+// 现有界面状态测试共用 JSON 结构的测试替身；真实 SSE 通信另有测试。
 module.exports = ctx => {
   ctx.window.SGTChatTransport = {request: (payload, onEvent = () => {}) =>
     ctx.fetch('/chat/stream', {body:JSON.stringify(payload)}).then(async response => {

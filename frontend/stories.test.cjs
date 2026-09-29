@@ -49,7 +49,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);
   assert.ok(shapes.every(svg=>svg.children.length===3));
   assert.equal(test.get('#story-buildings').children.length,5);
-  // Untrusted content remains text rather than executable markup.
+  // 不可信内容始终作为文本处理，不作为可执行标记。
   test.window.SGT_STORIES[0].title='<img src=x onerror=alert(1)>';cards[0].handlers.click();assert.equal(test.get('#story-title').textContent,'<img src=x onerror=alert(1)>');
   await new Promise(resolve=>setImmediate(resolve));assert.equal(test.get('#story-preview-map').children.length,1);assert.deepEqual(test.requests,['sichuan-map-geometry.json']);
   const offline=setup(true);await new Promise(resolve=>setImmediate(resolve));assert.ok(offline.get('#story-preview-status').textContent.includes('暂不可用'));assert.equal(offline.get('#story-cards').children.length,5);

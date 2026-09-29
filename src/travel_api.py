@@ -1,4 +1,4 @@
-"""Same-origin adapters for the travel UI; no simulated live services."""
+"""为旅游界面提供同源接口适配，不伪装实时服务。"""
 from __future__ import annotations
 
 import math
@@ -68,7 +68,7 @@ def envelope(status: str, message: str, data=None):
 
 
 def sample_meta():
-    # Seed dates are import dates, not verification dates.
+    # 种子数据中的日期是导入日期，不是核验日期。
     return {"data_status": "sample", "updated_at": None, "sources": []}
 
 
@@ -110,7 +110,7 @@ def preview(p: Preferences):
     route = result["route"]
     if not route["found"]:
         return envelope("empty", route["message"])
-    # Preserve template order; this is a visit grouping, never road navigation.
+    # 保留模板顺序；这只是游览分组，不是道路导航。
     days = []
     for stop in route["stops"]:
         minutes = stop.get("stay_minutes") or 0

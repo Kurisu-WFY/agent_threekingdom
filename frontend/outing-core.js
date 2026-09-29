@@ -1,4 +1,4 @@
-/* Pure parsing: an AI answer is a draft, never an authoritative coordinate source. */
+/* 仅做解析：智能体回答是草案，不能作为权威坐标来源。 */
 (function(root) {
   function draft(message) {
     const answer = String(message?.text || message?.data?.answer || '').slice(0,24000);
@@ -7,7 +7,7 @@
     const dates = [...new Set((question + '\n' + answer).match(/\b20\d{2}-\d{2}-\d{2}\b/g) || [])].filter(v => {
       const d = new Date(v+'T00:00:00Z'); return Number.isFinite(+d) && d.toISOString().slice(0,10) === v;
     });
-    // No extraction from prose: a list of recommended places is not necessarily an ordered itinerary.
+    // 不从正文推导路线；推荐地点列表不一定是有序行程。
     const stops = (Array.isArray(message?.data?.route?.stops) ? message.data.route.stops : []).slice(0,30).map(s => ({name:String(s?.name || '').slice(0,120)})).filter(s=>s.name);
     return {answer, city:cities.length===1?cities[0]:'', date:dates.length===1?dates[0]:'', stops};
   }

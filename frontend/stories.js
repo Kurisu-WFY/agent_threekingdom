@@ -1,4 +1,4 @@
-/* Editorial templates only. Missing content is never synthesized into a route. */
+/* 仅提供编辑模板，不将缺失内容编造成路线。 */
 (() => {
   'use strict';
   window.SGT_STORIES = [
@@ -12,8 +12,8 @@
     { id: 'history-to-place', title: '从史书到现场', phase: '探秘' },
     { id: 'official-history', title: '正史里的三国', phase: '读史' }
   ].map(story => Object.assign({ coreQuestion: '', summary: '', people: [], events: [], durationHours: null, areas: [], chapters: [], dataStatus: 'pending', updatedAt: null, sources: [] }, story));
-  // Fallback county names come from the repository's scenic_spots_northeast_sichuan.sample.json addresses.
-  // Its unverified lat/lng values are deliberately not copied. Chapters above are user-specified editorial order.
+  // 兜底区县名称取自仓库 scenic_spots_northeast_sichuan.sample.json 中的地址。
+  // 不复制其中未经核验的经纬度；上方章节顺序是用户指定的编辑顺序。
   window.SGT_PLACES = [
     { id: 'wanjuanlou', name: '万卷楼', building: 'tower' },
     { id: 'hanhuanhouci', name: '汉桓侯祠', building: 'shrine' },

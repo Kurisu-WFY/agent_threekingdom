@@ -1,4 +1,4 @@
-// All journey entrances share the existing conversation and /chat request flow.
+// 所有旅程入口共用现有会话和 /chat 请求流程。
 (() => {
   const $ = selector => document.querySelector(selector);
   const field = $('#hero-message'), submit = $('#hero-send');
@@ -27,7 +27,7 @@
     if (!question.trim()) return;
     toggleChat(true);
     if (chats[active].pending) {
-      // Append rather than overwrite an unsent conversation draft.
+      // 追加内容，不覆盖尚未发送的会话草稿。
       input.value = input.value.trim() ? input.value + '\n\n' + question : question;
       saveDraft(); updateComposer();
       $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';

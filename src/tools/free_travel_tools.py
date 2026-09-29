@@ -1,4 +1,4 @@
-"""Keyless demo services. Shared by HTTP and MCP; never infer attraction coordinates."""
+"""无需密钥的演示服务，由 HTTP 和 MCP 共用，绝不推测景点坐标。"""
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
@@ -18,7 +18,7 @@ from typing import Literal
 
 from san_guo_core.settings import PROJECT_ROOT
 
-# Shared across API/MCP processes on this computer; bounded and never stores secrets.
+# 本机接口和 MCP 进程共用缓存；限制缓存大小，不存储密钥。
 CACHE = Path(tempfile.gettempdir()) / ("sanguo-travel-" + hashlib.sha256(str(PROJECT_ROOT).encode()).hexdigest()[:12] + ".sqlite3")
 ALIASES = {"南充": "Nanchong", "南充市": "Nanchong", "阆中": "Langzhong", "阆中市": "Langzhong", "广元": "Guangyuan", "广元市": "Guangyuan"}
 HOSTS = {"geo": "https://geocoding-api.open-meteo.com/v1/search", "weather": "https://api.open-meteo.com/v1/forecast", "air": "https://air-quality-api.open-meteo.com/v1/air-quality"}
@@ -54,7 +54,7 @@ def fetch(url: str, params: dict, ttl: int, group: str) -> dict:
         raise ValueError("外部服务未返回有效数据。")
     result = {"payload": payload, "fetched_at": datetime.now(timezone.utc).isoformat()}
     with closing(sqlite3.connect(CACHE, timeout=3)) as db, db:
-        # Simple upper bound for local demo storage.
+        # 为本地演示缓存设置简单的存储上限。
         if db.execute("SELECT COUNT(*) FROM cache").fetchone()[0] >= 500:
             db.execute("DELETE FROM cache WHERE key IN (SELECT key FROM cache ORDER BY expires LIMIT 50)")
         db.execute("INSERT OR REPLACE INTO cache VALUES (?, ?, ?)", (key, time.time() + ttl, json.dumps(result)))
@@ -67,7 +67,7 @@ def metadata(kind: str, fetched_at: str, url: str, title: str) -> dict:
 
 
 def lookup_travel_city(city: str) -> dict:
-    """Only supported Sichuan destinations; do not choose similarly named cities elsewhere."""
+    """仅匹配支持的四川目的地，不选择其他地区的同名城市。"""
     query = ALIASES.get(city.strip()) if isinstance(city, str) else None
     if not query:
         return unavailable("当前支持南充、阆中、广元；城市中心仅用于天气，不代表景区入口。")

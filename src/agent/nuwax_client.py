@@ -1,7 +1,7 @@
-"""Nuwa agent sessions. Secrets and provider conversation IDs stay on the server.
+"""女娲智能体会话适配，密钥和平台会话标识只保留在服务端。
 
-This adapter is used by the web API only, never by answer_travel_question MCP,
-so a remote agent cannot recursively call itself through that tool.
+此适配器仅供网页接口使用，不供 answer_travel_question 工具调用，
+避免远程智能体通过该工具递归调用自身。
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ class NuwaxError(Exception):
 
 
 def iter_sse(lines):
-    """Parse complete SSE records, including multiline data and CRLF streams."""
+    """解析完整的 SSE 记录，支持多行数据和回车换行符。"""
     data = []
     for line in lines:
         if not line:
@@ -88,7 +88,7 @@ class NuwaxClient:
             return token, session
 
     def events(self, message, mode='大众', session_id=None, history=None, story_id=None):
-        """Emit sanitized frontend events, never raw provider errors/configuration."""
+        """输出经过清理的前端事件，不透传平台原始错误或配置。"""
         session = None
         acquired = False
         try:
@@ -105,8 +105,8 @@ class NuwaxClient:
                 if not acquired:
                     raise NuwaxError('此对话仍在执行，请等待完成后再发送。')
                 yield {'type': 'session', 'session_id': token, 'warning': self.warning}
-                # Send recent user context for character/stage hints; platform owns
-                # the authoritative conversation history, not browser assistant text.
+                # 发送近期用户上下文，提供人物和阶段提示；
+                # 以平台保存的会话历史为准，而非浏览器传来的助手文本。
                 prompt = build_web_prompt(message, mode, history, story_id)
                 payload = {'conversationId': session.conversation_id, 'message': prompt}
                 if self.settings.nuwax_sandbox_id.isdigit():

@@ -1,4 +1,4 @@
-// Isolated browser benchmark; never loaded by the production homepage.
+// 独立的浏览器性能测试，不由正式首页加载。
 const benchButton=document.createElement('button');benchButton.textContent='运行缩放基准';
 benchButton.style.cssText='position:fixed;top:40px;right:12px;z-index:9999;padding:10px;background:white';document.body.append(benchButton);
 const result=document.createElement('output');result.id='map-benchmark-result';result.style.cssText='position:fixed;top:85px;right:12px;z-index:9999;background:white;max-width:400px';document.body.append(result);

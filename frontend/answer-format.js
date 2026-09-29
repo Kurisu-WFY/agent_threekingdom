@@ -1,4 +1,4 @@
-/* Small Markdown subset, built with DOM/textContent only: no model HTML executes. */
+/* 仅用 DOM 和 textContent 构建有限的 Markdown 格式，不执行模型返回的 HTML。 */
 (function(root) {
   const labels={retrieve_culture_knowledge:'文化知识检索',answer_travel_question:'旅游问题解答',plan_cultural_route:'文化路线规划',list_scenic_spots:'景点查询',get_spot_ticket:'门票信息查询',estimate_hotel_budget:'住宿预算估算',search_hotel_poi_request:'住宿地点查询',plan_budget:'行程预算估算',get_travel_weather:'天气查询',lookup_travel_city:'城市位置查询',get_road_route:'道路路线查询',get_nanchong_travel_catalog:'南充出行资料查询',plan_nanchong_itinerary:'南充行程规划',WaitForMcpServers:'连接旅游工具'};
   const names=new RegExp('(?<![\\w-])(?:[\\w-]+__)?('+Object.keys(labels).join('|')+')(?![\\w])','g');

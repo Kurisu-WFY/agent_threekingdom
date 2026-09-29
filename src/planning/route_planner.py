@@ -64,10 +64,9 @@ def plan_route(
     transport_mode: str | None = None,
     excluded_place_ids: list[str] | None = None,
 ) -> dict:
-    """Return the closest curated Demo route and its cultural interpretation.
+    """返回最匹配的人工整理演示路线及其文化解读。
 
-    Explicit arguments are used by MCP clients.  Natural-language inference is
-    kept as a fallback for the chat endpoint.
+    MCP 客户端使用显式参数；聊天接口保留从自然语言推断参数的兜底逻辑。
     """
     city_name = city or _guess_city(user_message)
     duration_hours = duration_hours if duration_hours is not None else _guess_duration_hours(user_message)

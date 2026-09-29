@@ -1,4 +1,4 @@
-/* These are user requirements, not verified travel facts. */
+/* 这些是用户需求，不是已经核验的出行事实。 */
 (function(root){
   function question(p){
     const city=String(p.city||'').trim(),origin=String(p.origin||'').trim();

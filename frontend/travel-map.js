@@ -236,7 +236,7 @@
       const chat=activeChat;
       if(!await ready || !chat || activeChat!==chat)return false;
       const stops=Array.isArray(result?.stops)?result.stops:[];
-      // Never synthesize scenic coordinates. Only unique county names in the returned address qualify.
+      // 不推造景点坐标，只匹配返回地址中能够唯一确定的区县名称。
       const points=stops.map(stop=>{
         const found=core.mentions([stop.address,stop.city,stop.name].filter(Boolean).join(' '),counties);
         const unique=[...new Map(found.points.map(point=>[point.id,point])).values()];
@@ -274,14 +274,14 @@
       if (loaded && !window.StoryMap?.isActive()) fit(chat.mapRoute?.points || []);
     },
     fromMessage(chat, text) {
-      // Chapter context, including a pending draft sent later, must not become a route request.
+      // 章节上下文及稍后发送的待发草稿，都不能被误作路线请求。
       if (text.startsWith('【故事章节讲解】')) return;
       if (!/(旅游|旅行|路线|行程|出发|去|到|游玩|途经|经过|逛)/.test(text)) return;
       chat.mapQuestion = text;
       ready.then(ok => {
         if (!ok || chat.mapQuestion !== text) return;
         const parsed = core.mentions(text, places);
-        // A general story question must not clear the route or open an empty map.
+        // 普通故事问题不应清空路线或打开空白地图。
         if (!parsed.points.length && !parsed.ambiguous.length) return;
         if (window.StoryMap?.isActive()) window.StoryMap.exit();
         chat.mapRoute = { points: parsed.points, missing: parsed.ambiguous, kind: '按你的地名提及顺序' };

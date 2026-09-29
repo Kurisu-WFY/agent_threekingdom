@@ -1,4 +1,4 @@
-/* Scoped to the approved outing view; no changes to the chat shell. */
+/* 样式仅作用于已确认的出行视图，不改变聊天外框。 */
 .outing {container-type:inline-size;font-family:"Microsoft YaHei",system-ui,sans-serif;color:var(--ink);font-size:1rem;line-height:1.65}
 .outing h1 {font:normal 1.75rem/1.4 var(--font-display);margin:0}
 .outing h2 {font:normal 1.4rem/1.4 var(--font-display);margin:0 0 1rem}

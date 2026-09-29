@@ -253,9 +253,8 @@ async def call_tool(name: str, arguments: dict):
 
 
 sse = SseServerTransport("/messages")
-# Streamable HTTP is the current MCP HTTP transport. Stateless JSON responses
-# suit this tool-only server and avoid requiring the client to maintain a
-# separate SSE channel.
+# 流式 HTTP 是当前使用的 MCP 网络传输方式。无状态 JSON 响应
+# 适合此仅提供工具的服务，无需客户端额外维护独立的 SSE 通道。
 streamable_http = StreamableHTTPSessionManager(server, stateless=True, json_response=True)
 
 

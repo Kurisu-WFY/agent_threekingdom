@@ -1,4 +1,4 @@
-/* Perspective and evidence presentation over the existing /chat conversation. */
+/* 在现有 /chat 会话中展示人物视角和证据。 */
 (() => {
   'use strict';
   const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';
@@ -21,7 +21,7 @@
   function getMode(){const story=context().story;if(!story&&window.CulturalNode?.getContext())return window.CulturalNode.getMode();return (story&&window.StoryProgress?window.StoryProgress.get(story).mode:chats[active].readingMode)||'大众体验版';}
   function backendMode(){return modeMap[getMode()]||'大众';}
   function setMode(mode){if(!modeMap[mode])return;const story=context().story;if(story&&window.StoryProgress){window.StoryProgress.get(story).mode=mode;window.StoryProgress.save(story);}else {chats[active].readingMode=mode;if(window.CulturalNode?.getContext())window.CulturalNode.changeMode(mode);}sync(chats[active]);}
-  // Journals prefer the action saved with the request; legacy messages use this same classifier.
+  // 探索志优先使用请求中保存的操作；旧消息使用同一分类器。
   const isComparison=text=>/历史上|正史|演义|真是这样|史实/.test(String(text).split('\n')[0]);
   function prepare(chat,text){
     const userQuestion=text.split('\n')[0];
@@ -50,14 +50,14 @@
   }
   function answer(message){
     const box=node('div','character-answer'+(message.characterAction==='compare'?' character-comparison':''));box.append(node('strong','',message.persona+'视角 · AI解读，非人物原话'));
-    // Agent prose is not the legacy evidence_segments schema. Display it as prose,
-    // without inventing missing evidence, route geometry, or retrieval failures.
+    // 智能体正文不属于旧的 evidence_segments 结构，应直接按正文展示，
+    // 不凭空补充缺失的证据、路线几何信息或检索失败状态。
     if(message.data?.generation?.kind==='nuwax'&&window.AgentAnswer){
       box.append(window.AgentAnswer.render(message.text));
       const evidence=node('details','character-sources');evidence.append(node('summary','','来源与数据说明'),node('p','','回答中的来源由智能体提供，尚未逐项核验；未返回结构化来源不代表知识库没有命中。'),provenance(message.data));box.append(evidence);
     } else {
     const records=Array.isArray(message.data?.evidence_segments)?message.data.evidence_segments.filter(r=>r&&typeof r==='object'):[];
-    // Only explicit inference/literature labels can be extracted from prose, never promoted to historical evidence.
+    // 只提取正文中明确标注的推断或文学内容，不将其提升为史实证据。
     if(!records.length){const parts=message.text.split(/【(史料记载|合理推断|演义|无依据)】/);for(let i=1;i<parts.length;i+=2){if(['合理推断','演义'].includes(parts[i])&&parts[i+1]?.trim())records.push({type:parts[i]==='演义'?'romance':'inference',text:parts[i+1].trim(),data_status:'pending'});}}
     const historic=records.filter(r=>r?.type==='history'&&typeof r.text==='string'&&reliable(r)&&!/(三国演义|演义情节)/.test(r.text));
     const section=(label,text,cls)=>{const s=node('section','character-evidence '+cls);s.append(node('h4','',label),placeText(text));box.append(s);return s;};
@@ -65,7 +65,7 @@
     if(!historic.length)section(isNuwax?'来源核验提示':'史料记载 · 无可靠依据',isNuwax?'智能体回答尚未提供前端可核验的逐项来源字段；不代表知识库没有命中。':missing,'unverified').append(provenance(message.data));
     historic.forEach(r=>section('史料记载',r.text,'history').append(provenance(r)));
     records.filter(r=>r&&['inference','romance'].includes(r.type)&&typeof r.text==='string').forEach(r=>section(r.type==='inference'?'合理推断 · 非史料原文':'演义 · 文学表达，不是亲历史实',r.text,r.type).append(provenance(r)));
-    // Labels in model prose cannot establish provenance. Keep the original available but outside the factual layer.
+    // 模型正文中的标签不能证明来源；保留原文，但不纳入史实层。
     const raw=node('details','character-raw');if(isNuwax)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),placeText(message.text),provenance(message.data));box.append(raw);
     if(!records.some(r=>r?.type==='inference'))section('合理推断','尚无已分层的推断内容；原回答中的推测不作为史实。','inference');
     if(!records.some(r=>r?.type==='romance'))section('演义对照','尚无可靠的逐项对照；文学情节不能作为人物亲历。','romance');

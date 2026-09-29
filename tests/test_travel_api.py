@@ -1,4 +1,4 @@
-"""Local contract regression; temporary database, no external model calls."""
+"""本地接口契约回归测试，使用临时数据库，不调用外部模型。"""
 import sys
 import tempfile
 import unittest

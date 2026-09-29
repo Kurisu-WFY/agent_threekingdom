@@ -1,4 +1,4 @@
-# Optional local PDF/BGE processing; use alongside the project's API dependencies.
+# 可选的本地 PDF 处理和 BGE 依赖，与项目接口依赖配合使用。
 pypdf>=5.0
 sentence-transformers>=5.0
 torch>=2.6

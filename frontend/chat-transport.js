@@ -1,4 +1,4 @@
-/* Same-origin only: API keys and platform session IDs never enter the browser. */
+/* 仅使用同源通信，接口密钥和平台会话标识不传入浏览器。 */
 (function (root) {
   async function request(payload, onEvent = () => {}, fetcher = fetch) {
     const response = await fetcher('/chat/stream', {

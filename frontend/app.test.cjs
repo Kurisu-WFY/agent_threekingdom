@@ -1,4 +1,4 @@
-// Run: node frontend/app.test.cjs (no dependencies).
+// 运行命令：node frontend/app.test.cjs，无需额外依赖。
 const vm = require('node:vm');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
@@ -19,7 +19,7 @@ const context = vm.createContext({
   window: { addEventListener() {} }, AbortSignal, URL,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
-// App-state tests use a transport double; byte-level SSE parsing is tested separately.
+// 应用状态测试使用通信替身；SSE 字节级解析另行测试。
 context.window.SGTChatTransport = {request: (payload, onEvent = () => {}) =>
   context.fetch('/chat/stream', {body:JSON.stringify(payload)}).then(async response => {
     if (!response.ok) throw new Error('HTTP ' + response.status);

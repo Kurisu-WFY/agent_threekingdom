@@ -1,12 +1,12 @@
-// Offline boundary build: retain shared county vertices; never simplify each polygon independently.
-// City fills and outlines are derived from these same county rings to avoid mixed-resolution seams.
+// 离线构建边界：保留区县共用顶点，不对各多边形独立简化。
+// 城市填充和轮廓均从同一套区县边界环生成，避免分辨率不同产生接缝。
 const fs=require('node:fs');
 const {project}=require('./map-route-core.js');
 const read=name=>JSON.parse(fs.readFileSync(__dirname+'/'+name,'utf8').replace(/^\uFEFF/,''));
 const raw=read('sichuan-county-boundaries.json').features;
 const point=p=>project(p).map(v=>+v.toFixed(3)).join(',');
 const rawRings=f=>(f.geometry.type==='MultiPolygon'?f.geometry.coordinates.flat():f.geometry.coordinates).map(r=>r.map(point));
-// Shared arcs are simplified once, in canonical direction, with every junction locked.
+// 共用弧线按统一方向仅简化一次，并锁定所有交汇点。
 const projected=new Map(raw.map(f=>[f,rawRings(f)])),adjacency=new Map();
 for(const rs of projected.values())for(const r of rs)for(let i=1;i<r.length;i++){
  const a=r[i-1],b=r[i];if(a===b)continue;

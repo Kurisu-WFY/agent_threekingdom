@@ -68,7 +68,7 @@
     if (located(existing)) return { points: existing.points, missing: known, kind: existing.kind, backendStopsPending };
     return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
   }
-  // Viewport helpers operate in projected map units; text collision uses screen pixels.
+  // 视口辅助函数使用地图投影单位，文字碰撞检测使用屏幕像素。
   function fitBounds(bounds, aspect = 900 / 680) {
     const [left,top,right,bottom] = bounds;
     const width = Math.min(900,Math.max(110,(right-left)*1.3,(bottom-top)*1.3*aspect));
@@ -78,7 +78,7 @@
     const scale = Math.min(width/view[2],height/view[3]);
     const ox=(width-view[2]*scale)/2,oy=(height-view[3]*scale)/2;
     const occupied=[],visible=[];
-    // Optional marker clearance for larger story seals; ordinary labels keep their old layout.
+    // 可为较大的故事印章预留标记间距，普通标签保持原有布局。
     for (const item of items.filter(item=>item.markerRadius>0)) {
       const x=(item.x-view[0])*scale+ox,y=(item.y-view[1])*scale+oy,r=item.markerRadius;
       if(x+r>=0&&x-r<=width&&y+r>=0&&y-r<=height) occupied.push([x-r,y-r,x+r,y+r]);

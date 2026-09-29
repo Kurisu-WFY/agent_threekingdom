@@ -1,4 +1,4 @@
-/* Evidence-backed cultural reading; missing data never becomes historical narrative. */
+/* 文化阅读以证据为依据，不把缺失的数据编造成历史叙述。 */
 (() => {
   'use strict';
   const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';
@@ -52,7 +52,7 @@
   function changeMode(next){
     if(!context||!modes.includes(next)||mode===next)return;
     const reader=$('#node-reading'),top=reader.scrollTop,pageTop=window.scrollY || 0;
-    // Keep the reading surface tall enough that shorter modes cannot clamp its scroll offset.
+    // 保持阅读区域足够高，避免较短模式限制原有滚动位置。
     $('#node-reading-content').style.minHeight=$('#node-reading-content').scrollHeight+'px';
     mode=next;renderReading();reader.scrollTop=top;
     if(context.story){const s=window.StoryProgress.get(context.story);s.mode=mode;window.StoryProgress.save(context.story);}

@@ -1,4 +1,4 @@
-"""Sourced name-based itinerary. No fabricated POI coordinates or live quotes."""
+"""依据有来源的地名规划行程，不编造景点坐标或实时报价。"""
 from __future__ import annotations
 
 from urllib.parse import urlencode
@@ -52,7 +52,7 @@ def plan_nanchong_itinerary(request: NanchongPlanRequest) -> dict:
                      "note": "按主题顺序编排，未做最短路径优化；预留餐饮/休息，交通耗时与开放时间确认后才能判断可行。"})
     nights = 1 if request.days == 2 else 0
     charged_days = 2 if request.days == 2 else 1
-    # Explicit demo reserves requested by the user; not researched market prices.
+    # 按用户要求明确预留演示预算，并非调研得到的市场价格。
     hotel_rate = request.hotel_per_room if request.hotel_per_room is not None else 200
     meal_rate = request.meals_per_person_day if request.meals_per_person_day is not None else 60
     allowances = {

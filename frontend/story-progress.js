@@ -1,4 +1,4 @@
-/* Versioned device-local exploration records; no account or location verification. */
+/* 带版本的设备本地探索记录，不进行账号或位置验证。 */
 (() => {
   'use strict';
   const key = 'sgt.story-progress.v1', records = new Map(), listeners = [];

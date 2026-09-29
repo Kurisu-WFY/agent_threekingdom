@@ -55,8 +55,8 @@ class HybridRetriever:
                 if current is None or (hit.vector_score + hit.lexical_score) > (current.vector_score + current.lexical_score):
                     merged[hit.chunk.id] = hit
 
-        # For this explicitly disputed topic, retrieve both approved papers rather
-        # than allowing many chunks of one author's paper to crowd out the other.
+        # 对这一明确存在争议的话题，同时检索两篇已审核论文，
+        # 避免同一作者的多个片段挤掉另一方观点。
         hometown_dispute = '陈寿' in query and '故里' in query
         if hometown_dispute:
             for chunk in self.vector_store.all_chunks():

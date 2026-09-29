@@ -1,16 +1,15 @@
-"""Local stdio entry point for the San Guo travel MCP server.
+"""三国旅游 MCP 服务的本地标准输入输出入口。
 
-Use this when an MCP client can start a local command directly (for example,
-the Windows NuwaClaw client).  Unlike ``mcp_server.py``, this entry point does
-not open a network port: protocol messages travel through stdin/stdout.
+适用于可直接启动本地命令的 MCP 客户端，例如 Windows 版女娲客户端。
+与 mcp_server.py 不同，此入口不开放网络端口，
+而是通过标准输入和标准输出传输协议消息。
 """
 
 import asyncio
 
 from mcp.server.stdio import stdio_server
 
-# Importing the shared server preserves the exact same seven tools for both
-# Streamable HTTP and stdio clients.
+# 导入共用服务，确保流式 HTTP 与标准输入输出客户端使用同一套工具。
 from mcp_server import server
 
 

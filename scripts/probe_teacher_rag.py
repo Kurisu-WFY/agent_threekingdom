@@ -1,4 +1,4 @@
-"""Run actual BGE and project hybrid retrieval checks (no paid LLM request)."""
+"""执行真实的 BGE 和项目混合检索检查，不调用付费大模型。"""
 import json
 from pathlib import Path
 from rag.hybrid_retriever import HybridRetriever

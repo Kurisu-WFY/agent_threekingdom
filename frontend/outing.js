@@ -1,4 +1,4 @@
-/* Same-page view: leaving it never destroys the original chat. */
+/* 同页视图，离开时不销毁原有聊天。 */
 (() => {
   const $=id=>document.getElementById(id), core=window.OutingCore, api=window.TravelApi;
   if (!$('outing-view') || !core || !api) return;

@@ -1,4 +1,4 @@
-// Exercise all navigation states using the real view switcher.
+// 使用真实视图切换器测试所有导航状态。
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 let cancelled=0,animated=0,reduced=false,focused=0,storyFocused=0;
 const label={textContent:''};

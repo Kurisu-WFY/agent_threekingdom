@@ -28,7 +28,7 @@ class BGEVectorStore:
         model_path = Path(s.embedding_model).resolve()
         if not model_path.is_dir():
             raise ValueError("BGE requires an existing local model directory")
-        # Config and weight identity; original weights remain in their directory.
+        # 校验模型配置和权重身份，原始权重保留在原目录。
         fingerprint = hashlib.sha256()
         for name in ('config.json', '1_Pooling/config.json', 'tokenizer.json'):
             fingerprint.update((model_path / name).read_bytes())
@@ -59,7 +59,7 @@ class BGEVectorStore:
         chunks = list(chunks)
         if not chunks:
             return
-        # Check length rather than silently truncating source paragraphs.
+        # 检查长度，避免源文段落被静默截断。
         texts = [c.title + '\n' + c.content for c in chunks]
         for text in texts:
             if len(self.model.tokenizer.encode(text)) > 512:

@@ -1,7 +1,6 @@
-# Runtime dependencies required by the MCP SSE service.
-# Heavy optional backends (PyTorch, sentence-transformers, Milvus and Redis)
-# are intentionally omitted: the application gracefully falls back to its
-# local vector store when those optional packages are unavailable.
+# MCP SSE 服务所需的运行依赖。
+# 此处有意省略较重的可选后端依赖（PyTorch、sentence-transformers、Milvus 和 Redis）；
+# 当这些可选包不可用时，应用会回退到本地向量存储。
 fastapi>=0.111.0
 uvicorn>=0.30.0
 starlette>=0.40.0

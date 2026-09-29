@@ -1,4 +1,4 @@
-"""Conservative first batch: retain provenance, quarantine OCR and incomplete works."""
+"""首批采用保守入库策略：保留来源，暂缓需文字识别或内容不完整的文献。"""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -11,7 +11,7 @@ from pypdf import PdfReader
 from san_guo_core.models import KnowledgeChunk
 from rag.vector_store import get_vector_store
 
-# Content reviewed in the source-folder audit. No automatic trust promotion.
+# 内容已在源文件夹审查时核验，不自动提升来源可信等级。
 APPROVED = {
     '文质辨洽': ('culture', '读史'),
     '《三国志》和陈寿的史识': ('research', '读史'),
@@ -85,9 +85,9 @@ def main():
                 row['excluded_pages'].append({'page': page_number, 'reason': issue})
                 continue
             text = clean(raw)
-            # Bibliography is provenance, not an answer passage. Preserve original PDF.
+            # 参考文献用于追溯来源，不作为回答片段；原始 PDF 保持不变。
             text = re.split(r'参考文献|REFERENCES', text)[0]
-            # Page-local overlap prevents provenance drifting across pages.
+            # 重叠切片限于同一页，避免跨页后来源页码错位。
             for offset in range(0, len(text), 300):
                 content = text[offset:offset + 350].strip()
                 if len(content) < 60 or len(re.findall(r'[\u4e00-\u9fff]', content)) / max(len(content), 1) < .35:

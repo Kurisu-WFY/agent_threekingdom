@@ -1,4 +1,4 @@
-/* A browser-local journal derived from real chapter marks and user messages. */
+/* 根据实际章节标记和用户消息生成浏览器本地探索志。 */
 (() => {
   'use strict';
   const $=s=>document.querySelector(s), key='sgt.journal.questions.v1', limit=200;
