@@ -78,9 +78,6 @@
     if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
     if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','压缩需由你选择保留章节；现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选择保留章节并重绘路线',()=>window.SGTStoryUI.openStory(message.storyId)));
-    const places=(window.SGT_PLACES||[]).filter(p=>message.text.includes(p.name));
-    places.forEach(p=>{const located=window.StoryMap?.describePlace?.(p,{placeId:p.id});if(located?.point){box.append(button('地图定位：'+p.name+' · '+(located.exact?'核验位置':'县级示意'),()=>window.TravelMap.focusStoryPoint(located.point)),button('加入路线：'+p.name,()=>window.TravelMap.addStoryPlace(located.point)));}else box.append(node('p','',p.name+' · 坐标待核验，暂不能定位'));box.append(button('查看地点：'+p.name,()=>window.CulturalNode.openPlace(p.id)),button('为'+p.name+'规划路线',()=>window.SGTJourney.ask('请规划到'+p.name+'的路线；先询问可用时间、出发地和交通方式。')));});
-    if(message.text.includes('阆中'))box.append(button('定位阆中 · 县级示意',()=>window.TravelMap.focusMention('阆中市')));
     return box;
   }
   function selectPersona(name){if(!profiles[name])return;chats[active].persona=name;chats[active].characterNotice='已切换为'+name+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';sync(chats[active]);}

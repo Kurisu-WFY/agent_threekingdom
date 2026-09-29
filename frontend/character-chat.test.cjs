@@ -31,7 +31,7 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  assert.ok(!text(rendered).includes('当前资料中未找到可靠记载'));
  ctx.window.CharacterChat.selectPersona('诸葛亮');
  run("send('我想了解张飞\\n\\n请区分史实与推测')");assert.ok(!actions.includes('zhangfei'));assert.ok(!actions.includes('exit'));assert.ok(actions.includes('预选:阆中市'));assert.equal(run('chats[active].persona'),'诸葛亮');assert.equal(requests.at(-1).body.mode,'学术');assert.ok(requests.at(-1).body.history.at(-1).content.includes('半天/一天/两天'));assert.ok(requests.at(-1).body.history.some(m=>m.content.startsWith('【人物视角：诸葛亮】')));
- requests.at(-1).resolve({ok:true,json:async()=>({answer:'阆中与剑门关',intent:{intent:'budget_ticket'},route:null})});await flush();rendered=ctx.window.CharacterChat.answer(run('chats[0].messages.at(-1)'));assert.ok(text(rendered).includes('故事线推荐'));assert.ok(text(rendered).includes('定位阆中'));assert.ok(text(rendered).includes('为剑门关规划路线'));
+ requests.at(-1).resolve({ok:true,json:async()=>({answer:'阆中与剑门关',intent:{intent:'budget_ticket'},route:null})});await flush();rendered=ctx.window.CharacterChat.answer(run('chats[0].messages.at(-1)'));assert.ok(text(rendered).includes('故事线推荐'));assert.ok(!all(rendered).some(n=>n.tag==='button'&&/^(查看地点：|为.+规划路线|地图定位：|加入路线：|定位阆中)/.test(n.textContent)));
  assert.ok(text(rendered).includes('切换到张飞视角'));all(rendered).find(n=>n.textContent==='切换到张飞视角').handlers.click();assert.equal(run('chats[active].persona'),'张飞');
  const before=run('chats[active]');get('#new-chat').onclick();get('#character-select').value='陈寿';get('#character-select').handlers.change();run('deleteChat(chats[active])');get('#undo-delete').onclick();assert.equal(run('chats[active].persona'),'陈寿');assert.equal(before.persona,'张飞');
  const paths=['陈寿','诸葛亮','张飞'].map(n=>ctx.window.CharacterChat.portrait(n).children.at(-1).attrs.d);assert.equal(new Set(paths).size,3);
@@ -46,9 +46,11 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  assert.ok(!text(rendered).includes('coverage: 1.0'));
  const placeLink=all(rendered).find(n=>n.className==='character-place-link'&&n.textContent==='剑门关');
  assert.ok(placeLink);placeLink.handlers.click();assert.ok(actions.includes('jianmenguan'));
+ assert.ok(all(rendered).filter(n=>n.tag==='button'&&n.textContent==='剑门关').every(n=>n.className==='character-place-link'));
  rendered=ctx.window.CharacterChat.answer({persona:'陈寿',text:'| 名称 | 状态 |\n| --- | --- |\n| 剑门关 | 待核验 |',data:{generation:{kind:'nuwax'}}});
  assert.ok(all(rendered).some(n=>n.tag==='table'));
  assert.ok(!text(rendered).includes('当前资料中未找到可靠记载'));
- assert.ok(text(rendered).includes('查看地点：剑门关'));
+ assert.ok(all(rendered).some(n=>n.tag==='td'&&all(n).some(child=>child.className==='character-place-link'&&child.textContent==='剑门关')));
+ assert.ok(!all(rendered).some(n=>n.tag==='button'&&/^(查看地点：|为.+规划路线|地图定位：|加入路线：|定位阆中)/.test(n.textContent)));
  console.log('PASS: persona/context isolation, history prefix, pending drafts, immutable retry, evidence and C/URL gating, explicit inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo');
 })();
