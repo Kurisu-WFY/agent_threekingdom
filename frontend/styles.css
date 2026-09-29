@@ -312,7 +312,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 }
 .close:hover { background: var(--surface-2); border-color: var(--line); color: var(--ink); }
 
-.messages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: var(--space-4); }
+.messages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
 
 .message { display: flex; gap: var(--space-2); align-items: flex-start; }
 .message.user { flex-direction: row-reverse; }
@@ -328,7 +328,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 .message.user .body { align-items: flex-end; }
 
 .bubble {
-  padding: var(--space-3) var(--space-3); font-size: var(--text-sm); line-height: var(--leading-body);
+  padding: var(--space-2) var(--space-3); font-size: var(--text-sm); line-height: var(--leading-body);
   white-space: pre-wrap; word-break: break-word;
   border-radius: 12px;
 }
@@ -781,11 +781,11 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .portrait-layer { stroke:var(--ink); stroke-width:1.6; stroke-linejoin:round; fill:var(--paper); }
 .portrait-layer.layer-0 { fill:var(--portrait-robe); }.portrait-layer.layer-1 { fill:var(--portrait-skin); }.portrait-layer.layer-2 { fill:var(--portrait-robe); }
 .avatar .character-portrait { width:30px; height:34px; }
-.character-evidence { border-left:3px solid var(--line-strong); padding:var(--space-2) var(--space-2); margin:var(--space-2) 0; background:var(--surface-2); }
+.character-evidence { border-left:3px solid var(--line-strong); padding:var(--space-1) var(--space-2); margin:var(--space-1) 0; background:var(--surface-2); }
 .character-evidence h4 { margin:0 0 var(--space-1); font-size:var(--text-xs); }.character-evidence p { margin:0; white-space:pre-wrap; }
 .character-evidence.inference { border:1px dashed var(--brass); }.character-evidence.romance { border-left-color:var(--brass-ink); background:var(--surface-2); }
 .character-evidence.unverified { border-left-color:var(--portrait-robe); }
-.character-raw { padding:var(--space-2) 0; border-top:1px solid var(--line); }.character-raw p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.character-raw { padding:var(--space-1) 0; border-top:1px solid var(--line); }.character-raw p { white-space:pre-wrap; overflow-wrap:anywhere; }
 .character-sources { font-size:var(--text-xs); overflow-wrap:anywhere; }.character-answer button { margin:var(--space-1); white-space:normal; text-align:left; }
 @media(max-width:760px) { .character-panel { max-height:145px; }.character-answer { min-width:0; overflow-wrap:anywhere; } }
 
@@ -1016,15 +1016,15 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .chat-panel .composer { padding:var(--space-2) var(--space-3); }
 .chat-panel .composer textarea { min-height:var(--target-size); height:54px; max-height:100px; }
 .agent-prose { min-width:0; line-height:var(--leading-body); overflow-wrap:anywhere; }
-.agent-prose p { margin:var(--space-2) 0; white-space:pre-wrap; }
-.agent-prose h4 { margin:var(--space-4) 0 var(--space-2); font-size:var(--text-base); }
+.agent-prose p { margin:var(--space-1) 0; white-space:pre-wrap; }
+.agent-prose h4 { margin:var(--space-3) 0 var(--space-1); font-size:var(--text-base); }
 .agent-prose ul,.agent-prose ol { padding-left:var(--space-5); }
-.agent-prose li { margin:var(--space-1) 0; }
+.agent-prose li { margin:2px 0; }
 .agent-prose code { font-size:var(--text-sm); background:var(--surface-2); overflow-wrap:anywhere; }
 .agent-prose pre { white-space:pre-wrap; overflow:auto; padding:var(--space-2); background:var(--surface-2); }
 .agent-table-scroll { overflow-x:auto; max-width:100%; margin:var(--space-3) 0; }
 .agent-prose table { width:100%; border-collapse:collapse; font-size:var(--text-sm); }
-.agent-prose th,.agent-prose td { border:1px solid var(--line); padding:var(--space-2); text-align:left; vertical-align:top; min-width:7em; }
+.agent-prose th,.agent-prose td { border:1px solid var(--line); padding:var(--space-1) var(--space-2); text-align:left; vertical-align:top; min-width:7em; }
 .agent-prose th { background:var(--surface-2); font-weight:600; }
 .agent-prose a { display:inline; }
 

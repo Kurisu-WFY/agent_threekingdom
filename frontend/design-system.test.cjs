@@ -26,4 +26,7 @@ assert.ok(!/body\.chat-open \.content\s*\{[^}]*\b(?:transform|height|margin):/.t
 assert.ok(!/body\.chat-open \.content-heading\s*>\s*span\s*\{\s*display:none/.test(css));
 assert.ok(/\.composer-send\s*\{[^}]*border-radius:50%/.test(css));
 assert.ok(/\.composer textarea\s*\{[^}]*padding:[^;]*64px/.test(css));
+assert.ok(/\.messages\s*\{[^}]*padding:\s*var\(--space-3\)[^}]*gap:\s*var\(--space-2\)/.test(css));
+assert.ok(/\.bubble\s*\{[^}]*padding:\s*var\(--space-2\) var\(--space-3\);\s*font-size:\s*var\(--text-sm\);\s*line-height:\s*var\(--leading-body\)/.test(css));
+assert.ok(/\.agent-prose p\s*\{\s*margin:var\(--space-1\) 0/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
