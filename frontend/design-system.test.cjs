@@ -31,4 +31,7 @@ assert.ok(/@media\(max-width:760px\)\s*\{\s*\.chat-panel \.composer textarea\s*\
 assert.ok(/\.messages\s*\{[^}]*padding:\s*var\(--space-3\)[^}]*gap:\s*var\(--space-2\)/.test(css));
 assert.ok(/\.bubble\s*\{[^}]*padding:\s*var\(--space-2\) var\(--space-3\);\s*font-size:\s*var\(--text-sm\);\s*line-height:\s*var\(--leading-body\)/.test(css));
 assert.ok(/\.agent-prose p\s*\{\s*margin:var\(--space-1\) 0/.test(css));
+assert.ok(/\.character-answer \.module-button\s*\{[^}]*display:inline-flex[^}]*min-height:30px!important[^}]*border-radius:999px/.test(css));
+assert.ok(/@media\(max-width:760px\)\s*\{\s*\.character-answer \.module-button\s*\{\s*min-height:var\(--target-size\)!important/.test(css));
+assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-height:0!important[^}]*margin:0/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
