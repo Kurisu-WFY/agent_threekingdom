@@ -409,6 +409,15 @@
         </div>
         <button id="close-chat" class="close" aria-label="关闭对话">×</button>
       </header>
+      <div id="messages" class="messages" role="log" aria-live="polite"></div>
+      <div class="delete-notice" id="delete-notice" role="status" hidden>已删除对话 <button type="button" id="undo-delete">撤销</button></div>
+      <form id="chat-form" class="composer">
+        <label class="sr-only" for="message">输入消息</label>
+        <div class="composer-field">
+          <textarea id="message" placeholder="问陈寿：这一章讲什么？我只有半天…" rows="2" maxlength="2000"></textarea>
+          <button class="composer-send" type="submit" aria-label="发送消息">↑</button>
+        </div>
+      </form>
       <details class="chat-options"><summary>路线背景与讲解设置</summary><div class="chat-options-body">
       <details class="historian-context"><summary>此刻行至 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
       <details class="historian-note" id="guide-note" hidden open><summary>陈寿接卷 · 章节引导</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
@@ -420,17 +429,6 @@
         <p>AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志</p><p id="character-notice" role="status"></p>
       </section>
       </div></details>
-      <div id="messages" class="messages" role="log" aria-live="polite"></div>
-      <div class="delete-notice" id="delete-notice" role="status" hidden>已删除对话 <button type="button" id="undo-delete">撤销</button></div>
-      <form id="chat-form" class="composer">
-        <label class="sr-only" for="message">输入消息</label>
-        <textarea id="message" placeholder="问陈寿：这一章讲什么？我只有半天…" rows="2" maxlength="2000"></textarea>
-        <div class="composer-bottom">
-          <span>Enter 发送 · Shift + Enter 换行</span>
-          <button type="submit" aria-label="发送消息">↑</button>
-        </div>
-      </form>
-      <p class="demo-note">川东北三国文化旅游智能服务 · 动态信息请核验</p>
     </section>
   </aside>
 

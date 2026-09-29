@@ -14,4 +14,16 @@ assert.ok(contrast('status-ink','status-surface')>=4.5);assert.ok(contrast('line
 const outside=css.replace(root,'');assert.equal(/#[a-f\d]{3,8}\b|rgba?\([\d.,\s]+\)/i.test(outside),false,'raw colors must stay in root');
 assert.ok(css.includes('min-height:var(--target-size)!important'));
 assert.ok(css.includes('--layout-duration:0ms'));assert.ok(css.includes('animation:none!important'));
+const html=fs.readFileSync(__dirname+'/index.html','utf8');
+const conversationStart=html.indexOf('<section class="conversation">');
+const conversation=html.slice(conversationStart,html.indexOf('</aside>',conversationStart));
+assert.ok(conversation.indexOf('id="messages"')<conversation.indexOf('id="chat-form"'));
+assert.ok(conversation.indexOf('id="chat-form"')<conversation.indexOf('class="chat-options"'));
+assert.ok(!/class="demo-note"|class="composer-bottom"/.test(conversation));
+assert.ok(html.includes('class="content-footer"'));
+assert.ok(/--panel-width:min\(680px,42vw\)/.test(css));
+assert.ok(!/body\.chat-open \.content\s*\{[^}]*\b(?:transform|height|margin):/.test(css));
+assert.ok(!/body\.chat-open \.content-heading\s*>\s*span\s*\{\s*display:none/.test(css));
+assert.ok(/\.composer-send\s*\{[^}]*border-radius:50%/.test(css));
+assert.ok(/\.composer textarea\s*\{[^}]*padding:[^;]*64px/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
