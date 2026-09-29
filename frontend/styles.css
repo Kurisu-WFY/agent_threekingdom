@@ -366,15 +366,15 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 .composer { border-top: 1px solid var(--line); padding: var(--space-3) var(--space-3) var(--space-2); }
 .composer-field { position:relative; }
 .composer textarea {
-  width: 100%; resize: none; padding: var(--space-3) 64px var(--space-3) var(--space-3);
+  display:block; width: 100%; resize: none; padding: var(--space-2) 48px var(--space-2) var(--space-3);
   border: 1px solid var(--line); border-radius: 10px;
   background: var(--surface); font-size: var(--text-sm); line-height: var(--leading-title);
 }
 .composer textarea::placeholder { color: var(--line); }
 .composer-send {
-  position:absolute; right:8px; bottom:8px;
-  width:44px; height:44px; border-radius:50%; border:none;
-  background: var(--shu); color: var(--surface); font-size: var(--text-base); line-height: var(--leading-tight);
+  position:absolute; right:6px; bottom:6px;
+  width:32px; height:32px; min-width:32px!important; min-height:32px!important; border-radius:50%; border:none;
+  background: var(--shu); color: var(--surface); font-size: var(--text-sm); line-height: var(--leading-tight);
   transition: background var(--motion-fast) var(--layout-easing);
 }
 .composer-send:hover { background: var(--shu-2); }
@@ -987,7 +987,6 @@ img,svg,textarea,select { max-width:100%; }
  .chat-panel .historian-note { max-height:100px; }
  .chat-panel .messages { min-height:72px; }
  .chat-panel .composer { flex-shrink:0; }
- .chat-panel .composer textarea { min-height:var(--target-size); height:64px; }
  .county-controls > *, .map-controls > * { min-width:0; max-width:100%; }
 }
 @media(prefers-reduced-motion:reduce) {
@@ -1014,7 +1013,11 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .chat-panel #historian-portrait .historian-svg { height:44px; width:42px; }
 .chat-panel .messages { flex:1 1 0; min-height:0; }
 .chat-panel .composer { padding:var(--space-2) var(--space-3); }
-.chat-panel .composer textarea { min-height:var(--target-size); height:54px; max-height:100px; }
+.chat-panel .composer textarea { min-height:var(--target-size); max-height:none; overflow-y:hidden; }
+@media(max-width:760px) {
+ .chat-panel .composer textarea { min-height:56px; padding-right:64px; }
+ .chat-panel .composer-send { width:44px; height:44px; min-width:44px!important; min-height:44px!important; }
+}
 .agent-prose { min-width:0; line-height:var(--leading-body); overflow-wrap:anywhere; }
 .agent-prose p { margin:var(--space-1) 0; white-space:pre-wrap; }
 .agent-prose h4 { margin:var(--space-3) 0 var(--space-1); font-size:var(--text-base); }

@@ -10,13 +10,14 @@ class Element {
   append(...nodes) { this.children.push(...nodes); }
   replaceChildren() { this.children = []; }
   focus() { this.focused = true; }
+  getBoundingClientRect() { return { left: 0, top: 0 }; }
 }
 const nodes = new Map();
 function get(id) { if (!nodes.has(id)) nodes.set(id, new Element()); return nodes.get(id); }
 const requests = [];
 const context = vm.createContext({
   document: { querySelector: get, querySelectorAll: () => [], createElement: tag => new Element(tag), body: new Element(), addEventListener() {} },
-  window: { addEventListener() {} }, AbortSignal, URL,
+  window: { events: {}, addEventListener(type, fn) { this.events[type] = fn; } }, AbortSignal, URL,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
 // 应用状态测试使用通信替身；SSE 字节级解析另行测试。
@@ -33,6 +34,24 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 (async () => {
   assert.equal(get('#chat-panel').hidden, true);
   assert.equal(get('submit').disabled, true);
+  get('#chat-panel').clientHeight = 900;
+  get('#message').value = '草稿';
+  get('#message').scrollHeight = 80;
+  run('updateComposer()');
+  assert.equal(get('#message').style.height, '80px');
+  assert.equal(get('#message').style.overflowY, 'hidden');
+  get('#message').scrollHeight = 400;
+  run('updateComposer()');
+  assert.equal(get('#message').style.height, '300px');
+  assert.equal(get('#message').style.overflowY, 'auto');
+  get('#chat-panel').clientHeight = 600;
+  context.window.events.resize();
+  assert.equal(get('#message').style.height, '200px');
+  get('#message').value = '';
+  run('updateComposer()');
+  assert.equal(get('#message').style.height, '44px');
+  assert.equal(get('#message').style.overflowY, 'hidden');
+  get('#message').scrollHeight = 0;
   assert.equal(get('#history-list').children[0].children.length, 1);
   run('deleteChat(chats[0])');
   get('#undo-delete').onclick();

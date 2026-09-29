@@ -49,6 +49,13 @@ document.querySelector('#undo-delete').onclick = () => {
 function updateComposer() {
   submitButton.disabled = !!chats[active].pending || !input.value.trim();
   submitButton.setAttribute('aria-label', chats[active].pending ? '正在生成回答' : '发送消息');
+  const minHeight = window.innerWidth <= 760 ? 56 : 44;
+  const maxHeight = Math.max(minHeight, (panel.clientHeight || window.innerHeight || 0) / 3);
+  input.style.height = minHeight + 'px';
+  input.style.overflowY = 'hidden';
+  const contentHeight = input.value ? Math.max(minHeight, input.scrollHeight || 0) : minHeight;
+  input.style.height = Math.min(contentHeight, maxHeight) + 'px';
+  input.style.overflowY = contentHeight > maxHeight ? 'auto' : 'hidden';
 }
 
 function saveDraft() {
@@ -247,6 +254,7 @@ function toggleChat(open) {
   document.body.classList.toggle('chat-open', open);
   launcher.setAttribute('aria-expanded', String(open));
   launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');
+  updateComposer();
   if (open) input.focus({ preventScroll: true });
   else {
     launcher.focus({ preventScroll: true });
@@ -450,7 +458,9 @@ window.addEventListener('resize', () => {
   launcher.style.left = launcher.style.top = launcher.style.bottom = launcher.style.right = '';
   launcherRestLeft = launcher.getBoundingClientRect().left;
   if (!panel.hidden) updateChatLayout();
+  updateComposer();
 });
+if (typeof ResizeObserver !== 'undefined') new ResizeObserver(updateComposer).observe(panel);
 
 render();
 
