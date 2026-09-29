@@ -1,5 +1,11 @@
 # 交接记录 · HANDOFF
 
+### 2026-09-29 · 高德交互地图
+- 新增 `amap_map_api.py` 配置与固定高德上游代理。网页只获得JS API Key，securityJsCode仅服务端注入；拒绝路径穿越、跨站浏览器请求、无效回调及重定向，错误不回显密钥。本机服务绑定127.0.0.1，公开部署前需认证与限流。
+- REST路线返回真实分段轨迹，前端 `amap-map.js` 用高德底图绘制、切换方案、标记起终点，缺失路段不画直线补齐。保持原聊天和行程布局。地图SDK需联网。
+- MCP路线返回本机 `map_url`，不向模型输出大量坐标。智能体按本地提示词附「查看路线地图」链接；点击链接再点击加载，后端按地点ID重新核验，可查看最新路线（不保证与先前结果完全相同）。当前是逐段路线地图，不是多站点整程自动合图。
+- 真实南充公交底图和路线显示通过；375px无页面横向溢出；9项后端测试、全部前端回归、stdio MCP地图链接实测通过。截图在output/playwright/amap-map-desktop.png和amap-map-mobile.png。平台系统提示词未代发布；客户端MCP需重载。
+
 ### 2026-09-29 · 高德前端与MCP接入
 - 共用实现 `src/tools/amap_tools.py`，REST为 `POST /api/travel/amap/places`、`POST /api/travel/amap/route`；MCP新增 `search_amap_places` 和 `get_amap_route`。密钥只读取服务端 `AMAP_WEB_SERVICE_KEY`，不输出到网页或错误消息。
 - 出行助手新增地点搜索、起终点确认与公交/驾车/步行查询，保留既有智能体规划入口；高德GCJ02坐标不送入旧WGS84路线工具。返回距离、预计时长、公交费用、分段指引及查询时间，不代表实时到站或购票。

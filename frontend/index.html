@@ -92,6 +92,10 @@
               </form>
               <p id="amap-status" role="status" aria-live="polite">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>
               <div id="amap-results"></div>
+              <section id="amap-map-region" aria-label="高德路线地图" hidden>
+                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
+                <p id="amap-map-note" role="status"></p>
+              </section>
             </div>
             <details><summary>其他道路参考：城市中心或手动坐标</summary>
             <form id="outing-route-form">
@@ -447,7 +451,8 @@
   <script src="journal.js?v=demo-ready-1"></script>
   <script src="chenshou-guide.js?v=nuwax-reading-2"></script>
   <script src="outing.js?v=2"></script>
-  <script src="amap-planner.js?v=1"></script>
+  <script src="amap-map.js?v=1"></script>
+  <script src="amap-planner.js?v=2"></script>
   <script src="itinerary-agent-core.js?v=1"></script>
   <script src="itinerary.js?v=5"></script>
 </body>

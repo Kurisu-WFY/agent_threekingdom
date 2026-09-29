@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     app_env: str = "dev"
     amap_web_service_key: str | None = None
+    amap_js_api_key: str | None = None
+    amap_js_security_code: str | None = None
     data_dir: Path = Path("data")
     raw_dir: Path = Path("data/raw")
     processed_dir: Path = Path("data/processed")

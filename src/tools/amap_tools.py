@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Literal
 import re
+from urllib.parse import urlencode
 
 import httpx
 from pydantic import BaseModel, Field
@@ -83,6 +84,25 @@ def number(value):
         return None
 
 
+def route_lines(raw, mode):
+    """保留各真实路段的边界，缺失轨迹不跨段连成直线。"""
+    parts = raw.get('steps', []) if mode != 'transit' else []
+    if mode == 'transit':
+        for segment in raw.get('segments', []):
+            parts.extend((segment.get('walking') or {}).get('steps', []))
+            parts.extend((segment.get('bus') or {}).get('buslines', [])[:1])
+    lines = []
+    for part in parts:
+        try:
+            points = [list(map(float, point.split(','))) for point in str(part.get('polyline', '')).split(';')]
+            if len(points) < 2 or len(points) > 20000 or not all(len(p) == 2 and -180 <= p[0] <= 180 and -90 <= p[1] <= 90 for p in points):
+                continue
+            lines.append(points)
+        except (ValueError, TypeError):
+            continue
+    return lines
+
+
 def get_amap_route(origin_id: str, destination_id: str, mode: str = 'transit'):
     try:
         p = AmapRoute(origin_id=origin_id, destination_id=destination_id, mode=mode)
@@ -103,7 +123,7 @@ def get_amap_route(origin_id: str, destination_id: str, mode: str = 'transit'):
                 params.update(city=origin['citycode'], cityd=destination['citycode'])
                 path = '/v3/direction/transit/integrated'
             else:
-                params['show_fields'] = 'cost'
+                params['show_fields'] = 'cost,polyline'
                 path = '/v5/direction/' + p.mode
             route = request(client, path, params).get('route') or {}
         alternatives = []
@@ -122,12 +142,14 @@ def get_amap_route(origin_id: str, destination_id: str, mode: str = 'transit'):
                 steps = [x.get('instruction', '') for x in raw.get('steps', [])]
             cost = raw.get('cost')
             alternatives.append({'distance_m': number(raw.get('distance')),
+                'lines': route_lines(raw, p.mode),
                 'duration_seconds': number(raw.get('duration') or (cost.get('duration') if isinstance(cost, dict) else None)),
                 'fare_yuan': number(cost) if p.mode == 'transit' else None,
                 'walking_distance_m': number(raw.get('walking_distance')),
                 'steps': [s for s in steps if s][:100]})
         return envelope('ok' if alternatives else 'empty', '高德查询结果，时间及费用为估计；出发前请复核，不代表实时到站或已购票。' if alternatives else '当前条件没有可用路线，请换交通方式或具体入口。',
                         {'origin': origin, 'destination': destination, 'mode': p.mode, 'alternatives': alternatives[:3],
-                         'source': '高德地图', 'coordinate_system': 'GCJ02', 'queried_at': datetime.now(timezone.utc).isoformat()})
+                         'source': '高德地图', 'coordinate_system': 'GCJ02', 'queried_at': datetime.now(timezone.utc).isoformat(),
+                         'map_url': 'http://127.0.0.1:8010/?' + urlencode({'amap_origin': p.origin_id, 'amap_destination': p.destination_id, 'amap_mode': p.mode}) + '#outing'})
     except (AmapError, ValueError) as exc:
         return envelope('unavailable', str(exc) if isinstance(exc, AmapError) else '路线参数不正确，请重新选择地点。')

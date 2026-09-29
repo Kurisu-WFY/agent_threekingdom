@@ -10,6 +10,26 @@ from travel_api import router
 
 
 class AmapTests(unittest.TestCase):
+    def test_geometry_preserves_segments(self):
+        raw={'steps':[{'polyline':'106,30;106.1,30.1'}, {'polyline':'bad'}, {'polyline':'107,31;107.1,31.1'}]}
+        self.assertEqual(len(a.route_lines(raw,'walking')),2)
+        self.assertEqual(a.route_lines({'steps':[{'polyline':'nan,30;106,30'}]},'walking'),[])
+
+    def test_map_proxy_boundary_and_secrets(self):
+        import amap_map_api as maps
+        app=FastAPI();app.include_router(maps.router)
+        settings=SimpleNamespace(amap_js_api_key='public-key',amap_js_security_code='private-code')
+        with patch.object(maps,'get_settings',return_value=settings), TestClient(app) as client:
+            config=client.get('/api/travel/amap/map-config')
+            self.assertTrue(config.json()['enabled'])
+            self.assertNotIn('private-code',config.text)
+            self.assertEqual(client.get('/_AMapService/https://example.com').status_code,404)
+            self.assertEqual(client.get('/_AMapService/v3/place/text',headers={'Sec-Fetch-Site':'cross-site'}).status_code,403)
+            with patch.object(httpx.AsyncClient,'get',side_effect=RuntimeError('private-code')):
+                failure=client.get('/_AMapService/v3/place/text')
+                self.assertEqual(failure.status_code,502)
+                self.assertNotIn('private-code',failure.text)
+
     def test_missing_key(self):
         with patch.object(a, 'get_settings', return_value=SimpleNamespace(amap_web_service_key=None)):
             self.assertEqual(a.search_amap_places('万卷楼')['status'], 'unavailable')

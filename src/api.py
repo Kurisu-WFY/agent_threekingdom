@@ -30,6 +30,8 @@ service = TravelAgentService()
 nuwax = NuwaxClient()
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.include_router(travel_router)
+from amap_map_api import router as amap_map_router
+app.include_router(amap_map_router)
 
 
 class ChatRequest(BaseModel):

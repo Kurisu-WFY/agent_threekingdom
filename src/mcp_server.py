@@ -176,7 +176,11 @@ async def call_tool(name: str, arguments: dict):
         return as_text(await asyncio.to_thread(search_amap_places, **p.model_dump()))
     if name == 'get_amap_route':
         p = AmapRoute(**arguments)
-        return as_text(await asyncio.to_thread(get_amap_route, **p.model_dump()))
+        result = await asyncio.to_thread(get_amap_route, **p.model_dump())
+        # 地图页会重新核验轨迹，不把大量坐标塞进模型上下文。
+        for route in (result.get('data') or {}).get('alternatives', []):
+            route.pop('lines', None)
+        return as_text(result)
     if name == "get_nanchong_travel_catalog":
         return as_text(get_nanchong_travel_catalog())
     if name == "plan_nanchong_itinerary":
