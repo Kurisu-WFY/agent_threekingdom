@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>对话错误态验收</title><style>body{margin:0;font:16px sans-serif}header{padding:8px}iframe{width:100%;height:calc(100vh - 50px);border:0}</style><header>仅供测试：首次聊天请求触发真实 422；重新请求恢复正常请求。</header><iframe title="错误态测试页面"></iframe><script>
 fetch('/').then(r=>r.text()).then(html=>{
-const setup = '<base href="/"><script>const originalFetch=window.fetch.bind(window);let first=true;window.fetch=(url,options)=>{if(url==="/chat"&&first){first=false;return originalFetch(url,{...options,body:"{}"});}return originalFetch(url,options);};<'+ '/script>';
+const setup = '<base href="/"><script>const originalFetch=window.fetch.bind(window);let first=true;window.fetch=(url,options)=>{if((url==="/chat"||url==="/chat/stream")&&first){first=false;return originalFetch(url,{...options,body:"{}"});}return originalFetch(url,options);};<'+ '/script>';
 document.open();document.write(html.replace('<head>','<head>'+setup));document.close();
 });
 </script></html>

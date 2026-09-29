@@ -21,5 +21,6 @@ function response(events, crlf=false) {
   await assert.rejects(request({},()=>{},async()=>response([{type:'delta',text:'未完成'}])),/完整回答/);
   await assert.rejects(request({},()=>{},async()=>response([{type:'error',message:'测试失败'}])),/测试失败/);
   await assert.rejects(request({},()=>{},async()=>new Response('',{status:502})),/502/);
+  await assert.rejects(request({message:'南充一天三国文化路线'},()=>{},async()=>new Response('{"detail":"missing message"}',{status:422,headers:{'content-type':'application/json'}})),/422/);
   console.log('PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure');
 })().catch(e=>{console.error(e);process.exitCode=1;});
