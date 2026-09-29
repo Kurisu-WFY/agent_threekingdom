@@ -129,7 +129,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
 .status { display: inline-flex; align-items: center; font-size: var(--text-xs); color: var(--ink-soft); }
 
 /* ---------- 主内容 ---------- */
-.workspace { min-height: calc(100dvh - var(--header-height)); padding: calc(var(--space-1) * 10) var(--space-6) calc(var(--space-1) * 14); }
+.workspace { min-height: calc(100dvh - var(--header-height)); padding: calc(var(--space-1) * 10) var(--space-6) calc(var(--space-1) * 14); transition:padding-right var(--layout-duration) var(--layout-easing); }
 
 .content {
   width: min(1500px, 100%);

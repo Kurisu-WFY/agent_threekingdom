@@ -34,4 +34,6 @@ assert.ok(/\.agent-prose p\s*\{\s*margin:var\(--space-1\) 0/.test(css));
 assert.ok(/\.character-answer \.module-button\s*\{[^}]*display:inline-flex[^}]*min-height:30px!important[^}]*border-radius:999px/.test(css));
 assert.ok(/@media\(max-width:760px\)\s*\{\s*\.character-answer \.module-button\s*\{\s*min-height:var\(--target-size\)!important/.test(css));
 assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-height:0!important[^}]*margin:0/.test(css));
+assert.ok(/\.workspace\s*\{[^}]*transition:padding-right var\(--layout-duration\) var\(--layout-easing\)/.test(css));
+assert.ok(/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\*,\*::before,\*::after\s*\{[^}]*transition:none!important/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
