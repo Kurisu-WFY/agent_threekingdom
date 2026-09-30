@@ -5,9 +5,11 @@
   form.onsubmit=event=>{
     event.preventDefault();if(!form.reportValidity())return;
     try{
-      const question=window.ItineraryAgentCore.question(Object.fromEntries(new FormData(form)));
+      const preferences=Object.fromEntries(new FormData(form));
+      const question=window.ItineraryAgentCore.question(preferences);
       if(!window.SGTJourney?.ask)throw Error('智能体入口尚未加载，请刷新页面重试。');
-      window.SGTJourney.ask(question, {preserveMap:true});
+      if(window.TravelModules?.askActivity)window.TravelModules.askActivity(question,preferences);
+      else window.SGTJourney.ask(question, {preserveMap:true});
       status.textContent='已打开智能体对话并带入条件；若正在回答，本次需求已保留在对话草稿中。';
     }catch(e){status.textContent=e.message||'无法打开智能体，请刷新重试。';}
   };

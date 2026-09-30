@@ -29,6 +29,7 @@
     if (chats[active].pending) {
       // 追加内容，不覆盖尚未发送的会话草稿。
       input.value = input.value.trim() ? input.value + '\n\n' + question : question;
+      if(options.activityPlan)chats[active].draftActivityPlan={question,activityPlan:options.activityPlan};
       saveDraft(); updateComposer();
       $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';
     } else { send(question, options); $('#journey-feedback').textContent = '已交给向导，可以在对话中继续追问。'; }

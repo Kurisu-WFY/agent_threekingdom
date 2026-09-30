@@ -45,13 +45,6 @@
               <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
             </div>
             <label>想去的景点（选填）<input name="place_names" maxlength="500" placeholder="填写景点名称；留空让智能体根据文化资料推荐"></label>
-            <details><summary>预算与住宿设置（选填，留空使用演示估算）</summary><p>演示默认：住宿200元/间夜、餐饮60元/人天、市内交通30元/人天、门票预留30元/人/地点。不是实际收费；你填写的额度优先。</p><div class="itinerary-fields">
-              <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
-              <label>每间每晚额度（元）<input name="hotel_per_room" type="number" min="0" max="100000" step="0.01"></label>
-              <label>每人每日餐饮（元）<input name="meals_per_person_day" type="number" min="0" max="100000" step="0.01"></label>
-              <label>全程交通额度（元）<input name="transport_total" type="number" min="0" max="1000000" step="0.01"></label>
-              <label>全员总预算上限（元）<input name="budget_limit" type="number" min="0" max="1000000" step="0.01"></label>
-            </div></details>
             <button type="submit" class="outing-primary">交给智能体规划路线</button>
           </form>
           <p id="itinerary-status" role="status">点击后打开智能体对话，并带入这些条件。不限南充；资料和工具覆盖范围不等于目的地输入范围。</p>
@@ -339,10 +332,6 @@
           <label>同行人群<select name="group"><option>独行</option><option selected>家庭</option><option>亲子</option><option>研学</option></select></label>
           <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
           <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
-          <label>预算下限（元 / 全团）<input name="budget_min" type="number" min="0" step="1" placeholder="可不填"></label>
-          <label>预算上限（元 / 全团）<input name="budget_max" type="number" min="0" step="1" placeholder="可不填"></label>
-          <label>住宿档位<select name="hotel_tier"><option>经济型</option><option selected>舒适型</option><option value="品质型">高档型</option></select></label>
-          <label>房间数<input name="rooms" type="number" value="1" min="1" max="50" required></label>
           <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
           <button class="module-button primary" type="submit">规划 / 重绘路线</button>
         </form>
@@ -355,21 +344,13 @@
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">出行方案</h2>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="budget">预算明细</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
-        <div class="route-replan"><label>途中剩余时间<select id="remaining-time"><option value="0.5">半天</option><option value="1">一天</option><option value="2">两天</option></select></label><button id="replan-remaining" class="module-button">重绘剩余路线</button><p class="map-note">沿用已完成记录，只请求调整剩余章节；后端是否满足约束会在结果中说明。</p></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
         <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <p id="plan-status" role="status"></p>
         <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
         <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
       </section>
 
-      <section class="module-view" id="budget-view" data-view-panel="budget" hidden>
-        <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
-        <p class="welcome-kicker">费用分开看</p><h2>预算明细</h2>
-        <p>根据当前行程的人数、住宿晚数和房间数估算。没有数据的费用不会按零元计入。</p>
-        <button id="load-budget" class="module-button">查询当前行程预算</button>
-        <div id="budget-results" class="module-results" aria-live="polite"></div>
-      </section>
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
         <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>

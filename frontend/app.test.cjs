@@ -138,6 +138,13 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   }
   context.window.CharacterChat={backendMode:()=> '学术'};
   const modeRequest=run("window.SGTChat.request('文化模式校验')");assert.equal(requests.at(-1).body.mode,'学术');requests.at(-1).resolve({ok:true,json:async()=>({answer:'模式回答',intent:{intent:'culture_qa'}})});await modeRequest;delete context.window.CharacterChat;
+  let capturedActivity;
+  context.activityTest={preferences:{city:'南充',people:2},version:7};
+  context.window.TravelModules={receiveActivity:reply=>capturedActivity=reply};
+  run("send('测试活动方案', {preserveMap:true,activityPlan:activityTest})");
+  requests.at(-1).resolve({ok:true,json:async()=>({answer:'活动顺序：读史，30分钟。',intent:{intent:'culture_qa'}})});await flush();
+  assert.equal(capturedActivity.activityPlan,context.activityTest);assert.equal(capturedActivity.preserveMap,true);assert.match(capturedActivity.text,/活动顺序/);
+  run("chats[active].draftActivityPlan={question:'草稿活动方案',activityPlan:activityTest};send('草稿活动方案')");requests.at(-1).resolve({ok:true,json:async()=>({answer:'草稿活动回答'})});await flush();assert.equal(capturedActivity.activityPlan,context.activityTest);assert.equal(run('chats[active].draftActivityPlan'),undefined);delete context.window.TravelModules;
   console.log('PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover');
   console.log('PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation');
   console.log('PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery');

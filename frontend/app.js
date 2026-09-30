@@ -377,6 +377,10 @@ function send(text, options = {}) {
   const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
   chat.messages.push(reply);
   if (options.preserveMap) reply.preserveMap = true;
+  const draftActivity=chat.draftActivityPlan;
+  const activityPlan=options.activityPlan || (draftActivity && trimmed.includes(draftActivity.question) ? draftActivity.activityPlan : null);
+  if (activityPlan) reply.activityPlan = activityPlan;
+  delete chat.draftActivityPlan;
   if (!reply.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
   input.value = '';
@@ -412,6 +416,7 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.text = data.answer;
       reply.data = data;
+      if(chats.includes(chat))window.TravelModules?.receiveActivity(reply);
       if (data.session_id) chat.sessionId = data.session_id;
       if (!reply.preserveMap && (!reply.persona || data?.intent?.intent === 'route_planning')) window.TravelMap?.fromResponse(chat, reply.originalQuestion || reply.question, data);
     })
@@ -507,7 +512,7 @@ function showContentView(view) {
     const restoreFocus = leaving?.contains(document.activeElement);
     sections.forEach(section => { section.hidden = section !== target; });
     currentContentView = view;
-    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地', planner: '规划行程', plan: '出行方案', budget: '预算明细', travel: '天气与交通' };
+    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地', planner: '规划行程', plan: '出行方案', travel: '天气与交通' };
     labels.outing = '出行助手';
     const label = document.querySelector('#view-label');
     if (label) label.textContent = labels[view] || '主界面';

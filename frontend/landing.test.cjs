@@ -32,3 +32,5 @@ context.window.SGTJourney.ask('故事线主题追问');
 assert.ok(input.value.endsWith('故事线主题追问'));assert.equal(calls.at(-1),'draft');
 chat.pending=false;context.window.SGTJourney.ask('另一条主题');assert.equal(calls.at(-1),'另一条主题');
 console.log('PASS: story detail uses the same request/pending-draft bridge');
+
+chat.pending=true;context.window.SGTJourney.ask('待发送的活动方案',{activityPlan:{version:9}});assert.equal(chat.draftActivityPlan.question,'待发送的活动方案');assert.equal(chat.draftActivityPlan.activityPlan.version,9);
