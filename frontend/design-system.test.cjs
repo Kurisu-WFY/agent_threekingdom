@@ -47,3 +47,8 @@ assert.ok(contrast('chat-ink','surface-2')>=7,'chat contrast AAA');
 assert.ok(/\.agent-prose h2\s*\{[^}]*font-weight:700/.test(css));
 assert.ok(/\.agent-prose h4\s*\{[^}]*font-weight:600/.test(css));
 assert.ok(!/fonts\.googleapis|fonts\.gstatic|@font-face/.test(css+html));
+
+assert.ok(luminance(value('composer-surface'))<luminance(value('surface')));
+assert.ok(contrast('muted','composer-surface')>=4.5);
+assert.ok(/\.composer textarea\s*\{[^}]*border:0/.test(css));
+assert.ok(/\.composer textarea:focus\s*\{[^}]*outline:[^;]*var\(--focus-ring\)/.test(css));
