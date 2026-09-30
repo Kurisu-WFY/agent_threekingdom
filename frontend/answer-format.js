@@ -44,8 +44,8 @@
         while(i<lines.length&&lines[i].includes('|')&&lines[i].trim()) {const tr=element('tr'),values=cells(lines[i++]);visible.forEach(n=>{const td=element('td');inline(td,values[n]||'',decorateText);tr.append(td);});body.append(tr);}
         if(visible.length){table.append(head,body);wrapper.append(table);box.append(wrapper);}continue;
       }
-      const heading=/^#{1,6}\s+(.+)$/.exec(line);
-      if(heading){const h=element('h4');inline(h,heading[1],decorateText);box.append(h);i++;continue;}
+      const heading=/^(#{1,6})\s+(.+)$/.exec(line);
+      if(heading){const h=element('h'+Math.min(4,Math.max(2,heading[1].length)));inline(h,heading[2],decorateText);box.append(h);i++;continue;}
       if(/^\s*([-*]|\d+\.)\s+/.test(line)) {const list=element(/^\s*\d/.test(line)?'ol':'ul');while(i<lines.length&&/^\s*([-*]|\d+\.)\s+/.test(lines[i])){const li=element('li');inline(li,lines[i++].replace(/^\s*([-*]|\d+\.)\s+/,''),decorateText);list.append(li);}box.append(list);continue;}
       const p=element('p');inline(p,line,decorateText);box.append(p);i++;
     }

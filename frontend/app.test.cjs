@@ -181,7 +181,7 @@ assert.ok(textTree(userBubble).includes('coverage: 0.5'));
 assert.ok(userNodes.some(n=>n.tag==='th'&&textTree(n).includes('coverage')));
 assert.ok(!userNodes.some(n=>n.tag==='img'));
 context.testAssistantMessage={role:'assistant',text:'## 标题\n- 第一项'};
-assert.ok(allNodes(run('bubbleNode(testAssistantMessage)')).some(n=>n.tag==='h4'));
+assert.ok(allNodes(run('bubbleNode(testAssistantMessage)')).some(n=>n.tag==='h2'));
 
 const trusted = run('trustNode({data_status:"maintained",updated_at:"2026-09-12T10:00:00Z",sources:[{title:"官方",source_url:"https://example.com/info",source_level:"A"}]})');
 assert.match(textTree(trusted), /维护数据/);

@@ -29,7 +29,7 @@ assert.ok(/\.composer textarea\s*\{[^}]*padding:[^;]*48px/.test(css));
 assert.ok(/\.composer-send\s*\{[^}]*width:32px; height:32px; min-width:32px!important; min-height:32px!important/.test(css));
 assert.ok(/@media\(max-width:760px\)\s*\{\s*\.chat-panel \.composer textarea\s*\{[^}]*min-height:56px; padding-right:64px;[^}]*\}\s*\.chat-panel \.composer-send\s*\{[^}]*min-width:44px!important; min-height:44px!important/.test(css));
 assert.ok(/\.messages\s*\{[^}]*padding:\s*var\(--space-3\)[^}]*gap:\s*var\(--space-2\)/.test(css));
-assert.ok(/\.bubble\s*\{[^}]*padding:\s*var\(--space-2\) var\(--space-3\);\s*font-size:\s*var\(--text-sm\);\s*line-height:\s*var\(--leading-body\)/.test(css));
+assert.ok(/\.bubble\s*\{[^}]*padding:\s*var\(--space-2\) var\(--space-3\);\s*font-size:\s*var\(--text-base\);\s*line-height:\s*var\(--leading-body\)/.test(css));
 assert.ok(/\.agent-prose p\s*\{\s*margin:var\(--space-1\) 0/.test(css));
 assert.ok(/\.character-answer \.module-button\s*\{[^}]*display:inline-flex[^}]*min-height:30px!important[^}]*border-radius:999px/.test(css));
 assert.ok(/@media\(max-width:760px\)\s*\{\s*\.character-answer \.module-button\s*\{\s*min-height:var\(--target-size\)!important/.test(css));
@@ -41,3 +41,9 @@ console.log('PASS: original token semantics, complete scales, no raw component c
 assert.ok(/\.meta\s*\{[^}]*flex-wrap:\s*nowrap/.test(css),'N13 metadata is a single line');
 assert.ok(/\.trust-info\s*\{[^}]*flex-wrap:\s*nowrap/.test(css));
 assert.ok(/\.tag\[data-trust-state=unverified\]\s*\{[^}]*font-size:var\(--text-xs\)/.test(css));
+
+assert.equal(value('font-chat'),'-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif');
+assert.ok(contrast('chat-ink','surface-2')>=7,'chat contrast AAA');
+assert.ok(/\.agent-prose h2\s*\{[^}]*font-weight:700/.test(css));
+assert.ok(/\.agent-prose h4\s*\{[^}]*font-weight:600/.test(css));
+assert.ok(!/fonts\.googleapis|fonts\.gstatic|@font-face/.test(css+html));

@@ -38,7 +38,7 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  run(fs.readFileSync(__dirname+'/answer-format.js','utf8'));
  rendered=ctx.window.CharacterChat.answer({persona:'陈寿',text:'## 剑门关史学风格\n**剑门关**与文质辨洽\n- 资料待核验\n<img src=x onerror=alert(1)>\ncoverage: 1.0',data:{generation:{kind:'llm'}}});
  assert.ok(all(rendered).some(n=>n.className==='agent-prose'));
- assert.ok(all(rendered).some(n=>n.tag==='h4'&&all(n).some(child=>child.className==='character-place-link'&&child.textContent==='剑门关')));
+ assert.ok(all(rendered).some(n=>n.tag==='h2'&&all(n).some(child=>child.className==='character-place-link'&&child.textContent==='剑门关')));
  assert.ok(all(rendered).some(n=>n.tag==='strong'&&text(n).includes('剑门关')));
  assert.ok(all(rendered).some(n=>n.tag==='ul'));
  assert.ok(!all(rendered).some(n=>n.tag==='img'));
