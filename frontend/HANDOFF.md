@@ -447,3 +447,54 @@
 - 补充真实行程表单证据：#trip-form 一天活动请求走 culture_qa，但 generation.kind=retrieval_fallback，仅返回文献摘录，仍不符合活动顺序/时长/讲解的验收。前端同时识别该降级，提示尚未收到活动方案，避免成功误报。该项需要后端生成链路支持；仅改前端提示词无法解决。
 
 - 独立只读审查（Pascal）发现3个P2，已逐项红绿复现并修复：仅当前会话回答可更新全局方案；等待草稿恢复activityPlan时强制保留preserveMap；明确route_planning/budget_ticket响应也不能冒充活动方案。对应app.test.cjs和travel-modules.test.cjs新增断言。
+
+
+## 2026-09-30 · 第四轮 N10–N17（Codex，v4）
+
+- DONE：在 feat/frontend-acceptance-20260929 从 93f1d4b 完成 N10–N17；未重做前3轮功能。代码与提交范围仅 frontend/**，未 push、merge 或强推。
+- N12/N14/N17：气泡直接显示完整正文，移除人物抬头及前端补出的证据/来源/details 包装；头像旁显示人物名和“你”。原有故事操作保留在气泡下方；人物快照、Markdown、地点内联链接保留。
+- N10：取消 tab 切换时滚动文档；内容框使用稳定外框和内部滚动，避免长短视图收缩导致浏览器自动滚动。同步保存/恢复内部位置以保留 N9 关闭行为，同视图三个关闭入口均 240→640→240。
+- N13/N15/N16：单行12px元信息可横向滚动，路线详情独立保留；聊天使用 DSH 字体栈、16px近黑正文及分级粗体标题；输入背景加深、边框移除，保留鼠标/键盘焦点反馈。
+- N11：window passive scroll + rAF 合并帧，内容框内部滚动同步品牌状态；只用 opacity/transform 改变绘制效果，顶栏高度不变，支持减少动态效果。
+- 验证：19/19 回归、23/23 JS语法；1920×1080、375×812、375减少动态效果的逐项浏览器断言通过；六次 tab 切换顶部偏移0px，长视图底部可达，无页面横向溢出。真实 route_planning / culture_qa / budget_ticket 各发送一次，正文、名字、标签正常；Console errors=[]；/health=ok，8002五个修改资源与本地SHA256一致。
+- 本地提交：47ba8a9（P0气泡/名字/导航）、2aec85a（N13）、2a7b6a6（N15）、d5cb134（N16）、c4e53d7（N11/浏览器断言）、587ea42（复核兼容修复/刷新版本），另有收工交接提交。
+- 卡点：本轮无未解决功能问题。下一步由协调者 review；可刷新8002查看，源码无需构建镜像。详细逐项证据和重放方式见 frontend/HANDOFF.md。
+- docs/TASKS.md、docs/HANDOFF.md 既存未提交字节保持不变，本轮仅末尾追加且不纳入提交；src/**、deploy/**、data/**、prompts/** 未改。
+
+### v4 逐项验收证据
+
+| 项目 | 结果 | 回归断言 / 浏览器自证 |
+|---|---|---|
+| N12 证据分层删项 | PASS | character-chat.test.cjs：llm/未标注/NuWax 均直接渲染正文，正文中的真实文字不按关键词删掉；无 character-evidence/sources/raw |
+| N14 正文不丢失 | PASS | character-chat：标题、粗体、列表、表格、原文字样、地点链接及点击回调保留；浏览器夹具覆盖 heading/list/table/place links；真实三意图无退休包装 |
+| N17 人物名 | PASS | app：陈寿默认、诸葛亮、张飞、用户“你”；character-chat：请求发出后人物快照不变。真实切换后新消息显示诸葛亮/张飞，1920/375名字不换行，不压头像或气泡，用户仍反向右对齐 |
+| N10 切换不滚整页 | PASS | navigation：零 window.scrollTo，标签/aria-pressed/焦点恢复/地图选择及缩放/减少动态效果仍通过；浏览器 welcome/map/story/journal 六次切换，展开/收起两状态顶部偏移均0px |
+| N10 长视图可达 | PASS | 内容区内部滚到底：1920收起3036px、展开4702.67px；375约7074.67px；距scrollHeight-clientHeight不足2px |
+| N10 与 N9 兼容 | PASS | 独立只读复核发现内部位置遗漏，先红绿640≠240复现；三个关闭入口桌面/手机均240→640→240，焦点回launcher；不同视图不恢复旧位置，未引入卡片scrollIntoView竞争 |
+| N13 标签单行 | PASS | design-system nowrap/12px断言，app路线卡片独立保留；浏览器tag高27px，trust-info约27px，meta高37px（含10px横向滚动条），无多行；宽529/279px、内容739px，可横向滚动；全部tag字号12px |
+| N15 字体/颜色/层级 | PASS | design-system DSH原文字体栈与AAA对比度；character-chat/app ##→h2断言同步。计算正文16px、近黑rgb(15,17,21)，对比度17.53:1；h2=22px/700、h3=18px/700、h4=16px/600；用户正文及内联待核验文字不受旧绿色/14px规则覆盖；未新增字体资源 |
+| N16 输入框 | PASS | design-system背景亮度降低、无边框、焦点及占位符对比度断言；实测底色rgb(236,232,223)、border0px、焦点outline约2.67px，占位符4.96:1；发送按钮桌面32px/手机44px；app原自适应高度断言通过 |
+| N11 顶栏效果 | PASS | app：passive监听、100次事件合并1帧、状态未变不重复class操作、返回顶部恢复、内部滚动；浏览器1920品牌94.125→84.713px，高度64px不变；375品牌85.969→77.372px，高度56px不变；opacity1→0.65→1；减少动态效果transition0s |
+| 全19组 / JS | PASS | 全19个*.test.cjs逐个node执行，23个*.js逐个node --check；fail=0；git diff --check无错误 |
+| 1920/375 视觉与边界 | PASS | 手动截图复核名字、气泡、单行标签、输入区域；document.scrollWidth≤innerWidth；气泡在消息行内、头像组与正文无重叠 |
+| 真实三意图 | PASS | 南充一天三国文化路线→route_planning；陈寿与南充有什么关系？→culture_qa；南充三国景点门票多少钱，预算怎么估算？→budget_ticket；全部error=false，正文和名字/标签正常 |
+| Console / live挂载 | PASS | 清洁页面Console errors=[]，GET /health status=ok；index.html、app.js、character-chat.js、answer-format.js、styles.css的服务端与本地SHA256一致；资源版本更新到r4 |
+| 代码与协作边界 | PASS | 提交仅frontend/**；docs原始内容以字节前缀核对保留，只追加；未改后端/部署/数据/提示词，无push/merge/force |
+
+### 浏览器重放
+
+1. 打开 http://localhost:8002，设置1920×1080或375×812。
+2. Console执行：
+
+    await import('/n10-n17.browser-test.js');
+    await runRound4Acceptance();
+
+3. 返回各项测量；脚本使用明确的渲染夹具，不调用后端，结束后恢复原会话渲染、视图及滚动状态。产品页面不自动加载该文件。
+4. 减少动态效果请在清洁页面启用 prefers-reduced-motion: reduce 后重放；本轮最终该档全部通过。开发工具连续更改断点/媒体状态时曾有一次顶栏时序断言失败，检查滚动事件与rAF后清洁页面重放通过；未通过时不记为验收成功。
+5. 真实三意图另外由正常聊天请求验证，不将夹具结果冒充后端回答。前端只移除补出的区块，模型正文自身的出处或推断文字仍原样保留。
+
+### 复核结论
+
+只读代码复核（Feynman）发现一个P2：新内部滚动未接入旧关闭恢复。已补测试并修复，桌面/手机三个关闭入口均通过，等待复核确认写入补充记录。其余人物快照、标签单行、rAF未发现可复现P1/P2。
+
+- 复核补充：Feynman已确认P2修复；只读验证app三个关闭入口、跨视图不恢复和app.js语法通过。
