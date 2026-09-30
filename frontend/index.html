@@ -31,7 +31,7 @@
       </div>
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">三国文化行程规划</h1><p>填写条件，交给智能体规划。覆盖川东北及四川其他三国文化目的地，资料不足会说明。</p></header>
+        <header><h1 id="outing-title" tabindex="-1">三国文化活动方案</h1><p>填写条件，交给智能体安排文化活动。覆盖川东北及四川其他三国文化目的地，资料不足会说明。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
         <section id="nanchong-planner" class="itinerary" aria-label="智能体行程需求">
           <form id="itinerary-form">
@@ -45,7 +45,7 @@
               <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
             </div>
             <label>想去的景点（选填）<input name="place_names" maxlength="500" placeholder="填写景点名称；留空让智能体根据文化资料推荐"></label>
-            <button type="submit" class="outing-primary">交给智能体规划路线</button>
+            <button type="submit" class="outing-primary">交给智能体安排活动</button>
           </form>
           <p id="itinerary-status" role="status">点击后打开智能体对话，并带入这些条件。不限南充；资料和工具覆盖范围不等于目的地输入范围。</p>
           <div id="itinerary-result" class="itinerary-result" tabindex="-1" aria-label="行程草案结果"></div>
@@ -288,7 +288,7 @@
           <p class="map-note">地图仅为位置示意，驻地不是景区入口；待定位章节不会连接。当前章高亮，已完成盖“已寻迹”，未到达为待探索。</p>
           <p id="story-map-status" role="status"></p><ol id="story-chapter-list"></ol>
         </section>
-        <button id="map-back-plan" type="button" class="module-button" data-content-view="plan" hidden>返回路线方案</button>
+        <button id="map-back-plan" type="button" class="module-button" data-content-view="plan" hidden>返回活动方案</button>
         <p id="map-route-status" role="status">正在加载县级地点…</p>
         <ol id="map-route-list" class="map-route-list"></ol>
         <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部即可选中；县名自动避让，未显示的县区也可从列表选择。</p>
@@ -320,7 +320,7 @@
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
         <p class="welcome-kicker">把想法整理成行程</p><h2 tabindex="-1">规划你的川东北之旅</h2>
-        <p>通过文化向导规划路线；交通、开放时间与费用仍需核验。调整条件不会清空已寻迹记录。</p>
+        <p>通过文化向导安排活动顺序、时长与文化讲解；开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>
         <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
         <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
         <form id="trip-form" class="module-form">
@@ -333,16 +333,16 @@
           <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
           <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
           <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
-          <button class="module-button primary" type="submit">规划 / 重绘路线</button>
+          <button class="module-button primary" type="submit">生成活动方案</button>
         </form>
-        <p class="map-note">时间预算按半天4小时、一天8小时、两天16小时计算，含游览与交通；具体出发时刻、开放时段和班次仍待核验。预算为全团范围。</p>
+        <p class="map-note">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>
         <button type="button" class="module-button" data-content-view="plan">查看上一份方案</button>
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
       </section>
 
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
-        <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">出行方案</h2>
+        <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">活动方案</h2>
         <div id="plan-results" class="module-results"></div>
         <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
         <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>

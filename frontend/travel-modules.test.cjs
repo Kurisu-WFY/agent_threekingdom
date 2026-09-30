@@ -48,6 +48,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  const html=fs.readFileSync(__dirname+'/index.html','utf8');
  for(const name of ['destinations','planner','plan','travel'])assert.ok(html.includes('data-view-panel="'+name+'"'));
  assert.doesNotMatch(html,/住宿档位|房间数|预算明细|重绘剩余路线|预算与住宿设置|name="(?:rooms|hotel_tier|budget_min|budget_max|budget_limit|hotel_per_room|meals_per_person_day|transport_total)"/);
+ assert.ok(html.includes('交给智能体安排活动')&&html.includes('生成活动方案'));
  assert.ok(html.includes('id="amap-map"')&&html.includes('id="outing-weather-form"'));
  const journeyCalls=[];window.SGTJourney={ask:(q,o)=>journeyCalls.push({q,o})};
  await form.requestSubmit();const activity=journeyCalls.at(-1);

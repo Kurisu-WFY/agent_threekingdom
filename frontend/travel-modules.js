@@ -50,7 +50,7 @@
     city = nextCity;
     const version = ++cityRequest;
     document.querySelectorAll('[data-city]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.city === city)));
-    $('#plan-destination').textContent = `规划${city}行程`;
+    $('#plan-destination').textContent = `安排${city}活动`;
     const target = $('#destination-results');
     empty(target, '正在查询景区资料…');
     try {
@@ -67,7 +67,7 @@
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));
         if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));
         card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));
-        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('让智能体规划路线', () => chooseCity(spot.city || city, spot.name)));
+        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('让智能体安排活动', () => chooseCity(spot.city || city, spot.name)));
         sources(card, spot.sources);
         target.append(card);
       });
