@@ -1075,3 +1075,11 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .message .bubble,.agent-prose { color:var(--chat-ink); font-size:var(--text-base); }
 
 .composer textarea:focus { outline:2px solid var(--focus-ring); outline-offset:2px; box-shadow:inset 0 0 0 1px var(--focus-ring); }
+
+/* 品牌压缩仅用 transform，顶栏占位高度不变。 */
+.topbar .brand { transform-origin:left center; transition:opacity var(--motion-base) var(--layout-easing),transform var(--motion-base) var(--layout-easing); }
+.topbar.is-scrolled .brand { opacity:.65; transform:scaleX(.9); }
+@media(prefers-reduced-motion:reduce) { .topbar .brand { transition:none; } }
+
+/* 来源链接跟随单行标签高度，仍满足 24px 最小点击区域。 */
+.meta .trust-info a { min-height:24px; line-height:var(--leading-title); }

@@ -513,6 +513,26 @@ async function checkHealth() {
 checkHealth();
 window.addEventListener('online', checkHealth);
 
+/* 顶栏只改变绘制效果，保持高度及布局尺寸；多次滚动合并到一帧。 */
+function initTopbarScroll() {
+  const topbar = document.querySelector('.topbar');
+  const content = document.querySelector('.content');
+  if (!topbar || !window.requestAnimationFrame) return () => {};
+  let frame = null, compact = null;
+  function sync() {
+    frame = null;
+    const visible = content?.querySelector('[data-view-panel]:not([hidden])');
+    const next = (window.scrollY || 0) > 4 || (visible?.scrollTop || 0) > 24;
+    if (next !== compact) { topbar.classList.toggle('is-scrolled', next); compact = next; }
+  }
+  function schedule() { if (frame === null) frame = window.requestAnimationFrame(sync); }
+  window.addEventListener('scroll', schedule, { passive: true });
+  content?.addEventListener('scroll', schedule, { passive: true, capture: true });
+  sync();
+  return schedule;
+}
+const updateTopbarScroll = initTopbarScroll();
+
 /* ---------------- 主框内容切换 ---------------- */
 let currentContentView = 'welcome';
 let contentEntrance = null;
@@ -537,6 +557,7 @@ function showContentView(view) {
       contentEntrance = target.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });
     }
     if (!panel.hidden) updateChatLayout();
+    updateTopbarScroll();
     window.ChenshouGuide?.refresh();
 }
 document.querySelectorAll('[data-content-view]').forEach(button => {

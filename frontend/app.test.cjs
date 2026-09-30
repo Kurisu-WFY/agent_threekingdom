@@ -224,3 +224,24 @@ context.routeFixture={role:'assistant',text:'路线正文',data:{intent:{intent:
 const routeRow=run('messageNode(routeFixture)'), routeBody=routeRow.children[1];
 assert.ok(routeBody.children.some(n=>n.className==='route-card'),'route details remain readable below metadata');
 assert.ok(!allNodes(routeBody.children.find(n=>n.className==='meta')).some(n=>n.className==='route-card'));
+
+// N11: a burst of scroll events schedules one frame and updates once.
+assert.equal(run('typeof initTopbarScroll'),'function');
+const frames=[],scrollOptions={};
+context.window.requestAnimationFrame=fn=>{frames.push(fn);return frames.length;};
+const oldAdd=context.window.addEventListener;
+context.window.addEventListener=(event,fn,options)=>{oldAdd.call(context.window,event,fn);scrollOptions[event]=options;};
+let innerTop=0,toggles=0;
+get('.content').querySelector=()=>({scrollTop:innerTop});
+const oldToggle=get('.topbar').classList.toggle;
+get('.topbar').classList.toggle=(...args)=>{toggles++;oldToggle(...args);};
+context.window.scrollY=0;run('initTopbarScroll()');assert.equal(toggles,1);
+assert.equal(scrollOptions.scroll.passive,true);
+for(let i=0;i<100;i++)context.window.events.scroll();
+assert.equal(frames.length,1);assert.equal(toggles,1);
+context.window.scrollY=80;frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),true);assert.equal(toggles,2);
+context.window.events.scroll();frames.shift()();assert.equal(toggles,2,'unchanged state causes no class churn');
+context.window.scrollY=0;context.window.events.scroll();frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),false);
+innerTop=100;get('.content').events.scroll();frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),true);
+innerTop=0;get('.content').events.scroll();frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),false);
+console.log('PASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery');

@@ -7,7 +7,7 @@ const cultural=section('node',true),journal=section('journal',true);
 const home=section('welcome',false),map=section('map',true),story=section('story',true);map.selection='仪陇县';map.zoom=450;
 const options=['welcome','map','story','journal'].map(view=>({dataset:{contentView:view},setAttribute(k,v){this[k]=v;},addEventListener(){}}));
 const scrolls=[],win={scrollY:700,scrollTo(o){scrolls.push(o.top);this.scrollY=o.top;},matchMedia:()=>({matches:reduced})};
-const context=vm.createContext({document:{querySelectorAll:s=>s==='[data-view-panel]'?[home,map,story,cultural,journal]:options,querySelector:s=>s==='#view-label'?label:s.includes('"story"')?null:{focus(){focused++;}}},window:win,panel:{hidden:true},chatOpeningScroll:null,updateChatLayout(){}});
+const context=vm.createContext({document:{querySelectorAll:s=>s==='[data-view-panel]'?[home,map,story,cultural,journal]:options,querySelector:s=>s==='#view-label'?label:s.includes('"story"')?null:{focus(){focused++;}}},window:win,panel:{hidden:true},chatOpeningScroll:null,updateChatLayout(){},updateTopbarScroll(){}});
 const source=fs.readFileSync(__dirname+'/app.js','utf8');vm.runInContext(source.slice(source.indexOf('/* ---------------- 主框内容切换 ---------------- */')),context);
 const show=view=>vm.runInContext('showContentView('+JSON.stringify(view)+')',context);
 home.contains=()=>true;show('map');assert.equal(focused,1);assert.equal(home.hidden,true);assert.equal(map.hidden,false);assert.equal(win.scrollY,700);assert.equal(label.textContent,'行旅地图');
