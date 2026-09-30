@@ -42,8 +42,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'}});await culture;assert.match(text(get('#plan-results')),/文化活动/);
  const p=form.requestSubmit();requests.at(-1).reject(Object.assign(Error('timeout'),{name:'TimeoutError'}));await p;assert.match(get('#planner-status').textContent,/超时/);
  const question=requests.at(-1).q,retry=get('#planner-retry').onclick();assert.equal(requests.at(-1).q,question);requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null});await retry;
- const changed=form.requestSubmit();form.oninput();requests.at(-1).resolve({...response,route:{...response.route,route:{name:'旧条件结果'}}});await changed;assert.ok(!text(get('#plan-results')).includes('旧条件结果'));
- const late=form.requestSubmit();window.TravelModules.openStory({id:'other',title:'另一个故事',chapters:[]});requests.at(-1).resolve({...response,route:{...response.route,route:{name:'迟到错误覆盖'}}});await late;assert.ok(!text(get('#plan-results')).includes('迟到错误覆盖'));assert.equal(views.at(-1),'planner');
+ const changed=form.requestSubmit();form.oninput();requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'旧条件结果'});await changed;assert.ok(!text(get('#plan-results')).includes('旧条件结果'));
+ const late=form.requestSubmit();window.TravelModules.openStory({id:'other',title:'另一个故事',chapters:[]});requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'迟到错误覆盖'});await late;assert.ok(!text(get('#plan-results')).includes('迟到错误覆盖'));assert.equal(views.at(-1),'planner');
  await get('#load-travel').onclick({currentTarget:get('#load-travel')});assert.match(text(get('#travel-results')),/待接入/);
  const html=fs.readFileSync(__dirname+'/index.html','utf8');
  for(const name of ['destinations','planner','plan','travel'])assert.ok(html.includes('data-view-panel="'+name+'"'));
@@ -60,8 +60,15 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  let copied;context.navigator={clipboard:{writeText:async t=>copied=t}};get('#plan-results').innerText=text(get('#plan-results'));
  await get('#copy-plan').onclick();assert.match(copied,/先读史/);assert.match(get('#plan-status').textContent,/已复制/);
  await get('#load-travel').onclick({currentTarget:get('#load-travel')});assert.match(text(get('#travel-results')),/待接入/);
+ const stringForm=await window.TravelModules.askActivity('普通活动需求',{city:'南充',days:'1',people:'2',travel_date:'2026-10-02'});const simple=journeyCalls.at(-1).o.activityPlan;assert.equal(simple.preferences.days,1);assert.equal(simple.preferences.people,2);assert.equal(simple.preferences.date,'2026-10-02');
+ window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',activityPlan:simple});
+ get('#save-plan').onclick();const storedActivity=JSON.parse(saved['sanguo.travel-plans.v1'])[0];assert.equal(storedActivity.preferences.days,1);
  const oldOutput=text(get('#plan-results'));
- window.TravelModules.receiveActivity({text:'推荐路线与预算',data:{intent:{intent:'route_planning'},route:{found:true}},activityPlan:activity.o.activityPlan});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
- await form.requestSubmit();window.TravelModules.receiveActivity({text:'旧活动不得覆盖',activityPlan:activity.o.activityPlan});assert.equal(text(get('#plan-results')),oldOutput);
+ window.TravelModules.receiveActivity({text:'推荐路线与预算',data:{intent:{intent:'route_planning'},route:{found:true}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
+ window.TravelModules.receiveActivity({text:'资料摘录不是活动方案',data:{generation:{kind:'retrieval_fallback'}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
+ window.TravelModules.receiveActivity({text:'住宿预算800元',data:{intent:{intent:'budget_ticket'}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
+ await form.requestSubmit();form.oninput();const changedPrimary=journeyCalls.at(-1).o.activityPlan;window.TravelModules.receiveActivity({text:'输入变化后不覆盖',activityPlan:changedPrimary});assert.equal(text(get('#plan-results')),oldOutput);window.TravelModules.receiveActivity({text:'旧活动不得覆盖',activityPlan:activity.o.activityPlan});assert.equal(text(get('#plan-results')),oldOutput);
+ vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
+ get('#saved-plans').children[0].children[1].onclick();assert.match(text(get('#plan-results')),/先读史/);assert.equal(get('#save-plan').disabled,false);await get('#load-travel').onclick({currentTarget:get('#load-travel')});assert.match(text(get('#travel-results')),/待接入/);
  console.log('PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels');
 })().catch(e=>{console.error(e);process.exitCode=1;});

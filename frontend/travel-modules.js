@@ -141,7 +141,7 @@
     return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事线：'+story.title+'。':'')+
       '出发地：'+p.origin+'；目的地：'+p.city+'；可用时间：'+duration+'；出发日期：'+(p.date||'待确认')+
       '（活动时长合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+'。'+
-      '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认。')+'。'+
+      '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认')+'。'+
       '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
       '先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
@@ -181,8 +181,9 @@
   function receiveActivity(reply) {
     const attempt=reply.activityPlan;
     if(!attempt || attempt.version!==planRequest || typeof reply.text!=='string' || !reply.text.trim())return;
-    if(reply.data?.route?.found===true){
-      $('#planner-status').textContent='后端返回路线模板，尚未收到活动方案；原回答保留在对话中，上一份方案保持。';
+    const intent=reply.data?.intent?.intent;
+    if(reply.data?.route?.found===true || ['route_planning','budget_ticket'].includes(intent) || reply.data?.generation?.kind==='retrieval_fallback'){
+      $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，上一份方案保持。';
       $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';
       return;
     }
@@ -212,7 +213,7 @@
     const preferences=Object.fromEntries(new FormData(form));preferences.origin=(preferences.origin||'').trim();
     ['days','people'].forEach(k=>preferences[k]=Number(preferences[k]));
     if(!preferences.origin || ![0.5,1,2].includes(preferences.days) || !Number.isInteger(preferences.people) || preferences.people<1 || preferences.people>50) {
-      $('#planner-status').textContent='请填写有效出发地、可用时间与人数；预算下限不能高于上限。';return;
+      $('#planner-status').textContent='请填写有效出发地、可用时间与人数。';return;
     }
     const story=planningStory?JSON.parse(JSON.stringify(planningStory)):null,choices=chapterChoices(planningStory);
     if(choices.length&&!choices.some(c=>c.status==='本次保留')) {$('#planner-status').textContent='没有待规划的保留章节；可返回故事线调整选取或撤销完成记录。';return;}
@@ -220,6 +221,8 @@
     storyLabel();return requestPlan({preferences,story,choices,question:makeQuestion(preferences,story,choices)});
   };
   $('#trip-form').addEventListener('input',()=>{
+    ++planRequest; // 条件改变后，旧活动回答不覆盖方案。
+
     const button=$('#trip-form').querySelector('[type="submit"]');
     if(button.disabled){button.disabled=false;$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新规划。';}
     lastAttempt=null;$('#planner-retry').hidden=true;
@@ -228,7 +231,7 @@
   const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('story');};
   $('#planner-back-story').onclick=$('#plan-back-story').onclick=backStory;
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
-  window.TravelModules={openStory,receiveActivity,askActivity:(question,preferences)=>requestPlan({question,preferences:{...preferences,date:preferences.date||preferences.travel_date},story:null,choices:[]})};
+  window.TravelModules={openStory,receiveActivity,askActivity:(question,preferences)=>requestPlan({question,preferences:{...preferences,days:Number(preferences.days),people:Number(preferences.people),date:preferences.date||preferences.travel_date},story:null,choices:[]})};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();

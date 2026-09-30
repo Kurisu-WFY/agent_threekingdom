@@ -379,7 +379,7 @@ function send(text, options = {}) {
   if (options.preserveMap) reply.preserveMap = true;
   const draftActivity=chat.draftActivityPlan;
   const activityPlan=options.activityPlan || (draftActivity && trimmed.includes(draftActivity.question) ? draftActivity.activityPlan : null);
-  if (activityPlan) reply.activityPlan = activityPlan;
+  if (activityPlan) { reply.activityPlan = activityPlan; reply.preserveMap = true; }
   delete chat.draftActivityPlan;
   if (!reply.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
 
@@ -416,7 +416,7 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.text = data.answer;
       reply.data = data;
-      if(chats.includes(chat))window.TravelModules?.receiveActivity(reply);
+      if(chats[active]===chat)window.TravelModules?.receiveActivity(reply);
       if (data.session_id) chat.sessionId = data.session_id;
       if (!reply.preserveMap && (!reply.persona || data?.intent?.intent === 'route_planning')) window.TravelMap?.fromResponse(chat, reply.originalQuestion || reply.question, data);
     })

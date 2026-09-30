@@ -406,3 +406,44 @@
 - 桌面输入框空态 44px，长文本上限为面板高度 1/3；375px 空态 56px，发送键保留 44px 触控尺寸。输入、草稿恢复、面板开合与窗口变化均会重算。保留 Enter 发送、Shift+Enter 换行、2000 字上限。
 - 1920px 浏览器实测：欢迎气泡高 91.73→75.73px，正文字号仍 14px、行高仍 25.2px；显式操作按钮 44→30px，地名链接 44→约 25.2px。三次开合捕获到中间过渡位置，标题 top/height/字号和滚动位置不变；减少动态效果时过渡为 0 秒。375px 无横向溢出，消息、输入框、设置区不重叠。
 - 真实 8002 联调：文化问答多个地名均为正文内链接，机械按钮数 0；路线规划有路线卡与演示数据标记；预算票价的未知金额仍为待核验。`/health` 为 200；全部 JS 语法与 19 组前端测试通过，真实地图响应回放保留缺坐标站点前已有地名点。后端多城市请求仍可能返回南充一日演示路线，需后端完善路线资料。
+
+
+## 2026-09-30 · 第三轮 N8 / N9（Codex）
+
+- 工作区：D:\DSH Workspace\agent_threekingdom；分支 feat/frontend-acceptance-20260929，起点 1118c02。代码修改和提交仅在 frontend/**。docs/TASKS.md、docs/HANDOFF.md 的既存未提交内容逐字节保留，本次只在末尾追加，不纳入提交。
+- N9 DONE：移除收起时的 StoryMap.revealCard() 调用，统一沿用 toggleChat(false)，显式 instant 恢复打开前滚动与入口焦点；拖动抑制在新手势/取消/合成 click 后复位。761–1050px 使用侧栏，375px 维持全屏与内部关闭入口。
+- N8 前端实现 DONE / 真实回答验收未通过：提示词只要求活动顺序、时长、文化讲解；删除住宿、房间、费用设置、预算视图及重绘剩余路线，同步删除相关 JS。有效活动回答可以保存、复制、恢复并查询天气；旧条件回答不会覆盖。结构化固定路线不会冒充活动方案。
+- 验证：19/19 既有前端回归通过，22/22 JS 语法通过。新增可选浏览器断言 frontend/n8-n9.browser-test.js。真实8002页面无产品 Console error；1920/1280/1035入口可见可点击；故事地图展开章节后各关闭方式恢复120px，焦点/状态/位置一致，内容宽度1150→1193→1277→1354→1380px；无卡片恢复80px、非地图恢复260px，真实拖动后可连续打开/关闭。375px内部关闭可用，完整布局宽度约375px，无页面横向溢出。
+- 天气/地图：真实查询返回南充7日预报和空气质量；高德南充站→万卷楼驾车路线成功，地图容器有canvas并显示实际路段。路线、文化问答、预算票价三条真实请求的气泡与标签正常。活动保存/复制的有效响应路径用受控样本自证，真实后端活动请求尚未产出有效活动方案。
+- 卡点：活动表单发送的提示词已正确，8002仍按关键词（例如“规划”“半天”）进入 route_planning，返回“陈寿笔下的蜀汉记忆·南充一日线”固定模板及路线/预算展示文案。N8“真实回答只输出活动、不再推荐住宿/路线”尚未通过；需要后端同事调整活动请求识别/生成。前端标注“尚未收到活动方案”，保留原聊天回答与上一份有效方案。未修改 src/**、data/**、prompts/**、deploy/**。
+- 提交：88281d4（N9）、8a79cf6（N8.1）、a9a6cbe（N8.2/3）、c83d24b（N8.4）；另有收工验收与手机断点/保存恢复补充提交。全部本地，无push、merge或强推。
+- 下一步：后端支持活动生成后，在8002用同一活动表单再次验收真实回答，再检查保存/复制及天气视图。不应把该项标成全绿。
+
+### v3 验收逐项证据
+
+| 项目 | 结果 | 回归 / 自证 |
+|---|---|---|
+| N9 展开章节地图滚动恢复 | PASS | app.test.cjs：原失败940≠320；修复后320。真实地图120→120，误差0 |
+| N9 三关闭入口等价 | PASS | app.test.cjs + n8-n9.browser-test.js；真实launcher/close/Escape均chat-open=false、focus=launcher、left一致 |
+| N9 内容平滑恢复 | PASS | 浏览器8ms宽度采样：1150、1192.8、1277.1、1354.3、1380；CSS padding-right轨迹720→40，420ms |
+| N9 无卡片 / 非地图 | PASS | 浏览器分别80→80、260→260；app.test.cjs无卡片保护 |
+| N9 1920/1280/1035入口 | PASS | 浏览器visibility=visible且中心elementFromPoint命中入口；1035面板宽621px |
+| N9 拖动/取消/后续点击 | PASS | app.test.cjs与真实鼠标drag→打开→收起；pointercancel不吞下次点击 |
+| N9 手机全屏/关闭入口 | PASS | 手机布局宽度375px，内部关闭点击后hidden=true、focus=launcher；专项offsetWidth断言 |
+| N8 DOM删项与视觉 | PASS | travel-modules.test.cjs使退休节点返回null；browser-test dom断言删除项为0，浏览器视觉复核 |
+| N8 提示词 | PASS | itinerary-agent-core.test.cjs与travel-modules.test.cjs，提交及地点入口仅要求活动；保留不编造约束里的“实时交通”字样 |
+| N8 状态/保存/复制/恢复 | PASS（有效活动受控样本） | app/landing/travel-modules覆盖activityPlan、等待草稿、旧请求、复制、保存刷新后回填；退役预算控件不再被引用 |
+| N8 真实智能体仅活动 | FAIL / 待后端 | 实际/chat/stream仍返回route_planning固定路线；页面明确提示，不伪造或改写后端答案 |
+| N8 天气/高德地图 | PASS（真实） | 南充7日天气/空气质量、高德南充站→万卷楼实际路段和canvas均成功 |
+| 全19组回归/JS语法 | PASS | node逐个执行19个*.test.cjs，22个*.js --check，fail=0 |
+| 1920/375溢出/视觉 | PASS | 桌面宽度1920，手机文档宽度≤375；手机面板全屏，关闭/输入入口互不遮挡 |
+| 三意图气泡/标签 | PASS（真实） | route_planning / culture_qa / budget_ticket均有回答、气泡与相应标签，无error消息 |
+| Console与代码边界 | PASS | 最终重新载入页面后的Console errors=[]；Git提交面仅frontend/** |
+
+浏览器专项脚本不在index.html自动加载。Console里执行 await import('/n8-n9.browser-test.js')，调用 N8N9BrowserTest.dom()；进入地图并展开章节、关闭面板后执行 open()，待展开宽度稳定，close('launcher'|'close'|'Escape')，约600ms后settled()。断点由浏览器测试工具设置；手机入场动画的即时bounding rect有平移，布局全屏用offsetWidth验证。
+
+不要把有效活动受控样本的保存验证描述成真实后端已生成活动。后端固定路线限制是本轮联调的明确失败项。
+
+- 补充真实行程表单证据：#trip-form 一天活动请求走 culture_qa，但 generation.kind=retrieval_fallback，仅返回文献摘录，仍不符合活动顺序/时长/讲解的验收。前端同时识别该降级，提示尚未收到活动方案，避免成功误报。该项需要后端生成链路支持；仅改前端提示词无法解决。
+
+- 独立只读审查（Pascal）发现3个P2，已逐项红绿复现并修复：仅当前会话回答可更新全局方案；等待草稿恢复activityPlan时强制保留preserveMap；明确route_planning/budget_ticket响应也不能冒充活动方案。对应app.test.cjs和travel-modules.test.cjs新增断言。
