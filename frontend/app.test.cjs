@@ -199,15 +199,21 @@ get('#chat-panel').offsetWidth=680;get('#launcher').offsetWidth=120;
 get('#launcher').getBoundingClientRect=()=>({left:1600,top:760});
 const closeResults=[];
 for(const close of [()=>get('#launcher').events.click({detail:1}),()=>get('#close-chat').onclick(),()=>context.document.events.keydown({key:'Escape'})]){
+ const viewPanel=get('[data-view-panel="welcome"]');viewPanel.scrollTop=240;
  context.window.scrollY=320;get('#launcher').events.click({detail:1});
  assert.equal(get('#chat-panel').hidden,false);
- context.window.scrollY=500;close();
+ context.window.scrollY=500;viewPanel.scrollTop=640;close();
+ assert.equal(viewPanel.scrollTop,240,'N10 内部滚动同步保留 N9 关闭恢复');
  assert.equal(context.window.scrollY,320,'章节卡片已展开时恢复打开前位置');
  assert.equal(get('#chat-panel').hidden,true);
  assert.equal(context.document.body.classList.contains('chat-open'),false);
  assert.equal(context.document.activeElement,get('#launcher'));
  closeResults.push([context.window.scrollY,get('#launcher').style.left,context.document.activeElement]);
 }
+const internalWelcome=get('[data-view-panel="welcome"]');internalWelcome.scrollTop=240;
+run('toggleChat(true)');internalWelcome.scrollTop=640;run('currentContentView="map";toggleChat(false)');
+assert.equal(internalWelcome.scrollTop,640,'closing a different view does not restore a stale panel');
+run('currentContentView="welcome"');
 assert.deepEqual(closeResults[0],closeResults[1]);assert.deepEqual(closeResults[1],closeResults[2]);
 delete context.window.StoryMap;
 context.window.scrollY=180;run('toggleChat(true)');context.window.scrollY=400;run('toggleChat(false)');assert.equal(context.window.scrollY,180);

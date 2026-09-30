@@ -18,11 +18,11 @@ show('story');assert.equal(win.scrollY,80);show('map');
 assert.equal(options[1]['aria-pressed'],'true');const count=animated;show('map');show('invalid');assert.equal(animated,count);
 reduced=true;show('welcome');assert.equal(animated,count);assert.equal(home.hidden,false);assert.equal(map.hidden,true);assert.equal(story.hidden,true);assert.equal(label.textContent,'主界面');
 context.panel.hidden=false;context.chatOpeningScroll={view:'welcome',top:920};win.scrollY=0;show('story');show('welcome');assert.equal(win.scrollY,0);
-console.log('PASS: story/map/home labels, focus fallback, rapid cancellation, scroll memory, preserved map and reduced motion');
+console.log('PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion');
 
 show('node');assert.equal(cultural.hidden,false);assert.equal(label.textContent,'文化节点');show('story');assert.equal(cultural.hidden,true);
 
 show('journal');assert.equal(journal.hidden,false);assert.equal(label.textContent,'我的三国探索志');assert.equal(options[3]['aria-pressed'],'true');win.scrollY=315;show('map');assert.equal(map.selection,'仪陇县');assert.equal(map.zoom,450);show('journal');assert.equal(win.scrollY,315);assert.equal(journal.hidden,false);
-console.log('PASS: journal label, aria-pressed, independent scroll memory and map preservation');
+console.log('PASS: journal label, aria-pressed, no document scrolling and map preservation');
 
 assert.equal(scrolls.length,0,'tab switches must never scroll the document');

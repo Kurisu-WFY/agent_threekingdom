@@ -51,5 +51,5 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  assert.ok(!text(rendered).includes('当前资料中未找到可靠记载'));
  assert.ok(all(rendered).some(n=>n.tag==='td'&&all(n).some(child=>child.className==='character-place-link'&&child.textContent==='剑门关')));
  assert.ok(!all(rendered).some(n=>n.tag==='button'&&/^(查看地点：|为.+规划路线|地图定位：|加入路线：|定位阆中)/.test(n.textContent)));
- console.log('PASS: persona/context isolation, history prefix, pending drafts, immutable retry, evidence and C/URL gating, explicit inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo');
+ console.log('PASS: persona/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo');
 })();

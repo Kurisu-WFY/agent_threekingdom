@@ -256,7 +256,8 @@ function updateChatLayout() {
 function toggleChat(open) {
   if (open === !panel.hidden) return;
   if (open) {
-    chatOpeningScroll = { view: currentContentView, top: window.scrollY || 0 };
+    const viewPanel = document.querySelector('[data-view-panel="' + currentContentView + '"]');
+    chatOpeningScroll = { view: currentContentView, top: window.scrollY || 0, viewPanel, innerTop: viewPanel?.scrollTop || 0 };
     const rect = launcher.getBoundingClientRect();
     launcherRestLeft = rect.left;
     launcher.style.left = rect.left + 'px';
@@ -274,7 +275,10 @@ function toggleChat(open) {
   if (open) input.focus({ preventScroll: true });
   else {
     launcher.focus({ preventScroll: true });
-    if (chatOpeningScroll?.view === currentContentView) window.scrollTo({ top: chatOpeningScroll.top, behavior: 'instant' });
+    if (chatOpeningScroll?.view === currentContentView) {
+      if (chatOpeningScroll.viewPanel) chatOpeningScroll.viewPanel.scrollTop = chatOpeningScroll.innerTop;
+      window.scrollTo({ top: chatOpeningScroll.top, behavior: 'instant' });
+    }
     chatOpeningScroll = null;
   }
 }

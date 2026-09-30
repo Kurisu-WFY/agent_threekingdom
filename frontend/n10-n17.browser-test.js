@@ -43,6 +43,8 @@
       const prose=q('.agent-prose'),bubble=q('.bubble'),font=style(prose).fontFamily;
       assert(font.startsWith('-apple-system')&&font.includes('Segoe UI')&&!/Noto Serif|Songti/.test(font),'N15 DSH font');
       assert(parseFloat(style(bubble).fontSize)>=16,'N15 size');
+      assert(style(q('.message.user .bubble')).color===style(bubble).color,'N15 user正文近黑');
+      for(const pending of answer.querySelectorAll('[data-trust-state=unverified]'))assert(parseFloat(style(pending).fontSize)>=16&&style(pending).color===style(bubble).color,'N15 inline pending正文');
       const ratio=contrast(style(bubble).color,style(bubble).backgroundColor);
       assert(ratio>=7,'N15 contrast');
       const headings=[...prose.querySelectorAll('h2,h3,h4')].map(n=>({tag:n.tagName,size:parseFloat(style(n).fontSize),weight:parseFloat(style(n).fontWeight)}));
@@ -55,6 +57,17 @@
       input.focus({preventScroll:true});assert(parseFloat(style(input).outlineWidth)>0&&style(input).outlineStyle!=='none','N16 visible focus');
       report.N16={background:style(input).backgroundColor,border:style(input).borderWidth,focus:style(input).outlineWidth,placeholderContrast:placeholder,sendWidth:q('.composer-send').getBoundingClientRect().width};
       input.blur();
+      report.N10_close=[];
+      for(const method of ['launcher','close','Escape']) {
+        toggleChat(false);await wait(500);showContentView('welcome');q('#welcome-view').scrollTop=240;
+        toggleChat(true);await wait(500);q('#welcome-view').scrollTop=640;
+        if(method==='Escape')document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+        else q(method==='launcher'?'#launcher':'#close-chat').click();
+        await wait(500);
+        assert(Math.abs(q('#welcome-view').scrollTop-240)<=2,'N10/N9 internal position restore '+method);
+        assert(q('#chat-panel').hidden&&document.activeElement===q('#launcher'),'N10/N9 close state and focus '+method);
+        report.N10_close.push({method,innerTop:q('#welcome-view').scrollTop});
+      }
       report.N10=[];
       for(const opened of [false,true]) {
         toggleChat(opened);await wait(500);window.scrollTo({top:20,behavior:'instant'});

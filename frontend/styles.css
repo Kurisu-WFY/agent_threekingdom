@@ -336,7 +336,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--brass); 
   border-radius: 12px;
 }
 .message.assistant .bubble { background: var(--surface-2); border: 1px solid var(--line); border-top-left-radius: 4px; }
-.message.user .bubble { background: var(--jade-soft); color: var(--ink); border-top-right-radius: 4px; }
+.message.user .bubble { background: var(--jade-soft); color: var(--chat-ink); border-top-right-radius: 4px; }
 
 /* 思考中动画 */
 .bubble.typing { display: inline-flex; align-items: center; gap: var(--space-1); }
@@ -1065,7 +1065,7 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 /* 固定外框，将长视图的滚动留在内容框内，避免切换时文档高度收缩。 */
 .content { height:calc(100dvh - var(--header-height) - var(--space-6)); min-height:360px; max-height:none; }
 .content > .content-heading,.content > .content-footer { flex:none; }
-.content > [data-view-panel] { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.content > [data-view-panel] { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; overflow-anchor:none; }
 .welcome > * { flex-shrink:0; }
 
 .meta .tag { flex:none; white-space:nowrap; line-height:var(--leading-title); }
@@ -1083,3 +1083,6 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 
 /* 来源链接跟随单行标签高度，仍满足 24px 最小点击区域。 */
 .meta .trust-info a { min-height:24px; line-height:var(--leading-title); }
+
+/* 正文里的待核验字样仍是正文，不套用全站状态卡片排版。 */
+.character-answer [data-trust-state=unverified] { color:inherit; font:inherit; background:transparent; border:0; padding:0; }
