@@ -125,6 +125,8 @@ function trustNode(record, label = '回答') {
 function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
+  meta.setAttribute('tabindex','0');
+  meta.setAttribute('aria-label','回答元信息，可横向滚动');
   const intent = data && data.intent && data.intent.intent;
   if (typeof intent === 'string' && Object.hasOwn(INTENT_LABELS, intent)) meta.append(tag('意图 · ' + INTENT_LABELS[intent]));
   const coverage = data?.retrieval?.coverage;
@@ -135,7 +137,7 @@ function metaNode(data) {
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
-    meta.append(routeCard(route, data.route.stops), trustNode(route, '路线'));
+    meta.append(trustNode(route, '路线'));
   }
   return meta;
 }
@@ -184,7 +186,11 @@ function messageNode(message) {
     retry.onclick = () => requestReply(chats[active], message);
     body.append(retry);
   }
-  if (message.data) body.append(metaNode(message.data));
+  if (message.data) {
+    body.append(metaNode(message.data));
+    const route = message.data.intent?.intent === 'route_planning' && message.data.route?.found === true && message.data.route.route;
+    if (route) body.append(routeCard(route, message.data.route.stops));
+  }
   if (window.TravelAssistant?.canOpen(message)) {
     const sourceChat = chats[active];
     const open = document.createElement('button');

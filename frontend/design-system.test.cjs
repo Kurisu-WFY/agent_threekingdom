@@ -37,3 +37,7 @@ assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-height:0!impor
 assert.ok(/\.workspace\s*\{[^}]*transition:padding-right var\(--layout-duration\) var\(--layout-easing\)/.test(css));
 assert.ok(/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\*,\*::before,\*::after\s*\{[^}]*transition:none!important/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
+
+assert.ok(/\.meta\s*\{[^}]*flex-wrap:\s*nowrap/.test(css),'N13 metadata is a single line');
+assert.ok(/\.trust-info\s*\{[^}]*flex-wrap:\s*nowrap/.test(css));
+assert.ok(/\.tag\[data-trust-state=unverified\]\s*\{[^}]*font-size:var\(--text-xs\)/.test(css));

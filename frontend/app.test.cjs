@@ -219,3 +219,8 @@ launcherN9.events.pointerdown({button:0,clientX:1500,clientY:700,pointerId:2});l
 assert.equal(get('#chat-panel').hidden,false);launcherN9.events.click({detail:1});assert.equal(get('#chat-panel').hidden,true);
 launcherN9.events.pointercancel();launcherN9.events.click({detail:1});assert.equal(get('#chat-panel').hidden,false,'取消拖动不吞掉下次点击');run('toggleChat(false)');
 console.log('PASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery');
+
+context.routeFixture={role:'assistant',text:'路线正文',data:{intent:{intent:'route_planning'},route:{found:true,route:{name:'路线详情'},stops:[{name:'剑门关'}]}}};
+const routeRow=run('messageNode(routeFixture)'), routeBody=routeRow.children[1];
+assert.ok(routeBody.children.some(n=>n.className==='route-card'),'route details remain readable below metadata');
+assert.ok(!allNodes(routeBody.children.find(n=>n.className==='meta')).some(n=>n.className==='route-card'));
