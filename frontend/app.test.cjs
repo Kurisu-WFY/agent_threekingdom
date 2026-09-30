@@ -3,21 +3,22 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 class Element {
-  constructor(tag) { this.tag = tag; this.value = ''; this.children = []; this.dataset = {}; this.style = {}; this.hidden = true; this.classList = { toggle() {}, add() {}, remove() {} }; }
+  constructor(tag) { this.tag = tag; this.value = ''; this.children = []; this.dataset = {}; this.style = {}; this.hidden = true; this.events = {}; const classes = new Set(); this.classList = { toggle(c,on) { if(on) classes.add(c); else classes.delete(c); }, add(c) { classes.add(c); }, remove(c) { classes.delete(c); }, contains(c) { return classes.has(c); } }; }
   querySelector() { return get('submit'); }
   setAttribute() {}
-  addEventListener() {}
+  addEventListener(type,fn) { this.events[type]=fn; }
+  setPointerCapture() {}
   append(...nodes) { this.children.push(...nodes); }
   replaceChildren() { this.children = []; }
-  focus() { this.focused = true; }
+  focus() { this.focused = true; context.document.activeElement = this; }
   getBoundingClientRect() { return { left: 0, top: 0 }; }
 }
 const nodes = new Map();
 function get(id) { if (!nodes.has(id)) nodes.set(id, new Element()); return nodes.get(id); }
 const requests = [];
 const context = vm.createContext({
-  document: { querySelector: get, querySelectorAll: () => [], createElement: tag => new Element(tag), body: new Element(), addEventListener() {} },
-  window: { events: {}, addEventListener(type, fn) { this.events[type] = fn; } }, AbortSignal, URL,
+  document: { querySelector: get, querySelectorAll: () => [], createElement: tag => new Element(tag), body: new Element(), events: {}, addEventListener(type,fn) { this.events[type]=fn; } },
+  window: { events: {}, addEventListener(type, fn) { this.events[type] = fn; } }, AbortSignal, URL, setTimeout, clearTimeout,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
 // 应用状态测试使用通信替身；SSE 字节级解析另行测试。
@@ -172,3 +173,33 @@ assert.match(textTree(trusted), /2026-09-12T10:00:00Z/);
 assert.equal(trusted.children[2].children[0].href, 'https://example.com/info');
 assert.equal(trusted.children[2].children[0].rel, 'noopener noreferrer');
 assert.match(textTree(run('trustNode({data_status:"constructor"})')), /待核验/);
+
+// N9：故事卡片不能覆盖关面板后的滚动恢复；三个关闭入口必须等价。
+context.window.innerWidth=1920; context.window.innerHeight=1080;
+context.window.scrollY=320;
+context.window.scrollTo=({top,behavior})=>{assert.equal(behavior,'instant');context.window.scrollY=top;};
+context.window.StoryMap={revealCard(){context.window.scrollY=940;}};
+get('#chat-panel').offsetWidth=680;get('#launcher').offsetWidth=120;
+get('#launcher').getBoundingClientRect=()=>({left:1600,top:760});
+const closeResults=[];
+for(const close of [()=>get('#launcher').events.click({detail:1}),()=>get('#close-chat').onclick(),()=>context.document.events.keydown({key:'Escape'})]){
+ context.window.scrollY=320;get('#launcher').events.click({detail:1});
+ assert.equal(get('#chat-panel').hidden,false);
+ context.window.scrollY=500;close();
+ assert.equal(context.window.scrollY,320,'章节卡片已展开时恢复打开前位置');
+ assert.equal(get('#chat-panel').hidden,true);
+ assert.equal(context.document.body.classList.contains('chat-open'),false);
+ assert.equal(context.document.activeElement,get('#launcher'));
+ closeResults.push([context.window.scrollY,get('#launcher').style.left,context.document.activeElement]);
+}
+assert.deepEqual(closeResults[0],closeResults[1]);assert.deepEqual(closeResults[1],closeResults[2]);
+delete context.window.StoryMap;
+context.window.scrollY=180;run('toggleChat(true)');context.window.scrollY=400;run('toggleChat(false)');assert.equal(context.window.scrollY,180);
+const launcherN9=get('#launcher');
+launcherN9.events.pointerdown({button:0,clientX:1600,clientY:760,pointerId:1});
+launcherN9.events.pointermove({clientX:1500,clientY:700});launcherN9.events.pointerup();
+// 没有派发拖动合成的 click 时，下一次按下也必须清除旧手势抑制。
+launcherN9.events.pointerdown({button:0,clientX:1500,clientY:700,pointerId:2});launcherN9.events.pointerup();launcherN9.events.click({detail:1});
+assert.equal(get('#chat-panel').hidden,false);launcherN9.events.click({detail:1});assert.equal(get('#chat-panel').hidden,true);
+launcherN9.events.pointercancel();launcherN9.events.click({detail:1});assert.equal(get('#chat-panel').hidden,false,'取消拖动不吞掉下次点击');run('toggleChat(false)');
+console.log('PASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery');

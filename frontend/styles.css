@@ -972,10 +972,10 @@ img,svg,textarea,select { max-width:100%; }
 :where(.node-comparison,.character-comparison) { grid-template-columns:repeat(2,minmax(0,1fr)); }
 @media(max-width:1050px) {
  .story-cards { grid-template-columns:minmax(0,1fr); }
- .chat-panel:not([hidden]) { width:100%; max-width:100vw; height:100dvh; flex-direction:column; overflow:hidden; }
+ .chat-panel:not([hidden]) { width:min(680px,60vw); max-width:100vw; flex-direction:column; overflow:hidden; }
  body.chat-open .content { width:100%; }
- body.chat-open .launcher { visibility:hidden; }
- body.chat-open { overflow:hidden; }
+
+
  .chat-panel .history { width:100%; flex-direction:row; }
  .chat-panel .conversation { min-height:0; }
 }

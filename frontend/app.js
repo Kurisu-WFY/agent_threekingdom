@@ -260,15 +260,17 @@ function toggleChat(open) {
     launcher.focus({ preventScroll: true });
     if (chatOpeningScroll?.view === currentContentView) window.scrollTo({ top: chatOpeningScroll.top, behavior: 'instant' });
     chatOpeningScroll = null;
-    window.StoryMap?.revealCard();
   }
 }
 
 /* ---------------- 拖动入口 ---------------- */
 let drag = null;
 let suppressClick = false;
+let suppressClickReset = null;
 
 launcher.addEventListener('pointerdown', event => {
+  suppressClick = false;
+  clearTimeout(suppressClickReset);
   if (event.button !== 0 || !panel.hidden) return;
   const rect = launcher.getBoundingClientRect();
   drag = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
@@ -291,13 +293,17 @@ launcher.addEventListener('pointermove', event => {
 
 launcher.addEventListener('pointerup', () => {
   suppressClick = !!drag?.moved;
+  // 只拦截本次拖动后紧随的合成 click；缺失该 click 时也自动复位。
+  clearTimeout(suppressClickReset);
+  suppressClickReset = setTimeout(() => { suppressClick = false; }, 0);
   drag = null;
   launcher.classList.remove('dragging');
 });
 
 launcher.addEventListener('pointercancel', () => {
   drag = null;
-  suppressClick = true;
+  suppressClick = false;
+  clearTimeout(suppressClickReset);
   launcher.classList.remove('dragging');
 });
 
