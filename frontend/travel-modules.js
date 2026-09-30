@@ -74,7 +74,7 @@
     } catch (error) { if (version === cityRequest) empty(target, error.message); }
   }
   function chooseCity(nextCity, spot = '') {
-    if(window.SGTJourney?.ask){window.SGTJourney.ask('请规划'+nextCity+'三国文化旅游路线。'+(spot?'希望包含：'+spot+'。':'')+'先确认出发地、时间、交通方式与人数，再检索文化资料并安排交通、游览、住宿和预算。缺少本地模板不代表该城市没有文化景点；资料不足请说明。',{preserveMap:true});return;}
+    if(window.SGTJourney?.ask){window.SGTJourney.ask('请生成'+nextCity+'三国文化活动方案。'+(spot?'希望包含：'+spot+'。':'')+'先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。',{preserveMap:true});return;}
     ++planRequest; planningStory=null; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false; storyLabel();
     $('#trip-form').elements.city.value = nextCity;
     showContentView('planner');
@@ -132,13 +132,12 @@
   }
   function makeQuestion(p,story,choices) {
     const duration={'0.5':'半天','1':'一天','2':'两天'}[p.days];
-    return '请规划旅游路线，按现实约束重绘剩余行程。'+(story?'故事线：'+story.title+'。':'')+
+    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事线：'+story.title+'。':'')+
       '出发地：'+p.origin+'；目的地：'+p.city+'；可用时间：'+duration+'；出发日期：'+(p.date||'待确认')+
-      '（可安排游览与交通合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；交通方式：'+p.transport+'；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+
-      '；全团预算：'+(p.budget_min || '未设下限')+' 至 '+(p.budget_max || '未设上限')+' 元；住宿：'+p.hotel_tier+'，'+p.rooms+'间。'+
-      '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认。')+
-      '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增节点必须说明原因，以selection_reason和各站reason解释；不把未返回章节默认为已完成。'+
-      '请提供停留时长、建议游览时长、开放时间、交通可行性、风险与更新时间；无依据标待核验，不编造价格天气或坐标。补充需求：'+(p.notes||'无')+'。';
+      '（活动时长合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+'。'+
+      '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认。')+'。'+
+      '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
+      '先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;

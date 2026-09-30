@@ -12,7 +12,7 @@
     }catch(e){status.textContent=e.message||'无法打开智能体，请刷新重试。';}
   };
   window.NanchongPlanner={
-    openPlace(name){if(!window.SGTJourney?.ask)return false;window.SGTJourney.ask('请规划到'+name+'的三国文化旅游路线；先确认出发地、时间、交通方式和人数。检索资料后安排交通、游览、住宿及预算，缺少来源请说明。',{preserveMap:true});return true;},
+    openPlace(name){if(!window.SGTJourney?.ask)return false;window.SGTJourney.ask('请生成到'+name+'的三国文化活动方案；先确认出发地、时间和人数。检索资料后只说明景点与活动顺序、每项时长、文化讲解要点；资料不足请说明，不要编造实时交通、开放时段或空位。',{preserveMap:true});return true;},
     importDraft(d){
       if(d.city)form.elements.city.value=d.city;
       if(d.date)form.elements.travel_date.value=d.date;

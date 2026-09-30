@@ -29,7 +29,7 @@ const response={answer:'示例路线',intent:{intent:'route_planning'},route:{fo
  fields.origin.value='南充';fields.budget_min.value='2000';await form.requestSubmit();assert.equal(requests.length,0);fields.budget_min.value='100';
  const pending=form.requestSubmit();assert.equal(button.disabled,true);form.requestSubmit();assert.equal(requests.length,1);
  assert.equal(requests[0].preferences.city,'广元');assert.equal(requests[0].preferences.days,0.5);assert.equal(requests[0].preferences.explanation,'亲子');assert.equal(requests[0].preferences.date,null);assert.equal(JSON.stringify(requests[0].preferences.excluded_place_ids),JSON.stringify(['a','c']));
- assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
+ assert.match(requests[0].q,/活动顺序/);assert.doesNotMatch(requests[0].q,/住宿|房间数|预算|交通方式|交通可行性|规划旅游路线/);assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
  requests[0].resolve(response);await pending;assert.equal(views.at(-1),'plan');
  const output=text(get('#plan-results'));for(const value of ['了解关隘主题','90 分钟','120 分钟','需核验路况','2026-09-17','优先保留第二幕','本次跳过','待定位','不一致'])assert.ok(output.includes(value),value);
  assert.equal(state.completed.size,1);assert.ok(state.completed.has(0));assert.equal(button.disabled,false);
