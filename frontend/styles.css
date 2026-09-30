@@ -1046,3 +1046,18 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 @media(max-width:760px) {
  .chat-panel:not([hidden]) { bottom:0; height:100dvh; }
 }
+
+/* 人物名与头像同行；消息行及用户反向排列保持原有布局。 */
+.message-identity { display:flex; align-items:center; gap:var(--space-1); flex:none; }
+.message-name { font-size:var(--text-xs); color:var(--ink); white-space:nowrap; }
+.message .body { flex:1; }
+.character-actions { display:flex; flex-wrap:wrap; gap:var(--space-1); font-size:var(--text-xs); }
+.character-actions p { flex-basis:100%; margin:0; }
+.character-actions .module-button { width:auto; margin:0; }
+@media(max-width:760px) { .message-identity { gap:2px; }.message-identity .avatar { width:24px; height:28px; }.message-identity svg { max-width:24px; } }
+
+/* 固定外框，将长视图的滚动留在内容框内，避免切换时文档高度收缩。 */
+.content { height:calc(100dvh - var(--header-height) - var(--space-6)); min-height:360px; max-height:none; }
+.content > .content-heading,.content > .content-footer { flex:none; }
+.content > [data-view-panel] { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.welcome > * { flex-shrink:0; }

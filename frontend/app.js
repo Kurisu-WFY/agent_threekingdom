@@ -165,7 +165,17 @@ function messageNode(message) {
   else avatar.textContent = message.role === 'user' ? '你' : '寿';
   const body = document.createElement('div');
   body.className = 'body';
+  const identity = document.createElement('div');
+  identity.className = 'message-identity';
+  const name = document.createElement('span');
+  name.className = 'message-name';
+  name.textContent = message.role === 'user' ? '你' : message.persona || '陈寿';
+  identity.append(avatar, name);
   body.append(bubbleNode(message));
+  if (message.role === 'assistant' && !message.pending && !message.error && window.CharacterChat?.actions) {
+    const actions = window.CharacterChat.actions(message);
+    if (actions.children.length) body.append(actions);
+  }
   if (message.error) {
     const retry = document.createElement('button');
     retry.className = 'retry';
@@ -186,7 +196,7 @@ function messageNode(message) {
     });
     body.append(open);
   }
-  row.append(avatar, body);
+  row.append(identity, body);
   return row;
 }
 
@@ -498,15 +508,12 @@ checkHealth();
 window.addEventListener('online', checkHealth);
 
 /* ---------------- 主框内容切换 ---------------- */
-const contentScrollPositions = new Map();
 let currentContentView = 'welcome';
 let contentEntrance = null;
 function showContentView(view) {
     const sections = Array.from(document.querySelectorAll('[data-view-panel]'));
     const target = sections.find(section => section.dataset.viewPanel === view);
     if (!target || view === currentContentView) return;
-    const savedTop = !panel.hidden && chatOpeningScroll?.view === currentContentView ? chatOpeningScroll.top : window.scrollY || 0;
-    contentScrollPositions.set(currentContentView, savedTop);
     contentEntrance?.cancel();
     const leaving = sections.find(section => !section.hidden);
     const restoreFocus = leaving?.contains(document.activeElement);
@@ -519,8 +526,6 @@ function showContentView(view) {
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
-    // 同步恢复视图滚动位置，不重置地图或会话状态。
-    window.scrollTo({ top: contentScrollPositions.get(view) || 0, behavior: 'instant' });
     if (restoreFocus) (document.querySelector('.content-switch [data-content-view="' + view + '"]') || target.querySelector('[tabindex="-1"]'))?.focus({ preventScroll: true });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && target.animate) {
       contentEntrance = target.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 220, easing: 'ease-out' });

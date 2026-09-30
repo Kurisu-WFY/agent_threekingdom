@@ -33,6 +33,14 @@ vm.runInContext(fs.readFileSync(__dirname + '/app.js', 'utf8'), context);
 const run = code => vm.runInContext(code, context);
 const flush = () => new Promise(resolve => setImmediate(resolve));
 (async () => {
+  const flatten = n => [n,...n.children.flatMap(x=>typeof x==='object'?flatten(x):[])];
+  for (const [role,persona,name] of [['assistant',undefined,'陈寿'],['assistant','诸葛亮','诸葛亮'],['assistant','张飞','张飞'],['user','陈寿','你']]) {
+    context.messageFixture={role,persona,text:'正文'};
+    const row=run('messageNode(messageFixture)');
+    assert.equal(row.className,'message '+role);
+    assert.equal(flatten(row).find(n=>n.className==='message-name')?.textContent,name);
+    assert.equal(row.children[1].className,'body');
+  }
   assert.equal(get('#chat-panel').hidden, true);
   assert.equal(get('submit').disabled, true);
   get('#chat-panel').clientHeight = 900;

@@ -1,7 +1,7 @@
 /* 在现有 /chat 会话中展示人物视角和证据。 */
 (() => {
   'use strict';
-  const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';
+  const $=s=>document.querySelector(s);
   const profiles={
     '陈寿':{style:'史官视角：审慎、简洁，先核对材料再解释，不虚构见闻。',basis:'史料依据摘要待核验；可从《三国志》的编纂与记载入手，具体引文和出处待补充。',story:'chenshou'},
     '诸葛亮':{style:'筹划者视角：条理清楚，讨论选择与条件，不虚构本人动机和原话。',basis:'史料依据摘要待核验；可从《三国志》相关传记入手，具体引文和出处待补充。',story:'shudao-xunzong'},
@@ -38,7 +38,6 @@
   function url(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}
   function sources(record){return Array.isArray(record?.sources)?record.sources.filter(s=>s&&typeof s==='object'):[];}
   function reliable(record){return ['maintained','live'].includes(record?.data_status)&&typeof record.updated_at==='string'&&/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(record.updated_at)&&Number.isFinite(Date.parse(record.updated_at))&&sources(record).some(s=>['A','B'].includes(s.source_level)&&['maintained','live'].includes(s.data_status)&&s.title&&url(s.source_url));}
-  function provenance(record){const d=node('details','character-sources');d.append(node('summary','','展开来源 · '+(record?.data_status||'待核验')),node('p','','更新时间：'+(record?.updated_at||'待核验')));if(!sources(record).length)d.append(node('p','','来源待核验'));sources(record).forEach(s=>{const u=url(s.source_url),a=node(u?'a':'span','',s.title||'标题待核验');if(u){a.href=u;a.target='_blank';a.rel='noopener noreferrer';}d.append(a,node('p','','来源等级：'+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验')+' · data_status：'+(s.data_status||'待核验')+(s.source_level==='C'?' · C级可信度不足，不能作为史实依据。':'')));});return d;}
   function placeInline(text){
     const inline=node('span'), places=(window.SGT_PLACES||[]).filter(item=>item&&typeof item.name==='string'&&item.name), names=[...new Set([...places.map(item=>item.name),'阆中','南充'])].sort((a,b)=>b.length-a.length);
     let rest=String(text||'');
@@ -53,27 +52,12 @@
     return p;
   }
   function answer(message){
-    const box=node('div','character-answer'+(message.characterAction==='compare'?' character-comparison':''));box.append(node('strong','',message.persona+'视角 · AI解读，非人物原话'));
-    // 智能体正文不属于旧的 evidence_segments 结构，应直接按正文展示，
-    // 不凭空补充缺失的证据、路线几何信息或检索失败状态。
-    if(message.data?.generation?.kind==='nuwax'&&window.AgentAnswer){
-      box.append(window.AgentAnswer.render(message.text,{decorateText:placeInline}));
-      const evidence=node('details','character-sources');evidence.append(node('summary','','来源与数据说明'),node('p','','回答中的来源由智能体提供，尚未逐项核验；未返回结构化来源不代表知识库没有命中。'),provenance(message.data));box.append(evidence);
-    } else {
-    const records=Array.isArray(message.data?.evidence_segments)?message.data.evidence_segments.filter(r=>r&&typeof r==='object'):[];
-    // 只提取正文中明确标注的推断或文学内容，不将其提升为史实证据。
-    if(!records.length){const parts=message.text.split(/【(史料记载|合理推断|演义|无依据)】/);for(let i=1;i<parts.length;i+=2){if(['合理推断','演义'].includes(parts[i])&&parts[i+1]?.trim())records.push({type:parts[i]==='演义'?'romance':'inference',text:parts[i+1].trim(),data_status:'pending'});}}
-    const historic=records.filter(r=>r?.type==='history'&&typeof r.text==='string'&&reliable(r)&&!/(三国演义|演义情节)/.test(r.text));
-    const section=(label,text,cls)=>{const s=node('section','character-evidence '+cls);s.append(node('h4','',label),placeText(text));box.append(s);return s;};
-    const isNuwax=message.data?.generation?.kind==='nuwax';
-    if(!historic.length)section(isNuwax?'来源核验提示':'史料记载 · 无可靠依据',isNuwax?'智能体回答尚未提供前端可核验的逐项来源字段；不代表知识库没有命中。':missing,'unverified').append(provenance(message.data));
-    historic.forEach(r=>section('史料记载',r.text,'history').append(provenance(r)));
-    records.filter(r=>r&&['inference','romance'].includes(r.type)&&typeof r.text==='string').forEach(r=>section(r.type==='inference'?'合理推断 · 非史料原文':'演义 · 文学表达，不是亲历史实',r.text,r.type).append(provenance(r)));
-    // 模型正文中的标签不能证明来源；保留原文，但不纳入史实层。
-    const raw=node('details','character-raw');if(isNuwax||window.AgentAnswer)raw.setAttribute('open','');raw.append(node('summary','',isNuwax?'智能体回答 · 来源未逐项核验':'查看后端原回答 · 未逐项核验，可能含推断或演义'),window.AgentAnswer?window.AgentAnswer.render(message.text,{decorateText:placeInline}):placeText(message.text),provenance(message.data));box.append(raw);
-    if(!records.some(r=>r?.type==='inference'))section('合理推断','尚无已分层的推断内容；原回答中的推测不作为史实。','inference');
-    if(!records.some(r=>r?.type==='romance'))section('演义对照','尚无可靠的逐项对照；文学情节不能作为人物亲历。','romance');
-    }
+    const box=node('div','character-answer');
+    box.append(window.AgentAnswer?window.AgentAnswer.render(message.text,{decorateText:placeInline}):placeText(message.text));
+    return box;
+  }
+  function actions(message){
+    const box=node('div','character-actions');
     if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？'));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city)),button('切换到'+name+'视角',()=>selectPersona(name)));}
     if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
@@ -83,5 +67,5 @@
   function selectPersona(name){if(!profiles[name])return;chats[active].persona=name;chats[active].characterNotice='已切换为'+name+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';sync(chats[active]);}
   $('#character-select').addEventListener('change',()=>{selectPersona($('#character-select').value);$('#character-notice').textContent='已切换为'+chats[active].persona+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';});
   $('#character-mode').addEventListener('change',()=>setMode($('#character-mode').value));
-  window.CharacterChat={context,refresh:()=>sync(chats[active]),selectPersona,sync,portrait,prepare,answer,reliable,isComparison,getMode,setMode,backendMode};window.StoryProgress?.subscribe(()=>sync(chats[active]));sync(chats[active]);
+  window.CharacterChat={context,refresh:()=>sync(chats[active]),selectPersona,sync,portrait,prepare,answer,actions,reliable,isComparison,getMode,setMode,backendMode};window.StoryProgress?.subscribe(()=>sync(chats[active]));sync(chats[active]);
 })();
