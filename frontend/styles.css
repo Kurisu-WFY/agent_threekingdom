@@ -635,9 +635,9 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .welcome-bottom p { margin:var(--space-2) 0 0; font-size:var(--text-xs); color:var(--line-strong); line-height:var(--leading-body); }
 .welcome-bottom button { white-space:nowrap; }
 .journey-trust { font-size:var(--text-xs); line-height:var(--leading-body); color:var(--line-strong); margin:var(--space-4) 0 0; }
-.content-footer { padding:var(--space-3) var(--space-6); background:var(--paper); font-size:var(--text-xs); position:relative; }
-.image-credits summary { cursor:pointer; color:var(--line-strong); padding:var(--space-2); }
-.image-credits > div { position:absolute; right:20px; bottom:52px; z-index:var(--z-panel); padding:var(--space-4); background:var(--surface); border:1px solid var(--line); border-radius:8px; width:min(400px,calc(100% - 40px)); box-shadow:var(--shadow-sm); font-size:var(--text-xs); line-height:var(--leading-body); }
+.content-footer { padding:0 var(--space-4); background:var(--paper); font-size:var(--text-xs); position:relative; }
+.image-credits summary { cursor:pointer; color:var(--line-strong); padding:var(--space-1); min-height:var(--target-size); box-sizing:border-box; display:flex; align-items:center; }
+.image-credits > div { position:absolute; right:16px; bottom:40px; z-index:var(--z-panel); padding:var(--space-4); background:var(--surface); border:1px solid var(--line); border-radius:8px; width:min(320px,calc(100% - 32px)); box-shadow:var(--shadow-sm); font-size:var(--text-xs); line-height:var(--leading-body); }
 .image-credits a { color:var(--muted); }
 .launcher { width:112px; height:50px; flex-direction:row; gap:var(--space-2); border-radius:28px; background:var(--shu); color:var(--surface-2); bottom:20px; right:20px; box-shadow:0 8px 22px color-mix(in srgb, var(--shu-deep) 15%, transparent); }
 .launcher svg { width:23px; height:23px; }
