@@ -165,6 +165,7 @@
     if (!loaded) return;
     const route = activeChat?.mapRoute;
     const points = route?.points || [];
+    $('#map-fit').disabled=!points.some(Boolean);
     $('#route-lines').replaceChildren(); $('#route-points').replaceChildren(); $('#map-route-list').replaceChildren();
     points.forEach((place, index) => {
       if (place) {
@@ -352,7 +353,7 @@
   $('#map-zoom-out').onclick = () => zoomTo(900 / targetView[2] * 80);
   $('#map-reset').onclick = () => { $('#map-prefecture').value=''; populateCounties(); setView([0, 0, 900, 680]); };
   $('#map-fit').onclick = () => fit(activeChat?.mapRoute?.points || []);
-  $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); setView([0, 0, 900, 680]); };
+  $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); };
   svg.addEventListener('wheel',event=>{
     event.preventDefault();
     const matrix=svg.getScreenCTM();if(!matrix)return;
