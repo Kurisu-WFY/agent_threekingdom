@@ -1071,6 +1071,21 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 .content > [data-view-panel] { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; overflow-anchor:none; }
 .welcome > * { flex-shrink:0; }
 
+/* 地点阅读保留来处：桌面侧栏，窄屏使用完整详情页。 */
+@media (min-width:761px) {
+  body:not(.chat-open) .content:has(> #node-view:not([hidden])) {
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(390px,42%);
+    grid-template-rows:auto minmax(0,1fr) auto;
+  }
+  body:not(.chat-open) .content:has(> #node-view:not([hidden])) > .content-heading,
+  body:not(.chat-open) .content:has(> #node-view:not([hidden])) > .content-footer { grid-column:1 / -1; }
+  body:not(.chat-open) .content > [data-node-source] { grid-column:1; grid-row:2; min-width:0; }
+  body:not(.chat-open) .content > #node-view:not([hidden]) { grid-column:2; grid-row:2; min-width:0; border-left:1px solid var(--line); }
+}
+@media (max-width:760px) {
+  .content > [data-node-source] { display:none; }
+}
+
 .meta .tag { flex:none; white-space:nowrap; line-height:var(--leading-title); }
 .meta > .trust-info { max-width:none; overflow:visible; }
 

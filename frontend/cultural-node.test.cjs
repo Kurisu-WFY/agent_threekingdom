@@ -34,6 +34,8 @@ api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welco
 click('#node-back');assert.equal(views.at(-1),'welcome');
 for(const source of ['journal','map','story','welcome']){
   assert.equal(api.openPlace('pass',{returnTo:source}),true);
+  assert.match(get('#node-back').textContent,/返回上一视图/);
+  assert.ok(get('#node-origin').textContent.includes({journal:'探索志',map:'行旅地图',story:'文化探索',welcome:'文化探索'}[source]));
   click('#node-back');assert.equal(views.at(-1),source,`node should return to ${source}`);
 }
 assert.equal(api.openPlace('pass'),true);

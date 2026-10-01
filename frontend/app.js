@@ -541,14 +541,25 @@ const updateTopbarScroll = initTopbarScroll();
 let currentContentView = 'welcome';
 window.getContentView = () => currentContentView;
 let contentEntrance = null;
+let nodeSource = null;
 function showContentView(view) {
     const sections = Array.from(document.querySelectorAll('[data-view-panel]'));
     const target = sections.find(section => section.dataset.viewPanel === view);
     if (!target || view === currentContentView) return;
     contentEntrance?.cancel();
-    const leaving = sections.find(section => !section.hidden);
+    const leaving = sections.find(section => section.dataset.viewPanel === currentContentView);
     const restoreFocus = leaving?.contains(document.activeElement);
-    sections.forEach(section => { section.hidden = section !== target; });
+    if (view !== 'node' && nodeSource) {
+      nodeSource.inert = false;
+      delete nodeSource.dataset.nodeSource;
+      nodeSource = null;
+    }
+    if (view === 'node' && leaving && leaving.dataset.viewPanel !== 'node') {
+      nodeSource = leaving;
+      nodeSource.dataset.nodeSource = '';
+      nodeSource.inert = true;
+    }
+    sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
     if(view==='travel')window.TravelModules?.onEnterTravel?.(leaving?.dataset.viewPanel);
     const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地与行程', planner: '规划行程', plan: '活动方案', travel: '天气与空气质量' };

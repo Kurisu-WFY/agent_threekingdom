@@ -82,6 +82,8 @@
     if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});
     context={...payload,returnTo:payload.returnTo || payload.back || null};const {place,chapter,story}=context;
     $('#node-back').textContent=context.returnTo?'返回上一视图':'返回首页（来源未知）';
+    const origins={welcome:'文化探索',story:'文化探索',map:'行旅地图',journal:'探索志',destinations:'目的地',planner:'活动计划',plan:'活动计划',travel:'活动计划',outing:'活动计划'};
+    $('#node-origin').textContent='来自'+(origins[context.returnTo]||'未知来源')+' · 地点资料';
     readingKey=(story?.id||'unlinked')+':'+(context.index??'none')+':'+place.id;
     mode=(story?window.StoryProgress.get(story).mode:readings.get(readingKey)?.mode) || modes[0];
     $('#node-visual').replaceChildren(window.SGTStoryUI.icon(place.building));

@@ -48,6 +48,7 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  assert.ok(!text(rendered).includes('coverage: 1.0'));
  const placeLink=all(rendered).find(n=>n.className==='character-place-link'&&n.textContent==='剑门关');
  assert.ok(placeLink);run('currentContentView="story"');placeLink.handlers.click();assert.ok(actions.some(a=>Array.isArray(a)&&a[0]==='jianmenguan'&&a[1]==='story'));
+ run('currentContentView="node"');placeLink.handlers.click();assert.ok(actions.some(a=>Array.isArray(a)&&a[0]==='jianmenguan'&&a[1]==='welcome'),'answer link from an open detail must return to its source, not itself');
  assert.ok(all(rendered).filter(n=>n.tag==='button'&&n.textContent==='剑门关').every(n=>n.className==='character-place-link'));
  rendered=ctx.window.CharacterChat.answer({persona:'陈寿',text:'| 名称 | 状态 |\n| --- | --- |\n| 剑门关 | 待核验 |',data:{generation:{kind:'nuwax'}}});
  assert.ok(all(rendered).some(n=>n.tag==='table'));

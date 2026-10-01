@@ -43,7 +43,7 @@
     let rest=String(text||'');
     while(rest){const matches=names.map(name=>({name,index:rest.indexOf(name)})).filter(item=>item.index>=0).sort((a,b)=>a.index-b.index||b.name.length-a.name.length),hit=matches[0];if(!hit){inline.append(node('span','',rest));break;}if(hit.index)inline.append(node('span','',rest.slice(0,hit.index)));
       const place=places.find(item=>item.name===hit.name),located=place&&window.StoryMap?.describePlace?.(place,{placeId:place.id});
-      if(place){const link=button(hit.name,()=>window.CulturalNode.openPlace(place.id,{returnTo:window.getContentView?.()||'welcome'}));link.className='character-place-link';link.title='查看地点资料';inline.append(link);}
+      if(place){const link=button(hit.name,()=>{const view=window.getContentView?.()||'welcome';window.CulturalNode.openPlace(place.id,{returnTo:view==='node'?(window.CulturalNode.getContext?.()?.returnTo||'welcome'):view});});link.className='character-place-link';link.title='查看地点资料';inline.append(link);}
       else inline.append(node('span','character-place-name',hit.name));
       rest=rest.slice(hit.index+hit.name.length);
     }
