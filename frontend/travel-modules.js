@@ -3,6 +3,7 @@
   const api = window.TravelApi;
   const storageKey = 'sanguo.travel-plans.v1';
   let current = null, planningStory = null, planRequest = 0, lastAttempt = null;
+  let travelReturnTo='destinations';
   let city = '南充';
   let cityRequest = 0;
   let saved = [];
@@ -125,6 +126,8 @@
   }
   function storyLabel() {
     $('#planner-story').textContent=planningStory ? '故事线：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事线，可填写普通行程需求。';
+    $('#planner-back-story').textContent=planningStory?'返回故事线调整章节':'返回目的地与行程';
+    $('#plan-back-story').textContent=planningStory?'返回故事线':'返回目的地与行程';
   }
   function restoreForm(preferences) {
     Object.entries(preferences).forEach(([key,value])=>{if(field(key))field(key).value=value;});
@@ -187,6 +190,7 @@
       $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';
       return;
     }
+    planningStory=attempt.story||null;storyLabel();
     current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
       activityAnswer:reply.text,plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
     renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');
@@ -228,10 +232,11 @@
     lastAttempt=null;$('#planner-retry').hidden=true;
   });
   $('#planner-retry').onclick=()=>{if(lastAttempt&&!$('#trip-form').querySelector('[type="submit"]').disabled)return requestPlan(lastAttempt);};
-  const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('story');};
+  const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('destinations');};
   $('#planner-back-story').onclick=$('#plan-back-story').onclick=backStory;
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
-  window.TravelModules={openStory,receiveActivity,askActivity:(question,preferences)=>requestPlan({question,preferences:{...preferences,days:Number(preferences.days),people:Number(preferences.people),date:preferences.date||preferences.travel_date},story:null,choices:[]})};
+  function getParentView(view){return view==='travel'&&travelReturnTo==='destinations'?'destinations':planningStory?'story':'destinations';}
+  window.TravelModules={openStory,receiveActivity,onEnterTravel,getParentView,askActivity:(question,preferences)=>requestPlan({question,preferences:{...preferences,days:Number(preferences.days),people:Number(preferences.people),date:preferences.date||preferences.travel_date},story:null,choices:[]})};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();
@@ -260,28 +265,39 @@
     try { await navigator.clipboard.writeText($('#plan-results').innerText); $('#plan-status').textContent = '方案已复制。'; }
     catch { $('#plan-status').textContent = '复制失败，可选中方案文字手动复制。'; }
   };
-  async function queryCurrent(button, target, method, renderResult) {
-    if (!current) return empty(target, '请先在“规划行程”中填写出行条件并生成草稿。');
-    const selected = current;
-    button.disabled = true;
-    empty(target, '正在查询…');
-    try {
-      const result = await method(selected.preferences);
-      if (current !== selected) return;
-      if (result.status !== 'ok') return empty(target, result.message || '暂无数据。');
-      target.replaceChildren(); renderResult(target, result.data);
-    } catch (error) { if (current === selected) empty(target, error.message); }
-    finally { button.disabled = false; }
+  let prefilledPlanId=null, weatherVersion=0;
+  function onEnterTravel(source){
+    if(source){travelReturnTo=source==='plan'?'plan':'destinations';$('#travel-back').dataset.contentView=travelReturnTo;$('#travel-back').textContent=travelReturnTo==='plan'?'返回活动方案':'返回目的地与行程';}
+    if(current?.id && current.id!==prefilledPlanId){
+      $('#travel-city').value=current.preferences.city||'';
+      $('#travel-date').value=current.preferences.date||current.preferences.travel_date||'';
+      prefilledPlanId=current.id;
+      $('#travel-status').textContent='已从活动方案预填目的地与日期；点击查询后才会请求天气。';
+    }
   }
-  $('#load-travel').onclick = event => queryCurrent(event.currentTarget, $('#travel-results'), api.getTravelInfo, (target, data) => {
-    if (!Array.isArray(data.items)) throw new Error('出行信息格式不完整。');
-    if (!data.items.length) return empty(target, '暂无天气或交通信息。');
-    data.items.forEach(item => {
-      const card = node('article', null, 'result-card');
-      card.append(node('h3', item.title), node('p', item.summary), node('p', dataStatus(item), 'map-note'));
-      sources(card, item.sources); target.append(card);
-    });
-  });
+  const weatherForm=$('#travel-weather-form'),weatherButton=$('#load-travel'),weatherTarget=$('#travel-results');
+  weatherForm.addEventListener('input',()=>{weatherVersion++;weatherButton.disabled=false;empty(weatherTarget,'条件已改变，点击查询以更新天气。');$('#travel-status').textContent='条件已改变，请重新查询。';});
+  weatherForm.onsubmit=async event=>{
+    event.preventDefault();if(!weatherForm.reportValidity())return;
+    const version=++weatherVersion,city=$('#travel-city').value.trim(),date=$('#travel-date').value;
+    weatherButton.disabled=true;$('#travel-status').textContent='正在查询天气与空气质量…';empty(weatherTarget,'正在查询…');
+    try{
+      const result=await api.getTravelInfo({city});if(version!==weatherVersion)return;
+      if(result.status!=='ok')throw Error(result.message||'天气服务暂不可用，请重试。');
+      const data=result.data,days=Array.isArray(data.forecast)?data.forecast:[],items=Array.isArray(data.items)?data.items:[];
+      weatherTarget.replaceChildren();
+      if(days.length){const forecast=node('section',null,'result-card');forecast.append(node('h3','未来七天天气预报'));
+        days.forEach(day=>forecast.append(node('p',`${day.date}${date===day.date?'（所选日期）':''} · ${day.temperature_min_c??'—'}～${day.temperature_max_c??'—'}°C · 降雨概率 ${day.rain_probability_percent??'—'}%`)));
+        weatherTarget.append(forecast);
+      }
+      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${air.time||'未提供'}；PM2.5：${air.pm2_5??'—'}；PM10：${air.pm10??'—'}`));weatherTarget.append(card);}
+      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),node('p',item.summary||'摘要待补充'),node('p',dataStatus(item),'map-note'));sources(card,item.sources);weatherTarget.append(card);});
+      if(!days.length&&!data.air_quality&&!items.length)empty(weatherTarget,'暂无可确认的天气或空气数据，可稍后重试。');
+      const warnings=Array.isArray(data.warnings)?data.warnings:[];
+      $('#travel-status').textContent=[`${city} · 已完成查询。来源及查询时间见结果卡；出发前请再次核验。`,date&&!days.some(day=>day.date===date)?'所选日期不在预报范围内，不代表该日天气。':'',...warnings].filter(Boolean).join(' ');
+    }catch(error){if(version===weatherVersion){empty(weatherTarget,'本次没有可确认的数据，可修改条件后重试。');$('#travel-status').textContent=(error.message||'查询失败').replace(/[。；，\s]+$/,'')+'；请重试。';}}
+    finally{if(version===weatherVersion)weatherButton.disabled=false;}
+  };
   renderPlan(); renderSaved(); loadCity(city);
-    empty($('#travel-results'), '生成行程后可查询天气预报与当前空气质量。免费公共服务可能暂时不可用；出发前请通过运营方确认班次。');
+    empty($('#travel-results'), '填写目的地后可独立查询天气预报与当前空气质量。');
 })();

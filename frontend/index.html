@@ -317,6 +317,7 @@
         <p class="map-note">范围：川东北及四川其他三国文化目的地。景点库未覆盖的城市仍可交给智能体检索规划，不代表当地没有相关景点。</p>
         <div id="destination-results" aria-live="polite" class="module-results"></div>
         <button class="module-button" id="plan-destination">规划南充行程</button>
+        <button type="button" class="module-button" data-content-view="travel">天气与空气质量</button>
       </section>
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
@@ -354,10 +355,15 @@
 
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
-        <button type="button" class="module-button" data-content-view="plan">返回路线方案</button>
+        <button type="button" class="module-button" id="travel-back" data-content-view="destinations">返回目的地与行程</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
-        <p>按行程目的地查询出发日期天气预报与当前空气质量，显示来源与查询时间。空气质量为模型估计，不是现场实测；出发前请通过运营方确认班次。</p>
-        <button id="load-travel" class="module-button">查询出行信息</button>
+        <p>填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。</p>
+        <form id="travel-weather-form" class="module-form">
+          <label>目的地<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充"></label>
+          <label>出行日期（可选）<input id="travel-date" type="date"></label>
+          <button id="load-travel" type="submit" class="module-button primary">查询天气与空气质量</button>
+        </form>
+        <p id="travel-status" role="status">填写目的地后点击查询；进入页面不会自动发出请求。</p>
         <div id="travel-results" class="module-results" aria-live="polite"></div>
       </section>
 
