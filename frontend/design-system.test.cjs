@@ -70,3 +70,6 @@ for(const selector of ['chapter-number-text','chapter-complete-stamp']){
   assert.ok(blocks.every(b=>!/\bfont\s*:/.test(b)));
 }
 assert.ok(css.includes('counter-scaled story glyph'),'chapter and stamp text inherit a screen-sized glyph');
+assert.ok(/\.topbar\s*\{[^}]*justify-content:flex-start/.test(css),'desktop topbar groups brand, location, status');
+assert.ok(/\.topbar-center\s*\{[^}]*flex:none;\s*text-align:left/.test(css),'location label does not stretch across the header');
+assert.equal(value('header-height'),'64px','topbar height stays unchanged');
