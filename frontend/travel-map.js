@@ -133,6 +133,8 @@
     if (!loaded) return;
     const storyNode = event.target.closest('[data-story-chapter]');
     if (storyNode) { window.StoryMap?.selectChapter(Number(storyNode.getAttribute('data-story-chapter'))); return; }
+    // 文字可能嵌在县区按钮内；先拦截标签，再判断区域及空白处的附近拾取。
+    if (['text','tspan'].includes(String(event.target.localName || event.target.tagName).toLowerCase())) return;
     const code=event.target.closest('[data-county-code]')?.getAttribute('data-county-code');
     if(code){const county=counties.find(c=>String(c.adcode)===code);if(county)return selectPlace(county);}
     const matrix = svg.getScreenCTM();

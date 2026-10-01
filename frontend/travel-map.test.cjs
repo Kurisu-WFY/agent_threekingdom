@@ -19,7 +19,7 @@ function makeNode(tag = 'div') {
     listeners: {}, addEventListener(type,fn) { this.listeners[type]=fn; }, removeEventListener() {}, focus() {}, scrollIntoView() {},
     setPointerCapture() { this.captured=true; }, getBoundingClientRect() { return { top: 0, left: 0, width: 900, height: 680 }; },
     getScreenCTM() { return { a: 1, b: 0, inverse: () => ({}) }; },
-    closest(selector) { const key=selector.slice(1,-1);return this.attributes[key] !== undefined ? this : null; },
+    closest(selector) { const key=selector.slice(1,-1);for(let current=this;current;current=current.parent)if(current.attributes[key]!==undefined)return current;return null; },
     querySelector() { return makeNode(); }
   };
   Object.defineProperty(node, 'firstElementChild', { writable: true, value: undefined });
@@ -68,6 +68,16 @@ const assert=require('node:assert/strict');
  const county=registry.get('#county-boundaries').children.find(n=>n.attributes['data-county-code']==='511324');
  assert.ok(county);
  const event={preventDefault(){this.prevented=true;},button:0,pointerId:1,clientX:0,clientY:0,target:county};
+ const countyLabel=registry.get('#county-points').children.find(n=>n.attributes['data-county-code']==='511324').children.find(n=>n.tagName==='text');
+ registry.get('#map-place-picker').hidden=true;
+ svg.listeners.click({...event,target:countyLabel});
+ assert.equal(registry.get('#map-county').value,'','clicking label must not select its parent county marker');
+ assert.equal(registry.get('#map-place-picker').hidden,true);
+ const place=window.TravelMap.getPlaces().find(p=>String(p.adcode)==='511324');
+ const [nearX,nearY]=window.MapRouteCore.project(place.center);
+ svg.listeners.click({...event,target:svg,clientX:nearX,clientY:nearY});
+ assert.ok(registry.get('#map-county').value==='county-511324'||!registry.get('#map-place-picker').hidden,'blank-area nearby picking remains available');
+ select.onchange();paintAll();
  svg.listeners.pointerdown(event);assert.equal(svg.captured,undefined);svg.listeners.pointerup(event);svg.listeners.click(event);
  assert.equal(registry.get('#map-county').value,'county-511324');
  assert.equal(registry.get('#map-picker-title').textContent,'仪陇县 · 南充市');
