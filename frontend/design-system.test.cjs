@@ -15,6 +15,8 @@ const outside=css.replace(root,'');assert.equal(/#[a-f\d]{3,8}\b|rgba?\([\d.,\s]
 assert.ok(css.includes('min-height:var(--target-size)!important'));
 assert.ok(css.includes('--layout-duration:0ms'));assert.ok(css.includes('animation:none!important'));
 const html=fs.readFileSync(__dirname+'/index.html','utf8');
+assert.ok(/data-q="[^"]*门票[^"]*"[^>]*>票价与预算/.test(html));
+assert.ok(!/data-q="[^"]*(?:酒店|住宿|房间)/.test(html));
 const conversationStart=html.indexOf('<section class="conversation">');
 const conversation=html.slice(conversationStart,html.indexOf('</aside>',conversationStart));
 assert.ok(conversation.indexOf('id="messages"')<conversation.indexOf('id="chat-form"'));
@@ -52,3 +54,4 @@ assert.ok(luminance(value('composer-surface'))<luminance(value('surface')));
 assert.ok(contrast('muted','composer-surface')>=4.5);
 assert.ok(/\.composer textarea\s*\{[^}]*border:0/.test(css));
 assert.ok(/\.composer textarea:focus\s*\{[^}]*outline:[^;]*var\(--focus-ring\)/.test(css));
+assert.ok(/\.content-switch button\[aria-current="location"\]\s*\{[^}]*background:var\(--jade-soft\)/.test(css));

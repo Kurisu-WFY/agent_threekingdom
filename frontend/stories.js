@@ -46,6 +46,8 @@
     selected = story;
     $('#story-title').textContent = text(story.title);
     $('#preview-selection').textContent = text(story.title) + (story.chapters.length ? ' · 章节顺序已设定，位置待核验' : ' · 空间走向待补充');
+    $('#preview-story-open').disabled=!story.chapters.length;
+    $('#preview-map-note').textContent=story.chapters.length?'':'本主题章节与地点待补充；仍可与陈寿讨论。';
     const detail = $('#story-detail-content');
     detail.replaceChildren(node('p', 'story-disclosure', '文化探索主题 · 向陈寿了解故事与出处'), facts(story));
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
@@ -135,11 +137,14 @@
     progress.subscribe(() => { badge.textContent = progress.status(story); shell.dataset.progress = progress.status(story); });
     const mapButton = node('button', 'story-map-entry', '在故事地图中探索 →'); mapButton.type = 'button';
     mapButton.setAttribute('aria-label', '在故事地图中探索：' + story.title); mapButton.setAttribute('aria-controls', 'map-view');
-    mapButton.addEventListener('click', () => window.StoryMap.open(story.id));
-    shell.append(card, mapButton); cards.append(shell);
+    mapButton.disabled=!story.chapters.length;
+    mapButton.addEventListener('click', () => {if(story.chapters.length)window.StoryMap.open(story.id);});
+    shell.append(card, mapButton);
+    if(!story.chapters.length)shell.append(node('p','map-note','本主题章节与地点待补充；可进入主题与陈寿讨论。'));
+    cards.append(shell);
   });
-  $('#story-map-open').addEventListener('click', () => window.StoryMap.open(selected.id));
-  $('#preview-story-open').addEventListener('click', () => window.StoryMap.open(selected.id));
+  $('#story-map-open').addEventListener('click', () => {if(selected.chapters.length)window.StoryMap.open(selected.id);});
+  $('#preview-story-open').addEventListener('click', () => {if(selected.chapters.length)window.StoryMap.open(selected.id);});
   $('#story-ask').addEventListener('click', () => {
     window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事线，适合怎么游览？');
     $('#story-action-status').textContent = '已交给向导；如正在回答，问题会保留在对话草稿中。';
@@ -168,7 +173,7 @@
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));
-    article.append(action('读懂'+place.name,()=>window.CulturalNode.openPlace(place.id)));
+    article.append(action('读懂'+place.name,()=>window.CulturalNode.openPlace(place.id,{returnTo:'welcome'})));
     $('#story-buildings').append(article);
   });
   select(selected, false);

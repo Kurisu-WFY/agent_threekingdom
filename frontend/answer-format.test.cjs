@@ -21,6 +21,7 @@ assert.equal(latestCalls([{name:'x',status:'EXECUTING'},{name:'x',status:'FINISH
 console.log('PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status');
 assert.equal(clean('`retrieve_culture_knowledge`（成都武侯祠+陈寿关系）'),'`文化知识检索`（成都武侯祠+陈寿关系）');
 assert.equal(clean('san-guo-travel-agent__list_scenic_spots'),'景点查询');
+assert.equal(clean('estimate_hotel_budget / search_hotel_poi_request'),'住宿预算估算 / 住宿地点查询');
 assert.equal(clean('召回率：100%\n命中5个chunk\n陈寿是史学家。\n来源：《三国志》，第3页。'),'陈寿是史学家。\n来源：《三国志》，第3页。');
 assert.equal(clean('[来源](https://example.com/retrieve_culture_knowledge)'),'[来源](https://example.com/retrieve_culture_knowledge)');
 const filtered=walk(render('| 论文 | chunk数 | rerank最高分 | PDF页码 |\n| --- | --- | --- | --- |\n| 陈寿研究 | 5 | 0.9 | 3 |'));

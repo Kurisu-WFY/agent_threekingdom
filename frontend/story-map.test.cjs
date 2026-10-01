@@ -35,7 +35,7 @@ function allText(node){return node.textContent+node.children.map(allText).join('
  api.selectChapter(0);t.get('#chapter-add').click();assert.equal(t.added[0].name,'昭化区');t.get('#chapter-enter').click();assert.equal(t.opened[0],'test');
  api.exit();assert.equal(api.isActive(),false);assert.equal(t.get('#story-map-nodes').children.length,0);assert.equal(t.fits.at(-1),'restored');
  await api.open('test');assert.ok(t.get('#story-map-progress').textContent.includes('已寻迹 1 / 3'));
- await api.open('empty');assert.equal(t.get('#story-map-nodes').children.length,0);assert.ok(t.get('#story-map-progress').textContent.includes('待确认'));
+ assert.equal(await api.open('empty'),false);assert.equal(api.getContext().story.id,'test');assert.equal(t.get('#map-view').dataset.storyId,'test');
  await api.open('test');
  const progress=t.window.StoryProgress, state=progress.get(t.story);
  progress.choose(t.story,[0,2]);api.selectChapter(0);t.get('#chapter-next').click();assert.equal(state.current,2);

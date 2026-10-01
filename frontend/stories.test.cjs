@@ -22,13 +22,21 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   for(const record of test.window.SGT_STORIES)assert.ok(['寻源','读史','探秘','传承'].includes(record.phase));
   assert.equal(test.window.SGT_STORIES.find(s=>s.id==='history-to-place').phase,'探秘');
   assert.ok(!contents(cards[0]).includes('待补充'));assert.ok(contents(cards[2]).includes('3 章'));
+  for(const [i,shell] of test.get('#story-cards').children.entries()){
+    assert.equal(shell.children[1].disabled,i!==2);
+    if(i!==2)assert.match(contents(shell),/章节与地点待补充/);
+  }
   for(const place of test.window.SGT_PLACES)assert.equal(place.coordinates,null);
   for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('文化主题与故事线'));}
   test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
   test.get('#story-map-open').handlers.click();assert.equal(test.mapCalls[1],'shudao-xunzong');
-  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,1);assert.equal(test.questions[0],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[0].includes('模板'));
+  cards[0].handlers.click();assert.equal(test.get('#story-map-open').disabled,true);assert.equal(test.get('#preview-story-open').disabled,true);assert.match(test.get('#preview-map-note').textContent,/章节与地点待补充/);
+  test.get('#preview-story-open').handlers.click();assert.equal(test.mapCalls.length,2,'empty preview must not open map');
+  test.get('#story-ask').handlers.click();assert.match(test.questions.at(-1),/从南充少年到三国史家/);
+  cards[2].handlers.click();
+  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,2);assert.equal(test.questions[1],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[1].includes('模板'));
   const story=test.window.SGT_STORIES[2],progress=test.window.StoryProgress;
   const state=progress.get(story);state.started=true;state.completed=new Set([0,1,2]);progress.save(story);
   assert.ok(contents(test.get('#story-detail-content')).includes('一卷读罢'));

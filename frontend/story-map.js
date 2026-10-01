@@ -160,7 +160,7 @@
   }
   async function open(id) {
     const story = overrides.get(id)?.story || window.SGT_STORIES.find(item=>item.id===id);
-    if (!story) return false;
+    if (!story?.chapters?.length) return false;
     const request = ++epoch;
     if (!await window.TravelMap.ready || request !== epoch) {
       if (request === epoch) { showContentView('map'); $('#map-route-status').textContent='地图资料暂不可用，请刷新后重试。故事模式尚未开启。'; }
