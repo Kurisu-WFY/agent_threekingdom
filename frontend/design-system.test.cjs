@@ -73,3 +73,6 @@ assert.ok(css.includes('counter-scaled story glyph'),'chapter and stamp text inh
 assert.ok(/\.topbar\s*\{[^}]*justify-content:flex-start/.test(css),'desktop topbar groups brand, location, status');
 assert.ok(/\.topbar-center\s*\{[^}]*flex:none;\s*text-align:left/.test(css),'location label does not stretch across the header');
 assert.equal(value('header-height'),'64px','topbar height stays unchanged');
+assert.ok(/\.content\s*\{[^}]*width:100%;\s*max-width:none;[^}]*margin:0;/.test(css),'closed workspace uses available width');
+assert.ok(/@media\(min-width:1051px\)\s*\{\s*body:not\(\.chat-open\) \.content\s*\{\s*height:calc\(100dvh - var\(--header-height\) - var\(--space-5\) - calc\(var\(--space-1\)\*12\)\)/.test(css),'closed desktop content height subtracts actual workspace padding');
+assert.ok(/\.map-view\s*>\s*p,\s*\.module-view\s*>\s*p\s*\{\s*max-inline-size:var\(--measure-reading\)/.test(css),'wide workspace keeps direct prose readable');
