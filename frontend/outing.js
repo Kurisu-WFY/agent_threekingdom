@@ -79,7 +79,6 @@
   };
   window.TravelAssistant={canOpen:core.canOpen,open(message,returnToChat){
     const d=core.draft(message);clearWeather();clearRoute();
-    window.NanchongPlanner?.importDraft(d);
     $('outing-city').value=d.city;$('outing-date').value=d.date;back=returnToChat;
     for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}coordinateFields();$('outing-confirm').checked=false;
     $('outing-origin').textContent='来自陈寿对话的行程草案 · 请确认目的地与日期';$('outing-back').hidden=false;

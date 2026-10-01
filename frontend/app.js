@@ -443,6 +443,7 @@ function requestReply(chat, reply) {
     .catch(error => {
       reply.pending = false;
       reply.error = true;
+      if (chats[active] === chat && reply.activityPlan) window.TravelModules?.failActivity?.(reply);
       reply.text = error.name === 'TimeoutError'
         ? '回答等待超时，平台任务可能仍在执行，请先检查女娲会话再决定是否重试。'
         : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');

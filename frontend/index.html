@@ -30,25 +30,8 @@
       </div>
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">三国文化活动方案</h1><p>填写条件，交给智能体安排文化活动。覆盖川东北及四川其他三国文化目的地，资料不足会说明。</p></header>
-        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
-        <section id="nanchong-planner" class="itinerary" aria-label="智能体行程需求">
-          <form id="itinerary-form">
-            <div class="itinerary-fields">
-              <label>从哪里出发<input name="origin" required maxlength="120" placeholder="如：南充站（请填公共地点）"></label>
-              <label>目的地（可多城市）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="如：成都，或南充、阆中"></label>
-              <datalist id="itinerary-cities"><option value="南充"><option value="阆中"><option value="广元"><option value="成都"><option value="绵阳"><option value="德阳"><option value="巴中"><option value="达州"></datalist>
-              <label>出行日期<input name="travel_date" type="date"></label>
-              <label>游玩时间<select name="days"><option value="0.5">半日</option><option value="1" selected>一日</option><option value="2">两日</option></select></label>
-              <label>交通方式<select name="mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
-              <label>人数<input name="people" type="number" value="1" min="1" max="50" required></label>
-            </div>
-            <label>想去的景点（选填）<input name="place_names" maxlength="500" placeholder="填写景点名称；留空让智能体根据文化资料推荐"></label>
-            <button type="submit" class="outing-primary">交给智能体安排活动</button>
-          </form>
-          <p id="itinerary-status" role="status">点击后打开智能体对话，并带入这些条件。不限南充；资料和工具覆盖范围不等于目的地输入范围。</p>
-          <div id="itinerary-result" class="itinerary-result" tabindex="-1" aria-label="行程草案结果"></div>
-        </section>
+        <header><h1 id="outing-title" tabindex="-1">出发核验</h1><p>按需核对道路信息。文化活动需求与结果集中在活动计划中。</p></header>
+        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button type="button" class="module-button" data-content-view="planner">活动需求与结果</button><button id="outing-back" type="button" hidden>返回原对话</button></div>
         <details class="itinerary-utilities" open><summary>高德路线规划、天气与空气查询</summary>
         <div class="outing-columns">
           <section aria-labelledby="outing-weather-title" class="outing-weather">
@@ -293,7 +276,7 @@
         <ol id="map-route-list" class="map-route-list"></ol>
         <p class="map-note">市州与县级点表示驻地，不代表景区入口。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部即可选中；县名自动避让，未显示的县区也可从列表选择。</p>
         <p class="map-note">轮廓与坐标来源：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">阿里云 DataV 地理数据</a>。</p>
-        <div class="module-actions"><button type="button" class="module-button" data-agent-question="帮我规划南充、阆中和广元的三国文化旅游路线">让向导帮我规划这趟旅程 ↗</button></div>
+        <div class="module-actions"><button type="button" class="module-button" data-plan-cities="南充、阆中、广元">带入活动计划</button></div>
       </section>
 
       <section class="module-view cultural-node" id="node-view" data-view-panel="node" hidden>
@@ -327,6 +310,7 @@
         <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
         <form id="trip-form" class="module-form">
           <label>目的地<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
+          <datalist id="itinerary-cities"><option value="南充"><option value="阆中"><option value="广元"><option value="成都"><option value="绵阳"><option value="德阳"><option value="巴中"><option value="达州"></datalist>
           <label>出发地<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
           <label>出发日期<input name="date" type="date"></label>
           <label>可用时间<select name="days"><option value="0.5">半天</option><option value="1" selected>一天</option><option value="2">两天</option></select></label>
@@ -439,7 +423,5 @@
   <script src="outing.js?v=2"></script>
   <script src="amap-map.js?v=1"></script>
   <script src="amap-planner.js?v=2"></script>
-  <script src="itinerary-agent-core.js?v=1"></script>
-  <script src="itinerary.js?v=5"></script>
 </body>
 </html>

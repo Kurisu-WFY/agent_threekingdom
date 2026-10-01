@@ -7,6 +7,7 @@
   let city = '南充';
   let cityRequest = 0;
   let saved = [];
+  const activityState = state => { $('#planner-view').dataset.activityState = state; };
   try {
     const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
     if (Array.isArray(stored)) saved = stored.filter(item => item && typeof item.id === 'string' && item.preferences && typeof item.preferences.city === 'string' && Number.isFinite(item.preferences.days) && item.preferences.days >= 0.5 && item.preferences.days <= 14 && item.plan && Array.isArray(item.plan.days) && (!item.chatRoute || (item.chatRoute.found===true && item.chatRoute.route && Array.isArray(item.chatRoute.stops) && item.chatRoute.stops.every(s=>s && typeof s.name==='string')))).slice(0, 20);
@@ -51,7 +52,7 @@
     city = nextCity;
     const version = ++cityRequest;
     document.querySelectorAll('[data-city]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.city === city)));
-    $('#plan-destination').textContent = `安排${city}活动`;
+    $('#plan-destination').textContent = '带入活动计划';
     const target = $('#destination-results');
     empty(target, '正在查询景区资料…');
     try {
@@ -68,21 +69,24 @@
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));
         if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));
         card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));
-        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('让智能体安排活动', () => chooseCity(spot.city || city, spot.name)));
+        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('带入活动计划', () => chooseCity(spot.city || city, spot.name)));
         sources(card, spot.sources);
         target.append(card);
       });
     } catch (error) { if (version === cityRequest) empty(target, error.message); }
   }
   function chooseCity(nextCity, spot = '') {
-    if(window.SGTJourney?.ask){window.SGTJourney.ask('请生成'+nextCity+'三国文化活动方案。'+(spot?'希望包含：'+spot+'。':'')+'先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。',{preserveMap:true});return;}
     ++planRequest; planningStory=null; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false; storyLabel();
-    $('#trip-form').elements.city.value = nextCity;
+    activityState(current?'stale':'idle');
+    field('city').value = nextCity;
+    if(spot && !field('notes').value.includes(spot)) field('notes').value=[field('notes').value.trim(),'希望包含：'+spot].filter(Boolean).join('；');
+    $('#planner-status').textContent='已带入'+(spot||nextCity)+'，请核对出发地、日期与活动条件后生成。';
     showContentView('planner');
   }
   document.querySelectorAll('[data-city]').forEach(button => button.onclick = () => loadCity(button.dataset.city));
   document.querySelectorAll('[data-destination]').forEach(button => button.onclick = () => chooseCity(button.dataset.destination));
   $('#plan-destination').onclick = () => chooseCity(city);
+  document.querySelectorAll('[data-plan-cities]').forEach(button => button.onclick = () => chooseCity(button.dataset.planCities));
   $('#open-culture').onclick = () => toggleChat(true);
 
   function renderPlan() {
@@ -134,6 +138,7 @@
   }
   function openStory(story) {
     ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true;
+    activityState(current?'stale':'idle');
     $('#trip-form').querySelector('[type="submit"]').disabled=false;
     planningStory=story; field('explanation').value=window.StoryProgress.get(story).mode;
     storyLabel(); $('#planner-status').textContent='请填写现实约束；核心章节按你在故事详情中的选取。';
@@ -186,6 +191,7 @@
     if(!attempt || attempt.version!==planRequest || typeof reply.text!=='string' || !reply.text.trim())return;
     const intent=reply.data?.intent?.intent;
     if(reply.data?.route?.found===true || ['route_planning','budget_ticket'].includes(intent) || reply.data?.generation?.kind==='retrieval_fallback'){
+      activityState('other-answer');
       $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，上一份方案保持。';
       $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';
       return;
@@ -193,6 +199,7 @@
     planningStory=attempt.story||null;storyLabel();
     current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
       activityAnswer:reply.text,plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
+    activityState('valid');
     renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');
     $('#planner-status').textContent='已收到活动方案，可在对话中继续追问，或查看方案保存与复制。';
     $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';
@@ -200,6 +207,7 @@
   async function requestPlan(attempt) {
     const version=++planRequest, button=$('#trip-form').querySelector('[type="submit"]');
     const activityPlan={...attempt,version};
+    activityState('requesting');
     if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿活动对话；若正在回答，本次需求保留在对话草稿。';window.SGTJourney.ask(attempt.question,{preserveMap:true,activityPlan});return;}
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
     $('#planner-status').textContent='正在检索文化资料并生成活动方案；上一份方案保持。';
@@ -208,7 +216,7 @@
       if(version!==planRequest)return;
       if(typeof data?.answer!=='string'||!data.answer.trim())throw Error('未返回有效活动回答。');
       receiveActivity({text:data.answer,data,activityPlan});showContentView('plan');
-    } catch(error) {if(version===planRequest){$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；上一份方案保持。':'请求失败：'+error.message+' 可重试；上一份方案保持。';$('#planner-retry').hidden=false;}}
+    } catch(error) {if(version===planRequest){activityState('failed');$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；上一份方案保持。':'请求失败：'+error.message+' 可重试；上一份方案保持。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
   }
   $('#trip-form').onsubmit = event => {
@@ -226,6 +234,7 @@
   };
   $('#trip-form').addEventListener('input',()=>{
     ++planRequest; // 条件改变后，旧活动回答不覆盖方案。
+    activityState(current||$('#planner-view').dataset.activityState==='requesting'?'stale':'idle');
 
     const button=$('#trip-form').querySelector('[type="submit"]');
     if(button.disabled){button.disabled=false;$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新规划。';}
@@ -235,8 +244,9 @@
   const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('destinations');};
   $('#planner-back-story').onclick=$('#plan-back-story').onclick=backStory;
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
-  function getParentView(view){return view==='travel'&&travelReturnTo==='destinations'?'destinations':planningStory?'story':'destinations';}
-  window.TravelModules={openStory,receiveActivity,onEnterTravel,getParentView,askActivity:(question,preferences)=>requestPlan({question,preferences:{...preferences,days:Number(preferences.days),people:Number(preferences.people),date:preferences.date||preferences.travel_date},story:null,choices:[]})};
+  function getParentView(){return 'planner';}
+  function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；上一份方案保持，可修改条件后重试。';}}
+  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,getParentView};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();
@@ -298,6 +308,6 @@
     }catch(error){if(version===weatherVersion){empty(weatherTarget,'本次没有可确认的数据，可修改条件后重试。');$('#travel-status').textContent=(error.message||'查询失败').replace(/[。；，\s]+$/,'')+'；请重试。';}}
     finally{if(version===weatherVersion)weatherButton.disabled=false;}
   };
-  renderPlan(); renderSaved(); loadCity(city);
+  activityState('idle');renderPlan(); renderSaved(); loadCity(city);
     empty($('#travel-results'), '填写目的地后可独立查询天气预报与当前空气质量。');
 })();
