@@ -551,6 +551,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .content-switch { display:flex; gap:var(--space-1); padding:var(--space-1); border-radius:8px; background:var(--paper); }
 .content-switch button { min-height:40px; border:0; border-radius:5px; padding:var(--space-2) var(--space-4); font-size:var(--text-xs); background:transparent; transition:background var(--motion-fast),color var(--motion-fast),box-shadow var(--motion-fast); }
 .content-switch button[aria-pressed=true] { color:var(--surface); background:var(--jade-deep); box-shadow:0 2px 5px color-mix(in srgb, var(--ink) 9%, transparent); }
+.content-switch button[aria-current="location"] { color:var(--jade-deep); background:var(--jade-soft); box-shadow:inset 0 -2px var(--jade); }
 .welcome { padding:calc(var(--space-1) * 9) calc(var(--space-1) * 10) var(--space-4); overflow:visible; }
 .agent-hero { display:grid; grid-template-columns:1.05fr 1fr; align-items:center; gap:calc(var(--space-1) * 12); }
 .hero-copy { min-width:0; padding:var(--space-3) 0; }

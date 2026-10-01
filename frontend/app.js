@@ -195,11 +195,11 @@ function messageNode(message) {
     const sourceChat = chats[active];
     const open = document.createElement('button');
     open.className = 'module-button'; open.textContent = '查看出行方案';
-    open.onclick = () => window.TravelAssistant.open(message, () => {
+    open.onclick = () => {const sourceView=currentContentView;window.TravelAssistant.open(message, () => {
       const index = chats.indexOf(sourceChat);
       if (index < 0) return false;
-      saveDraft(); active = index; input.value = sourceChat.draft || ''; render(); toggleChat(true); return true;
-    });
+      saveDraft(); active = index; input.value = sourceChat.draft || ''; render(); showContentView(sourceView);toggleChat(true); return true;
+    });};
     body.append(open);
   }
   row.append(identity, body);
@@ -539,6 +539,7 @@ const updateTopbarScroll = initTopbarScroll();
 
 /* ---------------- 主框内容切换 ---------------- */
 let currentContentView = 'welcome';
+window.getContentView = () => currentContentView;
 let contentEntrance = null;
 function showContentView(view) {
     const sections = Array.from(document.querySelectorAll('[data-view-panel]'));
@@ -549,12 +550,20 @@ function showContentView(view) {
     const restoreFocus = leaving?.contains(document.activeElement);
     sections.forEach(section => { section.hidden = section !== target; });
     currentContentView = view;
-    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地', planner: '规划行程', plan: '活动方案', travel: '天气与交通' };
+    if(view==='travel')window.TravelModules?.onEnterTravel?.(leaving?.dataset.viewPanel);
+    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地与行程', planner: '规划行程', plan: '活动方案', travel: '天气与空气质量' };
     labels.outing = '出行助手';
+    const parent=view==='node'?(window.CulturalNode?.getContext?.()?.returnTo||'welcome'):
+      ['planner','plan','travel'].includes(view)?(window.TravelModules?.getParentView?.(view)||'destinations'):null;
+    const parentNames={...labels,welcome:'与蜀汉对话',journal:'探索志'};
     const label = document.querySelector('#view-label');
-    if (label) label.textContent = labels[view] || '主界面';
+    if (label) label.textContent = parent?`${parentNames[parent]||'与蜀汉对话'} · ${labels[view]}`:labels[view] || '主界面';
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
+    });
+    document.querySelectorAll('.content-switch [data-content-view]').forEach(option=>{
+      if(parent && option.dataset.contentView===parent)option.setAttribute('aria-current','location');
+      else option.removeAttribute('aria-current');
     });
     if (restoreFocus) (document.querySelector('.content-switch [data-content-view="' + view + '"]') || target.querySelector('[tabindex="-1"]'))?.focus({ preventScroll: true });
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && target.animate) {
@@ -565,5 +574,5 @@ function showContentView(view) {
     window.ChenshouGuide?.refresh();
 }
 document.querySelectorAll('[data-content-view]').forEach(button => {
-  button.addEventListener('click', () => showContentView(button.dataset.contentView));
+  button.addEventListener('click', () => {if(button.dataset.contentView==='map')window.TravelMap?.clearMentionReturn?.();showContentView(button.dataset.contentView);});
 });
