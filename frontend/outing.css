@@ -5,7 +5,7 @@
 .outing h3 {font-size:1.05rem;margin:1.5rem 0 .75rem}
 .outing p {max-width:70ch;margin:.75rem 0}
 .outing-handoff {display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--jade-soft);padding:1rem;margin:1.5rem 0;border:1px solid var(--line);border-radius:8px}
-.outing-columns {display:grid;grid-template-columns:minmax(0, .8fr) minmax(0,1.35fr);gap:1.5rem;align-items:start}
+.outing-columns {display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;align-items:start}
 .outing-weather,.outing-route {min-width:0;padding:1.5rem;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .outing form {display:grid;gap:1rem}
 .outing label {display:grid;gap:.5rem;font-size:.95rem}

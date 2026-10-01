@@ -31,6 +31,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  fields.city.value='广元';fields.notes.value='少走路';
  delete window.SGTJourney;
  const initialCalls=apiCalls.length;window.TravelModules.onEnterTravel();assert.equal(apiCalls.length,initialCalls,'entering weather view must not request');
+ window.TravelModules.prefillTravel('阆中','2026-10-04');assert.equal(get('#travel-city').value,'阆中');assert.equal(get('#travel-date').value,'2026-10-04');assert.equal(apiCalls.length,initialCalls,'handoff only prefills weather');
  get('#travel-city').value='南充';get('#travel-date').value='2026-10-03';
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.equal(apiCalls.at(-1).city,'南充');assert.match(get('#travel-status').textContent,/待接入|重试/);
  const originalWeather=window.TravelApi.getTravelInfo;
@@ -39,8 +40,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  window.TravelApi.getTravelInfo=originalWeather;
  window.TravelModules.openStory(story);assert.equal(views.at(-1),'planner');
  assert.equal(window.TravelModules.getParentView('planner'),'planner');
- window.TravelModules.onEnterTravel('plan');assert.equal(window.TravelModules.getParentView('travel'),'planner');assert.equal(get('#travel-back').dataset.contentView,'plan');
- window.TravelModules.onEnterTravel('destinations');assert.equal(window.TravelModules.getParentView('travel'),'planner');assert.equal(get('#travel-back').dataset.contentView,'destinations');
+ window.TravelModules.onEnterTravel('plan');assert.equal(window.TravelModules.getParentView('travel'),'planner');assert.equal(get('#travel-back').dataset.contentView||'planner','planner');
+ window.TravelModules.onEnterTravel('destinations');assert.equal(window.TravelModules.getParentView('travel'),'planner');assert.equal(get('#travel-back').dataset.contentView||'planner','planner');
  fields.origin.value='   ';await form.requestSubmit();assert.equal(requests.length,0);
  fields.origin.value='南充';fields.people.value='0';await form.requestSubmit();assert.equal(requests.length,0);fields.people.value='2';
  const pending=form.requestSubmit();assert.equal(button.disabled,true);form.requestSubmit();assert.equal(requests.length,1);
@@ -65,7 +66,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  for(const name of ['destinations','planner','plan','travel'])assert.ok(html.includes('data-view-panel="'+name+'"'));
  assert.doesNotMatch(html,/住宿档位|房间数|预算明细|重绘剩余路线|预算与住宿设置|name="(?:rooms|hotel_tier|budget_min|budget_max|budget_limit|hotel_per_room|meals_per_person_day|transport_total)"/);
  assert.ok(html.includes('带入活动计划')&&html.includes('生成活动方案'));
- assert.ok(html.includes('id="amap-map"')&&html.includes('id="outing-weather-form"'));
+ assert.ok(html.includes('id="amap-map"')&&html.includes('id="travel-weather-form"')&&!html.includes('id="outing-weather-form"'));
  const journeyCalls=[];window.SGTJourney={ask:(q,o)=>journeyCalls.push({q,o})};
  await form.requestSubmit();const activity=journeyCalls.at(-1);
  assert.doesNotMatch(activity.q,/住宿|房间数|预算|交通方式|规划旅游路线/);

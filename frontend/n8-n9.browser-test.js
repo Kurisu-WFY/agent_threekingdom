@@ -11,7 +11,7 @@
   function dom(){
     assert(!document.querySelectorAll('[name="hotel_tier"],[name="rooms"],[name="hotel_per_room"],[name="meals_per_person_day"],[name="transport_total"],[name="budget_limit"],[name="budget_min"],[name="budget_max"],#budget-view,[data-content-view="budget"],.route-replan').length,'N8 退休入口残留');
     assert(!/住宿档位|房间数|预算明细|重绘剩余路线|预算与住宿设置/.test(document.body.innerText),'N8 页面旧文案残留');
-    assert($('#travel-view')&&$('#load-travel')&&$('#amap-map')&&$('#outing-weather-form')&&$('#amap-route-form'),'N8 查询工具必须保留');
+    assert($('#travel-view')&&$('#load-travel')&&$('#amap-map')&&$('#travel-weather-form')&&$('#amap-route-form'),'N8 查询工具必须保留');
     assert(document.documentElement.scrollWidth<=window.innerWidth,'页面横向溢出');
     return {pass:true,viewport:[innerWidth,innerHeight]};
   }

@@ -3,7 +3,6 @@
   const api = window.TravelApi;
   const storageKey = 'sanguo.travel-plans.v1';
   let current = null, planningStory = null, planRequest = 0, lastAttempt = null;
-  let travelReturnTo='destinations';
   let city = '南充';
   let cityRequest = 0;
   let saved = [];
@@ -246,7 +245,7 @@
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
   function getParentView(){return 'planner';}
   function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；上一份方案保持，可修改条件后重试。';}}
-  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,getParentView};
+  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,prefillTravel,getParentView};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();
@@ -276,13 +275,15 @@
     catch { $('#plan-status').textContent = '复制失败，可选中方案文字手动复制。'; }
   };
   let prefilledPlanId=null, weatherVersion=0;
-  function onEnterTravel(source){
-    if(source){travelReturnTo=source==='plan'?'plan':'destinations';$('#travel-back').dataset.contentView=travelReturnTo;$('#travel-back').textContent=travelReturnTo==='plan'?'返回活动方案':'返回目的地与行程';}
+  function prefillTravel(cityName,date){
+    $('#travel-city').value=cityName||'';
+    $('#travel-date').value=date||'';
+    prefilledPlanId=current?.id||null;
+    $('#travel-status').textContent=cityName?'已带入目的地与日期；点击查询后才会请求天气。':'原回答未确认单一目的地；请手动选城后查询。';
+  }
+  function onEnterTravel(){
     if(current?.id && current.id!==prefilledPlanId){
-      $('#travel-city').value=current.preferences.city||'';
-      $('#travel-date').value=current.preferences.date||current.preferences.travel_date||'';
-      prefilledPlanId=current.id;
-      $('#travel-status').textContent='已从活动方案预填目的地与日期；点击查询后才会请求天气。';
+      prefillTravel(current.preferences.city,current.preferences.date||current.preferences.travel_date);
     }
   }
   const weatherForm=$('#travel-weather-form'),weatherButton=$('#load-travel'),weatherTarget=$('#travel-results');

@@ -31,22 +31,9 @@
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
         <header><h1 id="outing-title" tabindex="-1">出发核验</h1><p>按需核对道路信息。文化活动需求与结果集中在活动计划中。</p></header>
-        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button type="button" class="module-button" data-content-view="planner">活动需求与结果</button><button id="outing-back" type="button" hidden>返回原对话</button></div>
-        <details class="itinerary-utilities" open><summary>高德路线规划、天气与空气查询</summary>
+        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button type="button" class="module-button" data-content-view="planner">活动需求与结果</button><button type="button" class="module-button" data-content-view="travel">天气与空气质量</button><button id="outing-back" type="button" hidden>返回原对话</button></div>
+        <details class="itinerary-utilities" open><summary>道路查询工具</summary>
         <div class="outing-columns">
-          <section aria-labelledby="outing-weather-title" class="outing-weather">
-            <h2 id="outing-weather-title">天气查询</h2>
-            <form id="outing-weather-form">
-              <label>目的地<select id="outing-city" required><option value="">请选择城市</option><option>南充</option><option>阆中</option><option>广元</option></select></label>
-              <label>出行日期（可选）<input id="outing-date" type="date"></label>
-              <button type="submit" class="outing-primary">查询天气</button>
-            </form>
-            <p id="outing-weather-status" role="status">选择城市，查看未来七天预报。</p>
-            <p class="outing-note">未来七天 · 可横向滚动查看</p>
-            <div id="outing-forecast" class="outing-forecast" tabindex="0" role="region" aria-label="七日天气预报"></div>
-            <h3>空气质量</h3><div id="outing-air">查询后显示当前模型估计，非监测站实测。</div>
-            <div id="outing-weather-source" class="outing-source"></div>
-          </section>
           <section aria-labelledby="outing-route-title" class="outing-route">
             <h2 id="outing-route-title">路线规划</h2>
             <div id="amap-planner">
@@ -322,6 +309,7 @@
           <button class="module-button primary" type="submit">生成活动方案</button>
         </form>
         <p class="map-note">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>
+        <div class="module-actions"><button type="button" class="module-button" data-content-view="travel">查询天气与空气质量</button><button type="button" class="module-button" data-content-view="outing">核验道路路线</button></div>
         <button type="button" class="module-button" data-content-view="plan">查看上一份方案</button>
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
@@ -339,7 +327,7 @@
 
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
-        <button type="button" class="module-button" id="travel-back" data-content-view="destinations">返回目的地与行程</button>
+        <button type="button" class="module-button" id="travel-back" data-content-view="planner">返回活动计划</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
         <p>填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。</p>
         <form id="travel-weather-form" class="module-form">
