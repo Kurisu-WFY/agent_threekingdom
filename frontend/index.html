@@ -12,7 +12,7 @@
 <body>
   <header class="topbar">
     <span class="brand"><span class="brand-mark">蜀</span>寻迹三国</span>
-    <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">主界面</span></span>
+    <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">文化探索</span></span>
     <span class="status" data-service-status role="status">正在检查服务…</span>
   </header>
 
@@ -21,12 +21,11 @@
       <div class="content-heading">
         <span>陈寿笔下的蜀汉记忆</span>
         <nav class="content-switch" aria-label="主内容视图">
-          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">与蜀汉对话</button>
+          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">文化探索</button>
+          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
           <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
-          <button type="button" data-content-view="story" aria-pressed="false" aria-controls="story-view">故事线</button>
+          <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">活动计划</button>
           <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
-          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地与行程</button>
-          <button type="button" data-content-view="outing" aria-pressed="false" aria-controls="outing-view">出行助手</button>
         </nav>
       </div>
 
@@ -224,7 +223,7 @@
       </div>
 
       <div class="module-view story-detail" id="story-view" data-view-panel="story" hidden>
-        <button type="button" class="module-button" data-content-view="welcome" aria-controls="welcome-view">← 返回故事线推荐</button>
+        <button type="button" class="module-button" data-content-view="welcome" aria-controls="welcome-view">← 返回故事目录</button>
         <p class="welcome-kicker">故事线 · 主题模板</p><h2 id="story-title" tabindex="-1">选择一条故事线</h2>
         <div id="story-detail-content"></div>
         <button type="button" class="module-button" id="story-map-open" aria-controls="map-view">进入故事地图 →</button>

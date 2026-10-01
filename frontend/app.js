@@ -562,13 +562,12 @@ function showContentView(view) {
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
     if(view==='travel')window.TravelModules?.onEnterTravel?.(leaving?.dataset.viewPanel);
-    const labels = { welcome: '主界面', map: '行旅地图', story: '故事线', node: '文化节点', journal: '我的三国探索志', destinations: '目的地与行程', planner: '规划行程', plan: '活动方案', travel: '天气与空气质量' };
-    labels.outing = '出行助手';
-    const parent=view==='node'?(window.CulturalNode?.getContext?.()?.returnTo||'welcome'):
-      ['planner','plan','travel'].includes(view)?(window.TravelModules?.getParentView?.(view)||'destinations'):null;
-    const parentNames={...labels,welcome:'与蜀汉对话',journal:'探索志'};
+    const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气与空气质量', outing:'出发核验', journal:'探索志', node:'文化节点' };
+    const taskParent={story:'welcome',plan:'planner',travel:'planner',outing:'planner'};
+    const origin=view==='node'?(window.CulturalNode?.getContext?.()?.returnTo||'welcome'):null;
+    const parent=view==='node'?(taskParent[origin]||origin):taskParent[view]||null;
     const label = document.querySelector('#view-label');
-    if (label) label.textContent = parent?`${parentNames[parent]||'与蜀汉对话'} · ${labels[view]}`:labels[view] || '主界面';
+    if (label) label.textContent = parent?`${labels[parent]||'文化探索'} · ${labels[view]}`:labels[view] || '文化探索';
     document.querySelectorAll('[data-content-view]').forEach(option => {
       option.setAttribute('aria-pressed', String(option.dataset.contentView === view));
     });
