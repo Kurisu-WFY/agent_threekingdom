@@ -208,16 +208,20 @@
   }).catch(() => { $('#map-route-status').textContent = '地图边界或点位加载失败，请刷新页面重试。'; return false; });
 
   let storySnapshot = null;
+  let mentionReturn=null;
+  function clearMentionReturn(){mentionReturn=null;$('#map-back-mention').hidden=true;}
+  $('#map-back-mention').onclick=()=>{const origin=mentionReturn;clearMentionReturn();if(origin)showContentView(origin);};
   window.TravelMap = {
     ready,
     getPlaces() { return places; },
     getGeometry() { return geometry; },
+    clearMentionReturn,
     focusStoryPoint(point) {
       if(!loaded || !point) return false;
       selected=counties.find(p=>p.id===point.id)||null;drawCounties();fit([point]);showContentView('map');
       $('#map-route-status').textContent=point.name+' · 位置示意 / 入口待核验';return true;
     },
-    async focusMention(name, {reveal=true} = {}) {
+    async focusMention(name, {reveal=false} = {}) {
       const owner=activeChat;
       if (!await ready || activeChat!==owner) return false;
       const matches = counties.filter(p => p.name === name);
@@ -249,6 +253,7 @@
     },
     refreshLabels() { updateLabels(); },
     beginStory(points) {
+      clearMentionReturn();
       if (!storySnapshot) storySnapshot = { view: [...targetView], prefecture: $('#map-prefecture').value, selected };
       if ($('#map-prefecture').value) { $('#map-prefecture').value = ''; populateCounties(); }
       fit(points);
@@ -273,6 +278,27 @@
       activeChat = chat; drawRoute();
       if (loaded && !window.StoryMap?.isActive()) fit(chat.mapRoute?.points || []);
     },
+    hasMentions(text) {
+      return core.mentions(text,places).points.length>0 || (window.SGT_PLACES||[]).some(place=>text.includes(place.name)&&window.StoryMap?.describePlace?.(place,{placeId:place.id})?.point);
+    },
+    async showMentions(text,returnTo) {
+      const owner=activeChat;
+      if(!await ready || !owner || activeChat!==owner)return false;
+      const parsed=core.mentions(text,places);
+      if(parsed.points.length){
+        const point=parsed.points[0];
+        const county=counties.find(p=>p.id===point.id)||null;
+        if(county){$('#map-prefecture').value='';populateCounties();selected=county;$('#map-county').value=county.id;$('#map-add-stop').disabled=false;drawCounties();}
+        else if(point.level==='city'){$('#map-prefecture').value=point.name;populateCounties();}
+        fit(parsed.points);mentionReturn=returnTo&&returnTo!=='map'?returnTo:null;$('#map-back-mention').hidden=!mentionReturn;showContentView('map');
+        $('#map-route-status').textContent='回答提及：'+parsed.points.map(p=>p.name).join('、')+' · 位置示意 / 景区待定位';return true;
+      }
+      const place=(window.SGT_PLACES||[]).find(p=>text.includes(p.name));
+      const point=place&&window.StoryMap?.describePlace?.(place,{placeId:place.id})?.point;
+      if(!point)return false;
+      mentionReturn=returnTo&&returnTo!=='map'?returnTo:null;$('#map-back-mention').hidden=!mentionReturn;
+      return this.focusStoryPoint(point);
+    },
     fromMessage(chat, text) {
       // 章节上下文及稍后发送的待发草稿，都不能被误作路线请求。
       if (text.startsWith('【故事章节讲解】')) return;
@@ -286,9 +312,7 @@
         if (window.StoryMap?.isActive()) window.StoryMap.exit();
         chat.mapRoute = { points: parsed.points, missing: parsed.ambiguous, kind: '按你的地名提及顺序' };
         if (activeChat === chat) {
-          drawRoute(); fit(parsed.points); showContentView('map');
-          const panel = $('#map-view');
-          panel.scrollTop += $('.interactive-map').getBoundingClientRect().top - panel.getBoundingClientRect().top;
+          drawRoute(); fit(parsed.points);
         }
       });
     },

@@ -43,7 +43,9 @@
     let rest=String(text||'');
     while(rest){const matches=names.map(name=>({name,index:rest.indexOf(name)})).filter(item=>item.index>=0).sort((a,b)=>a.index-b.index||b.name.length-a.name.length),hit=matches[0];if(!hit){inline.append(node('span','',rest));break;}if(hit.index)inline.append(node('span','',rest.slice(0,hit.index)));
       const place=places.find(item=>item.name===hit.name),located=place&&window.StoryMap?.describePlace?.(place,{placeId:place.id});
-      const link=button(hit.name,()=>{if(located?.point)window.TravelMap.focusStoryPoint(located.point);else if(place)window.CulturalNode.openPlace(place.id);else window.TravelMap.focusMention(hit.name+'市');});link.className='character-place-link';link.title=place?(located?.point?'在地图查看 · '+(located.exact?'核验位置':'县级驻地示意'):'坐标待核验 · 查看地点资料'):'在地图查看 · '+(hit.name==='南充'?'市州范围示意':'县级驻地示意');inline.append(link);rest=rest.slice(hit.index+hit.name.length);
+      if(place){const link=button(hit.name,()=>window.CulturalNode.openPlace(place.id,{returnTo:window.getContentView?.()||'welcome'}));link.className='character-place-link';link.title='查看地点资料';inline.append(link);}
+      else inline.append(node('span','character-place-name',hit.name));
+      rest=rest.slice(hit.index+hit.name.length);
     }
     return inline;
   }
@@ -58,7 +60,8 @@
   }
   function actions(message){
     const box=node('div','character-actions');
-    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？'));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city)),button('切换到'+name+'视角',()=>selectPersona(name)));}
+    if(window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));
+    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。你有半天、一天还是两天？'));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})),button('切换到'+name+'视角',()=>selectPersona(name)));}
     if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
     if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','压缩需由你选择保留章节；现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选择保留章节并重绘路线',()=>window.SGTStoryUI.openStory(message.storyId)));
