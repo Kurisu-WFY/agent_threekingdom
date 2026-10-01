@@ -5,4 +5,5 @@ assert.doesNotMatch(html,/id="itinerary-form"|src="itinerary(?:-agent-core)?\.js
 assert.ok(html.includes('id="outing-route-form"'),'road lookup remains available');
 assert.equal((html.match(/id="travel-weather-form"/g)||[]).length,1,'one weather form in activity domain');
 assert.doesNotMatch(html,/id="outing-weather-form"/,'retired weather form is absent');
+assert.doesNotMatch(html,/itinerary\.css/,'retired duplicate form styles are not loaded');
 console.log('PASS: one activity request form, retired duplicate scripts, road lookup retained');

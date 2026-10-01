@@ -129,8 +129,8 @@
   }
   function storyLabel() {
     $('#planner-story').textContent=planningStory ? '故事线：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事线，可填写普通行程需求。';
-    $('#planner-back-story').textContent=planningStory?'返回故事线调整章节':'返回目的地与行程';
-    $('#plan-back-story').textContent=planningStory?'返回故事线':'返回目的地与行程';
+    $('#planner-back-story').textContent=planningStory?'返回故事详情调整章节':'返回目的地';
+    $('#plan-back-story').textContent=planningStory?'返回故事详情':'返回目的地';
   }
   function restoreForm(preferences) {
     Object.entries(preferences).forEach(([key,value])=>{if(field(key))field(key).value=value;});

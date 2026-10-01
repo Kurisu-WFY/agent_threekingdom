@@ -76,3 +76,7 @@ assert.equal(value('header-height'),'64px','topbar height stays unchanged');
 assert.ok(/\.content\s*\{[^}]*width:100%;\s*max-width:none;[^}]*margin:0;/.test(css),'closed workspace uses available width');
 assert.ok(/@media\(min-width:1051px\)\s*\{\s*body:not\(\.chat-open\) \.content\s*\{\s*height:calc\(100dvh - var\(--header-height\) - var\(--space-5\) - calc\(var\(--space-1\)\*12\)\)/.test(css),'closed desktop content height subtracts actual workspace padding');
 assert.ok(/\.map-view\s*>\s*p,\s*\.module-view\s*>\s*p\s*\{\s*max-inline-size:var\(--measure-reading\)/.test(css),'wide workspace keeps direct prose readable');
+assert.ok(/id="node-compare"[^>]*>阅读对照材料</.test(html),'local comparison reads material');
+assert.ok(/id="chapter-compare"[^>]*>请陈寿解释区别</.test(html),'chat comparison sends a question');
+assert.ok(/id="travel-back"[^>]*data-content-view="planner"[^>]*>返回活动计划</.test(html),'weather returns to activity domain');
+assert.ok(fs.readFileSync(__dirname+'/stories.js','utf8').includes("action('带入活动计划'"),'story activity entry uses shared wording');

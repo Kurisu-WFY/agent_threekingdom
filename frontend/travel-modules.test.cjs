@@ -23,6 +23,13 @@ const context={window,URL,crypto:{randomUUID:()=>String(Math.random())},localSto
  FormData:class{constructor(){return Object.entries(fields).map(([k,v])=>[k,v.value]);}},showContentView:v=>views.push(v),toggleChat(){}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
 const text=n=>n.textContent+n.children.map(text).join(' '),flush=()=>new Promise(r=>setImmediate(r));
+assert.ok(fs.existsSync(__dirname+'/cities.js'),'one shared city source is loaded before destination and weather modules');
+const cityWindow={};vm.runInNewContext(fs.readFileSync(__dirname+'/cities.js','utf8'),{window:cityWindow,document:{querySelector:get,createElement:t=>new Element(t)}});
+const cityNames=['南充','阆中','广元','成都','绵阳','德阳','巴中','达州'];
+assert.deepEqual([...cityWindow.SGTCities],cityNames);
+assert.deepEqual(get('#destination-cities').children.map(x=>x.dataset.city),cityNames);
+assert.deepEqual(get('#itinerary-cities').children.map(x=>x.value),cityNames);
+for(const id of ['#outing-start','#outing-end'])assert.deepEqual(get(id).children.map(x=>x.value),['',...cityNames,'manual']);
 const weatherForm=get('#travel-weather-form');weatherForm.reportValidity=()=>Boolean(get('#travel-city').value);
 const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需核验路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待核验',address:'广元市剑阁县'}]}};
 (async()=>{
