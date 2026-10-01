@@ -80,7 +80,8 @@
   function open(payload){
     if(!payload?.place)return false;
     if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});
-    context=payload;const {place,chapter,story}=context;
+    context={...payload,returnTo:payload.returnTo || payload.back || null};const {place,chapter,story}=context;
+    $('#node-back').textContent=context.returnTo?'返回上一视图':'返回首页（来源未知）';
     readingKey=(story?.id||'unlinked')+':'+(context.index??'none')+':'+place.id;
     mode=(story?window.StoryProgress.get(story).mode:readings.get(readingKey)?.mode) || modes[0];
     $('#node-visual').replaceChildren(window.SGTStoryUI.icon(place.building));
@@ -95,15 +96,15 @@
     $('#node-feedback').textContent='史料不足时保留问题；AI讲解不作为已核验史实。';
     showContentView('node');window.CharacterChat?.refresh();$('#node-reading').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
   }
-  function openPlace(id){
+  function openPlace(id,{returnTo}={}){
     const place=window.SGT_PLACES.find(p=>p.id===id);if(!place)return false;
     const story=window.SGT_STORIES.find(s=>s.chapters.some(c=>c.placeId===id));
     const index=story?story.chapters.findIndex(c=>c.placeId===id):-1,chapter=story?.chapters[index];
     const located=window.StoryMap.describePlace(place,chapter || {placeId:id});
-    return open({...located,story,chapter,index,back:'welcome'});
+    return open({...located,story,chapter,index,returnTo});
   }
   modes.forEach(name=>{const b=node('button','module-button',name);b.type='button';b.addEventListener('click',()=>changeMode(name));modeButtons.push(b);$('#node-modes').append(b);});
-  $('#node-back').addEventListener('click',()=>showContentView(context?.back || 'welcome'));
+  $('#node-back').addEventListener('click',()=>showContentView(context?.returnTo || 'welcome'));
   $('#node-enter-story').addEventListener('click',()=>{if(context?.story)window.SGTStoryUI.openStory(context.story.id,context.story);});
   $('#node-ask').addEventListener('click',()=>{
     if(!context)return;

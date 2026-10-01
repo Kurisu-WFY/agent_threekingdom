@@ -178,7 +178,7 @@
     showContentView('map'); window.CharacterChat?.refresh(); window.TravelMap.beginStory(resolved.map(item=>item.point).filter(Boolean)); draw();
     $('#story-map-title').focus({preventScroll:true}); return true;
   }
-  function openDetail(){if(active&&resolved[state().current])window.CulturalNode?.open({...resolved[state().current],story:active,index:state().current,back:'map'});}
+  function openDetail(){if(active&&resolved[state().current])window.CulturalNode?.open({...resolved[state().current],story:active,index:state().current,returnTo:'map'});}
   function exit() {
     ++epoch; active = null; resolved = []; cardOpen = false; draw();
     $('#map-view').classList.remove('story-mode'); delete $('#map-view').dataset.storyId;

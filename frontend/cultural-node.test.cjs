@@ -32,4 +32,11 @@ click('#node-add-route');assert.equal(adds[0].name,'县级驻地');click('#node-
 const links=[];function walk(n){if(n.tag==='a')links.push(n);n.children.forEach(walk);}nodes.forEach(walk);assert.ok(links.every(a=>/^https?:/.test(a.href)));
 api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').disabled,true);assert.match(get('#node-context').textContent,/待关联/);
 click('#node-back');assert.equal(views.at(-1),'welcome');
+for(const source of ['journal','map','story','welcome']){
+  assert.equal(api.openPlace('pass',{returnTo:source}),true);
+  click('#node-back');assert.equal(views.at(-1),source,`node should return to ${source}`);
+}
+assert.equal(api.openPlace('pass'),true);
+assert.match(get('#node-back').textContent,/来源未知/);
+click('#node-back');assert.equal(views.at(-1),'welcome');
 console.log('PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building');
