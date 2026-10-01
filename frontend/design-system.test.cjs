@@ -55,3 +55,18 @@ assert.ok(contrast('muted','composer-surface')>=4.5);
 assert.ok(/\.composer textarea\s*\{[^}]*border:0/.test(css));
 assert.ok(/\.composer textarea:focus\s*\{[^}]*outline:[^;]*var\(--focus-ring\)/.test(css));
 assert.ok(/\.content-switch button\[aria-current="location"\]\s*\{[^}]*background:var\(--jade-soft\)/.test(css));
+
+for(const [name,base] of Object.entries({city:13,county:11,route:10,chapter:13,stamp:11,story:12,footprint:8}))
+  assert.equal(value('map-text-'+name),base+'px','map label base size '+name);
+for(const [selector,token] of [['city-label','city'],['county-label','county'],['route-number','route'],['story-map-label','story']]){
+  const blocks=[...css.matchAll(new RegExp('(?:^|})\\s*\\.'+selector+'\\s*\\{([^}]*)\\}','gm'))].map(m=>m[1]);
+  assert.equal(blocks.filter(b=>/\bfont-size\s*:/.test(b)).length,1,selector+' font size has one source');
+  assert.ok(blocks.every(b=>!/\bfont\s*:/.test(b)),selector+' must not also set font shorthand');
+  assert.ok(blocks.some(b=>b.includes('font-size:calc(var(--map-text-'+token+') * var(--map-unit,1))')),selector+' compensates viewport scale');
+}
+for(const selector of ['chapter-number-text','chapter-complete-stamp']){
+  const blocks=[...css.matchAll(new RegExp('(?:^|})\\s*\\.'+selector+'\\s*\\{([^}]*)\\}','gm'))].map(m=>m[1]);
+  assert.equal(blocks.filter(b=>/\bfont-size\s*:/.test(b)).length,1);
+  assert.ok(blocks.every(b=>!/\bfont\s*:/.test(b)));
+}
+assert.ok(css.includes('counter-scaled story glyph'),'chapter and stamp text inherit a screen-sized glyph');

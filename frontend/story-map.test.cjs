@@ -14,7 +14,7 @@ function setup(ready=Promise.resolve(true)){
  const counties=JSON.parse(fs.readFileSync(__dirname+'/sichuan-counties.json','utf8')).map(p=>({...p,level:'county'}));
  const window={MapRouteCore:core,SGT_STORIES:[story,{id:'empty',title:'空模板',chapters:[]}],SGT_PLACES:places,
   SGTStoryUI:{icon:kind=>{const icon=new Element('svg');icon.dataset.kind=kind;return icon;},openStory:id=>opened.push(id)},
-  SGTJourney:{ask:q=>questions.push(q)},TravelMap:{ready,getPlaces:()=>counties,refreshLabels(){window.StoryMap.onViewport([0,0,900,680],{width:900,height:680});},beginStory:p=>fits.push(p),fitStory:p=>fits.push(p),endStory(){fits.push('restored');},addStoryPlace:p=>{added.push(p);return true;}}};
+  SGTJourney:{ask:q=>questions.push(q)},TravelMap:{ready,getPlaces:()=>counties,textSize:()=>14,refreshLabels(){window.StoryMap.onViewport([0,0,900,680],{width:900,height:680});},beginStory:p=>fits.push(p),fitStory:p=>fits.push(p),endStory(){fits.push('restored');},addStoryPlace:p=>{added.push(p);return true;}}};
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),{window});
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-map.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v)});
  return {window,get,questions,views,fits,added,opened,story,places};
@@ -23,6 +23,7 @@ function allText(node){return node.textContent+node.children.map(allText).join('
 (async()=>{
  const t=setup(),api=t.window.StoryMap;
  assert.equal(await api.open('missing'),false);assert.equal(await api.open('test'),true);
+ assert.equal(api.getLabels()[0].size,14,'story collision box follows the CSS screen-size token');
  assert.equal(t.get('#map-view').dataset.storyId,'test');assert.equal(t.get('#story-map-badge').hidden,false);assert.equal(t.get('#story-map-badge').textContent,t.get('#story-map-progress').textContent);assert.equal(t.get('#story-map-nodes').children.length,2);assert.equal(t.get('#story-chapter-list').children.length,3);
  assert.equal(t.get('#story-order-lines').children.length,1);assert.equal(t.get('#story-ink-lines').children.length,1);
  assert.ok(t.get('#story-map-status').textContent.includes('1 个待定位'));

@@ -2,6 +2,7 @@
   const $ = selector => document.querySelector(selector);
   const core = window.MapRouteCore;
   const svg = $('#route-map');
+  const textSize = (name, fallback) => Number.parseFloat(window.getComputedStyle?.(svg)?.getPropertyValue('--map-text-' + name)) || fallback;
   const ns = 'http://www.w3.org/2000/svg';
   let places = [], counties = [], activeChat = null, selected = null;
   let view = [0, 0, 900, 680];
@@ -25,7 +26,8 @@
     $('#county-boundaries').setAttribute('display',detailed?'inline':'none');
     $('#county-points').setAttribute('visibility', detailed ? 'visible' : 'hidden');
     $('#county-points').setAttribute('display',detailed?'inline':'none');
-    labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-20/scale&&l.x<=extent[2]+20/scale&&l.y>=extent[1]-20/scale&&l.y<=extent[3]+20/scale;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
+    const labelMargin=20/scale; // 20 屏幕像素转换为当前地图单位，与碰撞布局的像素字号一致。
+    labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-labelMargin&&l.x<=extent[2]+labelMargin&&l.y>=extent[1]-labelMargin&&l.y<=extent[3]+labelMargin;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
     const storyLabels = window.StoryMap?.getLabels() || [];
     const candidates = [...storyLabels, ...labels.filter(l => l.city || detailed)].sort((a,b) => (b.story?200:b.selected?100: b.capital?90:b.city?50:0)-(a.story?200:a.selected?100:a.capital?90:a.city?50:0));
     const positions = new Map(core.labelLayout(candidates, view, rect.width, rect.height).map(l => [l.id,l]));
@@ -70,7 +72,7 @@
       const name=capital?'成都':p.name.replace('藏族羌族自治州','州').replace('藏族自治州','州').replace('彝族自治州','州');
       const node=element('text',{x,y,class:'city-label'+(capital?' capital-label':'')},name);
       group.append(element('circle',{cx:x,cy:y,class:'city-dot'+(capital?' capital-dot':'')}),node);
-      labels.push({id:'city-'+p.name,x,y,name,size:13,node,city:true,capital});
+      labels.push({id:'city-'+p.name,x,y,name,size:textSize('city',13),node,city:true,capital});
     });
   }
   function element(tag, attributes = {}, text) {
@@ -113,7 +115,7 @@
       point.append(element('title', {}, `${place.name} · ${place.parent}`));
       const node=element('text',{x,y,class:'county-label'},place.name);
       point.append(node);
-      labels.push({id:place.id,x,y,name:place.name,size:11,node,point,selected:selected===place});
+      labels.push({id:place.id,x,y,name:place.name,size:textSize('county',11),node,point,selected:selected===place});
       point.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectPlace(place); } };
       group.append(point);
     }
@@ -213,6 +215,7 @@
     ready,
     getPlaces() { return places; },
     getGeometry() { return geometry; },
+    textSize,
     clearMentionReturn,
     focusStoryPoint(point) {
       if(!loaded || !point) return false;

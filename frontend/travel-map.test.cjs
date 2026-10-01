@@ -9,7 +9,7 @@ const QUESTION = '南充一天三国文化路线';
 function makeNode(tag = 'div') {
   const node = {
     tagName: tag, children: [], attributes: {}, textContent: '', value: '', hidden: false,
-    disabled: false, className: '', style: {}, dataset: {}, scrollTop: 0, innerText: '',
+    disabled: false, className: '', style: {setProperty(k,v){this[k]=v;}}, dataset: {}, scrollTop: 0, innerText: '',
     classList: { add() {}, remove() {}, toggle() {} },
     setAttribute(k, v) { this.attributes[k] = String(v); },
     getAttribute(k) { return this.attributes[k]; },
@@ -41,6 +41,7 @@ global.document = {
 };
 global.Option = class Option { constructor(text, value) { this.text = text; this.value = value; } };
 global.DOMPoint = class DOMPoint { constructor(x, y) { this.x = x; this.y = y; } matrixTransform(){return this;} };
+global.getComputedStyle=()=>({getPropertyValue(name){return {'--map-text-city':'15px','--map-text-county':'9px'}[name]||'';}});
 global.fetch = async url => {
   const file = path.join(FE, String(url));
   return { ok: fs.existsSync(file), json: async () => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')) };
@@ -75,6 +76,13 @@ const assert=require('node:assert/strict');
  }
  select.value='南充市';select.onchange();paintAll();
  for(let i=0;i<5;i++)registry.get('#map-zoom-in').onclick();paintAll();
+ assert.ok(Number(svg.style['--map-unit'])<1,'map-unit shrinks SVG font units as viewport zooms');
+ const oldLayout=window.MapRouteCore.labelLayout;let laidOut=[];
+ window.MapRouteCore.labelLayout=(items,...args)=>{laidOut=items;return oldLayout(items,...args);};
+ window.TravelMap.refreshLabels();
+ assert.equal(laidOut.find(item=>item.city)?.size,15,'city collision box uses CSS screen-size token');
+ assert.equal(laidOut.find(item=>!item.city)?.size,9,'county collision box uses CSS screen-size token');
+ window.MapRouteCore.labelLayout=oldLayout;
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'visible');
  const county=registry.get('#county-boundaries').children.find(n=>n.attributes['data-county-code']==='511324');
  assert.ok(county);

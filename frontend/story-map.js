@@ -89,7 +89,7 @@
       const label = svgNode('text', {x,y,class:'story-map-label'},item.place.name); group.append(label);
       group.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectChapter(index); } });
       $('#story-map-nodes').append(group); markers.push({glyph,index,group});
-      labels.push({id:'story-'+index,x,y,name:item.place.name,size:12,node:label,story:true,markerRadius:34});
+      labels.push({id:'story-'+index,x,y,name:item.place.name,size:window.TravelMap.textSize('story',12),node:label,story:true,markerRadius:34});
     });
     window.TravelMap.refreshLabels();
   }
