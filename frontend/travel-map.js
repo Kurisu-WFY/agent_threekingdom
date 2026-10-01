@@ -156,12 +156,8 @@
     const select = $('#map-county'); select.replaceChildren(new Option('选择地点', ''));
     const filtered = counties.filter(p => !$('#map-prefecture').value || p.parent === $('#map-prefecture').value);
     filtered.forEach(p => select.append(new Option(`${p.name} · ${p.parent}`, p.id)));
+    select.value='';
     selected = null; $('#map-add-stop').disabled = true; drawBoundaries(); drawCities(); drawCounties();
-    if ($('#map-prefecture').value) {
-      const boundary=geometry?.cities.find(c=>c.name===$('#map-prefecture').value);
-      if(boundary) setView(core.fitBounds(boundary.bounds)); else fit(filtered);
-    }
-    else setView([0, 0, 900, 680]);
   }
   function drawRoute() {
     if (!loaded) return;
@@ -205,7 +201,7 @@
     counties = countyData.map(p => ({ ...p, id: 'county-' + p.adcode, level: 'county' }));
     places = [...cityData.map(p => ({ ...p, id: 'city-' + p.name, level: 'city' })), ...counties];
     cityData.forEach(p => $('#map-prefecture').append(new Option(p.name, p.name)));
-    loaded = true; populateCounties(); drawRoute();
+    loaded = true; populateCounties(); drawRoute(); setView([0, 0, 900, 680], false);
     return true;
   }).catch(() => { $('#map-route-status').textContent = '地图边界或点位加载失败，请刷新页面重试。'; return false; });
 
@@ -231,6 +227,8 @@
         const city=places.find(p=>p.level==='city'&&p.name===name);
         if(!city)return false;
         $('#map-prefecture').value=name;populateCounties();
+        const boundary=geometry?.cities.find(c=>c.name===name);
+        if(boundary)setView(core.fitBounds(boundary.bounds));else fit([city]);
         if(reveal)showContentView('map');
         $('#map-route-status').textContent=name+' · 市州范围示意 / 景区待定位';return true;
       }
@@ -349,7 +347,7 @@
   $('#map-zoom-range').addEventListener('input', event => zoomTo(Number(event.target.value), false));
   $('#map-zoom-in').onclick = () => zoomTo(900 / targetView[2] * 125);
   $('#map-zoom-out').onclick = () => zoomTo(900 / targetView[2] * 80);
-  $('#map-reset').onclick = () => setView([0, 0, 900, 680]);
+  $('#map-reset').onclick = () => { $('#map-prefecture').value=''; populateCounties(); setView([0, 0, 900, 680]); };
   $('#map-fit').onclick = () => fit(activeChat?.mapRoute?.points || []);
   $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); setView([0, 0, 900, 680]); };
   svg.addEventListener('wheel',event=>{

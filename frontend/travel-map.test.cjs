@@ -63,7 +63,18 @@ const assert=require('node:assert/strict');
  await new Promise(resolve=>setImmediate(resolve));paintAll();
  const svg=registry.get('#route-map'),select=registry.get('#map-prefecture');
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'hidden');
+ const provinceView=svg.attributes.viewBox;
+ for(let i=0;i<3;i++){
+   select.value='南充市';select.onchange();paintAll();
+   assert.equal(svg.attributes.viewBox,provinceView,'changing prefecture does not pan or zoom');
+   registry.get('#map-reset').onclick();paintAll();
+   assert.equal(select.value,'','province button clears prefecture filter');
+   assert.equal(registry.get('#map-county').value,'','province button clears county selection');
+   assert.equal(registry.get('#map-county').children.length,184,'province button restores all counties');
+   assert.equal(svg.attributes.viewBox,provinceView,'province button restores province viewport');
+ }
  select.value='南充市';select.onchange();paintAll();
+ for(let i=0;i<5;i++)registry.get('#map-zoom-in').onclick();paintAll();
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'visible');
  const county=registry.get('#county-boundaries').children.find(n=>n.attributes['data-county-code']==='511324');
  assert.ok(county);
