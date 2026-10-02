@@ -7,7 +7,7 @@
   const text=v=>typeof v==='string'&&v.trim()?v.trim():'待核验';
   const list=v=>Array.isArray(v)&&v.length?v.map(text).join('、'):'待核验';
   const status=r=>r?.data_status || r?.dataStatus;
-  const statusLabel=r=>({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期',forecast:'天气预报',model:'模型估计'}[status(r)] || '状态待核验');
+  const statusLabel=r=>({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期',forecast:'天气预报',model:'模型估计'}[status(r)] || '待核验');
   const updated=r=>r?.updated_at || r?.updatedAt;
   const sources=r=>Array.isArray(r?.sources)?r.sources.filter(s=>s&&typeof s==='object'):[];
   function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;if(typeof content==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(content))n.setAttribute('data-trust-state','unverified');return n;}

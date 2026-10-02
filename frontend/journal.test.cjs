@@ -41,7 +41,7 @@ assert.equal(copyJournalFailures.join('\n'),'');
 
 
 const ninthJournal=setup(),ninthNotice=ninthJournal.get('#journal-local-notice').textContent;
-for(const phrase of ['最多保留最近200条','删除本页会话','撤销可恢复','不代表实际到访','換設備']){if(phrase!=='換設備')assert.ok(ninthNotice.includes(phrase),'C20 '+phrase);}
+for(const phrase of ['最多保留最近200条','删除本页会话','撤销可恢复','不代表实际到访']){assert.ok(ninthNotice.includes(phrase),'C20 '+phrase);}
 assert.match(ninthNotice,/换设备不会同步|未与账号.*同步/);
 const ninthHtml=fs.readFileSync(__dirname+'/index.html','utf8'),ninthHeader=ninthHtml.match(/<header class="journal-heading">[\s\S]*?<\/header>/)[0];
 assert.equal((ninthHeader.match(/不代表实际到访/g)||[]).length,0,'C20 boundary is owned by dynamic single notice');

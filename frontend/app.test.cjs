@@ -363,6 +363,8 @@ batch9Check('C11',()=>{
  const originalBubble=textTree(allNodes(row).find(n=>n.className==='bubble'));
  for(const line of raw.split('\n'))assert.ok(originalBubble.includes(line),'C11 原回答每行保留');
  assert.equal(context.copyHotel.answer,raw);
+ const routeRaw='以陈寿和地方蜀汉遗迹为主线，适合展示文化解释、路线推荐和预算估算能力。';context.ninthRouteRaw=routeRaw;
+ const routeRow=run('messageNode({role:"assistant",text:ninthRouteRaw,data:{intent:{intent:"route_planning"}}})');assert.match(textTree(routeRow),/当前内容为文化游览参考/);assert.ok(textTree(routeRow).includes(routeRaw),'C11 演示原文保留');
  context.batch9Foreign={...context.copyHotel,answer:raw.replace('CNY','USD')};
  assert.doesNotMatch(textTree(run('messageNode({role:"assistant",text:batch9Foreign.answer,data:batch9Foreign})')),/元\/晚\/间/);
 });

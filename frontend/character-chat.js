@@ -64,7 +64,7 @@
     if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];
       const question=String(message.originalQuestion||'');
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));
-      const explicit=/(?:可用时间|游玩时间|时间安排)[：:]\s*(?:半天|一天|一日|两天|两日)(?=[；;，,。\s]|$)|(?:我有|只有|可用|安排|用)(?:半天|一天|一日|两天|两日)(?=[，,。\s]|$)/.test(question);
+      const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
       box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})),button('切换到'+name+'视角',()=>selectPersona(name)));}
     if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
