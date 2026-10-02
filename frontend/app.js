@@ -102,7 +102,7 @@ function trustNode(record, label = '回答') {
   const validDate = typeof date === 'string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(date) && Number.isFinite(Date.parse(date));
   box.append(tag(validDate ? '更新时间 · ' + date : '更新时间 · 待核验'));
   const sources = record && Array.isArray(record.sources) ? record.sources : [];
-  let count = 0;
+  let count = 0, accessible = 0;
   sources.forEach(source => {
     if (!source || typeof source.title !== 'string' || !source.title.trim()) return;
     const line = document.createElement('div');
@@ -111,7 +111,7 @@ function trustNode(record, label = '回答') {
     const safe = url && ['http:', 'https:'].includes(url.protocol);
     const link = document.createElement(safe ? 'a' : 'span');
     link.textContent = source.title;
-    if (safe) { link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+    if (safe) { link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; accessible += 1; }
     const level = ['A','B','C'].includes(source.source_level) ? source.source_level : '待核验';
     line.append(link, tag('来源等级 · ' + level));
     if (!safe) line.append(tag('来源链接待核验'));
@@ -119,8 +119,10 @@ function trustNode(record, label = '回答') {
     box.append(line); count += 1;
   });
   if (!count) box.append(tag('来源 · 待核验'));
+  if (!accessible) box.append(tag('回答提及的文献出处尚未核验，请勿作为已核验引文。'));
   return box;
 }
+window.SGTAnswerTrust = { render: trustNode };
 
 function metaNode(data) {
   const meta = document.createElement('div');
@@ -131,10 +133,15 @@ function metaNode(data) {
   if (typeof intent === 'string' && Object.hasOwn(INTENT_LABELS, intent)) meta.append(tag('意图 · ' + INTENT_LABELS[intent]));
   const coverage = data?.retrieval?.coverage;
   if (typeof coverage === 'number' && Number.isFinite(coverage) && coverage >= 0 && coverage <= 1) {
-    meta.append(tag('召回覆盖 · ' + Math.round(coverage * 100) + '%（仅表示检索匹配）'));
+    meta.append(tag(coverage > 0 ? '检索到相关资料，回答仍需核对出处' : '本次未检索到相关资料，回答仍需核对出处'));
   }
-  if(data?.generation?.kind!=='nuwax')meta.append(trustNode(data));
+  meta.append(trustNode(data));
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
+  // 仅识别现有服务的住宿预算格式；不猜测未知回答或改写原文。
+  if (intent === 'budget_ticket' && typeof data.answer === 'string' &&
+      /^[^\n]+酒店预算：[^\n]+CNY\/晚\/间。(?:\n说明：[^\n]*)?$/.test(data.answer.trim())) {
+    meta.append(tag('本次未取得可核对的门票费用，以下仅为住宿预算'));
+  }
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
     meta.append(trustNode(route, '路线'));

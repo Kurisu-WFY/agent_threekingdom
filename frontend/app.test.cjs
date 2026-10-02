@@ -231,7 +231,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
 function allNodes(node) { return [node,...(node.children||[]).flatMap(allNodes)]; }
 assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /待核验/);
-assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"},retrieval:{coverage:0.55,passed:true}})')), /意图 · 文化问答.*召回覆盖 · 55%（仅表示检索匹配）/);
+
 assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"unknown"},retrieval:{coverage:2}})')), /意图 ·|召回覆盖/);
 assert.match(textTree(run('metaNode({intent:{intent:"budget_ticket"},route:null})')), /不能认定为免费/);
 assert.match(textTree(run('trustNode({data_status:"live",updated_at:"2026-09-12T10:00:00+08:00",sources:[{title:"来源",source_url:"https://example.com",source_level:"C"}]})')), /不能支撑史实结论/);
@@ -320,3 +320,30 @@ context.window.scrollY=0;context.window.events.scroll();frames.shift()();assert.
 innerTop=100;get('.content').events.scroll();frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),true);
 innerTop=0;get('.content').events.scroll();frames.shift()();assert.equal(get('.topbar').classList.contains('is-scrolled'),false);
 console.log('PASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery');
+
+// 第八批：原文、结构化出处与预算范围互不混淆。
+const copyFailures=[];
+const copyCheck=(name,fn)=>{try{fn();}catch(e){copyFailures.push(name+': '+e.message);}};
+copyCheck('C01',()=>{
+ assert.match(textTree(run('trustNode({})')),/文献出处尚未核验/);
+ assert.match(textTree(run('metaNode({generation:{kind:"nuwax"}})')),/来源.*待核验/);
+ const source={sources:[{title:'真实出处',source_url:'https://example.org/paper',source_level:'B'}]};context.copySource=source;
+ assert.doesNotMatch(textTree(run('trustNode(copySource)')),/文献出处尚未核验/);
+ const unsafe=run('trustNode({sources:[{title:"PDF",source_url:"javascript:alert(1)"}]})');
+ assert.match(textTree(unsafe),/文献出处尚未核验/);assert.equal(allNodes(unsafe).filter(n=>n.tag==='a').length,0);
+});
+copyCheck('C04',()=>{
+ assert.match(textTree(run('metaNode({retrieval:{coverage:1}})')),/检索到相关资料，回答仍需核对出处/);
+ assert.doesNotMatch(textTree(run('metaNode({retrieval:{coverage:1}})')),/100%|召回覆盖/);
+ assert.equal(allNodes(run('metaNode({retrieval:{coverage:0}})')).filter(n=>n.textContent==='检索到相关资料，回答仍需核对出处').length,0);
+});
+copyCheck('C10',()=>{
+ const hotel={intent:{intent:'budget_ticket'},answer:'南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。\n说明：景区票价为维护数据。'};context.copyHotel=hotel;
+ assert.match(textTree(run('metaNode(copyHotel)')),/本次未取得可核对的门票费用，以下仅为住宿预算/);
+ const withTicket={...hotel,answer:hotel.answer+'\n景区票价：剑门关：50 - 50 CNY'};context.copyTicket=withTicket;
+ assert.doesNotMatch(textTree(run('metaNode(copyTicket)')),/以下仅为住宿预算/);
+ context.copyUnknown={intent:{intent:'budget_ticket'},answer:'文化参观费用需核验。'};
+ assert.doesNotMatch(textTree(run('metaNode(copyUnknown)')),/以下仅为住宿预算/);
+ assert.equal(hotel.answer,context.copyHotel.answer,'原回答不改写');
+});
+assert.equal(copyFailures.join('\n'),'','第八批文案断言');
