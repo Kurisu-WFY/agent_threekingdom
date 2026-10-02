@@ -129,6 +129,8 @@ const assert=require('node:assert/strict');
    assert.equal(svg.attributes.viewBox,provinceView,'province button restores province viewport');
  }
  select.value='南充市';select.onchange();paintAll();
+ assert.match(document.querySelector('#map-filter-status').textContent,/南充市.*选县区.*定位/,'U14 prefecture selection explains the next step');
+ assert.equal(svg.attributes.viewBox,provinceView,'U14 city filter does not automatically move the viewport');
  assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:['南充'],places:[]},'prefecture filter is a real city selection');
  for(let i=0;i<5;i++)registry.get('#map-zoom-in').onclick();paintAll();
  assert.ok(Number(svg.style['--map-unit'])<1,'map-unit shrinks SVG font units as viewport zooms');
@@ -217,6 +219,8 @@ const assert=require('node:assert/strict');
  assert.ok(chat.mapRoute.kind.includes('待定位'));assert.equal(registry.get('#route-lines').children.length,0);
  assert.equal(registry.get('#map-fit').disabled,false);
  select.value='南充市';select.onchange();registry.get('#map-county').value='county-511324';registry.get('#map-county').onchange();paintAll();
+ assert.match(document.querySelector('#map-filter-status').textContent,/已选择仪陇县/,'U14 county feedback replaces the city instruction');
+ assert.notEqual(svg.attributes.viewBox,provinceView,'U14 county selection still focuses its parcel');
  const beforeClear=svg.attributes.viewBox;
  registry.get('#map-clear').onclick();paintAll();
  assert.equal(chat.mapRoute,undefined);assert.equal(registry.get('#map-route-list').children.length,0);

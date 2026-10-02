@@ -111,6 +111,7 @@
   function drawCounties() {
     const group = $('#county-points'); group.replaceChildren();
     const parent = $('#map-prefecture').value;
+    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置仍需核验。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '当前为全省县区列表，请选县区定位。';
     labels = labels.filter(l=>l.city);
     boundaryNodes.filter(b=>b.county).forEach(b=>b.node.classList.toggle('county-area-selected',String(b.adcode)===String(selected?.adcode)));
     for (const place of counties.filter(p => !parent || p.parent === parent)) {
