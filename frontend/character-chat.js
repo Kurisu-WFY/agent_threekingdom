@@ -67,9 +67,9 @@
       const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
       box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})),button('切换到'+name+'视角',()=>selectPersona(name)));}
-    if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));
+    if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 你可以打开相关主题，路线不会自动修改。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
-    if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','压缩需由你选择保留章节；现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选择保留章节并重绘路线',()=>window.SGTStoryUI.openStory(message.storyId)));
+    if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     return box;
   }
   function selectPersona(name){if(!profiles[name])return;chats[active].persona=name;chats[active].characterNotice='已切换为'+name+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';sync(chats[active]);}

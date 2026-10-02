@@ -40,20 +40,20 @@
   }
   function renderReading(){
     const chapter=context.chapter || {}, box=$('#node-reading-content');
-    const headings={ '大众体验版':'先读懂这里', '亲子故事版':'带着一个问题看这里', '学术探索版':'从证据与编纂背景读这一章' };
+    const headings={ '大众体验版':'先读懂这里', '亲子故事版':'带着一个问题看这里', '学术探索版':'查看这一章的证据和编纂背景' };
     box.replaceChildren(node('h3','',headings[mode]));
-    box.append(node('p','',mode==='大众体验版'?'先看这里是什么、为什么值得看，再联系当前故事。':mode==='亲子故事版'?'亲子共读：这一幕讲到谁？眼前建筑和故事有什么关系？请从下方同一组资料里找答案；没有记载就保留问题。':'依次核对史料出处、编纂背景、人物关系与不同观点；区分记载、文学和推断。'));
+    box.append(node('p','',mode==='大众体验版'?'这里是什么，为什么值得看，和当前故事有什么关系？':mode==='亲子故事版'?'这一幕讲到谁？这座建筑和故事有什么关系？可以和孩子一起看看下方资料；没有记载就保留问题。':'下方资料可核对史料出处、编纂背景、人物关系和不同观点。记载、文学和推断要分开看。'));
     const narrative={...chapter,text:['record','inference','literature'].includes(chapter.narrative_type)?chapter.story:''};
     box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
     if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));
     else box.append(emptyBlock('章节说明 · 资料待补充','章节与地点的关联、参观理由仍需资料支持。'));
     if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,'node-history'),recordBlock('人物关系',chapter.relationships,'node-history'));
-    if(mode==='亲子故事版')box.append(node('p','node-question','一起想一想：哪句话有史料依据？哪句话只是文学表达？无法核实时，不替古人编台词。'));
+    if(mode==='亲子故事版')box.append(node('p','node-question','哪句话有史料依据，哪句话只是文学表达？可以和孩子聊聊。无法核实时，不替古人编台词。'));
     const inferences=Array.isArray(chapter.inferences)?chapter.inferences:[];
     if(inferences.length)box.append(node('h3','','合理推断'));
     else box.append(emptyBlock('合理推断 · 资料待补充','暂无有依据的推断内容，不用推测填空。'));
     inferences.forEach(r=>box.append(recordBlock('合理推断',r,'node-inference')));
-    $('#node-mode-status').textContent='当前为'+mode+'；同一故事、章节与地点，阅读位置保留。';
+    $('#node-mode-status').textContent='当前为'+mode+'；故事、章节和地点没变，阅读位置也保留。';
     modeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.textContent===mode)));
   }
   function changeMode(next){
@@ -107,7 +107,7 @@
     $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
     const narrative={...chapter,text:['record','inference','literature'].includes(chapter?.narrative_type)?chapter.story:''};
     const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);
-    $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，空区块已收起，可展开查看核验说明。':'资料概况：已有来源的正文在下方展开，可逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
+    $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，缺资料的部分已收起，展开后可以查看核验说明。':'资料概况：已有来源的正文在下方，可以逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
     if(sources(chapter).length)$('#node-metadata').append(provenance(chapter));
     $('#node-reading-content').style.minHeight=readings.get(readingKey)?.height?readings.get(readingKey).height+'px':'';renderReading();comparison();tourism();
     $('#node-enter-story').disabled=!story;$('#node-add-route').disabled=!context.point;
@@ -129,7 +129,7 @@
     if(!context)return;
     window.CharacterChat?.selectPersona('陈寿');
     window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+mode+"）"});
-    $('#node-feedback').textContent='已交给陈寿；回答或草稿在现有对话中，资料仍需核验。';
+    $('#node-feedback').textContent='已发给陈寿。回答或草稿在当前对话里，资料仍需核验。';
   });
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
   $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});

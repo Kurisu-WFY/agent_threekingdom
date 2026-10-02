@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const $=s=>document.querySelector(s), key='sgt.journal.questions.v1', limit=200;
-  const owned=new Set(), messages=new WeakMap(), tabs=[], titles=['卷一 · 山河足迹','卷二 · 人物与疑问','卷三 · 未竟之旅'];
+  const owned=new Set(), messages=new WeakMap(), tabs=[], titles=['卷一 · 山河足迹','卷二 · 人物与疑问','卷三 · 还没读完的故事'];
   let questions=[], available=true, damaged=false, page=0, serial=0;
   const session=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
   try {
@@ -60,7 +60,7 @@
     const candidates=pending.map(x=>({...x,matches:(associations[x.story.id]||[]).filter(k=>interests.has(k))}));
     candidates.sort((a,b)=>b.matches.reduce((s,k)=>s+interests.get(k),0)-a.matches.reduce((s,k)=>s+interests.get(k),0)||Number(a.state.started)-Number(b.state.started)||Number(b.total>0)-Number(a.total>0));
     const next=candidates[0];let reason='';
-    if(next){reason=next.matches.length?'你的本地提问或已完成章节涉及“'+next.matches.join('、')+'”，可接着探索这个相关主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；这里是尚未完成的另一条故事线，可以继续拓展。':(next.total?'目前没有足够的兴趣记录，先推荐已有章节框架的主题作为起点。':'目前没有足够的兴趣记录，可以先浏览一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}
+    if(next){reason=next.matches.length?'你在本地问过的问题或已完成的章节提到了“'+next.matches.join('、')+'”，可以接着看看这个主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；还可以看看这条尚未完成的故事线。':(next.total?'目前的兴趣记录还不够，先推荐一个已有章节框架的主题。':'目前的兴趣记录还不够，可以先看一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}
     return {stories,completed,pending,explored:[...explored.values()],people:[...people],events:[...events],ranked,next,reason,started:stories.some(x=>x.state.started||x.state.completed.size)};
   }
   function heading(box,title){box.append(node('h2','',title));}
@@ -85,12 +85,12 @@
   function render(){
     const m=model(),book=$('#journal-book');book.replaceChildren(node('p','journal-page-kicker',titles[page]));
     $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 换设备不会同步；不是账号档案。'+(available?'问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'问题读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'问题存储不可用，当前问题仅本页保留。')+(!window.StoryProgress.notice().includes('不代表实际到访')?' 手动记录不代表实际到访。':'');
-    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started){empty.append(node('h2','','你还没有开始第一段旅程'),node('p','','从一个人物、一处古道或一个疑问出发。亲手记下第一幕，书页就会留下你的印章。'),button('开始探索故事线',()=>showContentView('story')));}
-    if(page===0){heading(book,'完成过的故事线');if(!m.completed.length)book.append(node('p','','还没有整条完成的故事线，未走完的章节也值得保留。'));m.completed.forEach(x=>storyRow(book,x));heading(book,'正在写下的旅程');const begun=m.pending.filter(x=>x.state.started||x.state.completed.size);if(!begun.length)book.append(node('p','','暂无进行中的旅程。'));begun.forEach(x=>storyRow(book,x));footprints(book,m);}
-    if(page===1){heading(book,'已解锁的人物与事件');book.append(node('p','','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问或切换人物不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));heading(book,'曾经问过的三国');if(!questions.length)book.append(node('p','','你还没有留下问题。向陈寿、诸葛亮或张飞提问，疑问也会成为旅程的一部分。'));[...questions].reverse().forEach(q=>{const row=node('section','journal-question');row.append(node('span','journal-seal',q.comparison?'正史 × 演义探索':'文化提问'),node('p','',visitorText(q.text)),node('small','', '记录时间：'+recordedTime(q.recordedAt)+(q.persona?' · '+q.persona+'视角':'')));book.append(row);});heading(book,'最感兴趣的人物与文化主题');book.append(node('p','','按最近200条本地问题及已完成章节中的关键词出现次数统计；每条同一关键词最多计一次，非历史事实或人物关系判断。'));if(!m.ranked.length)book.append(node('p','','尚无足够的本地兴趣记录。'));m.ranked.forEach(([n,count])=>book.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));}
+    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started){empty.append(node('h2','','你还没开始读故事'),node('p','','可以从人物、古道或一个问题选故事。把第一幕标为“已寻迹”，这里就会记下。'),button('开始探索故事线',()=>showContentView('story')));}
+    if(page===0){heading(book,'完成过的故事线');if(!m.completed.length)book.append(node('p','','还没有整条读完的故事线，未完成的章节也会保留。'));m.completed.forEach(x=>storyRow(book,x));heading(book,'正在读的故事');const begun=m.pending.filter(x=>x.state.started||x.state.completed.size);if(!begun.length)book.append(node('p','','还没有正在读的故事。'));begun.forEach(x=>storyRow(book,x));footprints(book,m);}
+    if(page===1){heading(book,'已解锁的人物与事件');book.append(node('p','','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问或切换人物不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));heading(book,'问过的问题');if(!questions.length)book.append(node('p','','还没有提问记录。问过陈寿、诸葛亮或张飞的问题，会记在这里。'));[...questions].reverse().forEach(q=>{const row=node('section','journal-question');row.append(node('span','journal-seal',q.comparison?'正史 × 演义探索':'文化提问'),node('p','',visitorText(q.text)),node('small','', '记录时间：'+recordedTime(q.recordedAt)+(q.persona?' · '+q.persona+'视角':'')));book.append(row);});heading(book,'最感兴趣的人物与文化主题');book.append(node('p','','按最近200条本地问题及已完成章节中的关键词出现次数统计；每条同一关键词最多计一次，非历史事实或人物关系判断。'));if(!m.ranked.length)book.append(node('p','','尚无足够的本地兴趣记录。'));m.ranked.forEach(([n,count])=>book.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));}
     if(page===2){heading(book,'待探索的故事线');if(!m.pending.length)book.append(node('p','','当前已知故事线均已记录完成，可以重读章节，等待新的主题。'));m.pending.forEach(x=>storyRow(book,x));book.append(node('p','','下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。'));}
     tabs.forEach((b,i)=>b.setAttribute('aria-pressed',String(i===page)));$('#journal-page-number').textContent='第 '+(page+1)+' / 3 页';$('#journal-prev').disabled=page===0;$('#journal-next').disabled=page===2;
-    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事线推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('翻开下一段故事',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
+    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事线推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('看看下一条故事线',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
   }
   function turn(next){if(next<0||next>=titles.length)return;page=next;render();$('#journal-book').setAttribute('tabindex','-1');$('#journal-book').focus({preventScroll:true});$('#journal-book').scrollIntoView?.({block:'start',behavior:'instant'});}
   titles.forEach((title,i)=>{const b=button(title,()=>turn(i));tabs.push(b);$('#journal-pages').append(b);});

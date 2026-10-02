@@ -27,7 +27,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
     if(i!==2)assert.match(contents(shell),/章节与地点待补充/);
   }
   for(const place of test.window.SGT_PLACES)assert.equal(place.coordinates,null);
-  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('文化主题与故事线'));}
+  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('故事详情'));}
   test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
   assert.ok(!contents(test.get('#story-detail-content')).includes('pending'),'U08 story status is Chinese');
@@ -42,8 +42,8 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   test.get('#story-ask').handlers.click();assert.equal(test.questions.length,2);assert.equal(test.questions[1],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[1].includes('模板'));
   const story=test.window.SGT_STORIES[2],progress=test.window.StoryProgress;
   const state=progress.get(story);state.started=true;state.completed=new Set([0,1,2]);progress.save(story);
-  assert.ok(contents(test.get('#story-detail-content')).includes('一卷读罢'));
-  assert.ok(contents(test.get('#story-detail-content')).includes('接着探索'));
+  assert.ok(contents(test.get('#story-detail-content')).includes('这条故事线已读完'));
+  assert.ok(contents(test.get('#story-detail-content')).includes('接着读'));
   assert.equal(test.get('#story-cards').children[2].dataset.progress,'已寻迹');
   test.get('#story-phase-filters').children[2].handlers.click();
   assert.equal(test.get('#story-cards').children.filter(n=>!n.hidden).length,1);
@@ -54,7 +54,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   assert.equal(reordered.get('#story-cards').children.find(n=>n.dataset.storyId==='new').hidden,true);
   reordered.get('#story-phase-filters').children[0].handlers.click();assert.equal(reordered.get('#story-cards').children.find(n=>n.dataset.storyId==='new').hidden,false);
   assert.equal(test.window.SGTStoryUI.matchesPhase({},'探秘'),false);assert.equal(test.window.SGTStoryUI.matchesPhase({},'全部'),true);
-  test.get('#story-phase-filters').children[4].handlers.click();assert.ok(test.get('#story-filter-status').textContent.includes('向陈寿询问'));cards[0].handlers.click();assert.ok(!contents(test.get('#story-detail-content')).includes('0 / 0'));
+  test.get('#story-phase-filters').children[4].handlers.click();assert.ok(test.get('#story-filter-status').textContent.includes('问陈寿这个主题'));cards[0].handlers.click();assert.ok(!contents(test.get('#story-detail-content')).includes('0 / 0'));
   const kinds=['tower','shrine','pass','wall','road'];
   const shapes=kinds.map(kind=>test.window.SGTStoryUI.icon(kind));
   assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);

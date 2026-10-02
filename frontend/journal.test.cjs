@@ -11,7 +11,7 @@ function setup({saved={},blocked=false,broken=false}={}){
  return {get,window,story,chats,store,views,map};
 }
 const t=setup(),journal=t.window.ExplorationJournal,progress=t.window.StoryProgress;
-assert.ok(text(t.get('#journal-empty')).includes('你还没有开始第一段旅程'));assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('没有足够的兴趣记录'));
+assert.ok(text(t.get('#journal-empty')).includes('你还没开始读故事'));assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('兴趣记录还不够'));
 t.get('#journal-empty').children.at(-1).handlers.click();assert.deepEqual(t.views,['story']);
 const s=progress.get(t.story);s.started=true;s.current=1;s.completed.add(0);progress.save(t.story);
 assert.equal(journal.model().explored.length,1);assert.equal(journal.model().people[0],'诸葛亮');assert.equal(journal.model().events[0],'示例事件');assert.ok(text(t.get('#journal-book')).includes('第 2 / 2 幕'));assert.ok(text(t.get('#journal-book')).includes('驻地示意'));assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);

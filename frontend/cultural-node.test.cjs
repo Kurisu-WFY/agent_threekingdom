@@ -17,7 +17,7 @@ api.open({place,chapter,story,index:1,back:'map',exact:false,point:null});
 assert.equal(views.at(-1),'node');assert.match(get('#node-context').textContent,/第二幕/);assert.match(get('#node-coordinate').textContent,/坐标待核验/);
 assert.match(text(get('#node-reading-content')),/当前资料中未找到可靠记载/);assert.ok(!text(get('#node-reading-content')).includes('未经核验的文字'));
 assert.match(text(get('#node-metadata')),/C 级可信度不足/);assert.equal(get('#node-add-route').disabled,true);
-get('#node-reading').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-reading').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/亲子共读/);
+get('#node-reading').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-reading').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/可以和孩子一起看看下方资料/);
 api.changeMode('学术探索版');assert.match(text(get('#node-reading-content')),/编纂背景/);assert.equal(get('#node-reading').scrollTop,260);assert.equal(get('#node-reading-content').style.minHeight,'1500px');
 state.mode='亲子故事版';window.StoryProgress.save(story);assert.equal(api.getMode(),'亲子故事版');assert.equal(get('#node-reading').scrollTop,260);api.changeMode('学术探索版');
 click('#node-ask');assert.match(asks.at(-1).q,/测试关楼/);assert.match(asks.at(-1).q,/合理推断/);assert.match(asks.at(-1).q,/学术探索版/);assert.equal(state.current,1);assert.match(asks.at(-1).o.displayText,/测试关楼/);assert.ok(!asks.at(-1).o.displayText.includes('必须分段'));
