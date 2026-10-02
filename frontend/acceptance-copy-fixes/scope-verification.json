@@ -1,0 +1,38 @@
+{
+  "baseline": "c707b28bbb0418b06d037b1e88b31f924ac31de2",
+  "product_head": "a1687390af07f1109bff6a9093d291b125c47fcd",
+  "branch": "feat/frontend-acceptance-20260929",
+  "product_paths": [
+    "frontend/app.js",
+    "frontend/app.test.cjs",
+    "frontend/cultural-node.js",
+    "frontend/cultural-node.test.cjs",
+    "frontend/index.html",
+    "frontend/journal.js",
+    "frontend/journal.test.cjs",
+    "frontend/story-map.js",
+    "frontend/story-map.test.cjs",
+    "frontend/travel-map.js",
+    "frontend/travel-map.test.cjs",
+    "frontend/travel-modules.js",
+    "frontend/travel-modules.test.cjs"
+  ],
+  "all_product_paths_frontend": true,
+  "index_before_acceptance": [],
+  "docs": [
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\docs\\TASKS.md",
+      "initial": "D40280C8B51F911B47929479D55DB3634F8F63FFDED278076AA1F2BCB614842F",
+      "current": "D40280C8B51F911B47929479D55DB3634F8F63FFDED278076AA1F2BCB614842F",
+      "unchanged": true
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\docs\\HANDOFF.md",
+      "initial": "2C11DF1C7459455C5302CA463E6A79633A2E52C82A0269621D635A3C41726FC3",
+      "current": "2C11DF1C7459455C5302CA463E6A79633A2E52C82A0269621D635A3C41726FC3",
+      "unchanged": true
+    }
+  ],
+  "push_merge_performed": false,
+  "preserved_existing_audits": true
+}

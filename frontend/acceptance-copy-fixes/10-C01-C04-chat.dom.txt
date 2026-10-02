@@ -1,0 +1,178 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/文化探索
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索" [pressed]
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - paragraph:
+      - generic: 蜀
+      - text: 寻迹三国 · 陈寿文化向导
+    - heading "从一条故事线，开始读懂三国。" [level=1]
+    - paragraph: 选一个感兴趣的主题，读章节、看地点，再向陈寿追问。
+    - generic: 南充
+    - generic: —
+    - generic: 阆中
+    - generic: —
+    - generic: 剑阁
+    - generic: —
+    - generic: 广元
+    - link "选一条故事线开始":
+      - /url: "#story-discovery"
+      - text: 选一条故事线开始
+      - generic: ↓
+    - generic: 第一次来，先选故事；问答、建筑线索与四川地图可在下方展开。
+    - figure "第一站，从好奇开始 剑门关 / 广元 · 剑阁":
+      - img "剑门关关楼与两侧山崖，石阶通向关门"
+      - generic: 第一站，从好奇开始
+      - strong: 剑门关 / 广元 · 剑阁
+    - region "选择一条三国文化故事线":
+      - heading "选择一条三国文化故事线" [level=2]
+      - paragraph: 点主题看详情；有章节的故事还可以进入地图。
+      - paragraph: 首批主题模板，部分章节与地点待补充；史料与行程仍需核验。
+      - group "按故事框架筛选":
+        - button "全部" [pressed]
+        - button "寻源"
+        - button "读史"
+        - button "探秘"
+        - button "传承"
+      - status
+      - article:
+        - button "查看故事线：从南充少年到三国史家":
+          - generic: 壹
+          - strong: 从南充少年到三国史家
+          - generic: 查看文化主题与故事线 ↗
+          - generic: 未开始
+        - button "在故事地图中探索：从南充少年到三国史家" [disabled]: 在故事地图中探索 →
+        - paragraph: 本主题章节与地点待补充；可进入主题与陈寿讨论。
+      - article:
+        - button "查看故事线：镇守阆中·寻迹张飞":
+          - generic: 贰
+          - strong: 镇守阆中·寻迹张飞
+          - generic: 查看文化主题与故事线 ↗
+          - generic: 未开始
+        - button "在故事地图中探索：镇守阆中·寻迹张飞" [disabled]: 在故事地图中探索 →
+        - paragraph: 本主题章节与地点待补充；可进入主题与陈寿讨论。
+      - article:
+        - button "查看故事线：蜀汉北境·蜀道寻踪":
+          - generic: 叁
+          - strong: 蜀汉北境·蜀道寻踪
+          - generic: 章节数量
+          - generic: 3 章
+          - generic: 查看文化主题与故事线 ↗
+          - generic: 探索中
+        - button "在故事地图中探索：蜀汉北境·蜀道寻踪": 在故事地图中探索 →
+      - article:
+        - button "查看故事线：从史书到现场":
+          - generic: 肆
+          - strong: 从史书到现场
+          - generic: 查看文化主题与故事线 ↗
+          - generic: 未开始
+        - button "在故事地图中探索：从史书到现场" [disabled]: 在故事地图中探索 →
+        - paragraph: 本主题章节与地点待补充；可进入主题与陈寿讨论。
+      - article:
+        - button "查看故事线：正史里的三国":
+          - generic: 伍
+          - strong: 正史里的三国
+          - generic: 查看文化主题与故事线 ↗
+          - generic: 未开始
+        - button "在故事地图中探索：正史里的三国" [disabled]: 在故事地图中探索 →
+        - paragraph: 本主题章节与地点待补充；可进入主题与陈寿讨论。
+    - generic "预览章节与地图 想先看看故事将走向哪里？ ＋":
+      - strong: 预览章节与地图
+      - generic: 想先看看故事将走向哪里？
+      - text: ＋
+    - heading "也可以从你的问题或地点开始" [level=2]
+    - generic "有问题？问陈寿 人物问答、旅程需求与快捷提问 ＋":
+      - strong: 有问题？问陈寿
+      - generic: 人物问答、旅程需求与快捷提问
+      - text: ＋
+    - option "暂不限定" [selected]
+    - option "普通初访"
+    - option "亲子同行"
+    - option "研学寻史"
+    - option "人物追踪"
+    - option "自然讲解" [selected]
+    - option "大众讲解"
+    - option "亲子故事版"
+    - option "学术探索版"
+    - generic "从眼前的地点读三国 建筑节点与三条文化线索 ＋":
+      - strong: 从眼前的地点读三国
+      - generic: 建筑节点与三条文化线索
+      - text: ＋
+    - generic "先看看四川的地点 打开行旅地图，按市州和县区探索 ＋":
+      - strong: 先看看四川的地点
+      - generic: 打开行旅地图，按市州和县区探索
+      - text: ＋
+    - paragraph: 内容有据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。
+    - generic: AI 伴你读史行旅 · 动态信息请核验
+    - generic "影像来源"
+- button "关闭对话" [expanded]:
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行
+- complementary "对话面板":
+  - navigation "历史对话":
+    - button "新建对话": ＋ 新对话
+    - button "南充三国景点门票多少" [pressed]
+    - button "重命名对话：南充三国景点门票多少": 改名
+  - strong: 万卷史官 · 陈寿
+  - generic "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+  - button "关闭对话": ×
+  - log:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph: 展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。
+    - generic: 你
+    - generic: 你
+    - paragraph: 南充三国景点门票多少钱，一天的门票费用怎么估算？
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph:
+      - generic: 南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。
+    - paragraph:
+      - generic: 说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。
+    - button "在地图查看提及地点"
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 预算票价
+      - generic: 回答 · 待核验
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+      - generic: 价格信息待核验；未知金额不能认定为免费
+      - generic: 本次未取得可核对的门票费用，以下仅为住宿预算
+    - generic: 你
+    - generic: 你
+    - paragraph: 请用两句话说明陈寿与《三国志》的关系，并说明出处。
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph:
+      - generic: 陈寿是西晋史学家，撰写了纪传体史书《三国志》，把魏、蜀、吴三国的历史分别成书，是后世了解三国历史最重要的正史来源之一。需要说明的是，这一层“作者—著作”关系属于基本史实，但本次检索到的材料主要是现代研究论文（如孙绍华《〈三国志〉和陈寿的史识》、刘伟航《从〈三国志〉史评看陈寿的政治思想》），它们讨论的是陈寿的史识与政治思想，并非《三国志》原文本身，所以这里只作概括，不引用具体原文。
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 文化问答
+      - generic: 检索到相关资料，回答仍需核对出处
+      - generic: 回答 · 待核验
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+  - generic: 输入消息
+  - textbox "输入消息":
+    - /placeholder: 问陈寿：这一章讲什么？我只有半天…
+  - button "发送消息" [disabled]: ↑
+  - generic "路线背景与讲解设置"
+  - option "陈寿" [selected]
+  - option "诸葛亮"
+  - option "张飞"
+  - option "大众体验版" [selected]
+  - option "亲子故事版"
+  - option "学术探索版"

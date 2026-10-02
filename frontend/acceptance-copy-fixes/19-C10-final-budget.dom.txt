@@ -1,0 +1,183 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/活动计划 · 活动方案
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - text: ＋ ＋ ＋ ＋
+    - paragraph: 我的行程
+    - heading "活动方案" [level=2]
+    - button "保存到本机"
+    - button "复制方案"
+    - button "调整需求"
+    - heading "南充文化活动方案" [level=3]
+    - paragraph: 2026-10-03 · 2人
+    - generic: 回答 · 待核验
+    - generic: 更新时间 · 待核验
+    - generic: 来源 · 待核验
+    - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+    - heading "南充一日·陈寿与《三国志》主题家庭活动方案（大众体验版）" [level=2]
+    - paragraph:
+      - strong: 出发地
+      - text: ：南充站｜
+      - strong: 目的地
+      - text: ：南充｜
+      - strong: 日期
+      - text: ：2026-10-03｜
+      - strong: 时长上限
+      - text: ：8小时｜
+      - strong: 同行
+      - text: ：家庭2人｜
+      - strong: 偏好
+      - text: ：少走路
+    - paragraph:
+      - strong: 章节说明
+      - text: ：你当前故事线为“蜀汉北境·蜀道寻踪”，但本次目的地是南充，主题落在“寻源”一章（陈寿、万卷楼、《三国志》）。
+      - strong: 章节主题关联待确认
+      - text: ——若你希望延续“蜀道寻踪”，剑门关、昭化古城不在本次南充一日范围内，需另择日期。以下按你补充的“万卷楼、陈寿与《三国志》”主题安排。
+    - paragraph: "---"
+    - heading "活动顺序（简短版）" [level=2]
+    - paragraph:
+      - strong: 1. 南充站出发 → 万卷楼景区（上午，建议2.5–3小时）
+    - list:
+      - text: 文化讲解要点：万卷楼相传为陈寿读书、著述之所。据现代研究论文《〈陈寿故里碑〉与陈寿故里》（刘敏）所述，南充万卷楼“传为陈寿著《三国志》之所”，《南充县志》有“陈寿有万卷楼，在山之麓”的记载；该文同时指出，
+      - strong: 万卷楼只能佐证陈寿在此著过《三国志》，而非故里
+      - text: 。
+      - listitem: 现场可看/可问：楼与“万卷”之名的关系；陈寿是“记录三国的人”，不是三国当事人——他生于蜀汉，入晋后著史。
+      - listitem: 少走路提示：景区内以核心楼阁为主，缓步参观即可。
+    - paragraph:
+      - strong: 2. 就近午餐与休息（约1小时）
+    - list:
+      - text: 具体餐馆、价格、营业状态
+      - strong: 待核验
+      - text: ，请以现场或地图服务为准。
+    - paragraph:
+      - strong: 3. 陈寿祠／相关纪念点（下午，建议1–1.5小时）
+    - list:
+      - text: 文化讲解要点：祠是后人纪念性建筑。据上述论文，
+      - strong: “陈寿祠”并非建在故里
+      - text: ，祠与故里是两回事——这点很适合现场讲给孩子听：纪念一个人的地方，不一定是他出生的地方。
+      - text: 若当日该点未开放或不可达，
+      - strong: 待核验
+      - text: ，可改为在万卷楼内延伸讲解。
+    - paragraph:
+      - strong: 4. 返程南充站（预留约1小时缓冲）
+    - list:
+      - text: 交通耗时、班次
+      - strong: 待核验
+      - text: ，请以官方或地图服务为准。
+    - paragraph: "---"
+    - heading "保留／舍弃／新增说明" [level=2]
+    - list:
+      - strong: 保留
+      - text: ：万卷楼、陈寿祠类纪念点——直接对应你指定的“陈寿与《三国志》”主题。
+      - strong: 舍弃
+      - text: ：剑门关、阆中汉桓侯祠、昭化古城——不在南充市内，一日且少走路条件下不适合；若要去，需单独成行。
+      - strong: 新增
+      - text: ：无。资料未提供更多南充市内陈寿相关点位，
+      - strong: 不虚构
+      - text: 。
+    - paragraph: "---"
+    - heading "资料边界" [level=2]
+    - list:
+      - text: 陈寿故里存在“南充说”“广安说”等分歧，上述论文属现代研究、作者观点，
+      - strong: 非正史定论
+      - text: ，现场讲解宜并列说明，不宜断言。
+      - text: 万卷楼、陈寿祠的
+      - strong: 开放时间、票价、实时状态
+      - text: 均
+      - strong: 待核验
+      - text: ，本方案不提供。
+      - text: 本方案为 Demo 维护的活动模板，
+      - strong: 非实时信息
+      - text: 。
+    - paragraph: 需要我把它改成“亲子版”话术，或补一条“若坚持去剑门关该怎么排期”的说明吗？
+    - button "查看位置示意 / 待定位" [disabled]
+    - button "天气与空气质量"
+    - button "核验道路路线"
+    - button "返回目的地"
+    - status: 已更新活动方案；已寻迹章节记录保持。
+    - heading "本机保存的方案" [level=3]
+    - generic: 南充文化活动方案 · 2026-10-03
+    - button "打开"
+    - generic: 南充文化活动方案 · 2026-10-04
+    - button "打开"
+    - paragraph: 仅保存在当前浏览器，不会同步到其他设备。
+    - generic: AI 伴你读史行旅 · 动态信息请核验
+    - generic "影像来源"
+- button "关闭对话" [expanded]:
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行
+- complementary "对话面板":
+  - navigation "历史对话":
+    - button "新建对话": ＋ 新对话
+    - button "南充三国景点门票多少" [pressed]
+    - button "重命名对话：南充三国景点门票多少": 改名
+    - button "删除对话：南充三国景点门票多少": 删除
+    - button "请安排南充的一天文化"
+    - button "重命名对话：请安排南充的一天文化": 改名
+    - button "删除对话：请安排南充的一天文化": 删除
+  - strong: 万卷史官 · 陈寿
+  - generic "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+  - button "关闭对话": ×
+  - log:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph: 展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。
+    - generic: 你
+    - generic: 你
+    - paragraph: 南充三国景点门票多少钱，一天的门票费用怎么估算？
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - generic: 本次未取得可核对的门票费用，以下仅为住宿预算。请提供具体景区，以便继续查询门票。
+    - paragraph:
+      - generic: 南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。
+    - paragraph:
+      - generic: 说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。
+    - button "在地图查看提及地点"
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 预算票价
+      - generic: 回答 · 待核验
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+      - generic: 价格信息待核验；未知金额不能认定为免费
+  - generic: 输入消息
+  - textbox "输入消息":
+    - /placeholder: 问陈寿：这一章讲什么？我只有半天…
+  - button "发送消息" [disabled]: ↑
+  - generic "路线背景与讲解设置"
+  - generic "此刻行至 · 剑门关"
+  - generic "陈寿接卷 · 章节引导"
+  - paragraph: 上章“第一幕｜昭化古城”之后，现在来到“第二幕｜剑门天险”。
+  - paragraph: 本章史料摘要：当前资料中未找到可靠记载。章节模板仅作行旅引导，不能代替史实。
+  - button "这一章有什么可靠史料？"
+  - button "请陈寿解释区别"
+  - button "接着探索：第三幕｜米仓道"
+  - button "标记本章已寻迹"
+  - button "只有半天 · 选择保留章节"
+  - region "人物视角":
+    - text: 当前人物视角
+    - combobox "当前人物视角":
+      - option "陈寿" [selected]
+      - option "诸葛亮"
+      - option "张飞"
+    - generic "人物依据与相关故事"
+    - text: 讲解模式
+    - combobox "讲解模式":
+      - option "大众体验版" [selected]
+      - option "亲子故事版"
+      - option "学术探索版"
+    - paragraph: AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志
+    - status

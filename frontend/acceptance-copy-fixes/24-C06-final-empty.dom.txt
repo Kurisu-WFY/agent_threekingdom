@@ -1,0 +1,36 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/目的地
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地" [pressed]
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - text: ＋ ＋ ＋ ＋
+    - paragraph: 从目的地开始
+    - heading "探索四川三国文化目的地" [level=2]
+    - paragraph: 选择目的地，查看景区资料或带入活动计划。
+    - group "选择目的地":
+      - button "南充"
+      - button "阆中"
+      - button "广元"
+      - button "成都"
+      - button "绵阳"
+      - button "德阳"
+      - button "巴中" [active] [pressed]
+      - button "达州"
+    - paragraph: 范围：川东北及四川其他三国文化目的地。景点库未覆盖的城市仍可交给智能体检索规划，不代表当地没有相关景点。
+    - paragraph: 当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。
+    - button "带入活动计划"
+    - generic: AI 伴你读史行旅 · 动态信息请核验
+    - generic "影像来源"
+- button "打开对话，可拖动调整位置":
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行

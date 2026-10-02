@@ -1,0 +1,28 @@
+{
+  "origin": "http://localhost:8002",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "browser": "Codex in-app Chromium",
+  "responseReplacement": false,
+  "offlineControl": "Network.emulateNetworkConditions offline true/false，仅影响验收页",
+  "actions": [
+    "21选择成都，在真实离线下listSpots fetch失败；默认错误详情折叠",
+    "22点击错误详情，显示原Failed to fetch",
+    "23恢复online，点击重新查询景区，真实取得成都武侯祠博物馆",
+    "24选择巴中，真实零结果",
+    "25从活动需求进入天气，离线提交真实fetch；中文失败及重试",
+    "26主动展开原Failed to fetch",
+    "27恢复online点击重新查询天气，真实结果北京时间显示",
+    "28展开原始服务说明，保留原文",
+    "16打开本机既存方案，缺出处提示",
+    "17从需求表真实生成活动聊天，检索提示与缺出处提示",
+    "18查看本次方案，继承来源提示且原回答保留",
+    "19新建普通预算对话，真实酒店返回前补范围及下一步",
+    "20普通地图模式真实路线回答的两处景区缺位置，保留城市示意",
+    "29探索志卷二，旧活动摘要与北京时间",
+    "五tab依次点击，两次测量聊天收起/展开的10种组合"
+  ],
+  "cleanup": "见browser-cleanup.json"
+}

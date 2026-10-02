@@ -1,0 +1,35 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/活动计划 · 天气与空气质量
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - text: ＋ ＋ ＋ ＋
+    - button "返回活动需求"
+    - paragraph: 出发前再确认
+    - heading "天气与空气质量" [level=2]
+    - paragraph: 填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。
+    - text: 目的地
+    - combobox "目的地": 南充
+    - text: 出行日期（可选）
+    - textbox "出行日期（可选）": 2026-10-03
+    - button "查询天气与空气质量"
+    - status: 天气查询失败，尚未取得数据。请检查网络或服务连接后重试。
+    - paragraph: 天气查询失败，尚未取得数据。请检查网络或服务连接后重试。
+    - generic "错误详情" [active]
+    - paragraph: Failed to fetch
+    - button "重新查询天气"
+    - generic: AI 伴你读史行旅 · 动态信息请核验
+    - generic "影像来源"
+- button "打开对话，可拖动调整位置":
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行

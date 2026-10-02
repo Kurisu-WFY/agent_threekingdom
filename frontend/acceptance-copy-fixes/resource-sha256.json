@@ -1,0 +1,51 @@
+[
+  {
+    "resource": "app.js",
+    "url": "http://localhost:8002/app.js",
+    "local": "B20671BC981236A36FC10571F3E956F54478533FB2BE593BB9549BFC37B22D46",
+    "served": "B20671BC981236A36FC10571F3E956F54478533FB2BE593BB9549BFC37B22D46",
+    "match": true
+  },
+  {
+    "resource": "travel-modules.js",
+    "url": "http://localhost:8002/travel-modules.js",
+    "local": "15E82755F74124D32355AE0EA47E3D6EDD582B947C4FA2CA3B348FEC8C9312BB",
+    "served": "15E82755F74124D32355AE0EA47E3D6EDD582B947C4FA2CA3B348FEC8C9312BB",
+    "match": true
+  },
+  {
+    "resource": "journal.js",
+    "url": "http://localhost:8002/journal.js",
+    "local": "E7D0DAD92665AECC0793AD69D7263C72571406CABDEBA2377EDBD5D5550A2C3A",
+    "served": "E7D0DAD92665AECC0793AD69D7263C72571406CABDEBA2377EDBD5D5550A2C3A",
+    "match": true
+  },
+  {
+    "resource": "travel-map.js",
+    "url": "http://localhost:8002/travel-map.js",
+    "local": "26776C34E0204AE26422D5F9B17CE00D4CFB1991BBDA9D3254CC331B1E27376A",
+    "served": "26776C34E0204AE26422D5F9B17CE00D4CFB1991BBDA9D3254CC331B1E27376A",
+    "match": true
+  },
+  {
+    "resource": "story-map.js",
+    "url": "http://localhost:8002/story-map.js",
+    "local": "8769392649CFD51F574C53E4578504E51D07D9D95B55B5FB4D7D1737FF7D36CF",
+    "served": "8769392649CFD51F574C53E4578504E51D07D9D95B55B5FB4D7D1737FF7D36CF",
+    "match": true
+  },
+  {
+    "resource": "cultural-node.js",
+    "url": "http://localhost:8002/cultural-node.js",
+    "local": "D9F5AEEE3A50915D491282F09ECB5251220C5C9E9D650E72E2FBC77C4ACECE1F",
+    "served": "D9F5AEEE3A50915D491282F09ECB5251220C5C9E9D650E72E2FBC77C4ACECE1F",
+    "match": true
+  },
+  {
+    "resource": "index.html",
+    "url": "http://localhost:8002/",
+    "local": "5B3E451C89F8250B79DF82BEAC0AB9C7FFC09BC482FA15733AB4D87282CF8459",
+    "served": "5B3E451C89F8250B79DF82BEAC0AB9C7FFC09BC482FA15733AB4D87282CF8459",
+    "match": true
+  }
+]
