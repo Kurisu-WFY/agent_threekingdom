@@ -1,0 +1,88 @@
+answer-format.test.cjs: exit=0
+PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status
+app.test.cjs: exit=0
+PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops
+PASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery
+PASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery
+PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover
+PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation
+PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery
+character-chat.test.cjs: exit=0
+PASS: persona/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo
+chat-transport.test.cjs: exit=0
+PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure
+chenshou-guide.test.cjs: exit=0
+PASS: scholar SVG/four states, default collapsed, honest chapter handoff, completion/undo, context/mode, compression snapshot, drafts/retry/session isolation, three person themes and stale note removal
+cultural-node.test.cjs: exit=0
+PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building
+design-system.test.cjs: exit=0
+PASS: original token semantics, complete scales, no raw component colors, text AA min=4.91, controls/focus >=3, reduced motion and touch target contract
+itinerary-agent-core.test.cjs: exit=0
+PASS: one activity request form, retired duplicate scripts, road lookup retained
+journal.test.cjs: exit=0
+PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage
+landing.test.cjs: exit=0
+PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls
+PASS: story detail uses the same request/pending-draft bridge
+map-route.test.cjs: exit=0
+PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map
+PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels
+PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation
+PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1000%
+PASS: wide/tall visible bounds and shared city/county geometry
+PASS: shared internal county edges removed from city outline
+PASS: chapter seals reserve label clearance without changing ordinary projection
+navigation.test.cjs: exit=0
+PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion
+PASS: journal label, aria-pressed, no document scrolling and map preservation
+outing-core.test.cjs: exit=0
+PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection
+stories.test.cjs: exit=0
+PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure
+story-map.test.cjs: exit=0
+PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation
+story-progress.test.cjs: exit=0
+PASS: local persistence, story isolation, modes, partial completion, undo, selection validation, changed chapters, corrupt/blocked storage
+travel-api.test.cjs: exit=0
+PASS: disabled no-network mode, URL encoding, request body, timeout signal, empty/error/invalid responses
+travel-map.test.cjs: exit=0
+PASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication
+PASS: general story questions preserve route/view/zoom; explicit destinations still map
+PASS: two-pointer pinch increases zoom
+PASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels
+travel-modules.test.cjs: exit=0
+PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels
+syntax frontend\amap-map.js: exit=0
+syntax frontend\amap-planner.js: exit=0
+syntax frontend\answer-format.js: exit=0
+syntax frontend\app.js: exit=0
+syntax frontend\character-chat.js: exit=0
+syntax frontend\chat-transport.js: exit=0
+syntax frontend\chenshou-guide.js: exit=0
+syntax frontend\cities.js: exit=0
+syntax frontend\cultural-node.js: exit=0
+syntax frontend\journal.js: exit=0
+syntax frontend\landing.js: exit=0
+syntax frontend\map-route-core.js: exit=0
+syntax frontend\n10-n17.browser-test.js: exit=0
+syntax frontend\n8-n9.browser-test.js: exit=0
+syntax frontend\outing-core.js: exit=0
+syntax frontend\outing.js: exit=0
+syntax frontend\stories.js: exit=0
+syntax frontend\story-map.js: exit=0
+syntax frontend\story-progress.js: exit=0
+syntax frontend\travel-api.js: exit=0
+syntax frontend\travel-map.js: exit=0
+syntax frontend\travel-modules.js: exit=0
+syntax frontend\acceptance-batch4\browser-checks.js: exit=0
+syntax frontend\tests\map-performance.js: exit=0
+tests=19 syntax_all=24 syntax_root=22 syntax_existing_subdir=1 syntax_new_acceptance=1 failures=0
+health=ok
+index.html sha256=0B2121ADE9BCB748FBB470AFF7CA3B1251E5BE23BF54BCE7180B35D0A0ACB8E2 server_equal=True
+styles.css sha256=3DF9249F5F8C3B9B0C54720975447609ED28607E1C98A1B5F4DE82A792F7C25E server_equal=True
+travel-modules.js sha256=185765D3C392DED560F4F33F66AE553D1BBEC4F5451A4B861439F11A8F33B813 server_equal=True
+travel-map.js sha256=9E0179817992D393638FF3F88FF50C6F491822619C941F5102E29E40258C0699 server_equal=True
+map-route-core.js sha256=62DB12ED423B6C7ADB5D8CB3564045DAE881982FE5D6282BB69AAF062E9E0225 server_equal=True
+n10-n17.browser-test.js sha256=0F5148949D2969DED02E7897ED90267206581B99ABE5942785E4C3B9FFD38F4E server_equal=True
+acceptance-batch4/browser-checks.js sha256=B156BAB5E8DD6CE509739E7152BDDE95680E7634EA3E5BFE31CCC80EFA7E5979 server_equal=True
+resource_hashes=7 mismatch=0

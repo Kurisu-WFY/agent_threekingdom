@@ -571,3 +571,22 @@
 删除：itinerary-agent-core.js、itinerary.js、itinerary.css。
 回归：character-chat.test.cjs、cultural-node.test.cjs、design-system.test.cjs、itinerary-agent-core.test.cjs（退休契约）、landing.test.cjs、navigation.test.cjs、outing-core.test.cjs、stories.test.cjs、travel-modules.test.cjs、n8-n9.browser-test.js、n10-n17.browser-test.js。
 记录：HANDOFF.md；acceptance-batch3/README.md、browser-reports.json、verification.txt、node-1920.png、node-375.png、activity-1280.png。
+
+## 2026-10-02 · 第四批前端修复（F1–F6，仅桌面1920×1080）
+
+- 开工核对分支feat/frontend-acceptance-20260929、HEAD291a64d；既存docs回填和未跟踪工作单/audit-ia保留。仅frontend文件明确逐个加入提交，无push/merge/强推；docs只末尾追加、不提交。
+- F1：城市/景点带入本地今天（空日期时）、真实目的地与景点需求，已有日期/条件保留，空出发地明确提示。地图删除固定三城，读取真实市州/县区/整条路线；无选择提示先选地点。新选择为地点来源，加入/绘制/查看路线为整条路线来源。结构化GCJ-02景点保留city；城市未知也保留地点名并提示补目的地，不猜城市。
+- F2：县区拾取与绘制共用250%阈值，隐藏县区不参与拾取；章节优先、文字拦截和拖动语义保持。F3：普通市州轮廓2.5px、选中3px，保持non-scaling-stroke。
+- F4：顶栏64→48px，左右padding40→24、gap16→12；已有桌面高度公式覆盖聊天开关两态，扣除72px垂直留白。两态content960/workspace1032/文档1080，三项单行无相交。F5：滚动宽94.125→94.125px，移除缩放，仅保留淡化。F6：logo圆角3→8px，29×29/18px/700及渐变保持。
+- 提交：2355186(F1)、031cf6c(F2)、e64488e(F3)、f70658b(F4)、7828635(F5)、f1b5dd1(F6)、ef69943(审查F1两边界修复)，最终验收提交见git log。逐项RED/GREEN和裁定在acceptance-batch4/implementation-plan.md。
+- 真实浏览器：阆中城市带入、万卷楼景点需求、已有日期保持、空地图提示、南充市州/仪陇县带入、仪陇→剑阁完整两站路线带入；100%隐藏县区点按不拾取、818%仪陇面域点按、305%屏山县空白附近拾取均通过。既有n10-n17桌面回归通过，Console errors=[]。截图稳定帧重存并目视复核。
+- 最终：19/19回归；根目录22/22现存JS语法；递归含既存tests/map-performance.js与新增acceptance-batch4/browser-checks.js，共24/24语法。health=ok；7个改动网页资源与8002 SHA256一致。不要把第三批根目录基线误记为23。
+- 独立只读审查2个Important均先RED再GREEN修复：整条路线受残留选择截断、坐标景点丢城市。无新增延后小问题。真实后端GCJ-02景点响应带入仅有受控链路证据；全部地图组合、网络失败/非活动响应本轮浏览器未测，响应式/1280/移动不做。M4-3既存局部交叉仍未修。市州面域/标签的基线直接选择行为未新增，市州下拉仍正常；更换目的地保留旧需求，用户需核对。
+- 下一步：由协调者review本地提交与acceptance-batch4/README.md逐条证据；无新工作单时保持只读等待。
+
+### 第四批产物与改动面（291a64d→最终验收提交）
+
+功能：index.html、travel-modules.js、travel-map.js、map-route-core.js、styles.css。
+回归：travel-modules.test.cjs、travel-map.test.cjs、map-route.test.cjs、design-system.test.cjs、n10-n17.browser-test.js。
+记录：HANDOFF.md；acceptance-batch4/README.md、implementation-plan.md、browser-checks.js、browser-reports.json、verification.txt。
+截图：acceptance-batch4/city-prefill-1920.png、map-prefill-1920.png、map-province-1920.png、map-detail-1920.png，均随前端提交入库。
