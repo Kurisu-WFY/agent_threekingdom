@@ -541,7 +541,7 @@ html { scroll-behavior:smooth; scroll-padding-top:90px; }
 body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--paper); }
 .topbar { padding:0 var(--space-5); background:color-mix(in srgb, var(--surface-2) 96%, transparent); }
 .brand { font-weight:500; font-size:var(--text-sm); }
-.brand-mark { width:29px; height:29px; border-radius:3px; box-shadow:none; font-family:serif; font-size:var(--text-lg); }
+.brand-mark { width:29px; height:29px; border-radius:8px; box-shadow:none; font-family:serif; font-size:var(--text-lg); }
 .topbar-center { font-size:var(--text-xs); letter-spacing:.1em; }
 .workspace { padding:var(--space-5) calc(var(--space-1) * 10) calc(var(--space-1) * 12); }
 .content { width:100%; max-width:none; height:auto; max-height:none; min-height:0; margin:0; border-radius:12px; box-shadow:0 12px 40px color-mix(in srgb, var(--ink) 6%, transparent); }
