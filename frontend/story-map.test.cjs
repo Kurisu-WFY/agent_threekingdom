@@ -62,5 +62,6 @@ function allText(node){return node.textContent+node.children.map(allText).join('
 
  const failed=setup(Promise.resolve(false));assert.equal(await failed.window.StoryMap.open('test'),false);assert.ok(failed.get('#map-route-status').textContent.includes('暂不可用'));
  let release;const delayed=setup(new Promise(resolve=>release=resolve));const pending=delayed.window.StoryMap.open('test');delayed.window.StoryMap.exit();release(true);await pending;assert.equal(delayed.window.StoryMap.isActive(),false);
+ assert.equal(t.get('#chapter-navigate').textContent,'直接导航暂未提供','C03');assert.equal(t.get('#chapter-navigate').disabled,true);assert.doesNotMatch(allText(t.get('#story-map-status')),/前端章节|后端|GCJ-02|自动对齐/,'C09');
  console.log('PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation');
 })().catch(e=>{console.error(e);process.exitCode=1;});

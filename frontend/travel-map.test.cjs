@@ -215,6 +215,8 @@ const assert=require('node:assert/strict');
  console.log('PASS: general story questions preserve route/view/zoom; explicit destinations still map');
  console.log('PASS: two-pointer pinch increases zoom');
  await window.TravelMap.showPlan({stops:[{name:'剑门关',address:'广元市剑阁县'},{name:'未知景区'},{name:'昭化古城',address:'广元市昭化区'}]});
+ chat.mapRoute.backendStopsPending=['剑门关','昭化古城'];window.TravelMap.syncChat({messages:[]});window.TravelMap.syncChat(chat);
+ assert.match(registry.get('#map-route-status').textContent,/暂缺可核对位置/,'C09 当前降级解释');assert.doesNotMatch(registry.get('#map-route-status').textContent,/后端|GCJ-02|自动对齐/);
  assert.equal(chat.mapRoute.points[0].level,'county');assert.equal(chat.mapRoute.points[1],null);assert.equal(chat.mapRoute.points[2].level,'county');
  assert.ok(chat.mapRoute.kind.includes('待定位'));assert.equal(registry.get('#route-lines').children.length,0);
  assert.equal(registry.get('#map-fit').disabled,false);

@@ -205,11 +205,11 @@
     });
     const notes = [];
     if (route?.missing?.length) notes.push(`未能唯一定位：${route.missing.join('、')}。请从县级列表补充。`);
-    if (route?.backendStopsPending?.length) notes.push(`后端返回的 ${route.backendStopsPending.length} 个站点（${route.backendStopsPending.join('、')}）暂无 GCJ-02 坐标，落不到景区入口；已保留按地名识别的点位，坐标接入后自动对齐。`);
+    if (route?.backendStopsPending?.length) notes.push(`${route.backendStopsPending.length} 个景区站点（${route.backendStopsPending.join('、')}）暂缺可核对位置，现显示城市或县级驻地示意，不是景区入口；请先核对入口，再规划到达路线。`);
     const missing = notes.length ? ' ' + notes.join('') : '';
     $('#map-route-status').textContent = points.length
       ? `${route.kind} · ${points.filter(Boolean).length} 个已定位地点。${points.filter(Boolean).length < 2 ? '至少两个地点才显示连线。' : '虚线仅作地点顺序示意，可在下方调整。'}${missing}`
-      : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后自动标点；也可选择县城加入路线。');
+      : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后标出已识别且有位置资料的地点；也可选择县城加入路线。');
   }
   async function loadMap() {
     $('#map-load-error').hidden=false;

@@ -53,3 +53,5 @@ assert.equal(api.openPlace('pass'),true);
 assert.match(get('#node-back').textContent,/来源未知/);
 click('#node-back');assert.equal(views.at(-1),'welcome');
 console.log('PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building');
+
+assert.match(text(get('#node-tourism')),/尚未查询所在地天气，可查询预报；景区开放另查公告/,'C08 天气缺数据不套用景区公告');

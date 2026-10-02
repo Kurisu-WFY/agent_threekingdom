@@ -57,7 +57,7 @@
     const notice = $('.story-map-memory'); if(notice && window.StoryProgress)notice.textContent=window.StoryProgress.notice();
     $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';
     $('#story-map-badge').textContent = $('#story-map-progress').textContent;
-    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '前端章节模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。到达路线请交给智能体规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
+    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。到达路线请交给智能体规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
     resolved.forEach((item, index) => {
       const status = currentStatus(index);
       const li = node('li', 'chapter-list-item');
@@ -124,7 +124,7 @@
       node('p', 'map-note', '更新时间：' + (verified ? chapter.updatedAt : '待确认')), sources(chapter));
     $('#chapter-add').disabled = !item.point;
     $('#chapter-add').textContent = item.exact ? '加入路线' : item.point ? '加入路线（驻地示意）' : '加入路线（待定位）';
-    $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '导航到这里（待确认）';
+    $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '直接导航暂未提供';
     $('#chapter-complete').textContent = state().completed.has(index) ? '撤销已寻迹' : '标记已寻迹';
     $('#chapter-next').disabled = !resolved.some((_,i)=>i>index&&!state().skipped?.has(i));
     $('#story-node-feedback').textContent = '点击章节后由陈寿接续讲解；资料不足时保留疑问。';

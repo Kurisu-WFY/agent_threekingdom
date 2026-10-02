@@ -83,7 +83,7 @@
     let missingCount=0;
     [['ticket','票价'],['opening','开放时间'],['weather','天气']].forEach(([key,title])=>{
       const r=data[key],valid=status(r)==='live'&&evidence(r)&&typeof r?.tool_source==='string'&&r.tool_source.trim();
-      const content=valid&&(key!=='ticket'||Number.isFinite(r.amount)&&r.amount>0)?(key==='ticket'?r.amount+' 元':text(r.text)):'请以景区公告为准';
+      const content=valid&&(key!=='ticket'||Number.isFinite(r.amount)&&r.amount>0)?(key==='ticket'?r.amount+' 元':text(r.text)):(key==='weather'?'尚未查询所在地天气，可查询预报；景区开放另查公告':'请以景区公告为准');
       const card=node('article','node-travel-item');card.append(node('h4','',title),node('p','',content),node('p','','更新时间：'+(dated(r)?updated(r):'待核验')),node('p','','工具来源：'+text(r?.tool_source)),provenance(r,'旅游信息来源'));
       if(valid&&(key!=='ticket'||Number.isFinite(r.amount)&&r.amount>0))area.append(card);
       else {missingCount++;unavailable.append(card);}
