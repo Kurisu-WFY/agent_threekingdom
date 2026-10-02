@@ -80,7 +80,8 @@
     field('city').value = nextCity;
     if(!field('date').value){const today=new Date();field('date').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');}
     if(spot && !field('notes').value.includes(spot)) field('notes').value=[field('notes').value.trim(),'希望包含：'+spot].filter(Boolean).join('；');
-    $('#planner-status').textContent='已带入 '+nextCity+(spot?' · '+spot:'')+' · '+(field('origin').value.trim()?'请核对出发地':'请补出发地')+'；日期与活动条件已保留或使用默认值，请核对后生成。';
+    const pending=[!nextCity&&'目的地',!field('origin').value.trim()&&'出发地'].filter(Boolean);
+    $('#planner-status').textContent='已带入 '+[nextCity,spot].filter(Boolean).join(' · ')+' · '+(pending.length?'请补'+pending.join('、'):'请核对出发地')+'；日期与活动条件已保留或使用默认值，请核对后生成。';
     showContentView('planner');
   }
   document.querySelectorAll('[data-city]').forEach(button => button.onclick = () => loadCity(button.dataset.city));
@@ -88,7 +89,7 @@
   $('#plan-destination').onclick = () => chooseCity(city);
   document.querySelectorAll('[data-plan-map]').forEach(button => button.onclick = () => {
     const selection=window.TravelMap?.getPlanSelection();
-    if(!selection?.cities.length){$('#map-plan-status').textContent='请先在地图选择地点或市州，再带入活动计划。';return;}
+    if(!selection || (!selection.cities.length&&!selection.places.length)){$('#map-plan-status').textContent='请先在地图选择地点或市州，再带入活动计划。';return;}
     $('#map-plan-status').textContent='';chooseCity(selection.cities.join('、'),selection.places.join('、'));
   });
   $('#open-culture').onclick = () => toggleChat(true);

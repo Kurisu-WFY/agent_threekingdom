@@ -42,7 +42,7 @@
     const points = stops.map(stop => {
       if (!stop || typeof stop.name !== 'string') { missing.push('未命名站点'); return null; }
       // 与底图一致的 GCJ-02 坐标；坐标系缺失时不能假定兼容。
-      if (stop.coordinate_system === 'GCJ-02' && Array.isArray(stop.coordinates) && stop.coordinates.length === 2 && stop.coordinates.every(Number.isFinite) && stop.coordinates[0] >= 97 && stop.coordinates[0] <= 109 && stop.coordinates[1] >= 26 && stop.coordinates[1] <= 35) return { name: stop.name, center: stop.coordinates, level: 'spot' };
+      if (stop.coordinate_system === 'GCJ-02' && Array.isArray(stop.coordinates) && stop.coordinates.length === 2 && stop.coordinates.every(Number.isFinite) && stop.coordinates[0] >= 97 && stop.coordinates[0] <= 109 && stop.coordinates[1] >= 26 && stop.coordinates[1] <= 35) return { name: stop.name, center: stop.coordinates, level: 'spot', ...(typeof stop.city==='string'&&stop.city.trim()?{city:stop.city.trim()}:{}) };
       const matches = places.filter(place => aliases(place).includes(stop.name) && (!stop.parent || stop.parent === place.parent));
       if (matches.length === 1) return matches[0];
       missing.push(stop.name);

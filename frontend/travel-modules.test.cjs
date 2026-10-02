@@ -47,6 +47,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.equal(fields.city.value,'南充');assert.match(fields.notes.value,/仪陇县/);assert.match(get('#planner-status').textContent,/已带入.*仪陇县.*请补出发地/);
  window.TravelMap.getPlanSelection=()=>({cities:['南充','广元'],places:['仪陇县','剑阁县']});get('#map-plan').onclick();
  assert.equal(fields.city.value,'南充、广元');assert.match(fields.notes.value,/仪陇县、剑阁县/);
+ window.TravelMap.getPlanSelection=()=>({cities:[],places:['已定位景点']});get('#map-plan').onclick();
+ assert.equal(fields.city.value,'','missing city stays empty instead of being guessed');assert.match(fields.notes.value,/已定位景点/);assert.match(get('#planner-status').textContent,/请补目的地、出发地/);
  fields.origin.value='南充';fields.date.value='';
  fields.city.value='广元';fields.notes.value='少走路';
  delete window.SGTJourney;

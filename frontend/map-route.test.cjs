@@ -18,6 +18,7 @@ assert.deepEqual(partial.missing, ['未核验景点']);
 assert.equal(core.structured({ map_route: { stops: [{ name: '景点', coordinates: [105, 31], coordinate_system: 'WGS84' }] } }, places).points[0], null);
 assert.deepEqual(core.structured({ map_route: { stops: [{ name: '景点', coordinates: [105, 31], coordinate_system: 'GCJ-02' }] } }, places).points[0].center, [105, 31]);
 assert.equal(core.structured({}, places), null);
+assert.equal(core.structured({map_route:{stops:[{name:'剑门关',city:'广元',coordinates:[105.58,32.22],coordinate_system:'GCJ-02'}]}},places).points[0].city,'广元','coordinate normalization must retain source city for activity handoff');
 assert.ok(core.project([105, 31]).every(Number.isFinite));
 const same = [{ name: '重叠甲', center: [105, 31] }, { name: '重叠乙', center: [105, 31] }, { name: '远点', center: [107, 33] }];
 const [x, y] = core.project([105, 31]);

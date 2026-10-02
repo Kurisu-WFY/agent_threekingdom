@@ -5,6 +5,7 @@
   const textSize = (name, fallback) => Number.parseFloat(window.getComputedStyle?.(svg)?.getPropertyValue('--map-text-' + name)) || fallback;
   const ns = 'http://www.w3.org/2000/svg';
   let places = [], counties = [], activeChat = null, selected = null;
+  let planSource = 'selection';
   let view = [0, 0, 900, 680];
   let loaded = false, geometry = null, cityPlaces = [], labels = [], boundaryNodes = [];
   let targetView = [...view], frame = 0, animateView = false;
@@ -123,6 +124,7 @@
     updateLabels();
   }
   function selectPlace(place) {
+    planSource = 'selection';
     selected = place; $('#map-county').value = place.id; $('#map-add-stop').disabled = false;
     drawCounties();
     $('#map-picker-title').textContent = place.name + ' · ' + place.parent;
@@ -157,6 +159,7 @@
   $('#map-picker-close').onclick = () => { $('#map-place-picker').hidden = true; $('#map-county').focus({ preventScroll: true }); };
   $('#map-place-picker').onkeydown = event => { if (event.key === 'Escape') { event.stopPropagation(); $('#map-picker-close').click(); } };
   function populateCounties() {
+    planSource = 'selection';
     const select = $('#map-county'); select.replaceChildren(new Option('选择地点', ''));
     const filtered = counties.filter(p => !$('#map-prefecture').value || p.parent === $('#map-prefecture').value);
     filtered.forEach(p => select.append(new Option(`${p.name} · ${p.parent}`, p.id)));
@@ -167,6 +170,7 @@
     if (!loaded) return;
     const route = activeChat?.mapRoute;
     const points = route?.points || [];
+    planSource = points.some(Boolean) ? 'route' : 'selection';
     $('#map-fit').disabled=!points.some(Boolean);
     $('#route-lines').replaceChildren(); $('#route-points').replaceChildren(); $('#map-route-list').replaceChildren();
     points.forEach((place, index) => {
@@ -219,7 +223,8 @@
     getPlaces() { return places; },
     getPlanSelection() {
       const parent=$('#map-prefecture').value;
-      const points=selected?[selected]:parent?[{name:parent,level:'city'}]:(activeChat?.mapRoute?.points||[]).filter(Boolean);
+      const routePoints=(activeChat?.mapRoute?.points||[]).filter(Boolean);
+      const points=planSource==='route'&&routePoints.length?routePoints:selected?[selected]:parent?[{name:parent,level:'city'}]:routePoints;
       const cities=[...new Set(points.map(p=>(p.parent||(p.level==='city'?p.name:p.city)||'').replace(/市$/,'')).filter(Boolean))];
       return {cities,places:[...new Set(points.filter(p=>p.level!=='city').map(p=>p.name).filter(Boolean))]};
     },
@@ -342,6 +347,7 @@
   window.TravelMap.syncChat(chats[active]);
   $('#map-prefecture').onchange = populateCounties;
   $('#map-county').onchange = () => {
+    planSource = 'selection';
     selected = counties.find(p => p.id === $('#map-county').value) || null;
     $('#map-add-stop').disabled = !selected;
     drawCounties(); if (selected) { const boundary=geometry?.counties.find(c=>c.adcode===selected.adcode); if(boundary)setView(core.fitBounds(boundary.bounds));else fit([selected]); }
@@ -360,7 +366,7 @@
   $('#map-zoom-in').onclick = () => zoomTo(900 / targetView[2] * 125);
   $('#map-zoom-out').onclick = () => zoomTo(900 / targetView[2] * 80);
   $('#map-reset').onclick = () => { $('#map-prefecture').value=''; populateCounties(); setView([0, 0, 900, 680]); };
-  $('#map-fit').onclick = () => fit(activeChat?.mapRoute?.points || []);
+  $('#map-fit').onclick = () => { planSource = 'route'; fit(activeChat?.mapRoute?.points || []); };
   $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); };
   svg.addEventListener('wheel',event=>{
     event.preventDefault();
