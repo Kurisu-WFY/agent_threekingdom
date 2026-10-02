@@ -8,6 +8,7 @@
   let planSource = 'selection';
   let view = [0, 0, 900, 680];
   let loaded = false, geometry = null, cityPlaces = [], labels = [], boundaryNodes = [];
+  const labelAreas = new Map();
   let targetView = [...view], frame = 0, animateView = false;
   const schedule = window.requestAnimationFrame?.bind(window) || (fn => setTimeout(() => fn(Date.now()), 16));
   const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -31,14 +32,14 @@
     $('#city-points').setAttribute('visibility', detailed ? 'hidden' : 'visible');
     $('#city-points').setAttribute('display',detailed?'none':'inline');
     const labelMargin=20/scale; // 20 屏幕像素转换为当前地图单位，与碰撞布局的像素字号一致。
-    labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-labelMargin&&l.x<=extent[2]+labelMargin&&l.y>=extent[1]-labelMargin&&l.y<=extent[3]+labelMargin;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
+    labels.filter(l=>l.point).forEach(l=>{const b=l.bounds;const visible=b?b[0]<=extent[2]&&b[2]>=extent[0]&&b[1]<=extent[3]&&b[3]>=extent[1]:l.x>=extent[0]-labelMargin&&l.x<=extent[2]+labelMargin&&l.y>=extent[1]-labelMargin&&l.y<=extent[3]+labelMargin;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
     const storyLabels = window.StoryMap?.getLabels() || [];
     const candidates = [...storyLabels, ...labels.filter(l => detailed ? !l.city : l.city)].sort((a,b) => (b.story?200:b.selected?100: b.capital?90:b.city?50:0)-(a.story?200:a.selected?100:a.capital?90:a.city?50:0));
     const positions = new Map(core.labelLayout(candidates, view, rect.width, rect.height).map(l => [l.id,l]));
     [...labels, ...storyLabels].forEach(l => {
       const pos = positions.get(l.id);
       if(Boolean(pos)!==l.visible){l.node.setAttribute('visibility',pos?'visible':'hidden');l.visible=Boolean(pos);}
-      if(pos){l.node.setAttribute('dx',pos.dx/scale);l.node.setAttribute('dy',pos.dy/scale);}
+      if(pos){l.node.setAttribute('dx',pos.dx/scale);l.node.setAttribute('dy',pos.dy/scale);if(l.area)l.node.style.setProperty('font-size',pos.fontSize/scale+'px');}
     });
     window.StoryMap?.onViewport(view, rect);
   }
@@ -112,14 +113,17 @@
     labels = labels.filter(l=>l.city);
     boundaryNodes.filter(b=>b.county).forEach(b=>b.node.classList.toggle('county-area-selected',String(b.adcode)===String(selected?.adcode)));
     for (const place of counties.filter(p => !parent || p.parent === parent)) {
-      const [x, y] = core.project(place.center);
+      const boundary=geometry?.counties.find(c=>String(c.adcode)===String(place.adcode));
+      if(!boundary)continue;
+      if(!labelAreas.has(place.adcode))labelAreas.set(place.adcode,core.polygonLabel(boundary.d,boundary.bounds));
+      const area=labelAreas.get(place.adcode);if(!area)continue;
+      const {x,y}=area;
       const point = element('g', { 'data-county-code':place.adcode, class: 'county-point', tabindex: '0', role: 'button', 'aria-label': `${place.name}，${place.parent}` });
-      point.append(element('circle', { cx: x, cy: y, r: 5, fill: 'transparent', stroke: 'none' }));
-      point.append(element('circle', { cx: x, cy: y, r: selected === place ? 3.5 : 2, class: selected === place ? 'county-selected' : 'county-dot' }));
+      point.append(element('path', { d:boundary.d, class:'county-hit-area', 'fill-rule':'evenodd' }));
       point.append(element('title', {}, `${place.name} · ${place.parent}`));
-      const node=element('text',{x,y,class:'county-label'},place.name);
+      const node=element('text',{x,y,class:'county-label', 'text-anchor':'middle', 'dominant-baseline':'central'},place.name);
       point.append(node);
-      labels.push({id:place.id,x,y,name:place.name,size:textSize('county',11),node,point,selected:selected===place});
+      labels.push({id:place.id,x,y,name:place.name,size:textSize('county',11),area,bounds:boundary.bounds,node,point,selected:selected===place});
       point.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectPlace(place); } };
       group.append(point);
     }
@@ -140,8 +144,8 @@
     if (!loaded) return;
     const storyNode = event.target.closest('[data-story-chapter]');
     if (storyNode) { window.StoryMap?.selectChapter(Number(storyNode.getAttribute('data-story-chapter'))); return; }
-    // 文字可能嵌在县区按钮内；先拦截标签，再判断区域及空白处的附近拾取。
-    if (['text','tspan'].includes(String(event.target.localName || event.target.tagName).toLowerCase())) return;
+    // 市州/故事文字保持原行为；县级文字属于自身地块，可直接拾取。
+    if (['text','tspan'].includes(String(event.target.localName || event.target.tagName).toLowerCase())&&!event.target.closest('[data-county-code]')) return;
     if (!countyDetailed()) { $('#map-place-picker').hidden = true; return; }
     const code=event.target.closest('[data-county-code]')?.getAttribute('data-county-code');
     if(code){const county=counties.find(c=>String(c.adcode)===code);if(county)return selectPlace(county);}

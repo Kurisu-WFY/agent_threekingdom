@@ -74,6 +74,33 @@
     const width = Math.min(900,Math.max(110,(right-left)*1.3,(bottom-top)*1.3*aspect));
     return [(left+right-width)/2,(top+bottom-width/aspect)/2,width];
   }
+  // 底图只有 M/L/Z 直线环。奇偶填充兼容孔洞与多片地块；以离边界最远的内点放标签。
+  function polygonLabel(path, bounds) {
+    const rings=path.split('M').filter(Boolean).map(r=>r.replace(/Z$/,'').split('L').map(p=>p.split(',').map(Number)));
+    function distance(x,y) {
+      let inside=false,min=Infinity;
+      for(const ring of rings)for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+        const a=ring[j],b=ring[i];
+        if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])inside=!inside;
+        const dx=b[0]-a[0],dy=b[1]-a[1],length=dx*dx+dy*dy;
+        const t=length?Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/length)):0;
+        min=Math.min(min,(x-a[0]-t*dx)**2+(y-a[1]-t*dy)**2);
+      }
+      return (inside?1:-1)*Math.sqrt(min);
+    }
+    const [left,top,right,bottom]=bounds,step=Math.min(right-left,bottom-top);
+    if(!(step>0))return null;
+    function cell(x,y,h){const d=distance(x,y);return {x,y,h,d,max:d+h*Math.SQRT2};}
+    // 最大堆让搜索只细分仍可能优于当前内点的格子，结果在首轮渲染后缓存。
+    const queue=[];
+    function push(c){let i=queue.length;queue.push(c);while(i){const p=(i-1)>>1;if(queue[p].max>=c.max)break;queue[i]=queue[p];i=p;}queue[i]=c;}
+    function pop(){const result=queue[0],tail=queue.pop();if(queue.length){let i=0;while(i*2+1<queue.length){let c=i*2+1;if(c+1<queue.length&&queue[c+1].max>queue[c].max)c++;if(queue[c].max<=tail.max)break;queue[i]=queue[c];i=c;}queue[i]=tail;}return result;}
+    let best=cell((left+right)/2,(top+bottom)/2,0);
+    for(let x=left;x<right;x+=step)for(let y=top;y<bottom;y+=step)push(cell(x+step/2,y+step/2,step/2));
+    const precision=Math.max(.01,step/100);
+    while(queue.length){const c=pop();if(c.d>best.d)best=c;if(c.max-best.d<=precision)continue;const h=c.h/2;for(const dx of [-h,h])for(const dy of [-h,h])push(cell(c.x+dx,c.y+dy,h));}
+    return best.d>0?{x:best.x,y:best.y,clearance:best.d}:null;
+  }
   function labelLayout(items, view, width, height) {
     const scale = Math.min(width/view[2],height/view[3]);
     const ox=(width-view[2]*scale)/2,oy=(height-view[3]*scale)/2;
@@ -85,6 +112,16 @@
     }
     for(const item of items) {
       const x=(item.x-view[0])*scale+ox,y=(item.y-view[1])*scale+oy;
+      if(item.area){
+        // 把文字及描边包络完整放进内切圆，不进行地块外的侧向避让。
+        const size=Math.min(item.size,(item.area.clearance*scale-3)/Math.hypot(item.name.length/2,.6));
+        if(size<8)continue;
+        const halfW=item.name.length*size/2+2,halfH=size*.6+2;
+        const box=[x-halfW,y-halfH,x+halfW,y+halfH];
+        if(box[0]<0||box[1]<0||box[2]>width||box[3]>height)continue;
+        if(occupied.some(b=>box[0]<b[2]&&box[2]>b[0]&&box[1]<b[3]&&box[3]>b[1]))continue;
+        occupied.push(box);visible.push({id:item.id,dx:0,dy:0,box,fontSize:size});continue;
+      }
       const w=item.name.length*item.size;
       if(x<0||x>width||y<0||y>height) continue;
       const gap=8+(item.markerRadius||0);
@@ -102,7 +139,7 @@
     const extraX=(width/scale-view[2])/2,extraY=(height/scale-view[3])/2;
     return [view[0]-extraX,view[1]-extraY,view[0]+view[2]+extraX,view[1]+view[3]+extraY];
   }
-  const api = { visibleBounds, fitBounds, labelLayout, project, aliases, mentions, structured, resolveRoute, nearby };
+  const api = { polygonLabel, visibleBounds, fitBounds, labelLayout, project, aliases, mentions, structured, resolveRoute, nearby };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.MapRouteCore = api;
 })();

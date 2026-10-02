@@ -460,10 +460,10 @@ body.chat-open #route-map { height: 260px; }
 .picker-heading button { width: 32px; height: 32px; flex: none; border: 0; border-radius: 6px; background: var(--surface-2); }
 #map-picker-list { max-height: 110px; overflow-y: auto; overscroll-behavior: contain; }
 #map-picker-list button { display: block; width: 100%; min-height: 44px; text-align: left; margin: var(--space-1) 0; }
-.county-dot { fill: var(--muted); stroke:var(--surface); stroke-width: .6; }
-.county-selected { fill: var(--shu); stroke:var(--surface); stroke-width: 1; }
 .county-point:focus { outline: none; }
-.county-point:focus circle { stroke: var(--shu); stroke-width: 2; }
+.county-hit-area { fill:transparent; stroke:none; pointer-events:all; }
+.county-point:hover .county-hit-area { fill:color-mix(in srgb, var(--muted) 10%, transparent); }
+.county-point:focus-visible .county-hit-area { stroke:var(--shu); stroke-width:2; vector-effect:non-scaling-stroke; }
 .county-label { font-family:'Microsoft YaHei',sans-serif; fill: var(--ink-soft); paint-order: stroke; stroke: var(--surface); stroke-width: 2px; }
 .route-segment { fill: none; stroke: var(--shu); stroke-width: 2; stroke-dasharray: 5 3; }
 .route-marker { fill: var(--shu); stroke:var(--surface); stroke-width: 1.5; }
@@ -517,7 +517,6 @@ body.chat-open #route-map { height: 260px; }
 .city-dot { r:calc(3px * var(--map-unit, 1)); fill:var(--muted); stroke:var(--surface); stroke-width:1; vector-effect:non-scaling-stroke; }
 .city-dot.capital-dot { fill:var(--shu); r:calc(4px * var(--map-unit, 1)); }
 .county-label { stroke-width:calc(2px * var(--map-unit, 1)); }
-.county-dot,.county-selected { r:calc(2.5px * var(--map-unit, 1)); vector-effect:non-scaling-stroke; }
 .route-marker { r:calc(8px * var(--map-unit, 1)); vector-effect:non-scaling-stroke; }
 .route-number { dominant-baseline:middle; }
 .route-segment { vector-effect:non-scaling-stroke; stroke-width:2; }

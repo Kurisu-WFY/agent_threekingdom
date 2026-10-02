@@ -101,3 +101,26 @@ for(const label of core.labelLayout(markerLabels,[0,0,900,680],900,680)) {
  const box=label.box;assert.ok(!(box[0]<484&&box[2]>416&&box[1]<374&&box[3]>306));
 }
 console.log('PASS: chapter seals reserve label clearance without changing ordinary projection');
+
+// 地块标签必须在凹形、多片和带孔地块内；不能继续使用行政驻地点或侧向偏移。
+const concave=core.polygonLabel('M0,0L60,0L60,10L10,10L10,60L0,60Z',[0,0,60,60]);
+assert.ok((concave.x<10||concave.y<10)&&concave.clearance>0,'concave interior anchor');
+const holed=core.polygonLabel('M0,0L100,0L100,100L0,100ZM20,20L80,20L80,80L20,80Z',[0,0,100,100]);
+assert.ok(holed.x<20||holed.x>80||holed.y<20||holed.y>80,'anchor avoids the hole');
+const islands=core.polygonLabel('M0,0L5,0L5,5L0,5ZM20,0L60,0L60,40L20,40Z',[0,0,60,40]);
+assert.ok(islands.x>20&&islands.clearance>15,'label uses the larger usable component');
+const areaItem={id:'area',name:'地块名称',size:11,x:50,y:50,area:{clearance:30}};
+const areaLayout=core.labelLayout([areaItem],[0,0,100,100],100,100);
+assert.equal(areaLayout.length,1);assert.equal(areaLayout[0].dx,0);assert.equal(areaLayout[0].dy,0);
+assert.equal(core.labelLayout([{...areaItem,area:{clearance:5}}],[0,0,100,100],100,100).length,0,'omit unreadable small parcel text instead of moving outside');
+for(const county of geometry.counties){
+ const anchor=core.polygonLabel(county.d,county.bounds);
+ assert.ok(anchor.clearance>0,county.name+' has an interior anchor');
+ const view=[anchor.x-30,anchor.y-680/30,60,680/15];
+ for(const layout of core.labelLayout([{...areaItem,name:county.name,x:anchor.x,y:anchor.y,area:anchor}],view,1920,563)){
+  const scale=Math.min(1920/view[2],563/view[3]);
+  const diagonal=Math.hypot((layout.box[2]-layout.box[0])/2,(layout.box[3]-layout.box[1])/2);
+  assert.ok(diagonal<=anchor.clearance*scale+.001,county.name+' full label box stays within inscribed clearance');
+ }
+}
+console.log('PASS: concave/holed/multipart interior labels, 183 county anchors, in-parcel text boxes or omission');
