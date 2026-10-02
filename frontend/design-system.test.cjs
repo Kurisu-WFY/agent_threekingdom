@@ -83,3 +83,7 @@ assert.ok(fs.readFileSync(__dirname+'/stories.js','utf8').includes("action('带�
 assert.ok(fs.readFileSync(__dirname+'/chenshou-guide.js','utf8').includes("'请陈寿解释区别'"),'guide comparison uses the shared question-action label');
 assert.ok(/\.content-footer\s*\{\s*padding:0 var\(--space-4\)/.test(css),'footer uses measured compact height');
 assert.ok(/\.image-credits summary\s*\{[^}]*min-height:var\(--target-size\)/.test(css),'credit disclosure keeps a 44px target');
+const outlineRules=[...css.matchAll(/\.city-outline(?:\.boundary-selected)?\s*\{([^}]*)\}/g)];
+assert.equal(outlineRules.length,2,'ordinary and selected outline each have one rule');
+const outlineWidths=outlineRules.map(rule=>Number(rule[1].match(/stroke-width:\s*([\d.]+)/)?.[1]));
+assert.ok(outlineWidths[0]>=2.5&&outlineWidths[1]>outlineWidths[0],'F3 ordinary outline is thick and selected outline is stronger');
