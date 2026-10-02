@@ -1,0 +1,583 @@
+{
+  "viewport": [
+    1920,
+    1080
+  ],
+  "counties": [
+    {
+      "adcode": "510104",
+      "name": "锦江区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        505.597,
+        296.446,
+        512.298,
+        305.012
+      ],
+      "bbox": [
+        505.59698486328125,
+        296.4460144042969,
+        512.2979736328125,
+        305.0119934082031
+      ],
+      "bboxMaxError": 0.00002636718750181899,
+      "labelVisible": true,
+      "labelBox": [
+        507.71881103515625,
+        301.0637512207031,
+        2.744569778442383,
+        1.1301169395446777
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "0.887949px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510104",
+      "viewBox": "478.9475 278.0623333333334 60 45.333333333333336",
+      "zoom": "1500",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510104.jpg"
+    },
+    {
+      "adcode": "510105",
+      "name": "青羊区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        495.774,
+        292.724,
+        507.377,
+        298.046
+      ],
+      "bbox": [
+        495.77398681640625,
+        292.7239990234375,
+        507.37701416015625,
+        298.0459899902344
+      ],
+      "bboxMaxError": 0.000014160156240450306,
+      "labelVisible": true,
+      "labelBox": [
+        497.60198974609375,
+        294.65362548828125,
+        2.6907546520233154,
+        1.1301169395446777
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "0.887949px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510105",
+      "viewBox": "471.57550000000003 272.71833333333336 60 45.333333333333336",
+      "zoom": "1500",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510105.jpg"
+    },
+    {
+      "adcode": "510106",
+      "name": "金牛区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        498.693,
+        286.983,
+        510.377,
+        296.933
+      ],
+      "bbox": [
+        498.6929931640625,
+        286.9830017089844,
+        510.37701416015625,
+        296.9330139160156
+      ],
+      "bboxMaxError": 0.000014160156240450306,
+      "labelVisible": true,
+      "labelBox": [
+        503.0984802246094,
+        293.5306396484375,
+        2.744569778442383,
+        1.1301169395446777
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "0.887949px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510106",
+      "viewBox": "474.53499999999997 269.29133333333334 60 45.333333333333336",
+      "zoom": "1500",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510106.jpg"
+    },
+    {
+      "adcode": "510107",
+      "name": "武侯区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        498.991,
+        296.866,
+        507.653,
+        306.165
+      ],
+      "bbox": [
+        498.9909973144531,
+        296.8659973144531,
+        507.65301513671875,
+        306.1650085449219
+      ],
+      "bboxMaxError": 0.000015136718729991117,
+      "labelVisible": true,
+      "labelBox": [
+        502.9713134765625,
+        299.7183532714844,
+        2.6907546520233154,
+        1.1301169395446777
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "0.887949px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510107",
+      "viewBox": "473.322 278.84883333333335 60 45.333333333333336",
+      "zoom": "1500",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510107.jpg"
+    },
+    {
+      "adcode": "510108",
+      "name": "成华区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        506.3,
+        290.957,
+        516.175,
+        300.11
+      ],
+      "bbox": [
+        506.29998779296875,
+        290.9570007324219,
+        516.1749877929688,
+        300.1099853515625
+      ],
+      "bboxMaxError": 0.00001464843751364242,
+      "labelVisible": true,
+      "labelBox": [
+        508.66839599609375,
+        293.8600769042969,
+        2.744569778442383,
+        1.1301169395446777
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "0.887949px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510108",
+      "viewBox": "481.23749999999995 272.8668333333334 60 45.333333333333336",
+      "zoom": "1500",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510108.jpg"
+    },
+    {
+      "adcode": "510112",
+      "name": "龙泉驿区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        510.42,
+        292.845,
+        529.265,
+        310.727
+      ],
+      "bbox": [
+        510.4200134277344,
+        292.8450012207031,
+        529.2650146484375,
+        310.72698974609375
+      ],
+      "bboxMaxError": 0.00001464843751364242,
+      "labelVisible": true,
+      "labelBox": [
+        515.1000366210938,
+        300.8199462890625,
+        6.607205390930176,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510112",
+      "viewBox": "464.8425 260.23044444444446 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510112.jpg"
+    },
+    {
+      "adcode": "510113",
+      "name": "青白江区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        511.668,
+        279.607,
+        531.637,
+        297.269
+      ],
+      "bbox": [
+        511.6679992675781,
+        279.60699462890625,
+        531.6370239257812,
+        297.2690124511719
+      ],
+      "bboxMaxError": 0.00002392578130638867,
+      "labelVisible": true,
+      "labelBox": [
+        518.2171020507812,
+        286.7417907714844,
+        5.529642105102539,
+        1.8745594024658203
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.38311px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510113",
+      "viewBox": "466.6524999999999 246.88244444444445 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510113.jpg"
+    },
+    {
+      "adcode": "510114",
+      "name": "新都区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        496.186,
+        276.024,
+        521.649,
+        295.858
+      ],
+      "bbox": [
+        496.1860046386719,
+        276.02398681640625,
+        521.6489868164062,
+        295.8580017089844
+      ],
+      "bboxMaxError": 0.000013183593750909495,
+      "labelVisible": true,
+      "labelBox": [
+        500.6191711425781,
+        280.7213439941406,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510114",
+      "viewBox": "453.9175 244.3854444444445 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510114.jpg"
+    },
+    {
+      "adcode": "510115",
+      "name": "温江区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        483.265,
+        281.612,
+        498.649,
+        300.323
+      ],
+      "bbox": [
+        483.2650146484375,
+        281.61199951171875,
+        498.64898681640625,
+        300.322998046875
+      ],
+      "bboxMaxError": 0.00001464843751364242,
+      "labelVisible": true,
+      "labelBox": [
+        488.837890625,
+        293.2558288574219,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510115",
+      "viewBox": "435.957 249.41194444444443 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510115.jpg"
+    },
+    {
+      "adcode": "510116",
+      "name": "双流区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        489.543,
+        296.77,
+        518.146,
+        327.133
+      ],
+      "bbox": [
+        489.5429992675781,
+        296.7699890136719,
+        518.14599609375,
+        327.13299560546875
+      ],
+      "bboxMaxError": 0.000010986328106810106,
+      "labelVisible": true,
+      "labelBox": [
+        503.8745422363281,
+        313.4992370605469,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510116",
+      "viewBox": "448.8445 270.39594444444447 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510116.jpg"
+    },
+    {
+      "adcode": "510117",
+      "name": "郫都区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        484.949,
+        276.368,
+        504.914,
+        293.029
+      ],
+      "bbox": [
+        484.9490051269531,
+        276.3680114746094,
+        504.91400146484375,
+        293.02899169921875
+      ],
+      "bboxMaxError": 0.000011474609380002221,
+      "labelVisible": true,
+      "labelBox": [
+        490.6431884765625,
+        282.5561828613281,
+        4.882178783416748,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510117",
+      "viewBox": "439.9315 243.14294444444442 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510117.jpg"
+    },
+    {
+      "adcode": "510118",
+      "name": "新津区",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        484.296,
+        306.411,
+        498.064,
+        320.143
+      ],
+      "bbox": [
+        484.2959899902344,
+        306.4110107421875,
+        498.0639953613281,
+        320.14300537109375
+      ],
+      "bboxMaxError": 0.000010742187498635758,
+      "labelVisible": true,
+      "labelBox": [
+        488.8368225097656,
+        312.4556579589844,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510118",
+      "viewBox": "436.18 271.72144444444444 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510118.jpg"
+    },
+    {
+      "adcode": "510121",
+      "name": "金堂县",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        523.046,
+        277.108,
+        555.567,
+        309.342
+      ],
+      "bbox": [
+        523.0460205078125,
+        277.1080017089844,
+        555.5670166015625,
+        309.3420104980469
+      ],
+      "bboxMaxError": 0.000020507812450887286,
+      "labelVisible": true,
+      "labelBox": [
+        535.4900512695312,
+        290.3003845214844,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510121",
+      "viewBox": "484.3065 251.66944444444448 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510121.jpg"
+    },
+    {
+      "adcode": "510129",
+      "name": "大邑县",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        441.573,
+        286.5,
+        487.889,
+        313.294
+      ],
+      "bbox": [
+        441.572998046875,
+        286.5,
+        487.8890075683594,
+        313.29400634765625
+      ],
+      "bboxMaxError": 0.000007568359364995558,
+      "labelVisible": true,
+      "labelBox": [
+        454.41888427734375,
+        298.54705810546875,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510129",
+      "viewBox": "409.731 258.34144444444445 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510129.jpg"
+    },
+    {
+      "adcode": "510131",
+      "name": "蒲江县",
+      "pathMatchesGeometry": true,
+      "nonempty": true,
+      "bounds": [
+        460.516,
+        319.405,
+        483.587,
+        336.305
+      ],
+      "bbox": [
+        460.5159912109375,
+        319.4049987792969,
+        483.5870056152344,
+        336.30499267578125
+      ],
+      "bboxMaxError": 0.000008789062519554136,
+      "labelVisible": true,
+      "labelBox": [
+        467.5484924316406,
+        325.1686706542969,
+        4.980839729309082,
+        2.0718815326690674
+      ],
+      "labelBox49SamplesInside": true,
+      "fontSize": "1.62791px",
+      "countyDotCount": 0,
+      "cityHidden": true,
+      "selected": "county-510131",
+      "viewBox": "417.05150000000003 286.2994444444445 110 83.11111111111111",
+      "zoom": "818",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "screenshot": "final-county-510131.jpg"
+    }
+  ],
+  "states": [],
+  "limits": [
+    "Native/physical two-finger touch not tested; controlled PointerEvents and Node regression only.",
+    "Administrative source geometry accepted from DSH; rendering reviewed, legal/current boundary accuracy not independently re-surveyed."
+  ]
+}

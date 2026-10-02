@@ -1,0 +1,120 @@
+﻿第五批前端验收命令输出 · 2026-10-02
+
+=== JS 语法检查 (node --check) ===
+OK amap-map.js
+OK amap-planner.js
+OK answer-format.js
+OK app.js
+OK character-chat.js
+OK chat-transport.js
+OK chenshou-guide.js
+OK cities.js
+OK cultural-node.js
+OK journal.js
+OK landing.js
+OK map-route-core.js
+OK n10-n17.browser-test.js
+OK n8-n9.browser-test.js
+OK outing-core.js
+OK outing.js
+OK stories.js
+OK story-map.js
+OK story-progress.js
+OK travel-api.js
+OK travel-map.js
+OK travel-modules.js
+
+=== 前端回归测试 ===
+--- answer-format.test.cjs ---
+PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status
+--- app.test.cjs ---
+PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops
+PASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery
+PASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery
+PASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover
+PASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation
+PASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery
+--- character-chat.test.cjs ---
+PASS: persona/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo
+--- chat-transport.test.cjs ---
+PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure
+--- chenshou-guide.test.cjs ---
+PASS: scholar SVG/four states, default collapsed, honest chapter handoff, completion/undo, context/mode, compression snapshot, drafts/retry/session isolation, three person themes and stale note removal
+--- cultural-node.test.cjs ---
+PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building
+--- design-system.test.cjs ---
+PASS: original token semantics, complete scales, no raw component colors, text AA min=4.91, controls/focus >=3, reduced motion and touch target contract
+--- itinerary-agent-core.test.cjs ---
+PASS: one activity request form, retired duplicate scripts, road lookup retained
+--- journal.test.cjs ---
+PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage
+--- landing.test.cjs ---
+PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls
+PASS: story detail uses the same request/pending-draft bridge
+--- map-route.test.cjs ---
+PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map
+PASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels
+PASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation
+PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1500%
+PASS: wide/tall visible bounds and shared city/county geometry
+PASS: shared internal county edges removed from city outline
+PASS: chapter seals reserve label clearance without changing ordinary projection
+PASS: concave/holed/multipart interior labels, 183 county anchors, in-parcel text boxes or omission
+--- navigation.test.cjs ---
+PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion
+PASS: journal label, aria-pressed, no document scrolling and map preservation
+--- outing-core.test.cjs ---
+PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection
+--- stories.test.cjs ---
+PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure
+--- story-map.test.cjs ---
+PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation
+--- story-progress.test.cjs ---
+PASS: local persistence, story isolation, modes, partial completion, undo, selection validation, changed chapters, corrupt/blocked storage
+--- travel-api.test.cjs ---
+PASS: disabled no-network mode, URL encoding, request body, timeout signal, empty/error/invalid responses
+--- travel-map.test.cjs ---
+PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out
+PASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication
+PASS: general story questions preserve route/view/zoom; explicit destinations still map
+PASS: two-pointer pinch increases zoom
+PASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels
+--- travel-modules.test.cjs ---
+PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels
+
+=== 成都 20 区县计算复核 (verify-chengdu.cjs) ===
+成都区县数: 20 / 期望 20
+缺失: 无
+多余: 无
+全部有效(存在/边界/内点>0/无曲线/父级=成都市): true
+510104 锦江区  present=true rings=1 dlen=565 curve=false clearance=1.856 fit=within
+510105 青羊区  present=true rings=1 dlen=632 curve=false clearance=1.748 fit=within
+510106 金牛区  present=true rings=2 dlen=1183 curve=false clearance=1.782 fit=within
+510107 武侯区  present=true rings=1 dlen=744 curve=false clearance=2.559 fit=within
+510108 成华区  present=true rings=1 dlen=704 curve=false clearance=2.418 fit=within
+510112 龙泉驿区  present=true rings=1 dlen=1231 curve=false clearance=6.115 fit=within
+510113 青白江区  present=true rings=1 dlen=1391 curve=false clearance=3.332 fit=within
+510114 新都区  present=true rings=1 dlen=1689 curve=false clearance=4.161 fit=within
+510115 温江区  present=true rings=1 dlen=692 curve=false clearance=3.889 fit=within
+510116 双流区  present=true rings=2 dlen=1985 curve=false clearance=8.355 fit=within
+510117 郫都区  present=true rings=2 dlen=1293 curve=false clearance=5.106 fit=within
+510118 新津区  present=true rings=1 dlen=680 curve=false clearance=5.472 fit=within
+510121 金堂县  present=true rings=1 dlen=2843 curve=false clearance=6.893 fit=within
+510129 大邑县  present=true rings=1 dlen=1916 curve=false clearance=6.489 fit=within
+510131 蒲江县  present=true rings=2 dlen=1778 curve=false clearance=5.854 fit=within
+510181 都江堰市  present=true rings=1 dlen=1446 curve=false clearance=7.152 fit=within
+510182 彭州市  present=true rings=2 dlen=2328 curve=false clearance=7.794 fit=within
+510183 邛崃市  present=true rings=1 dlen=2219 curve=false clearance=7.928 fit=within
+510184 崇州市  present=true rings=1 dlen=1579 curve=false clearance=6.162 fit=within
+510185 简阳市  present=true rings=2 dlen=3324 curve=false clearance=11.084 fit=within
+
+=== /health ===
+{"status":"ok","chat":{"configured":true,"mode":"model_configured","warning":"","connection_verified":false},"vector_backend":"local","embedding_backend":"bge","embedding_dimension":1024,"milvus_collection":"san_guo_culture_chunks","redis":{"enabled":true,"available":false,"url":"redis://localhost:6379/0","note":"Redis is optional for local demo. Use it for sessions, rate limits, and external MCP result cache in deployment."}}
+
+=== SHA256 本地 vs 8002 (Node raw bytes) ===
+MATCH index.html
+MATCH styles.css
+MATCH map-route-core.js
+MATCH travel-map.js
+MATCH travel-map.test.cjs
+MATCH map-route.test.cjs
