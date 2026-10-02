@@ -1,0 +1,63 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/探索志
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志" [pressed]
+    - paragraph: 我的阅读与旅行记录
+    - heading "我的三国探索志" [level=1]
+    - status: 探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。 换设备不会同步；不是账号档案。问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。
+    - navigation "探索志书页":
+      - button "卷一 · 山河足迹"
+      - button "卷二 · 人物与疑问"
+      - button "卷三 · 还没读完的故事" [pressed]
+    - article "探索志正文" [active]:
+      - paragraph: 卷三 · 还没读完的故事
+      - heading "待探索的故事线" [level=2]
+      - heading "从南充少年到三国史家" [level=3]
+      - paragraph: 章节待补充 · 尚不能计算完成进度
+      - generic "已完成 0 / 0 幕"
+      - button "继续阅读"
+      - heading "镇守阆中·寻迹张飞" [level=3]
+      - paragraph: 章节待补充 · 尚不能计算完成进度
+      - generic "已完成 0 / 0 幕"
+      - button "继续阅读"
+      - heading "蜀汉北境·蜀道寻踪" [level=3]
+      - paragraph: 第 2 / 3 幕 · 已寻迹 0 / 3 幕
+      - generic "已完成 0 / 3 幕":
+        - generic: 1 · 待探索
+        - generic: 2 · 待探索
+        - generic: 3 · 待探索
+      - button "继续阅读"
+      - heading "从史书到现场" [level=3]
+      - paragraph: 章节待补充 · 尚不能计算完成进度
+      - generic "已完成 0 / 0 幕"
+      - button "继续阅读"
+      - heading "正史里的三国" [level=3]
+      - paragraph: 章节待补充 · 尚不能计算完成进度
+      - generic "已完成 0 / 0 幕"
+      - button "继续阅读"
+      - paragraph: 下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。
+    - button "← 前一页"
+    - generic: 第 3 / 3 页
+    - button "后一页 →" [disabled]
+    - region "下一条故事线推荐":
+      - heading "下一条故事线推荐" [level=2]
+      - heading "从南充少年到三国史家" [level=3]
+      - paragraph: 你在本地问过的问题或已完成的章节提到了“陈寿、史书编纂”，可以接着看看这个主题。 这条线仍是主题模板，章节与史料待补充。
+      - button "看看下一条故事线"
+    - text: ＋ − − ＋
+    - generic: AI 文化向导 · 动态信息请核验
+    - generic "影像来源"
+- button "打开对话，可拖动调整位置":
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行

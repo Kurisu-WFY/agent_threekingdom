@@ -1,0 +1,75 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/探索志
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志" [pressed]
+    - paragraph: 我的阅读与旅行记录
+    - heading "我的三国探索志" [level=1]
+    - status: 探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。 换设备不会同步；不是账号档案。问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。
+    - navigation "探索志书页":
+      - button "卷一 · 山河足迹" [pressed]
+      - button "卷二 · 人物与疑问"
+      - button "卷三 · 还没读完的故事"
+    - article "探索志正文":
+      - paragraph: 卷一 · 山河足迹
+      - heading "完成过的故事线" [level=2]
+      - paragraph: 还没有整条读完的故事线，未完成的章节也会保留。
+      - heading "正在读的故事" [level=2]
+      - heading "蜀汉北境·蜀道寻踪" [level=3]
+      - paragraph: 第 2 / 3 幕 · 已寻迹 0 / 3 幕
+      - generic "已完成 0 / 3 幕":
+        - generic: 1 · 待探索
+        - generic: 2 · 待探索
+        - generic: 3 · 待探索
+      - button "继续阅读"
+      - heading "地图足迹与已探索节点" [level=2]
+      - paragraph: 仅来自你标为“已寻迹”的章节；县级驻地是位置示意，缺坐标不绘制精确点。
+      - paragraph: 尚无已探索的建筑、遗址或古道。完成章节后，足迹会写在这里。
+    - button "← 前一页" [disabled]
+    - generic: 第 1 / 3 页
+    - button "后一页 →"
+    - region "下一条故事线推荐":
+      - heading "下一条故事线推荐" [level=2]
+      - heading "从南充少年到三国史家" [level=3]
+      - paragraph: 你在本地问过的问题或已完成的章节提到了“陈寿、史书编纂”，可以接着看看这个主题。 这条线仍是主题模板，章节与史料待补充。
+      - button "看看下一条故事线"
+    - text: ＋ − − ＋
+    - generic: AI 文化向导 · 动态信息请核验
+    - generic "影像来源"
+- button "关闭对话" [expanded]:
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行
+- complementary "对话面板":
+  - navigation "历史对话":
+    - button "新建对话": ＋ 新对话
+    - button "新对话" [pressed]
+    - button "重命名对话：新对话": 改名
+  - strong: 万卷史官 · 陈寿
+  - generic "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+  - button "关闭对话": ×
+  - log:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph: 我是万卷史官·陈寿，这里的 AI 文化向导。你可以选一条故事线慢慢读，也可以先问人物，或告诉我有多少时间。讲到史实时，有依据才说；没依据的地方会留白。
+  - generic: 输入消息
+  - textbox "输入消息" [active]:
+    - /placeholder: 问陈寿：这一章讲什么？我只有半天…
+  - button "发送消息" [disabled]: ↑
+  - generic "路线背景与讲解设置"
+  - option "陈寿" [selected]
+  - option "诸葛亮"
+  - option "张飞"
+  - option "大众体验版"
+  - option "亲子故事版"
+  - option "学术探索版" [selected]

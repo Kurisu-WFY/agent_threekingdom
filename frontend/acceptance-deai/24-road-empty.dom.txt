@@ -1,0 +1,65 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/活动计划 · 出发核验
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - region "出发核验":
+      - heading "出发核验" [active] [level=1]
+      - paragraph: 需要查道路路线时，可以在这里查询。活动需求和结果都在“活动计划”里。
+      - generic: 来自本次活动计划 · 地点文字已带入，请搜索并确认候选
+      - button "活动需求与结果"
+      - button "天气与空气质量"
+      - generic "道路查询工具"
+      - region "路线规划":
+        - heading "路线规划" [level=2]
+        - paragraph: 输入地名，确认具体地点后查询高德公交、驾车或步行方案。
+        - text: 搜索城市
+        - combobox "搜索城市"
+        - text: 出发地点
+        - textbox "出发地点":
+          - /placeholder: 例如：西华师范大学北湖校区
+        - text: 目的地点
+        - textbox "目的地点":
+          - /placeholder: 例如：万卷楼
+        - button "搜索起终点"
+        - status: 本次计划的地点文字已带入。请搜索并确认具体起终点；候选地点尚未选择，坐标也未核验。
+        - generic "其他道路参考：城市中心或手动坐标"
+        - option "请选择已知位置" [selected]
+        - option "南充 · 城市中心"
+        - option "阆中 · 城市中心"
+        - option "广元 · 城市中心"
+        - option "成都 · 城市中心"
+        - option "绵阳 · 城市中心"
+        - option "德阳 · 城市中心"
+        - option "巴中 · 城市中心"
+        - option "达州 · 城市中心"
+        - option "手动 WGS84 坐标"
+        - option "请选择已知位置" [selected]
+        - option "南充 · 城市中心"
+        - option "阆中 · 城市中心"
+        - option "广元 · 城市中心"
+        - option "成都 · 城市中心"
+        - option "绵阳 · 城市中心"
+        - option "德阳 · 城市中心"
+        - option "巴中 · 城市中心"
+        - option "达州 · 城市中心"
+        - option "手动 WGS84 坐标"
+        - heading "原回答摘要" [level=3]
+        - paragraph: 从陈寿回答点击“查看出行方案”，可将原文带到这里。
+        - list
+    - text: ＋ − − ＋
+    - generic: AI 文化向导 · 动态信息请核验
+    - generic "影像来源"
+- button "打开对话，可拖动调整位置":
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行

@@ -1,0 +1,12 @@
+[
+  {
+    "file": "app",
+    "exit_code": 1,
+    "output": "PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops\nPASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery\nPASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery\nAssertionError [ERR_ASSERTION]: The input did not match the regular expression /重新请求/. Input:\n\n'寿 陈寿 服务暂时无法完成回答，请稍后重试。 错误详情 HTTP 422 重试，请陈寿再回答一次'\n\n    at D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.test.cjs:178:12 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: '寿 陈寿 服务暂时无法完成回答，请稍后重试。 错误详情 HTTP 422 重试，请陈寿再回答一次',\n  expected: /重新请求/,\n  operator: 'match',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "file": "landing",
+    "exit_code": 0,
+    "output": "PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls\nPASS: story detail uses the same request/pending-draft bridge\n"
+  }
+]

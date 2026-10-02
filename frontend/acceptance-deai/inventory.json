@@ -1,0 +1,3382 @@
+[
+  {
+    "file": "frontend/amap-map.js",
+    "sha256": "00c1ee4cb45153304b4bc0675139273754464cc7a3ba74d66b975891832baa05",
+    "lines": [
+      {
+        "line": 8,
+        "text": "      if(!response.ok) throw Error('地图配置读取失败');"
+      },
+      {
+        "line": 10,
+        "text": "      if(!config.enabled) throw Error('网页地图尚未配置，请联系管理员');"
+      },
+      {
+        "line": 14,
+        "text": "        const timer=setTimeout(()=>{script.remove();reject(Error('地图加载超时，请重试'));},20000);"
+      },
+      {
+        "line": 16,
+        "text": "        script.onerror=()=>{clearTimeout(timer);script.remove();reject(Error('地图加载失败，请检查网络'));};"
+      },
+      {
+        "line": 20,
+        "text": "      if(!window.AMap) throw Error('地图初始化失败');"
+      },
+      {
+        "line": 28,
+        "text": "    region.hidden=false;note.textContent='正在加载高德地图…';"
+      },
+      {
+        "line": 33,
+        "text": "      const overlays=points.map((p,i)=>new A.Marker({position:p,title:i?'终点':'起点',label:{content:i?'终点':'起点',direction:'top'}}));"
+      },
+      {
+        "line": 39,
+        "text": "      note.textContent=lines.length?'高德实际返回路段 · 可拖动、缩放；未返回的路段不补画。':'仅显示起终点：本方案未返回道路轨迹，不用直线代替路线。';"
+      },
+      {
+        "line": 40,
+        "text": "    }catch(error){if(current===generation)note.textContent=error.message+'。文字路线仍可查看。';}"
+      }
+    ]
+  },
+  {
+    "file": "frontend/amap-planner.js",
+    "sha256": "766793454a950f8d22b573e474fb78f38a70aa810a660166fa0824fd6e60bb47",
+    "lines": [
+      {
+        "line": 14,
+        "text": "    status('已带入本次计划的地点文字；请搜索后分别确认具体起终点，尚未选择候选或核验坐标。');"
+      },
+      {
+        "line": 16,
+        "text": "  $('amap-search-form').addEventListener('input', () => {clear(); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});"
+      },
+      {
+        "line": 17,
+        "text": "  $('amap-route-form').addEventListener('change', () => {clear(); status('条件已改变，请重新查询路线。');});"
+      },
+      {
+        "line": 21,
+        "text": "    button.disabled = true; $('amap-route-form').hidden = true; status('正在搜索高德地点…');"
+      },
+      {
+        "line": 28,
+        "text": "        if (r.status !== 'ok' || !r.data?.items?.length) throw Error(r.message || '没有匹配地点，请换关键词。');"
+      },
+      {
+        "line": 30,
+        "text": "        const placeholder = make('option', '请选择并确认具体地点'); placeholder.value=''; select.append(placeholder);"
+      },
+      {
+        "line": 33,
+        "text": "      $('amap-route-form').hidden=false; status('请核对校区、景区或入口，分别选择起终点。');"
+      },
+      {
+        "line": 34,
+        "text": "    } catch(error) {if(current===version) status(error.message || '地点搜索失败，请重试。');}"
+      },
+      {
+        "line": 38,
+        "text": "    clear(); const current=version, button=$('amap-route-form').querySelector('button'); button.disabled=true; status('正在查询高德路线…');"
+      },
+      {
+        "line": 42,
+        "text": "      if(r.status!=='ok' || !r.data?.alternatives?.length) throw Error(r.message || '当前没有可用路线。');"
+      },
+      {
+        "line": 47,
+        "text": "        const distance=Number.isFinite(p.distance_m)?`${(p.distance_m/1000).toFixed(1)}公里`:'距离未返回';"
+      },
+      {
+        "line": 48,
+        "text": "        const duration=Number.isFinite(p.duration_seconds)?`约${Math.ceil(p.duration_seconds/60)}分钟`:'时间未返回';"
+      },
+      {
+        "line": 49,
+        "text": "        details.append(make('summary', `方案${i+1} · ${distance} · ${duration}`));"
+      },
+      {
+        "line": 50,
+        "text": "        const show=make('button','在地图查看此方案');show.type='button';show.onclick=()=>window.AmapRouteMap?.draw(d,i);details.append(show);"
+      },
+      {
+        "line": 51,
+        "text": "        if(Number.isFinite(p.fare_yuan)) details.append(make('p', `预计公交费用：${p.fare_yuan}元／人，以实际票价为准。`));"
+      },
+      {
+        "line": 52,
+        "text": "        if(Number.isFinite(p.walking_distance_m)) details.append(make('p', `其中步行约${Math.round(p.walking_distance_m)}米。`));"
+      },
+      {
+        "line": 55,
+        "text": "      target.append(make('p', '来源：高德地图 · 查询时间：'+new Date(d.queried_at).toLocaleString('zh-CN')));"
+      },
+      {
+        "line": 57,
+        "text": "    } catch(error) {if(current===version) status(error.message || '路线查询失败，请重试。');}"
+      },
+      {
+        "line": 68,
+        "text": "      const open=make('button','加载智能体规划的路线地图');open.type='button';"
+      },
+      {
+        "line": 70,
+        "text": "      $('amap-planner').prepend(open);status('已接收智能体的起终点，点击加载后向高德重新核验路线。');"
+      },
+      {
+        "line": 72,
+        "text": "    }else status('路线链接参数无效，请手动搜索地点。');"
+      }
+    ]
+  },
+  {
+    "file": "frontend/answer-format.js",
+    "sha256": "4e03ea91ee733ef3a07a60bc4cc92a8a0bf0bcca9f4f767305ada42b958ccbec",
+    "lines": [
+      {
+        "line": 3,
+        "text": "  const labels={retrieve_culture_knowledge:'文化知识检索',answer_travel_question:'旅游问题解答',plan_cultural_route:'文化路线规划',list_scenic_spots:'景点查询',get_spot_ticket:'门票信息查询',estimate_hotel_budget:'住宿预算估算',search_hotel_poi_request:'住宿地点查询',plan_budget:'行程预算估算',get_travel_weather:'天气查询',lookup_travel_city:'城市位置查询',get_road_route:'道路路线查询',get_nanchong_travel_catalog:'南充出行资料查询',plan_nanchong_itinerary:'南充行程规划',WaitForMcpServers:'连接旅游工具'};"
+      },
+      {
+        "line": 4,
+        "text": "  labels.search_amap_places='高德地点搜索'; labels.get_amap_route='高德路线规划';"
+      },
+      {
+        "line": 6,
+        "text": "  const metric=/^(?:chunk(?:\\s*(?:数|id))?|召回率|召回覆盖率?|命中数|候选数|重排分数|rerank(?:\\s*最高分|_score)?|total_candidates|final_hits|coverage|passed|missing_entities)$/i;"
+      },
+      {
+        "line": 9,
+        "text": "      .split('\\n').filter(line=>!/^\\s*(?:#{1,6}\\s*|[-*]\\s*)?(?:召回率|召回覆盖率?|检索诊断|召回报告|检索统计|total_candidates|final_hits|coverage|rerank_score|chunk\\s*(?:数|id))\\s*[:：]/i.test(line.replace(/\\*\\*/g,'')))"
+      },
+      {
+        "line": 10,
+        "text": "      .filter(line=>!/^\\s*(?:[-*]\\s*)?(?:本次|此次|共|已)?(?:检索)?(?:命中|召回)\\s*\\d+\\s*(?:个|条)?\\s*(?:chunks?|片段)/i.test(line)).join('\\n')"
+      },
+      {
+        "line": 41,
+        "text": "        const wrapper=element('div');wrapper.className='agent-table-scroll';wrapper.setAttribute('tabindex','0');wrapper.setAttribute('role','region');wrapper.setAttribute('aria-label','回答数据表，可横向滚动');"
+      }
+    ]
+  },
+  {
+    "file": "frontend/app.js",
+    "sha256": "aaa1831d6f151500c9ebc3d50f3dff589ac2a14fee4144c36f4727b56120adeb",
+    "lines": [
+      {
+        "line": 10,
+        "text": "const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）"
+      },
+      {
+        "line": 11,
+        "text": "const WELCOME = '展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。';"
+      },
+      {
+        "line": 13,
+        "text": "  culture_qa: '文化问答',"
+      },
+      {
+        "line": 14,
+        "text": "  history_vs_romance: '正史 / 演义',"
+      },
+      {
+        "line": 15,
+        "text": "  route_planning: '路线规划',"
+      },
+      {
+        "line": 16,
+        "text": "  budget_ticket: '预算票价'"
+      },
+      {
+        "line": 19,
+        "text": "let chats = [{ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] }];"
+      },
+      {
+        "line": 51,
+        "text": "  submitButton.setAttribute('aria-label', chats[active].pending ? '正在生成回答' : '发送消息');"
+      },
+      {
+        "line": 70,
+        "text": "  if (/待核验|待接入|未找到可靠记载|暂无数据/.test(text)) span.setAttribute('data-trust-state','unverified');"
+      },
+      {
+        "line": 79,
+        "text": "  name.textContent = route.name + (route.duration_hours ? ' · ' + route.duration_hours + ' 小时' : '');"
+      },
+      {
+        "line": 81,
+        "text": "  const risk = document.createElement('p'); risk.textContent = '风险提示：' + (route.risk_note || '待核验'); card.append(risk);"
+      },
+      {
+        "line": 87,
+        "text": "      li.textContent = stop.name + ' · 推荐理由：' + (stop.reason || '待核验') + ' · 本次安排：' + (Number.isFinite(stop.stay_minutes) && stop.stay_minutes > 0 ? stop.stay_minutes + ' 分钟' : '时长含义待确认') + ' · 资料中的一般游览参考：' + (Number.isFinite(stop.recommended_duration_min) && stop.recommended_duration_min > 0 ? stop.recommended_duration_min + ' 分钟（仍需核验）' : '时长含义待确认') + ' · 开放时间：' + (stop.open_time || '待核验');"
+      },
+      {
+        "line": 95,
+        "text": "function trustNode(record, label = '回答') {"
+      },
+      {
+        "line": 99,
+        "text": "  const levels = {A:'权威资料',B:'较可靠资料',C:'文学/传说'};"
+      },
+      {
+        "line": 100,
+        "text": "  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'请以官方公告确认', stale:'请确认最新公告',forecast:'模型天气预报',model:'空气质量模型估计'};"
+      },
+      {
+        "line": 102,
+        "text": "  box.append(tag(label + ' · ' + (status || '待核验')));"
+      },
+      {
+        "line": 103,
+        "text": "  if (realtime) box.append(tag('模型预报、非现场实测；天气与空气信息需在出发前再核验。'));"
+      },
+      {
+        "line": 106,
+        "text": "  box.append(tag(validDate ? '更新时间 · ' + date : '更新时间 · 待核验'));"
+      },
+      {
+        "line": 118,
+        "text": "    const level = ['A','B','C'].includes(source.source_level) ? source.source_level : '待核验';"
+      },
+      {
+        "line": 119,
+        "text": "    line.append(link, tag(realtime ? '实时信息来源 · 需再核验' : '来源等级 · ' + level + (levels[level] ? '=' + levels[level] : '')));"
+      },
+      {
+        "line": 120,
+        "text": "    if (!safe) line.append(tag('来源链接待核验'));"
+      },
+      {
+        "line": 121,
+        "text": "    if (!realtime && level === 'C') line.append(tag('文学/传说不能支撑史实结论'));"
+      },
+      {
+        "line": 124,
+        "text": "  if (!count) box.append(tag('来源 · 待核验'));"
+      },
+      {
+        "line": 125,
+        "text": "  if (!accessible) box.append(tag(realtime ? '实时信息出处尚未核验，请查询最新预报。' : '回答提及的文献出处尚未核验，请勿作为已核验引文。'));"
+      },
+      {
+        "line": 132,
+        "text": "  const hotelOnly = /^(?:南充|阆中|广元)(?:经济型|舒适型|品质型)酒店预算：\\d+(?:\\.\\d+)? - \\d+(?:\\.\\d+)? CNY\\/晚\\/间。\\n说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。$/;"
+      },
+      {
+        "line": 134,
+        "text": "    ? '本次未取得可核对的门票费用，以下仅为住宿预算。请提供具体景区，以便继续查询门票。' : '';"
+      },
+      {
+        "line": 141,
+        "text": "  meta.setAttribute('aria-label','回答元信息，可横向滚动');"
+      },
+      {
+        "line": 143,
+        "text": "  if (typeof intent === 'string' && Object.hasOwn(INTENT_LABELS, intent)) meta.append(tag('意图 · ' + INTENT_LABELS[intent]));"
+      },
+      {
+        "line": 146,
+        "text": "    meta.append(tag(coverage > 0 ? '检索到相关资料，回答仍需核对出处' : '本次未检索到相关资料，回答仍需核对出处'));"
+      },
+      {
+        "line": 149,
+        "text": "  if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));"
+      },
+      {
+        "line": 152,
+        "text": "    meta.append(trustNode(route, '路线'));"
+      },
+      {
+        "line": 161,
+        "text": "    bubble.setAttribute('aria-label', '陈寿正在整理回答，请稍候');"
+      },
+      {
+        "line": 162,
+        "text": "    bubble.textContent = '陈寿正在整理回答，请稍候';"
+      },
+      {
+        "line": 179,
+        "text": "  else avatar.textContent = message.role === 'user' ? '你' : '寿';"
+      },
+      {
+        "line": 186,
+        "text": "  name.textContent = message.role === 'user' ? '你' : message.persona || '陈寿';"
+      },
+      {
+        "line": 192,
+        "text": "    const price = message.data.answer.match(/酒店预算：(\\d+(?:\\.\\d+)?) - (\\d+(?:\\.\\d+)?) CNY\\/晚\\/间/);"
+      },
+      {
+        "line": 193,
+        "text": "    body.append(tag('住宿价格仅供估算，请以预订平台当天报价为准。' + (price ? '上述住宿预算为 ' + price[1] + ' - ' + price[2] + ' 元/晚/间。' : '')));"
+      },
+      {
+        "line": 195,
+        "text": "  if (message.role === 'assistant' && !message.pending && !message.error && message.data?.intent?.intent === 'route_planning' && /适合展示文化解释、路线推荐和预算估算能力/.test(message.text || '')) body.append(tag('当前内容为文化游览参考；实际到达路线、开放时间与费用请在出发前逐项核验。'));"
+      },
+      {
+        "line": 201,
+        "text": "    if(message.errorDetail){const details=document.createElement('details');details.append(Object.assign(document.createElement('summary'),{textContent:'错误详情'}),Object.assign(document.createElement('p'),{textContent:message.errorDetail}));body.append(details);}"
+      },
+      {
+        "line": 204,
+        "text": "    retry.textContent = '重新请求 · 请陈寿再查一次';"
+      },
+      {
+        "line": 217,
+        "text": "    open.className = 'module-button'; open.textContent = '查看出行方案';"
+      },
+      {
+        "line": 256,
+        "text": "    remove.textContent = '删除';"
+      },
+      {
+        "line": 257,
+        "text": "    remove.title = '删除此对话';"
+      },
+      {
+        "line": 258,
+        "text": "    remove.setAttribute('aria-label', '删除对话：' + chat.title);"
+      },
+      {
+        "line": 261,
+        "text": "    rename.type = 'button'; rename.className = 'rename-chat'; rename.textContent = '改名';"
+      },
+      {
+        "line": 262,
+        "text": "    rename.setAttribute('aria-label', '重命名对话：' + chat.title);"
+      },
+      {
+        "line": 270,
+        "text": "      const label = document.createElement('label'); label.textContent = '对话名称（最多60字）';"
+      },
+      {
+        "line": 274,
+        "text": "      const save = document.createElement('button'); save.type = 'submit'; save.textContent = '保存';"
+      },
+      {
+        "line": 275,
+        "text": "      const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = '取消';"
+      },
+      {
+        "line": 281,
+        "text": "        if (!name || name.length > 60) { notice.textContent = '请填写1至60字的对话名称。'; field.focus(); return; }"
+      },
+      {
+        "line": 333,
+        "text": "  launcher.setAttribute('aria-label', open ? '关闭对话' : '打开对话，可拖动调整位置');"
+      },
+      {
+        "line": 406,
+        "text": "    chats.unshift({ title: '新对话', messages: [{ role: 'assistant', text: WELCOME }] });"
+      },
+      {
+        "line": 415,
+        "text": "function ask(text, history, mode = '大众', routePreferences, sessionId, onEvent, storyId) {"
+      },
+      {
+        "line": 433,
+        "text": "  if (!message) throw new Error('请先填写出行需求。');"
+      },
+      {
+        "line": 435,
+        "text": "    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text)}));"
+      },
+      {
+        "line": 436,
+        "text": "  const data = await ask(message, history, routePreferences?.explanation || window.CharacterChat?.backendMode() || '大众', routePreferences);"
+      },
+      {
+        "line": 437,
+        "text": "  if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');"
+      },
+      {
+        "line": 454,
+        "text": "    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text) }));"
+      },
+      {
+        "line": 466,
+        "text": "  const reply = { role: 'assistant', text: '', question: prepared?.question || requestText, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: visible };"
+      },
+      {
+        "line": 493,
+        "text": "    if (event.type === 'tool') reply.progress = '正在整理回答，请稍候…';"
+      },
+      {
+        "line": 498,
+        "text": "      if (bubble) bubble.textContent = '正在整理回答，请稍候…';"
+      },
+      {
+        "line": 504,
+        "text": "        throw new Error('服务未返回有效回答');"
+      },
+      {
+        "line": 519,
+        "text": "        ? '回答等待超时，平台任务可能仍在执行，请先检查女娲会话再决定是否重试。'"
+      },
+      {
+        "line": 521,
+        "text": "          ? '网络连接失败，尚未取得回答。请检查网络或服务连接后重试。'"
+      },
+      {
+        "line": 522,
+        "text": "          : /HTTP \\d+/.test(error.message || '') ? '服务暂时无法完成回答，请稍后重试。'"
+      },
+      {
+        "line": 523,
+        "text": "          : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');"
+      },
+      {
+        "line": 524,
+        "text": "      if (reply.streamText) reply.text += '\\n\\n以下为未完成的片段（不代表成功回答）：\\n' + reply.streamText;"
+      },
+      {
+        "line": 585,
+        "text": "  } catch { /* 将不可达状态显示在界面中 */ }"
+      },
+      {
+        "line": 587,
+        "text": "    node.textContent = connected ? (chatMode === 'nuwax' ? '女娲智能体已配置' : modelConfigured ? '模型已配置' : '检索演示模式') : '服务暂不可达';"
+      },
+      {
+        "line": 588,
+        "text": "    node.title = connected ? (chatWarning || '已配置不代表连接测试通过；请查看每条回答的来源与工具记录。') : '请检查后端是否启动。';"
+      },
+      {
+        "line": 641,
+        "text": "    const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气与空气质量', outing:'出发核验', journal:'探索志', node:'文化节点' };"
+      },
+      {
+        "line": 646,
+        "text": "    if (label) label.textContent = parent?`${labels[parent]||'文化探索'} · ${labels[view]}`:labels[view] || '文化探索';"
+      }
+    ]
+  },
+  {
+    "file": "frontend/character-chat.js",
+    "sha256": "70e2d06feda6512e56cd00c8f0f49976e7ca7e9fdfbf4ed86a8ee0337c2708cc",
+    "lines": [
+      {
+        "line": 6,
+        "text": "    '陈寿':{style:'史官视角：审慎、简洁，先核对材料再解释，不虚构见闻。',basis:'史料依据摘要待核验；可从《三国志》的编纂与记载入手，具体引文和出处待补充。',story:'chenshou'},"
+      },
+      {
+        "line": 7,
+        "text": "    '诸葛亮':{style:'筹划者视角：条理清楚，讨论选择与条件，不虚构本人动机和原话。',basis:'史料依据摘要待核验；可从《三国志》相关传记入手，具体引文和出处待补充。',story:'shudao-xunzong'},"
+      },
+      {
+        "line": 8,
+        "text": "    '张飞':{style:'守城者视角：直率、朴实，不以演义性格代替历史人物，不虚构亲历。',basis:'史料依据摘要待核验；可从《三国志》相关传记入手，具体引文和出处待补充。',story:'zhangfei'}"
+      },
+      {
+        "line": 10,
+        "text": "  function node(tag,cls,text){const n=document.createElement(tag);n.className=cls||'';if(text!==undefined)n.textContent=text;if(typeof text==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(text))n.setAttribute('data-trust-state','unverified');return n;}"
+      },
+      {
+        "line": 13,
+        "text": "    if(name==='陈寿'&&window.ChenshouGuide)return window.ChenshouGuide.portrait();"
+      },
+      {
+        "line": 14,
+        "text": "    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 80 90');svg.setAttribute('role','img');svg.setAttribute('aria-label',name+'人物视角插画，非历史肖像');svg.setAttribute('class','character-portrait');"
+      },
+      {
+        "line": 15,
+        "text": "    const paths=['M10 84Q10 56 40 55Q70 56 70 84Z','M26 27Q25 13 40 13Q56 13 54 29L52 46Q40 60 28 46Z',name==='陈寿'?'M25 22V10H55V22ZM19 62H40V83H19ZM23 66H36M23 72H36':name==='诸葛亮'?'M23 24L28 8L42 13L55 8L58 24ZM54 79L65 48M65 48Q40 43 50 29Q59 26 63 41Q65 18 73 30Q81 45 65 48':'M23 24Q40 2 57 24L54 29H26ZM27 44L30 58L40 65L50 58L53 44M18 64L40 78L62 64'];"
+      },
+      {
+        "line": 18,
+        "text": "  function sync(chat){window.ChenshouGuide?.refresh();$('#character-notice').textContent=chat.characterNotice||'';$('#character-mode').value=getMode();const name=profiles[chat.persona]?chat.persona:'陈寿';$('#character-select').value=name;const box=$('#character-card');box.replaceChildren(portrait(name),node('strong','',name+' · '+profiles[name].style),node('p','',profiles[name].basis));const story=window.SGT_STORIES?.find(s=>s.id===profiles[name].story);if(story)box.append(button('相关主题：'+story.title,()=>window.SGTStoryUI.openStory(story.id)));}"
+      },
+      {
+        "line": 20,
+        "text": "  const modeMap={'大众体验版':'大众','亲子故事版':'亲子','学术探索版':'学术'};"
+      },
+      {
+        "line": 21,
+        "text": "  function getMode(){const story=context().story;if(!story&&window.CulturalNode?.getContext())return window.CulturalNode.getMode();return (story&&window.StoryProgress?window.StoryProgress.get(story).mode:chats[active].readingMode)||'大众体验版';}"
+      },
+      {
+        "line": 22,
+        "text": "  function backendMode(){return modeMap[getMode()]||'大众';}"
+      },
+      {
+        "line": 25,
+        "text": "  const isComparison=text=>/历史上|正史|演义|真是这样|史实/.test(String(text).split('\\n')[0]);"
+      },
+      {
+        "line": 29,
+        "text": "    const discovered=!compare&&Object.keys(profiles).find(name=>new RegExp('(?:想|要|希望).{0,4}了解'+name).test(userQuestion));"
+      },
+      {
+        "line": 30,
+        "text": "    const discover=Boolean(discovered), theme=discover?window.SGT_STORIES?.find(s=>s.id===profiles[discovered].story):null, city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[discovered];"
+      },
+      {
+        "line": 31,
+        "text": "    if(discover){chat.characterNotice='已匹配“'+(theme?.title||'人物故事主题')+'”，地图预选'+city+'；当前人物与阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}"
+      },
+      {
+        "line": 32,
+        "text": "    const persona=profiles[chat.persona]?chat.persona:'陈寿',c=context();"
+      },
+      {
+        "line": 33,
+        "text": "    const snapshot='【人物视角：'+persona+'】'+profiles[persona].style+' 讲解模式：'+getMode()+'；当前故事线：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';"
+      },
+      {
+        "line": 35,
+        "text": "    const rules='这是AI人物解读，不是本人原话。按问题需要区分史料、推断与演义，不机械输出空栏目；史料有出处时提供实际来源，C级不能独立支撑史实。不编造引文或把演义当亲历。背景只作辅助，当前用户问题优先，不要复述内部背景。';"
+      },
+      {
+        "line": 36,
+        "text": "    return {persona,discovered,storyId:c.story?.id,mode:backendMode(),context:snapshot+rules+(window.ChenshouGuide?.requestContext(text)||'')+(discover?' 请介绍“'+(theme?.title||'人物故事主题')+'”主题，说明章节和史料仍待补充，并询问游客可用时间（半天/一天/两天）。':''),question:text,preserveMap:compare||discover,action:discover?'discover':compare?'compare':null};"
+      },
+      {
+        "line": 42,
+        "text": "    const inline=node('span'), places=(window.SGT_PLACES||[]).filter(item=>item&&typeof item.name==='string'&&item.name), names=[...new Set([...places.map(item=>item.name),'阆中','南充'])].sort((a,b)=>b.length-a.length);"
+      },
+      {
+        "line": 46,
+        "text": "      if(place){const link=button(hit.name,()=>{const view=window.getContentView?.()||'welcome';window.CulturalNode.openPlace(place.id,{returnTo:view==='node'?(window.CulturalNode.getContext?.()?.returnTo||'welcome'):view});});link.className='character-place-link';link.title='查看地点资料';inline.append(link);}"
+      },
+      {
+        "line": 63,
+        "text": "    if(window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));"
+      },
+      {
+        "line": 64,
+        "text": "    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];"
+      },
+      {
+        "line": 66,
+        "text": "      const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));"
+      },
+      {
+        "line": 67,
+        "text": "      const explicit=/(?:^|[；;，,。\\n])\\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\\s*|我(?:有|只有|可用|打算用|计划用)\\s*|只有\\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\\s]|$)/.test(question);"
+      },
+      {
+        "line": 69,
+        "text": "      box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})),button('切换到'+name+'视角',()=>selectPersona(name)));}"
+      },
+      {
+        "line": 70,
+        "text": "    if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 选择进入相关主题，不自动修改路线。'));"
+      },
+      {
+        "line": 71,
+        "text": "    if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));"
+      },
+      {
+        "line": 72,
+        "text": "    if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','压缩需由你选择保留章节；现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选择保留章节并重绘路线',()=>window.SGTStoryUI.openStory(message.storyId)));"
+      },
+      {
+        "line": 75,
+        "text": "  function selectPersona(name){if(!profiles[name])return;chats[active].persona=name;chats[active].characterNotice='已切换为'+name+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';sync(chats[active]);}"
+      },
+      {
+        "line": 76,
+        "text": "  $('#character-select').addEventListener('change',()=>{selectPersona($('#character-select').value);$('#character-notice').textContent='已切换为'+chats[active].persona+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';});"
+      }
+    ]
+  },
+  {
+    "file": "frontend/chat-transport.js",
+    "sha256": "6e18438e972f38b2f25802b785fdf1e5d4fd3a78c8be0f63ff51fda8d42cd2d3",
+    "lines": [
+      {
+        "line": 8,
+        "text": "    if (!response.ok) throw new Error('聊天服务请求失败（HTTP ' + response.status + '）。');"
+      },
+      {
+        "line": 9,
+        "text": "    if (!response.body) throw new Error('浏览器无法读取流式回答。');"
+      },
+      {
+        "line": 18,
+        "text": "      if (event.type === 'error') throw new Error(event.message || '智能体执行失败。');"
+      },
+      {
+        "line": 35,
+        "text": "        throw new Error('未收到完整回答，平台任务可能仍在执行，请先检查女娲会话。');"
+      }
+    ]
+  },
+  {
+    "file": "frontend/chenshou-guide.js",
+    "sha256": "c476a1e4210b01712e4e41a6b4248ec8c30e83a112721a60b23f873e30b381fa",
+    "lines": [
+      {
+        "line": 9,
+        "text": "    svg.setAttribute('viewBox','0 0 120 128');svg.setAttribute('class','historian-svg');svg.setAttribute('role','img');svg.setAttribute('aria-label','陈寿史官插画，持书卷与印章，非历史肖像');"
+      },
+      {
+        "line": 24,
+        "text": "    const stamp=shape('g',{class:'historian-stamp'});shape('rect',{x:84,y:92,width:31,height:28,rx:3,fill:'var(--shu)'},stamp);const label=shape('text',{x:99,y:109,'text-anchor':'middle',fill:'var(--surface)','font-size':9},stamp);label.textContent='已寻迹';"
+      },
+      {
+        "line": 30,
+        "text": "    const c=context(), done=completed(c), mode=window.CharacterChat?.getMode()||'大众体验版';"
+      },
+      {
+        "line": 31,
+        "text": "    const chapter=c.chapter?.name?`第 ${(c.index??0)+1} 幕 · ${c.chapter.name}`:'章节待关联';"
+      },
+      {
+        "line": 34,
+        "text": "    $('#guide-location').textContent=c.place?.name||c.story?.title||'尚未启程';"
+      },
+      {
+        "line": 35,
+        "text": "    $('#guide-context').textContent=[c.story?.title||'未选择故事线',chapter,c.place?.name||'地点待关联',mode,'已寻迹（本地手动记录，非实际到访证明）：'+(done.join('、')||'暂无')].join(' / ');"
+      },
+      {
+        "line": 36,
+        "text": "    if(lastKey&&lastKey!==key)$('#guide-transition').textContent='已接续：'+chapter+' · '+mode;"
+      },
+      {
+        "line": 38,
+        "text": "    const chat=chats[active], pending=chat.messages.find(m=>m.pending), planning=pending&&/路线|半天|规划|时间/.test(pending.originalQuestion||pending.question||'');"
+      },
+      {
+        "line": 41,
+        "text": "    $('#historian-state').textContent={idle:'展卷相伴 · 有据说史，无据留白',research:'陈寿正在查阅史料',planning:'陈寿正在筹划故事路线',complete:'已寻迹 · 这一章记下了'}[state];"
+      },
+      {
+        "line": 49,
+        "text": "    const text=finished?'这一章“'+(c.chapter?.name||'当前节点')+'”已记为寻迹完成。'+(next?'下一卷可接“'+next.name+'”。':'本次选取中没有待继续的后续章节；可回故事查看跳过或未完成章节。'):(previous?'上章“'+previous.name+'”之后，':'我们从这里展卷。')+'现在来到“'+(c.chapter?.name||c.place?.name||'待关联章节')+'”。';"
+      },
+      {
+        "line": 53,
+        "text": "    if(record?.text&&window.CharacterChat.reliable(record))box.append(window.CharacterChat.answer({persona:'陈寿',text:record.text,data:{evidence_segments:[{...record,type:'history'}]}}));"
+      },
+      {
+        "line": 54,
+        "text": "    else box.append(node('p','本章史料摘要：当前资料中未找到可靠记载。章节模板仅作行旅引导，不能代替史实。'));"
+      },
+      {
+        "line": 56,
+        "text": "    action('这一章有什么可靠史料？',()=>window.SGTJourney.ask('请讲解当前章节“'+(c.chapter?.name||c.place?.name||'待关联')+'”，列出可靠史料；缺资料请明确说明。'));"
+      },
+      {
+        "line": 57,
+        "text": "    action('请陈寿解释区别',()=>window.SGTJourney.ask('当前章节的正史与演义有何不同？请保留当前地点，列出处。'));"
+      },
+      {
+        "line": 58,
+        "text": "    if(next)action('接着探索：'+next.name,async()=>{if(window.StoryMap.getContext()?.story?.id===c.story.id||await window.StoryMap.open(c.story.id))window.StoryMap.selectChapter(chapters.indexOf(next));});"
+      },
+      {
+        "line": 59,
+        "text": "    if(c.story&&c.chapter)action(s.completed.has(i)?'撤销本章已寻迹':'标记本章已寻迹',()=>{if(s.completed.has(i)){s.completed.delete(i);window.StoryProgress.save(c.story);narrate(c);}else{s.completed.add(i);window.StoryProgress.save(c.story);}});"
+      },
+      {
+        "line": 60,
+        "text": "    if(c.story)action('只有半天 · 选择保留章节',()=>window.SGTStoryUI.openStory(c.story.id,c.story));"
+      },
+      {
+        "line": 64,
+        "text": "  function requestContext(text){const c=context();return ' 已寻迹节点（本地手动记录）：'+(completed(c).join('、')||'暂无')+'。'+(/半天|时间不够|只有.*小时/.test(text)?'围绕当前故事线“'+(c.story?.title||'未选择，先询问')+'”解释压缩取舍，保留已完成章节状态。核心章节由游客选择；使用 selection_reason 和各站 reason，缺少时长/推荐理由明确待核验，不能保证可行或擅自删章。':'');}"
+      }
+    ]
+  },
+  {
+    "file": "frontend/cities.js",
+    "sha256": "ff2d9705bb845e2c7d06459a12d3f105750456b14183f9b013ddb13e38a0b7ec",
+    "lines": [
+      {
+        "line": 3,
+        "text": "  const cities=Object.freeze(['南充','阆中','广元','成都','绵阳','德阳','巴中','达州']);"
+      },
+      {
+        "line": 20,
+        "text": "    const first=document.createElement('option');first.value='';first.textContent='请选择已知位置';"
+      },
+      {
+        "line": 21,
+        "text": "    const manual=document.createElement('option');manual.value='manual';manual.textContent='手动 WGS84 坐标';"
+      },
+      {
+        "line": 22,
+        "text": "    select.replaceChildren(first,...cities.map(city=>{const option=document.createElement('option');option.value=city;option.textContent=city+' · 城市中心';return option;}),manual);"
+      }
+    ]
+  },
+  {
+    "file": "frontend/cultural-node.js",
+    "sha256": "1d0bee75c52518065b42047191d9a849f676f0e90ac8dfb2892d3d7b7aed5578",
+    "lines": [
+      {
+        "line": 4,
+        "text": "  const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';"
+      },
+      {
+        "line": 5,
+        "text": "  const modes=['大众体验版','亲子故事版','学术探索版'], readings=new Map();"
+      },
+      {
+        "line": 7,
+        "text": "  const text=v=>typeof v==='string'&&v.trim()?v.trim():'待核验';"
+      },
+      {
+        "line": 8,
+        "text": "  const list=v=>Array.isArray(v)&&v.length?v.map(text).join('、'):'待核验';"
+      },
+      {
+        "line": 10,
+        "text": "  const statusLabel=r=>({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期',forecast:'天气预报',model:'模型估计'}[status(r)] || '待核验');"
+      },
+      {
+        "line": 13,
+        "text": "  function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;if(typeof content==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(content))n.setAttribute('data-trust-state','unverified');return n;}"
+      },
+      {
+        "line": 21,
+        "text": "  function provenance(r,label='史料来源'){"
+      },
+      {
+        "line": 22,
+        "text": "    const d=node('details','node-sources');d.append(node('summary','',label+' · '+sources(r).length+' 条'));"
+      },
+      {
+        "line": 23,
+        "text": "    d.append(node('p','','资料状态：'+statusLabel(r)+'；当前显示：资料条目；待确认项：'+(evidence(r)?'具体内容与时效':'出处与内容依据')+'；更新时间：'+(dated(r)?updated(r):'未提供')));"
+      },
+      {
+        "line": 24,
+        "text": "    if(!sources(r).length)d.append(node('p','','来源待核验。'));"
+      },
+      {
+        "line": 26,
+        "text": "      const row=node('p',''),url=safeUrl(s.source_url), title=text(s.title)+' · 来源等级 '+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验');"
+      },
+      {
+        "line": 27,
+        "text": "      if(url){const a=node('a','',title);a.href=url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);}else row.append(node('span','',title+' · 链接待核验'));"
+      },
+      {
+        "line": 28,
+        "text": "      row.append(node('span','',' · 资料状态：'+statusLabel(s)));"
+      },
+      {
+        "line": 29,
+        "text": "      if(s.source_level==='C')row.append(node('strong','node-unverified',' C 级可信度不足，不能作为史实依据。'));"
+      },
+      {
+        "line": 36,
+        "text": "    block.append(node(usable?'h4':'summary','',title+(usable?'':' · 资料待补充')));"
+      },
+      {
+        "line": 37,
+        "text": "    block.append(node('p','node-evidence-label',kind==='node-inference'?'合理推断 · 非史料原文':kind==='node-literature'?'文学表达 · 不等于历史事实':'史料记载'));"
+      },
+      {
+        "line": 38,
+        "text": "    block.append(node('p','',usable?record.text:kind==='node-literature'?'尚未补充可核对的文学文本/版本出处':missing));"
+      },
+      {
+        "line": 39,
+        "text": "    block.append(provenance(record,kind==='node-literature'?'文学文本来源':'史料来源'));return block;"
+      },
+      {
+        "line": 43,
+        "text": "    const headings={ '大众体验版':'先读懂这里', '亲子故事版':'带着一个问题看这里', '学术探索版':'从证据与编纂背景读这一章' };"
+      },
+      {
+        "line": 45,
+        "text": "    box.append(node('p','',mode==='大众体验版'?'先看这里是什么、为什么值得看，再联系当前故事。':mode==='亲子故事版'?'亲子共读：这一幕讲到谁？眼前建筑和故事有什么关系？请从下方同一组资料里找答案；没有记载就保留问题。':'依次核对史料出处、编纂背景、人物关系与不同观点；区分记载、文学和推断。'));"
+      },
+      {
+        "line": 47,
+        "text": "    box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));"
+      },
+      {
+        "line": 48,
+        "text": "    if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));"
+      },
+      {
+        "line": 49,
+        "text": "    else box.append(emptyBlock('章节说明 · 资料待补充','章节与地点的关联、参观理由仍需资料支持。'));"
+      },
+      {
+        "line": 50,
+        "text": "    if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,'node-history'),recordBlock('人物关系',chapter.relationships,'node-history'));"
+      },
+      {
+        "line": 51,
+        "text": "    if(mode==='亲子故事版')box.append(node('p','node-question','一起想一想：哪句话有史料依据？哪句话只是文学表达？无法核实时，不替古人编台词。'));"
+      },
+      {
+        "line": 53,
+        "text": "    if(inferences.length)box.append(node('h3','','合理推断'));"
+      },
+      {
+        "line": 54,
+        "text": "    else box.append(emptyBlock('合理推断 · 资料待补充','暂无有依据的推断内容，不用推测填空。'));"
+      },
+      {
+        "line": 55,
+        "text": "    inferences.forEach(r=>box.append(recordBlock('合理推断',r,'node-inference')));"
+      },
+      {
+        "line": 56,
+        "text": "    $('#node-mode-status').textContent='当前为'+mode+'；同一故事、章节与地点，阅读位置保留。';"
+      },
+      {
+        "line": 70,
+        "text": "    grid.replaceChildren(recordBlock('正史｜《三国志》及可靠史料',chapter.history,'node-history'),recordBlock('演义｜文学表达',chapter.romance,'node-literature'));"
+      },
+      {
+        "line": 73,
+        "text": "    difference.replaceChildren(hasDifference?recordBlock('两条叙事的差异',chapter.differences,'node-history'):emptyBlock('两条叙事的差异 · 资料待补充','当前资料不足，无法核验具体差异；文学情节不能作为历史事实。'));"
+      },
+      {
+        "line": 76,
+        "text": "    disputes.replaceChildren(...(opinions.length?[node('h3','',opinions.length>1?'存在不同说法':'学术争议资料')]:[emptyBlock('学术争议 · 资料待补充','当前资料中未找到可靠记载；不能据此断言不存在争议。')]));"
+      },
+      {
+        "line": 77,
+        "text": "    opinions.forEach((r,i)=>disputes.append(recordBlock('说法 '+(i+1),r,'node-history')));"
+      },
+      {
+        "line": 80,
+        "text": "    const area=$('#node-tourism');area.replaceChildren(node('h3','','出行信息 · 与历史史料分开核验'));"
+      },
+      {
+        "line": 82,
+        "text": "    const unavailable=emptyBlock('票价、开放时间与天气 · 待实时查询','出行信息请以景区公告及实时工具为准，不由历史材料推定。');"
+      },
+      {
+        "line": 84,
+        "text": "    [['ticket','票价'],['opening','开放时间'],['weather','天气']].forEach(([key,title])=>{"
+      },
+      {
+        "line": 86,
+        "text": "      const content=valid&&(key!=='ticket'||Number.isFinite(r.amount)&&r.amount>0)?(key==='ticket'?r.amount+' 元':text(r.text)):(key==='weather'?'尚未查询所在地天气，可查询预报；景区开放另查公告':'请以景区公告为准');"
+      },
+      {
+        "line": 87,
+        "text": "      const card=node('article','node-travel-item');card.append(node('h4','',title),node('p','',content),node('p','','更新时间：'+(dated(r)?updated(r):'待核验')),node('p','','工具来源：'+text(r?.tool_source)),provenance(r,'旅游信息来源'));"
+      },
+      {
+        "line": 91,
+        "text": "    if(missingCount){unavailable.children[0].textContent='查看待查询的出行资料（'+missingCount+'项）';area.append(unavailable);}"
+      },
+      {
+        "line": 97,
+        "text": "    $('#node-back').textContent=context.returnTo?'返回上一视图':'返回首页（来源未知）';"
+      },
+      {
+        "line": 98,
+        "text": "    const origins={welcome:'文化探索',story:'文化探索',map:'行旅地图',journal:'探索志',destinations:'目的地',planner:'活动计划',plan:'活动计划',travel:'活动计划',outing:'活动计划'};"
+      },
+      {
+        "line": 99,
+        "text": "    $('#node-origin').textContent='来自'+(origins[context.returnTo]||'未知来源')+' · 地点资料';"
+      },
+      {
+        "line": 104,
+        "text": "    $('#node-context').textContent='城市：'+text(place.city)+' · 故事线：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');"
+      },
+      {
+        "line": 105,
+        "text": "    $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';"
+      },
+      {
+        "line": 106,
+        "text": "    const locationNote=(context.note || '地点待定位，不猜景区位置。').replace(/^坐标待核验(?:\\s*\\/\\s*景区待定位)?\\s*·\\s*/, '');"
+      },
+      {
+        "line": 107,
+        "text": "    $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');"
+      },
+      {
+        "line": 109,
+        "text": "    const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);"
+      },
+      {
+        "line": 110,
+        "text": "    $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，空区块已收起，可展开查看核验说明。':'资料概况：已有来源的正文在下方展开，可逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));"
+      },
+      {
+        "line": 114,
+        "text": "    $('#node-add-route').textContent=context.point?(context.exact?'加入路线':'加入路线（驻地示意）'):'加入路线（待定位）';"
+      },
+      {
+        "line": 115,
+        "text": "    $('#node-feedback').textContent='史料不足时保留问题；AI讲解不作为已核验史实。';"
+      },
+      {
+        "line": 130,
+        "text": "    window.CharacterChat?.selectPersona('陈寿');"
+      },
+      {
+        "line": 131,
+        "text": "    window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:\"请陈寿讲解\"+context.place.name+\"（\"+mode+\"）\"});"
+      },
+      {
+        "line": 132,
+        "text": "    $('#node-feedback').textContent='已交给陈寿；回答或草稿在现有对话中，资料仍需核验。';"
+      },
+      {
+        "line": 135,
+        "text": "  $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});"
+      }
+    ]
+  },
+  {
+    "file": "frontend/index.html",
+    "sha256": "46cb6d3a82c17e78aa87fad4a5b16eb83f7906f9385a75f802ff06c004888da1",
+    "lines": [
+      {
+        "line": 6,
+        "text": "  <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>"
+      },
+      {
+        "line": 13,
+        "text": "    <span class=\"brand\"><span class=\"brand-mark\">蜀</span>寻迹三国</span>"
+      },
+      {
+        "line": 14,
+        "text": "    <span class=\"topbar-center\">南充 · 阆中 · 广元<span class=\"divider\">/</span><span id=\"view-label\">文化探索</span></span>"
+      },
+      {
+        "line": 15,
+        "text": "    <span class=\"status\" data-service-status role=\"status\">正在检查服务…</span>"
+      },
+      {
+        "line": 19,
+        "text": "    <section class=\"content\" aria-label=\"主内容区\">"
+      },
+      {
+        "line": 21,
+        "text": "        <span>陈寿笔下的蜀汉记忆</span>"
+      },
+      {
+        "line": 22,
+        "text": "        <nav class=\"content-switch\" aria-label=\"主内容视图\">"
+      },
+      {
+        "line": 23,
+        "text": "          <button type=\"button\" data-content-view=\"welcome\" aria-pressed=\"true\" aria-controls=\"welcome-view\">文化探索</button>"
+      },
+      {
+        "line": 24,
+        "text": "          <button type=\"button\" data-content-view=\"destinations\" aria-pressed=\"false\" aria-controls=\"destinations-view\">目的地</button>"
+      },
+      {
+        "line": 25,
+        "text": "          <button type=\"button\" data-content-view=\"map\" aria-pressed=\"false\" aria-controls=\"map-view\">行旅地图</button>"
+      },
+      {
+        "line": 26,
+        "text": "          <button type=\"button\" data-content-view=\"planner\" aria-pressed=\"false\" aria-controls=\"planner-view\">活动计划</button>"
+      },
+      {
+        "line": 27,
+        "text": "          <button type=\"button\" data-content-view=\"journal\" aria-pressed=\"false\" aria-controls=\"journal-view\">探索志</button>"
+      },
+      {
+        "line": 32,
+        "text": "        <header><h1 id=\"outing-title\" tabindex=\"-1\">出发核验</h1><p>按需核对道路信息。文化活动需求与结果集中在活动计划中。</p></header>"
+      },
+      {
+        "line": 33,
+        "text": "        <div class=\"outing-handoff\"><span id=\"outing-origin\">可独立查询，也可从陈寿的回答带入行程草案。</span><button type=\"button\" class=\"module-button\" data-content-view=\"planner\">活动需求与结果</button><button type=\"button\" class=\"module-button\" data-content-view=\"travel\">天气与空气质量</button><button id=\"outing-back\" type=\"button\" hidden>返回原对话</button></div>"
+      },
+      {
+        "line": 34,
+        "text": "        <details class=\"itinerary-utilities\" open><summary>道路查询工具</summary>"
+      },
+      {
+        "line": 37,
+        "text": "            <h2 id=\"outing-route-title\">路线规划</h2>"
+      },
+      {
+        "line": 39,
+        "text": "              <p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p>"
+      },
+      {
+        "line": 41,
+        "text": "                <label>搜索城市<input id=\"amap-city\" value=\"南充\" list=\"itinerary-cities\" required maxlength=\"60\"></label>"
+      },
+      {
+        "line": 43,
+        "text": "                  <label>出发地点<input id=\"amap-origin-query\" placeholder=\"例如：西华师范大学北湖校区\" required maxlength=\"100\"></label>"
+      },
+      {
+        "line": 44,
+        "text": "                  <label>目的地点<input id=\"amap-destination-query\" placeholder=\"例如：万卷楼\" required maxlength=\"100\"></label>"
+      },
+      {
+        "line": 46,
+        "text": "                <button type=\"submit\">搜索起终点</button>"
+      },
+      {
+        "line": 49,
+        "text": "                <label>确认出发地点<select id=\"amap-origin-id\" required></select></label>"
+      },
+      {
+        "line": 50,
+        "text": "                <label>确认目的地点<select id=\"amap-destination-id\" required></select></label>"
+      },
+      {
+        "line": 51,
+        "text": "                <label>出行方式<select id=\"amap-mode\"><option value=\"transit\">公共交通</option><option value=\"driving\">驾车</option><option value=\"walking\">步行</option></select></label>"
+      },
+      {
+        "line": 52,
+        "text": "                <button type=\"submit\" class=\"outing-primary\">查询高德路线</button>"
+      },
+      {
+        "line": 54,
+        "text": "              <p id=\"amap-status\" role=\"status\" aria-live=\"polite\">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>"
+      },
+      {
+        "line": 56,
+        "text": "              <section id=\"amap-map-region\" aria-label=\"高德路线地图\" hidden>"
+      },
+      {
+        "line": 57,
+        "text": "                <div id=\"amap-map\" style=\"height:360px;width:100%;min-width:0\" role=\"region\" aria-label=\"起终点及道路路线，可拖动缩放\"></div>"
+      },
+      {
+        "line": 61,
+        "text": "            <details><summary>其他道路参考：城市中心或手动坐标</summary>"
+      },
+      {
+        "line": 63,
+        "text": "              <fieldset class=\"outing-modes\"><legend>出行方式</legend><label><input type=\"radio\" name=\"outing-mode\" value=\"walking\" checked>步行</label><label><input type=\"radio\" name=\"outing-mode\" value=\"driving\">驾车</label></fieldset>"
+      },
+      {
+        "line": 65,
+        "text": "                <label>起点<select id=\"outing-start\" required></select></label>"
+      },
+      {
+        "line": 66,
+        "text": "                <label>终点<select id=\"outing-end\" required></select></label>"
+      },
+      {
+        "line": 68,
+        "text": "              <div id=\"outing-start-coords\" class=\"outing-coords\" hidden><label>起点经度<input id=\"outing-start-lon\" type=\"number\" min=\"-180\" max=\"180\" step=\"any\"></label><label>起点纬度<input id=\"outing-start-lat\" type=\"number\" min=\"-90\" max=\"90\" step=\"any\"></label></div>"
+      },
+      {
+        "line": 69,
+        "text": "              <div id=\"outing-end-coords\" class=\"outing-coords\" hidden><label>终点经度<input id=\"outing-end-lon\" type=\"number\" min=\"-180\" max=\"180\" step=\"any\"></label><label>终点纬度<input id=\"outing-end-lat\" type=\"number\" min=\"-90\" max=\"90\" step=\"any\"></label></div>"
+      },
+      {
+        "line": 70,
+        "text": "              <label id=\"outing-confirm-row\" class=\"outing-check\" hidden><input id=\"outing-confirm\" type=\"checkbox\">我已核实手动坐标为 WGS84，不是高德或百度坐标。</label>"
+      },
+      {
+        "line": 71,
+        "text": "              <p class=\"outing-note\">城市中心不是景区入口。查询会将起终点坐标发送到公共路线服务，请勿填写敏感地址。</p>"
+      },
+      {
+        "line": 72,
+        "text": "              <button type=\"submit\" class=\"outing-primary\">查询道路路线</button>"
+      },
+      {
+        "line": 74,
+        "text": "            <p id=\"outing-route-status\" role=\"status\">请先选择起终点；不提供实时路况或公交班次。</p>"
+      },
+      {
+        "line": 75,
+        "text": "            <div id=\"outing-route-preview\" class=\"outing-route-preview\"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>"
+      },
+      {
+        "line": 78,
+        "text": "            <section class=\"outing-draft\"><h3>原回答摘要</h3><p id=\"outing-draft-note\">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id=\"outing-stops\"></ol><details id=\"outing-original\" hidden><summary>查看带入的回答原文</summary><pre id=\"outing-original-text\"></pre></details></section>"
+      },
+      {
+        "line": 84,
+        "text": "        <header class=\"journal-heading\"><p class=\"welcome-kicker\">山河有迹 · 我的文化旅行史</p><h1 tabindex=\"-1\">我的三国探索志</h1><p id=\"journal-local-notice\" role=\"status\"></p></header>"
+      },
+      {
+        "line": 86,
+        "text": "        <nav id=\"journal-pages\" class=\"journal-pages\" aria-label=\"探索志书页\"></nav>"
+      },
+      {
+        "line": 87,
+        "text": "        <article id=\"journal-book\" class=\"journal-book\" aria-label=\"探索志正文\"></article>"
+      },
+      {
+        "line": 88,
+        "text": "        <footer class=\"journal-pagination\"><button type=\"button\" id=\"journal-prev\" class=\"module-button\">← 前一页</button><span id=\"journal-page-number\" aria-live=\"polite\"></span><button type=\"button\" id=\"journal-next\" class=\"module-button\">后一页 →</button></footer>"
+      },
+      {
+        "line": 89,
+        "text": "        <section id=\"journal-recommendation\" class=\"journal-recommendation\" aria-label=\"下一条故事线推荐\"></section>"
+      },
+      {
+        "line": 94,
+        "text": "            <p class=\"welcome-kicker\"><span class=\"hero-seal\" aria-hidden=\"true\">蜀</span> 寻迹三国 · 陈寿文化向导</p>"
+      },
+      {
+        "line": 95,
+        "text": "            <h1>从一条故事线，开始读懂三国。</h1>"
+      },
+      {
+        "line": 96,
+        "text": "            <p class=\"welcome-sub\">选一个感兴趣的主题，读章节、看地点，再向陈寿追问。</p>"
+      },
+      {
+        "line": 97,
+        "text": "            <div class=\"hero-destinations\"><span>南充</span><i aria-hidden=\"true\">—</i><span>阆中</span><i aria-hidden=\"true\">—</i><span>剑阁</span><i aria-hidden=\"true\">—</i><span>广元</span></div>"
+      },
+      {
+        "line": 98,
+        "text": "            <a class=\"hero-primary\" href=\"#story-discovery\">选一条故事线开始 <span aria-hidden=\"true\">↓</span></a>"
+      },
+      {
+        "line": 99,
+        "text": "            <span class=\"hero-footnote\">第一次来，先选故事；问答、建筑线索与四川地图可在下方展开。</span>"
+      },
+      {
+        "line": 102,
+        "text": "            <img src=\"assets/jianmen-pass.jpg\" alt=\"剑门关关楼与两侧山崖，石阶通向关门\" width=\"1170\" height=\"1671\" fetchpriority=\"high\" decoding=\"async\">"
+      },
+      {
+        "line": 103,
+        "text": "            <div class=\"photo-inscription\" aria-hidden=\"true\">循蜀道 · 见三国</div>"
+      },
+      {
+        "line": 104,
+        "text": "            <figcaption><span>第一站，从好奇开始</span><strong>剑门关 / 广元 · 剑阁</strong></figcaption>"
+      },
+      {
+        "line": 105,
+        "text": "            <span class=\"photo-index\" aria-hidden=\"true\">01 / 蜀道寻踪</span>"
+      },
+      {
+        "line": 110,
+        "text": "          <div class=\"desk-intro\"><div><h2 id=\"discovery-title\">选择一条三国文化故事线</h2></div><p>点主题看详情；有章节的故事还可以进入地图。</p></div>"
+      },
+      {
+        "line": 111,
+        "text": "          <p class=\"story-disclosure\">首批主题模板，部分章节与地点待补充；史料与行程仍需核验。</p>"
+      },
+      {
+        "line": 112,
+        "text": "          <div id=\"story-phase-filters\" class=\"story-controls\" role=\"group\" aria-label=\"按故事框架筛选\"></div>"
+      },
+      {
+        "line": 117,
+        "text": "          <summary><strong>预览章节与地图</strong><span>想先看看故事将走向哪里？</span></summary>"
+      },
+      {
+        "line": 119,
+        "text": "          <div><span class=\"story-eyebrow\">STORY ATLAS · 山河之间</span><h2 id=\"preview-title\">故事将走向哪里？</h2><p id=\"preview-selection\">从南充少年到三国史家</p><p>先看章节顺序，再将地点放回地图。位置与史料尚待核验。</p><p class=\"map-note\">轮廓示意图 · 2026-09-12 地理快照<br>不代表景区位置、交通路线或实时数据。</p><button type=\"button\" class=\"module-button\" id=\"preview-story-open\" aria-controls=\"map-view\">探索这条故事地图 →</button><p id=\"preview-map-note\" class=\"map-note\" role=\"status\"></p></div>"
+      },
+      {
+        "line": 120,
+        "text": "          <div><svg id=\"story-preview-map\" viewBox=\"0 0 900 680\" role=\"img\" aria-label=\"四川地理轮廓示意图，故事路线待补充\"></svg><p id=\"story-preview-status\" role=\"status\">正在加载地理轮廓示意图…</p></div>"
+      },
+      {
+        "line": 124,
+        "text": "        <h2 class=\"culture-other-title\">也可以从你的问题或地点开始</h2>"
+      },
+      {
+        "line": 126,
+        "text": "          <summary><strong>有问题？问陈寿</strong><span>人物问答、旅程需求与快捷提问</span></summary>"
+      },
+      {
+        "line": 129,
+        "text": "          <svg class=\"chenshou-portrait\" viewBox=\"0 0 180 190\" role=\"img\" aria-label=\"手持史册的陈寿艺术化形象，并非历史肖像\">"
+      },
+      {
+        "line": 137,
+        "text": "            <rect x=\"135\" y=\"38\" width=\"25\" height=\"31\" rx=\"2\" class=\"portrait-stamp\"/><text x=\"147\" y=\"59\" text-anchor=\"middle\">史</text>"
+      },
+      {
+        "line": 139,
+        "text": "          <div><span class=\"story-eyebrow\">万卷史官 · 陈寿</span><h2 id=\"chenshou-title\">从你的好奇，找到故事的开篇。</h2><p>说说你喜欢谁、有几天、从哪里出发，与文化向导一起探索主题。</p><div class=\"chips\"><button type=\"button\" class=\"chip\" data-agent-question=\"我想从喜欢的人物开始选择三国文化故事线，请先问我喜欢谁，再根据已有资料讨论适合的主题。资料不足时请说明。\">我喜欢的人物… ↗</button><a class=\"chip\" href=\"#journey-desk\">我有几天 · 从哪里出发</a></div><small>AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料，主题建议以现有资料为限。</small></div>"
+      },
+      {
+        "line": 143,
+        "text": "          <div class=\"desk-intro\"><div><span class=\"story-eyebrow\">YOUR JOURNEY · 你的旅程</span><h2 id=\"desk-title\">你想怎样走进三国？</h2></div><p>不必准备完整计划，先说一个想法。</p></div>"
+      },
+      {
+        "line": 146,
+        "text": "              <div class=\"intent-switch\" role=\"group\" aria-label=\"选择对话主题\">"
+      },
+      {
+        "line": 147,
+        "text": "                <button type=\"button\" data-journey-mode=\"plan\" aria-pressed=\"true\"><span aria-hidden=\"true\">01</span> 规划行程</button>"
+      },
+      {
+        "line": 148,
+        "text": "                <button type=\"button\" data-journey-mode=\"culture\" aria-pressed=\"false\"><span aria-hidden=\"true\">02</span> 听文化</button>"
+      },
+      {
+        "line": 149,
+        "text": "                <button type=\"button\" data-journey-mode=\"character\" aria-pressed=\"false\"><span aria-hidden=\"true\">03</span> 问人物</button>"
+      },
+      {
+        "line": 150,
+        "text": "                <button type=\"button\" data-journey-mode=\"review\" aria-pressed=\"false\"><span aria-hidden=\"true\">04</span> 调整旅程</button>"
+      },
+      {
+        "line": 153,
+        "text": "                <label id=\"journey-question-label\" for=\"hero-message\">想去哪里，和谁一起出发？</label>"
+      },
+      {
+        "line": 154,
+        "text": "                <p id=\"journey-mode-hint\" class=\"composer-hint\">告诉我时间、出发地和兴趣，一起梳理游览顺序。</p>"
+      },
+      {
+        "line": 155,
+        "text": "                <textarea id=\"hero-message\" rows=\"3\" maxlength=\"1600\" placeholder=\"例如：带孩子从南充出发，玩两天，想去阆中，少走路、多听三国故事。\" aria-describedby=\"journey-mode-hint\"></textarea>"
+      },
+      {
+        "line": 157,
+        "text": "                  <label>同行方式<select id=\"journey-profile\"><option value=\"\">暂不限定</option><option>普通初访</option><option>亲子同行</option><option>研学寻史</option><option>人物追踪</option></select></label>"
+      },
+      {
+        "line": 158,
+        "text": "                  <label>讲解偏好<select id=\"journey-style\"><option value=\"\">自然讲解</option><option>大众讲解</option><option>亲子故事版</option><option>学术探索版</option></select></label>"
+      },
+      {
+        "line": 160,
+        "text": "                <div class=\"hero-composer-bottom\"><span>进入同一段对话，随时追问</span><button id=\"hero-send\" type=\"submit\" disabled>与向导对话 <span aria-hidden=\"true\">↗</span></button></div>"
+      },
+      {
+        "line": 162,
+        "text": "              <p id=\"journey-feedback\" class=\"journey-feedback\" role=\"status\">主题切换会保留本页草稿。</p>"
+      },
+      {
+        "line": 163,
+        "text": "              <div class=\"starters\" id=\"starters\"><span class=\"starters-title\">灵感起点 · 直接问向导</span><div class=\"chips\">"
+      },
+      {
+        "line": 164,
+        "text": "                <button class=\"chip\" data-q=\"陈寿和南充有什么关系？\">陈寿与南充 ↗</button>"
+      },
+      {
+        "line": 165,
+        "text": "                <button class=\"chip\" data-q=\"南充一天三国文化路线\">南充一日游 ↗</button>"
+      },
+      {
+        "line": 166,
+        "text": "                <button class=\"chip\" data-q=\"南充三国景点门票多少钱，一天的门票费用怎么估算？\">票价与预算 ↗</button>"
+      },
+      {
+        "line": 169,
+        "text": "            <aside class=\"journey-companion\" aria-label=\"智能向导如何陪伴你\">"
+      },
+      {
+        "line": 170,
+        "text": "              <span class=\"companion-mark\" aria-hidden=\"true\">旅</span><h3>一个向导，陪你一路探索</h3>"
+      },
+      {
+        "line": 172,
+        "text": "                <li><span class=\"stage-number\">01</span><div><strong>先懂你的旅程</strong><p>时间、同行人、兴趣与预算。</p></div></li>"
+      },
+      {
+        "line": 173,
+        "text": "                <li><span class=\"stage-number\">02</span><div><strong>再串联三国遗迹</strong><p>地点有顺序，停留有理由。</p></div></li>"
+      },
+      {
+        "line": 174,
+        "text": "                <li><span class=\"stage-number\">03</span><div><strong>边走边讲人物</strong><p>联系史实、演义与眼前山河。</p></div></li>"
+      },
+      {
+        "line": 175,
+        "text": "                <li><span class=\"stage-number\">04</span><div><strong>一路追问调整</strong><p>继续提问，让行程更合心意。</p></div></li>"
+      },
+      {
+        "line": 177,
+        "text": "              <p class=\"companion-note\">本页对话可回看；问题记录另存于此浏览器的探索志，换设备不随行。讲解偏好会随问题发送，实际回答以当前服务为准。</p>"
+      },
+      {
+        "line": 182,
+        "text": "        <div class=\"welcome-bottom\"><div><strong>这一程之后，还有下一次出发。</strong><p>把喜欢的故事、走过的地方或想调整的节奏告诉向导。</p></div><button type=\"button\" data-prepare-review>回顾与调整 <span aria-hidden=\"true\">↗</span></button></div>"
+      },
+      {
+        "line": 187,
+        "text": "          <summary><strong>从眼前的地点读三国</strong><span>建筑节点与三条文化线索</span></summary>"
+      },
+      {
+        "line": 189,
+        "text": "        <section class=\"story-buildings\" aria-labelledby=\"buildings-title\"><div class=\"desk-intro\"><div><span class=\"story-eyebrow\">PLACES · 故事发生的空间</span><h2 id=\"buildings-title\">让建筑成为故事节点</h2></div><p>节点与章节的对应关系待确认。</p></div><div id=\"story-buildings\" class=\"building-grid\"></div><p class=\"map-note\">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>"
+      },
+      {
+        "line": 192,
+        "text": "          <div class=\"desk-intro\"><div><span class=\"story-eyebrow\">READ THE LAND · 山河有迹</span><h2 id=\"culture-title\">不只到过，更读懂过</h2></div><p>从人物、著作与遗迹，找到你的文化线索。</p></div>"
+      },
+      {
+        "line": 194,
+        "text": "            <article class=\"culture-card\"><span class=\"culture-tag\">壹 / 陈寿与《三国志》</span><h3>在南充，读一部三国</h3><p>从陈寿的故乡出发，聊聊史家的观察与《三国志》的书写。</p><button type=\"button\" data-agent-question=\"陈寿与南充有什么关系？请介绍《三国志》的编写背景，并说明资料出处。\">循着陈寿去了解 <span aria-hidden=\"true\">↗</span></button></article>"
+      },
+      {
+        "line": 195,
+        "text": "            <article class=\"culture-card\"><span class=\"culture-tag\">贰 / 正史与演义</span><h3>熟悉的故事，哪段是史实？</h3><p>把史书记载、文学加工与地方传说分开来看，保留疑问与依据。</p><button type=\"button\" data-agent-question=\"张飞的形象在《三国志》和《三国演义》中有什么区别？请区分史实与文学加工并说明依据。\">听听两种讲述 <span aria-hidden=\"true\">↗</span></button></article>"
+      },
+      {
+        "line": 196,
+        "text": "            <article class=\"culture-card character-card\"><span class=\"culture-tag\">叁 / 人物与地点</span><h3>如果能问古人一个问题</h3><p>从诸葛亮、张飞或陈寿切入，探索他们与蜀地的关系。</p><button type=\"button\" data-prepare-character>写下想问的话 <span aria-hidden=\"true\">↗</span></button><small>AI 基于资料解读；不视为历史人物原话。</small></article>"
+      },
+      {
+        "line": 204,
+        "text": "          <summary><strong>先看看四川的地点</strong><span>打开行旅地图，按市州和县区探索</span></summary>"
+      },
+      {
+        "line": 207,
+        "text": "          <img src=\"assets/langzhong-town.jpg\" alt=\"嘉陵江环绕阆中古城的远景\" width=\"1280\" height=\"835\" loading=\"lazy\" decoding=\"async\">"
+      },
+      {
+        "line": 208,
+        "text": "          <div><span class=\"story-eyebrow\">EXPLORE SICHUAN · 行旅地图</span><h2 id=\"map-invitation-title\">把故事，放回山河之间。</h2><p>21 个市州 · 183 个县级地点<br>选一座城，慢慢走进它的三国记忆。</p><button type=\"button\" data-content-view=\"map\">展开四川地图 <span aria-hidden=\"true\">→</span></button></div>"
+      },
+      {
+        "line": 212,
+        "text": "        <p class=\"journey-trust\">读史请核对依据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。</p>"
+      },
+      {
+        "line": 213,
+        "text": "        <button type=\"button\" id=\"open-culture\" hidden>与向导对话</button>"
+      },
+      {
+        "line": 217,
+        "text": "        <button type=\"button\" class=\"module-button\" data-content-view=\"welcome\" aria-controls=\"welcome-view\">← 返回故事目录</button>"
+      },
+      {
+        "line": 218,
+        "text": "        <p class=\"welcome-kicker\">故事线 · 主题模板</p><h2 id=\"story-title\" tabindex=\"-1\">选择一条故事线</h2>"
+      },
+      {
+        "line": 220,
+        "text": "        <button type=\"button\" class=\"module-button\" id=\"story-map-open\" aria-controls=\"map-view\">进入故事地图 →</button>"
+      },
+      {
+        "line": 221,
+        "text": "        <button type=\"button\" class=\"module-button\" id=\"story-ask\">与陈寿向导讨论这个主题 ↗</button>"
+      },
+      {
+        "line": 222,
+        "text": "        <p class=\"map-note\" id=\"story-action-status\" role=\"status\">当前为主题模板，尚未形成可执行行程。</p>"
+      },
+      {
+        "line": 225,
+        "text": "      <section class=\"map-view\" id=\"map-view\" data-view-panel=\"map\" aria-label=\"四川地图\" hidden>"
+      },
+      {
+        "line": 227,
+        "text": "          <div><p class=\"welcome-kicker\">立足川东北 · 放眼四川</p><h2>三国故事地图</h2></div>"
+      },
+      {
+        "line": 228,
+        "text": "          <span>21 个市州 · 183 个县级地点</span>"
+      },
+      {
+        "line": 230,
+        "text": "        <p class=\"map-note\">朱红色标注成都；重点游览南充—阆中—剑阁—广元。试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。已识别且有位置资料的地点会标到地图上；缺少景区位置时仅显示城市或县级驻地示意。</p>"
+      },
+      {
+        "line": 232,
+        "text": "          <div><p class=\"story-eyebrow\">STORY MODE · 沿章节寻迹</p><h3 id=\"story-map-title\" tabindex=\"-1\"></h3><p id=\"story-map-progress\" role=\"status\"></p></div>"
+      },
+      {
+        "line": 233,
+        "text": "          <div class=\"module-actions\"><button type=\"button\" class=\"module-button\" id=\"story-fit\">看整条故事</button><button type=\"button\" class=\"module-button\" id=\"story-exit\">退出故事模式</button></div>"
+      },
+      {
+        "line": 234,
+        "text": "          <p class=\"story-map-memory\">探索进度仅保存在此浏览器本地，未与账号或后端同步；不代表实际到访或自动定位。</p>"
+      },
+      {
+        "line": 236,
+        "text": "        <p class=\"map-note\" id=\"map-layer-status\">100%–249% 显示市州边界；250% 起叠加县级边界。标注自动避让，全部县区均可从列表选择。</p>"
+      },
+      {
+        "line": 238,
+        "text": "          <label>市州筛选<select id=\"map-prefecture\"><option value=\"\">全省</option></select></label>"
+      },
+      {
+        "line": 239,
+        "text": "          <label>县城 / 区<select id=\"map-county\"><option value=\"\">选择地点</option></select></label>"
+      },
+      {
+        "line": 240,
+        "text": "          <button type=\"button\" class=\"module-button\" id=\"map-add-stop\" disabled>加入路线</button>"
+      },
+      {
+        "line": 242,
+        "text": "        <p class=\"map-note\" id=\"map-filter-status\" role=\"status\">当前为全省县区列表，请选县区定位。</p>"
+      },
+      {
+        "line": 243,
+        "text": "        <div class=\"module-actions map-tools\"><button class=\"module-button\" id=\"map-reset\">全省视图</button><button class=\"module-button\" id=\"map-fit\" disabled>查看整条路线</button><button class=\"module-button\" id=\"map-clear\">清除路线</button></div>"
+      },
+      {
+        "line": 246,
+        "text": "          <svg id=\"route-map\" viewBox=\"0 0 900 680\" role=\"group\" aria-label=\"四川地理与故事章节地图，可拖动、双指缩放或使用右下角缩放控件\">"
+      },
+      {
+        "line": 252,
+        "text": "          <div id=\"map-place-picker\" class=\"map-place-picker\" role=\"region\" aria-label=\"选择附近地点\" hidden>"
+      },
+      {
+        "line": 253,
+        "text": "            <div class=\"picker-heading\"><strong id=\"map-picker-title\">选择地点</strong><button id=\"map-picker-close\" type=\"button\" aria-label=\"关闭地点列表\">×</button></div>"
+      },
+      {
+        "line": 256,
+        "text": "          <div class=\"map-zoom-control\" role=\"group\" aria-label=\"地图缩放\">"
+      },
+      {
+        "line": 257,
+        "text": "            <div class=\"map-zoom-heading\"><label for=\"map-zoom-range\">缩放</label><output id=\"map-zoom-value\" for=\"map-zoom-range\">100%</output></div>"
+      },
+      {
+        "line": 259,
+        "text": "              <button type=\"button\" id=\"map-zoom-out\" aria-label=\"缩小地图\" disabled>−</button>"
+      },
+      {
+        "line": 261,
+        "text": "              <button type=\"button\" id=\"map-zoom-in\" aria-label=\"放大地图\">＋</button>"
+      },
+      {
+        "line": 265,
+        "text": "        <aside id=\"story-node-card\" class=\"story-node-card\" aria-label=\"故事章节卡\" hidden>"
+      },
+      {
+        "line": 266,
+        "text": "          <div class=\"story-node-top\"><span class=\"story-eyebrow\">循迹 · 读这一幕</span><button type=\"button\" id=\"story-card-close\" class=\"module-button\" aria-label=\"收起故事章节卡\">×</button></div>"
+      },
+      {
+        "line": 268,
+        "text": "          <p class=\"story-art-note\">建筑类型艺术示意 · 非实测复原</p>"
+      },
+      {
+        "line": 271,
+        "text": "          <div class=\"story-node-actions\"><button type=\"button\" class=\"module-button\" id=\"chapter-detail\">文化节点详情</button><button type=\"button\" class=\"module-button\" id=\"chapter-enter\">进入故事</button><button type=\"button\" class=\"module-button\" id=\"chapter-ask\">问陈寿</button><button type=\"button\" class=\"module-button\" id=\"chapter-compare\">请陈寿解释区别</button><button type=\"button\" class=\"module-button\" id=\"chapter-add\">加入路线</button><button type=\"button\" class=\"module-button\" id=\"chapter-navigate\" disabled>直接导航暂未提供</button></div>"
+      },
+      {
+        "line": 272,
+        "text": "          <p id=\"story-navigation-note\" class=\"map-note\">地图展示文化地点概览；可先向陈寿咨询到达路线，实际道路仍需核验。</p>"
+      },
+      {
+        "line": 273,
+        "text": "          <div class=\"module-actions\"><button type=\"button\" class=\"module-button\" id=\"chapter-complete\">标记已寻迹</button><button type=\"button\" class=\"module-button\" id=\"chapter-next\">下一幕 →</button></div>"
+      },
+      {
+        "line": 277,
+        "text": "        <section id=\"story-map-chapters\" class=\"story-map-chapters\" aria-label=\"故事章节与图例\" hidden>"
+      },
+      {
+        "line": 278,
+        "text": "          <div class=\"story-map-legend\"><span><i class=\"legend-order\" aria-hidden=\"true\"></i>虚线代表地名提及顺序，不是道路导航</span><span><i class=\"legend-ink\" aria-hidden=\"true\"></i>墨迹线代表章节叙事顺序，不是实际道路</span></div>"
+      },
+      {
+        "line": 279,
+        "text": "          <p class=\"map-note\">地图仅为位置示意，驻地不是景区入口；待定位章节不会连接。当前章高亮，已完成盖“已寻迹”，未标记完成的章节显示待探索。</p>"
+      },
+      {
+        "line": 282,
+        "text": "        <button id=\"map-back-plan\" type=\"button\" class=\"module-button\" data-content-view=\"plan\" hidden>返回活动方案</button>"
+      },
+      {
+        "line": 283,
+        "text": "        <button id=\"map-back-mention\" type=\"button\" class=\"module-button\" hidden>返回提问前的页面</button>"
+      },
+      {
+        "line": 284,
+        "text": "        <p id=\"map-route-status\" role=\"status\">正在加载县级地点…</p>"
+      },
+      {
+        "line": 286,
+        "text": "        <p class=\"map-note\">市州圆点与路线点表示驻地，不代表景区入口；区县地名嵌于各自地块。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部或县名即可选中；小地块名称可能省略，全部县区均可从列表选择。</p>"
+      },
+      {
+        "line": 287,
+        "text": "        <p class=\"map-note\">轮廓与坐标来源：<a href=\"https://datav.aliyun.com/portal/school/atlas/area_selector\" target=\"_blank\" rel=\"noopener noreferrer\">阿里云 DataV 地理数据</a>。</p>"
+      },
+      {
+        "line": 288,
+        "text": "        <div class=\"module-actions\"><button type=\"button\" class=\"module-button\" id=\"map-plan\" data-plan-map>带入活动计划</button></div>"
+      },
+      {
+        "line": 293,
+        "text": "        <button type=\"button\" class=\"module-button\" id=\"node-back\">返回上一视图</button>"
+      },
+      {
+        "line": 295,
+        "text": "        <div class=\"module-actions reading-actions\"><button type=\"button\" id=\"node-enter-story\" class=\"module-button\">进入故事</button><button type=\"button\" id=\"node-ask\" class=\"module-button\">问陈寿</button><button type=\"button\" id=\"node-compare\" class=\"module-button\">阅读对照材料</button><button type=\"button\" id=\"node-add-route\" class=\"module-button\">加入路线</button><button type=\"button\" class=\"module-button\" disabled>请向智能体咨询到达路线</button></div>"
+      },
+      {
+        "line": 296,
+        "text": "        <div class=\"node-heading\"><div id=\"node-visual\" class=\"story-building-visual\"></div><div><p class=\"welcome-kicker\">文化节点 · 在故事中读懂这里</p><h2 id=\"node-title\" tabindex=\"-1\"></h2><p id=\"node-context\"></p><p id=\"node-people\"></p><p id=\"node-coordinate\" class=\"map-note\"></p></div></div>"
+      },
+      {
+        "line": 297,
+        "text": "        <p class=\"story-art-note\">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>"
+      },
+      {
+        "line": 299,
+        "text": "        <div id=\"node-modes\" class=\"story-controls\" role=\"group\" aria-label=\"节点讲解深度\"></div><p id=\"node-mode-status\" role=\"status\"></p>"
+      },
+      {
+        "line": 300,
+        "text": "        <div id=\"node-reading\" class=\"node-reading\" tabindex=\"0\" role=\"region\" aria-label=\"本章讲解，可独立滚动阅读\"><div id=\"node-reading-content\"></div></div>"
+      },
+      {
+        "line": 301,
+        "text": "        <h3 id=\"node-comparison-title\" tabindex=\"-1\">正史 × 演义</h3><div id=\"node-comparison\" class=\"node-comparison\"></div><div id=\"node-differences\"></div><div id=\"node-disputes\" class=\"node-disputes\"></div>"
+      },
+      {
+        "line": 302,
+        "text": "        <section id=\"node-tourism\" class=\"node-tourism\" aria-label=\"实时旅游信息\"></section>"
+      },
+      {
+        "line": 303,
+        "text": "        <p class=\"map-note\">前往景点前，可向智能体确认交通方式和参观安排。</p><p id=\"node-feedback\" role=\"status\"></p>"
+      },
+      {
+        "line": 306,
+        "text": "        <p class=\"welcome-kicker\">从目的地开始</p><h2>探索四川三国文化目的地</h2>"
+      },
+      {
+        "line": 307,
+        "text": "        <p>选择目的地，查看景区资料或带入活动计划。</p>"
+      },
+      {
+        "line": 308,
+        "text": "        <div class=\"module-actions\" id=\"destination-cities\" role=\"group\" aria-label=\"选择目的地\"></div>"
+      },
+      {
+        "line": 309,
+        "text": "        <p class=\"map-note\">范围：川东北及四川其他三国文化目的地。景点库未覆盖的城市仍可交给智能体检索规划，不代表当地没有相关景点。</p>"
+      },
+      {
+        "line": 311,
+        "text": "        <button class=\"module-button\" id=\"plan-destination\">带入活动计划</button>"
+      },
+      {
+        "line": 315,
+        "text": "        <p class=\"welcome-kicker\">把想法整理成活动</p><h2 tabindex=\"-1\">安排文化活动</h2>"
+      },
+      {
+        "line": 316,
+        "text": "        <p>通过文化向导安排活动顺序、时长与文化讲解；开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>"
+      },
+      {
+        "line": 317,
+        "text": "        <button id=\"view-current-plan\" type=\"button\" class=\"module-button\" data-content-view=\"plan\" hidden>查看本次方案</button>"
+      },
+      {
+        "line": 318,
+        "text": "        <p id=\"planner-story\" class=\"data-banner\">尚未选择故事线，可填写普通行程需求。</p>"
+      },
+      {
+        "line": 319,
+        "text": "        <button id=\"planner-back-story\" type=\"button\" class=\"module-button\">返回故事线调整章节</button>"
+      },
+      {
+        "line": 321,
+        "text": "          <label>目的地（必填）<input name=\"city\" required maxlength=\"120\" list=\"itinerary-cities\" placeholder=\"填写四川城市，可填写多个\"></label>"
+      },
+      {
+        "line": 323,
+        "text": "          <label>出发地（必填）<input name=\"origin\" maxlength=\"100\" required placeholder=\"例如：南充市\"></label>"
+      },
+      {
+        "line": 324,
+        "text": "          <label>出发日期（选填）<input name=\"date\" type=\"date\"></label>"
+      },
+      {
+        "line": 325,
+        "text": "          <label>可用时间<select name=\"days\"><option value=\"0.5\">半天</option><option value=\"1\" selected>一天</option><option value=\"2\">两天</option></select></label>"
+      },
+      {
+        "line": 326,
+        "text": "          <label>人数（必填，1–50人）<input name=\"people\" type=\"number\" value=\"2\" min=\"1\" max=\"50\" required></label>"
+      },
+      {
+        "line": 327,
+        "text": "          <label>同行人群<select name=\"group\"><option>独行</option><option selected>家庭</option><option>亲子</option><option>研学</option></select></label>"
+      },
+      {
+        "line": 328,
+        "text": "          <label>交通方式<select name=\"transport\"><option>公共交通</option><option>自驾</option></select></label>"
+      },
+      {
+        "line": 329,
+        "text": "          <label>讲解偏好<select name=\"explanation\"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>"
+      },
+      {
+        "line": 330,
+        "text": "          <label class=\"form-wide\">补充需求（选填）<textarea name=\"notes\" rows=\"2\" maxlength=\"1000\" placeholder=\"例如：少走路、想多了解陈寿\"></textarea></label>"
+      },
+      {
+        "line": 331,
+        "text": "          <button class=\"module-button primary\" type=\"submit\">生成活动方案</button>"
+      },
+      {
+        "line": 333,
+        "text": "        <p class=\"map-note\">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>"
+      },
+      {
+        "line": 334,
+        "text": "        <div class=\"module-actions\"><button type=\"button\" class=\"module-button\" data-content-view=\"travel\">查询天气与空气质量</button><button type=\"button\" class=\"module-button\" data-content-view=\"outing\">核验道路路线</button></div>"
+      },
+      {
+        "line": 336,
+        "text": "        <button id=\"planner-retry\" type=\"button\" class=\"module-button\" hidden>重试上次请求</button>"
+      },
+      {
+        "line": 340,
+        "text": "        <p class=\"welcome-kicker\">我的行程</p><h2 tabindex=\"-1\">活动方案</h2>"
+      },
+      {
+        "line": 341,
+        "text": "        <div class=\"module-actions reading-actions\"><button id=\"save-plan\" class=\"module-button\" disabled>保存到本机</button><button id=\"copy-plan\" class=\"module-button\" disabled>复制方案</button><button class=\"module-button\" data-content-view=\"planner\">调整需求</button></div>"
+      },
+      {
+        "line": 343,
+        "text": "        <div class=\"module-actions\"><button id=\"plan-map\" class=\"module-button\" disabled>查看位置示意 / 待定位</button><button class=\"module-button\" data-content-view=\"travel\">天气与空气质量</button><button class=\"module-button\" data-content-view=\"outing\">核验道路路线</button><button id=\"plan-back-story\" class=\"module-button\">返回故事线</button></div>"
+      },
+      {
+        "line": 345,
+        "text": "        <h3>本机保存的方案</h3><div id=\"saved-plans\" class=\"module-results\"></div>"
+      },
+      {
+        "line": 346,
+        "text": "        <p class=\"map-note\">仅保存在当前浏览器，不会同步到其他设备。</p>"
+      },
+      {
+        "line": 351,
+        "text": "        <button type=\"button\" class=\"module-button\" id=\"travel-back\" data-content-view=\"planner\">返回活动需求</button>"
+      },
+      {
+        "line": 352,
+        "text": "        <p class=\"welcome-kicker\">出发前再确认</p><h2>天气与空气质量</h2>"
+      },
+      {
+        "line": 353,
+        "text": "        <p>填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。</p>"
+      },
+      {
+        "line": 355,
+        "text": "          <label>目的地<input id=\"travel-city\" list=\"itinerary-cities\" required maxlength=\"120\" placeholder=\"例如：南充\"></label>"
+      },
+      {
+        "line": 356,
+        "text": "          <label>出行日期（可选）<input id=\"travel-date\" type=\"date\"></label>"
+      },
+      {
+        "line": 357,
+        "text": "          <button id=\"load-travel\" type=\"submit\" class=\"module-button primary\">查询天气与空气质量</button>"
+      },
+      {
+        "line": 359,
+        "text": "        <p id=\"travel-status\" role=\"status\">填写目的地后点击查询；进入页面不会自动发出请求。</p>"
+      },
+      {
+        "line": 364,
+        "text": "        <span class=\"note\">AI 伴你读史行旅 · 动态信息请核验</span>"
+      },
+      {
+        "line": 365,
+        "text": "        <details class=\"image-credits\"><summary>影像来源</summary><div>"
+      },
+      {
+        "line": 366,
+        "text": "          <p>剑门关：<a href=\"https://commons.wikimedia.org/wiki/File:Jianmen_Pass.jpg\" target=\"_blank\" rel=\"noopener noreferrer\">Chensiyu2004 / Wikimedia Commons</a></p>"
+      },
+      {
+        "line": 367,
+        "text": "          <p>阆中古城：<a href=\"https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg\" target=\"_blank\" rel=\"noopener noreferrer\">Panzer VI-II / Wikimedia Commons</a></p>"
+      },
+      {
+        "line": 368,
+        "text": "          <p>两图均采用 <a href=\"https://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\" rel=\"noopener noreferrer\">CC BY-SA 4.0</a>。网页以 CSS 裁切展示；裁切展示部分沿用相同许可。</p>"
+      },
+      {
+        "line": 374,
+        "text": "  <button class=\"launcher\" id=\"launcher\" aria-label=\"打开对话，可拖动调整位置\" aria-expanded=\"false\" aria-controls=\"chat-panel\">"
+      },
+      {
+        "line": 376,
+        "text": "    <span>陈寿伴行</span>"
+      },
+      {
+        "line": 379,
+        "text": "  <aside class=\"chat-panel\" id=\"chat-panel\" aria-label=\"对话面板\" hidden>"
+      },
+      {
+        "line": 380,
+        "text": "    <nav class=\"history\" aria-label=\"历史对话\">"
+      },
+      {
+        "line": 381,
+        "text": "      <button id=\"new-chat\" class=\"new-chat\" aria-label=\"新建对话\">＋ 新对话</button>"
+      },
+      {
+        "line": 382,
+        "text": "      <span class=\"history-title\">最近对话 · 本页保留</span>"
+      },
+      {
+        "line": 387,
+        "text": "        <div id=\"historian-heading\"><span id=\"historian-portrait\" aria-hidden=\"true\"></span><strong>万卷史官 · 陈寿</strong><span id=\"historian-state\" role=\"status\">展卷相伴</span>"
+      },
+      {
+        "line": 388,
+        "text": "          <strong id=\"conversation-title\">新对话</strong>"
+      },
+      {
+        "line": 389,
+        "text": "          <span class=\"sub\" data-service-status>正在检查服务…</span>"
+      },
+      {
+        "line": 391,
+        "text": "        <button id=\"close-chat\" class=\"close\" aria-label=\"关闭对话\">×</button>"
+      },
+      {
+        "line": 394,
+        "text": "      <div class=\"delete-notice\" id=\"delete-notice\" role=\"status\" hidden>已删除对话 <button type=\"button\" id=\"undo-delete\">撤销</button></div>"
+      },
+      {
+        "line": 396,
+        "text": "        <label class=\"sr-only\" for=\"message\">输入消息</label>"
+      },
+      {
+        "line": 398,
+        "text": "          <textarea id=\"message\" placeholder=\"问陈寿：这一章讲什么？我只有半天…\" rows=\"2\" maxlength=\"2000\"></textarea>"
+      },
+      {
+        "line": 399,
+        "text": "          <button class=\"composer-send\" type=\"submit\" aria-label=\"发送消息\">↑</button>"
+      },
+      {
+        "line": 402,
+        "text": "      <details class=\"chat-options\"><summary>路线背景与讲解设置</summary><div class=\"chat-options-body\">"
+      },
+      {
+        "line": 403,
+        "text": "      <details class=\"historian-context\"><summary>此刻行至 · <span id=\"guide-location\">尚未启程</span></summary><p id=\"guide-context\"></p><p id=\"guide-transition\" role=\"status\"></p></details>"
+      },
+      {
+        "line": 404,
+        "text": "      <details class=\"historian-note\" id=\"guide-note\" hidden open><summary>陈寿接卷 · 章节引导</summary><div id=\"guide-narration\"></div><div id=\"guide-actions\"></div></details>"
+      },
+      {
+        "line": 405,
+        "text": "      <section id=\"character-panel\" class=\"character-panel\" aria-label=\"人物视角\">"
+      },
+      {
+        "line": 406,
+        "text": "        <label for=\"character-select\">当前人物视角</label>"
+      },
+      {
+        "line": 407,
+        "text": "        <select id=\"character-select\"><option>陈寿</option><option>诸葛亮</option><option>张飞</option></select>"
+      },
+      {
+        "line": 408,
+        "text": "        <details><summary>人物依据与相关故事</summary><div id=\"character-card\"></div></details>"
+      },
+      {
+        "line": 409,
+        "text": "        <label for=\"character-mode\">讲解模式</label><select id=\"character-mode\"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select>"
+      },
+      {
+        "line": 410,
+        "text": "        <p>AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志</p><p id=\"character-notice\" role=\"status\"></p>"
+      }
+    ]
+  },
+  {
+    "file": "frontend/journal.js",
+    "sha256": "e5814b6dfa5451f11cb51d37b87c2a67304a7f3152f5d53c3c8c6f77d6cf7fa7",
+    "lines": [
+      {
+        "line": 5,
+        "text": "  const owned=new Set(), messages=new WeakMap(), tabs=[], titles=['卷一 · 山河足迹','卷二 · 人物与疑问','卷三 · 未竟之旅'];"
+      },
+      {
+        "line": 11,
+        "text": "    const ids=new Set();questions=raw.filter(r=>r&&typeof r.id==='string'&&!ids.has(r.id)&&ids.add(r.id)&&typeof r.text==='string'&&r.text.trim()).slice(-limit).map(r=>({id:r.id,text:r.text.slice(0,5000),persona:['陈寿','诸葛亮','张飞'].includes(r.persona)?r.persona:null,comparison:r.comparison===true,recordedAt:typeof r.recordedAt==='string'&&Number.isFinite(Date.parse(r.recordedAt))?r.recordedAt:null}));"
+      },
+      {
+        "line": 16,
+        "text": "    if(typeof value!=='string'||!/(?:Z|[+-]\\d{2}:\\d{2})$/.test(value))return value?'时区未提供，时间待核验':'待确认';"
+      },
+      {
+        "line": 18,
+        "text": "    if(!calendar)return '待确认';"
+      },
+      {
+        "line": 20,
+        "text": "    if(month<1||month>12||day<1||day>[31,leap?29:28,31,30,31,30,31,31,30,31,30,31,30,31][month-1]||Number(calendar[4])>23||Number(calendar[5])>59||Number(calendar[6]||0)>59)return '待确认';"
+      },
+      {
+        "line": 21,
+        "text": "    const date=new Date(value);if(!Number.isFinite(date.getTime()))return '待确认';"
+      },
+      {
+        "line": 23,
+        "text": "    return part('year')+'年'+part('month')+'月'+part('day')+'日 '+part('hour')+':'+part('minute')+'（北京时间）';"
+      },
+      {
+        "line": 26,
+        "text": "    const oldCity=text.match(/^请生成([^。；\\n]{1,30})三国文化活动方案。(?:希望包含：[^。\\n]{1,100}。)?先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。$/);"
+      },
+      {
+        "line": 27,
+        "text": "    if(oldCity)return '请安排'+oldCity[1]+'的文化活动';"
+      },
+      {
+        "line": 28,
+        "text": "    if(/^(?:请生成|请由智能体为我生成)三国文化活动方案，只输出活动安排。/.test(text)){"
+      },
+      {
+        "line": 29,
+        "text": "      const value=label=>text.match(new RegExp(label+'：([^；。\\\\n]+)'))?.[1] || '待确认';"
+      },
+      {
+        "line": 30,
+        "text": "      return '请安排'+value('目的地')+'的'+(value('可用时间')==='待确认'?value('游玩时间'):value('可用时间'))+'文化活动：'+value('出发地')+'出发。';"
+      },
+      {
+        "line": 32,
+        "text": "    if(text.startsWith('【故事章节讲解】'))return '请陈寿讲解'+(text.match(/(?:文化节点|地点)：([^；。]+)/)?.[1] || text.match(/故事线：([^；。]+)/)?.[1] || '当前章节')+'。';"
+      },
+      {
+        "line": 48,
+        "text": "  const names=xs=>(Array.isArray(xs)?xs:[]).map(x=>typeof x==='string'?x:typeof x?.name==='string'?x.name:'').filter(x=>x&&x!=='待核验'&&x!=='待补充');"
+      },
+      {
+        "line": 49,
+        "text": "  const associations={chenshou:['陈寿','史书编纂'],zhangfei:['张飞'], 'shudao-xunzong':['诸葛亮','古道与关隘'], 'history-to-place':['建筑与遗址'], 'official-history':['正史与演义']};"
+      },
+      {
+        "line": 50,
+        "text": "  const themes=[['正史与演义',/正史|演义|史实|历史上/],['史书编纂',/陈寿|三国志|编纂/],['古道与关隘',/蜀道|剑门|米仓|关隘|古道/],['建筑与遗址',/建筑|遗址|古城|祠|万卷楼/]];"
+      },
+      {
+        "line": 55,
+        "text": "    const analyze=text=>{['陈寿','诸葛亮','张飞'].forEach(n=>{if(text.includes(n))count(n);});themes.forEach(([n,re])=>{if(re.test(text))count(n);});};"
+      },
+      {
+        "line": 63,
+        "text": "    if(next){reason=next.matches.length?'你的本地提问或已完成章节涉及“'+next.matches.join('、')+'”，可接着探索这个相关主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；这里是尚未完成的另一条故事线，可以继续拓展。':(next.total?'目前没有足够的兴趣记录，先推荐已有章节框架的主题作为起点。':'目前没有足够的兴趣记录，可以先浏览一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}"
+      },
+      {
+        "line": 69,
+        "text": "    row.append(node('p','',total?'第 '+(state.started||state.completed.size?state.current+1:0)+' / '+total+' 幕 · 已寻迹 '+state.completed.size+' / '+total+' 幕':'章节待补充 · 尚不能计算完成进度'));"
+      },
+      {
+        "line": 70,
+        "text": "    const scroll=node('div','journal-scroll');scroll.setAttribute('aria-label','已完成 '+state.completed.size+' / '+total+' 幕');"
+      },
+      {
+        "line": 71,
+        "text": "    (story.chapters||[]).forEach((c,i)=>scroll.append(node('span','journal-seal'+(state.completed.has(i)?' complete':''),(i+1)+' · '+(state.completed.has(i)?'已寻迹':state.skipped.has(i)?'本次跳过':'待探索'))));row.append(scroll);"
+      },
+      {
+        "line": 72,
+        "text": "    row.append(button('继续阅读',()=>window.SGTStoryUI.openStory(story.id)));box.append(row);"
+      },
+      {
+        "line": 75,
+        "text": "    heading(box,'地图足迹与已探索节点');box.append(node('p','','仅来自你标为“已寻迹”的章节；县级驻地是位置示意，缺坐标不绘制精确点。'));"
+      },
+      {
+        "line": 76,
+        "text": "    if(!m.explored.length){box.append(node('p','journal-empty-line','尚无已探索的建筑、遗址或古道。完成章节后，足迹会写在这里。'));return;}"
+      },
+      {
+        "line": 78,
+        "text": "    m.explored.forEach(({place,chapter})=>{const located=window.StoryMap?.describePlace(place,chapter),row=node('div','journal-place');row.append(window.SGTStoryUI.icon(place.building),node('span','',place.name+' · '+(located?.point?located.exact?'来源已核验，入口待确认':'位置示意 / 待定位':'坐标待核验')));if(located?.point){points.push({...located.point,label:place.name,exact:located.exact});row.append(button('在地图中查看',()=>window.TravelMap.focusStoryPoint(located.point)));}row.append(button('重读这个节点',()=>window.CulturalNode.openPlace(place.id,{returnTo:'journal'})));box.append(row);});"
+      },
+      {
+        "line": 80,
+        "text": "    const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('class','journal-footprints');svg.setAttribute('role','img');svg.setAttribute('aria-label','已寻迹章节的地理位置示意，不是到访轨迹或道路导航');"
+      },
+      {
+        "line": 83,
+        "text": "    points.forEach((p,i)=>{const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',xy[i][0]);dot.setAttribute('cy',xy[i][1]);dot.setAttribute('r',4);const t=document.createElementNS(ns,'text');t.setAttribute('x',xy[i][0]+8);t.setAttribute('y',xy[i][1]-8+i%2*26);t.textContent=p.label+(p.exact?'':'（驻地示意）');svg.append(dot,t);});box.append(svg,node('p','','底图沿用现有四川地图资料；印记表示章节的关联位置，不是GPS轨迹。'));"
+      },
+      {
+        "line": 87,
+        "text": "    $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 换设备不会同步；不是账号档案。'+(available?'问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'问题读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'问题存储不可用，当前问题仅本页保留。')+(!window.StoryProgress.notice().includes('不代表实际到访')?' 手动记录不代表实际到访。':'');"
+      },
+      {
+        "line": 88,
+        "text": "    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started){empty.append(node('h2','','你还没有开始第一段旅程'),node('p','','从一个人物、一处古道或一个疑问出发。亲手记下第一幕，书页就会留下你的印章。'),button('开始探索故事线',()=>showContentView('story')));}"
+      },
+      {
+        "line": 89,
+        "text": "    if(page===0){heading(book,'完成过的故事线');if(!m.completed.length)book.append(node('p','','还没有整条完成的故事线，未走完的章节也值得保留。'));m.completed.forEach(x=>storyRow(book,x));heading(book,'正在写下的旅程');const begun=m.pending.filter(x=>x.state.started||x.state.completed.size);if(!begun.length)book.append(node('p','','暂无进行中的旅程。'));begun.forEach(x=>storyRow(book,x));footprints(book,m);}"
+      },
+      {
+        "line": 90,
+        "text": "    if(page===1){heading(book,'已解锁的人物与事件');book.append(node('p','','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问或切换人物不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));heading(book,'曾经问过的三国');if(!questions.length)book.append(node('p','','你还没有留下问题。向陈寿、诸葛亮或张飞提问，疑问也会成为旅程的一部分。'));[...questions].reverse().forEach(q=>{const row=node('section','journal-question');row.append(node('span','journal-seal',q.comparison?'正史 × 演义探索':'文化提问'),node('p','',visitorText(q.text)),node('small','', '记录时间：'+recordedTime(q.recordedAt)+(q.persona?' · '+q.persona+'视角':'')));book.append(row);});heading(book,'最感兴趣的人物与文化主题');book.append(node('p','','按最近200条本地问题及已完成章节中的关键词出现次数统计；每条同一关键词最多计一次，非历史事实或人物关系判断。'));if(!m.ranked.length)book.append(node('p','','尚无足够的本地兴趣记录。'));m.ranked.forEach(([n,count])=>book.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));}"
+      },
+      {
+        "line": 91,
+        "text": "    if(page===2){heading(book,'待探索的故事线');if(!m.pending.length)book.append(node('p','','当前已知故事线均已记录完成，可以重读章节，等待新的主题。'));m.pending.forEach(x=>storyRow(book,x));book.append(node('p','','下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。'));}"
+      },
+      {
+        "line": 92,
+        "text": "    tabs.forEach((b,i)=>b.setAttribute('aria-pressed',String(i===page)));$('#journal-page-number').textContent='第 '+(page+1)+' / 3 页';$('#journal-prev').disabled=page===0;$('#journal-next').disabled=page===2;"
+      },
+      {
+        "line": 93,
+        "text": "    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事线推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('翻开下一段故事',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));"
+      }
+    ]
+  },
+  {
+    "file": "frontend/landing.js",
+    "sha256": "6ec509335fcd5d23b3055d9804b32921cc4b74004bd1e3877c8d90bcf8f3e787",
+    "lines": [
+      {
+        "line": 6,
+        "text": "    plan: ['想去哪里，和谁一起出发？', '告诉我时间、出发地和兴趣，一起梳理游览顺序。', '例如：带孩子从南充出发，玩两天，想去阆中，少走路、多听三国故事。'],"
+      },
+      {
+        "line": 7,
+        "text": "    culture: ['眼前的山河，藏着什么故事？', '可以问人物、事件或景点；请向导区分正史与演义，说明资料依据。', '例如：陈寿为什么写《三国志》？万卷楼与他有什么关系？'],"
+      },
+      {
+        "line": 8,
+        "text": "    character: ['如果能问古人，你想问什么？', '这是基于资料的 AI 人物解读，不是历史人物原话；不确定的内容应明确说明。', '例如：我想问张飞，他与阆中有什么关系？哪些是史实，哪些来自演义？'],"
+      },
+      {
+        "line": 9,
+        "text": "    review: ['这一程，你想怎样调整？', '说说走过的地方、喜欢的故事或新的需求，在当前对话中继续完善。', '例如：把刚才的路线改得轻松一点，少走路，多留时间听陈寿的故事。']"
+      },
+      {
+        "line": 23,
+        "text": "    $('#journey-feedback').textContent = field.value ? '已恢复这个主题的草稿。' : '已切换主题，其他主题的草稿仍在本页保留。';"
+      },
+      {
+        "line": 36,
+        "text": "      $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';"
+      },
+      {
+        "line": 37,
+        "text": "    } else { send(question, options); $('#journey-feedback').textContent = '已交给向导，可以在对话中继续追问。'; }"
+      },
+      {
+        "line": 45,
+        "text": "    if ($('#journey-profile').value) preferences.push('同行方式：' + $('#journey-profile').value);"
+      },
+      {
+        "line": 46,
+        "text": "    if ($('#journey-style').value) preferences.push('讲解偏好：' + $('#journey-style').value);"
+      },
+      {
+        "line": 47,
+        "text": "    if (mode === 'character') preferences.push('请基于史料解读人物，区分史实、演义与推测，不编造人物原话。');"
+      },
+      {
+        "line": 49,
+        "text": "    ask(question,{displayText:field.value.trim()+(preferences.length?'（'+preferences.filter(p=>!p.startsWith('请基于')).join('；')+'）':'')}); field.value = ''; drafts[mode] = ''; update();"
+      }
+    ]
+  },
+  {
+    "file": "frontend/map-route-core.js",
+    "sha256": "161b5584771fc16a18ac65f92cebf399734f9321c9b0a008dedda22a68bd0a2a",
+    "lines": [
+      {
+        "line": 6,
+        "text": "    const short = place.name.replace(/(自治县|县|市|区)$/, '');"
+      },
+      {
+        "line": 8,
+        "text": "    if (place.name.startsWith('阿坝藏族')) names.push('阿坝州');"
+      },
+      {
+        "line": 9,
+        "text": "    if (place.name.startsWith('甘孜藏族')) names.push('甘孜州');"
+      },
+      {
+        "line": 10,
+        "text": "    if (place.name.startsWith('凉山彝族')) names.push('凉山州');"
+      },
+      {
+        "line": 18,
+        "text": "        if (!/(?:不去|不要去|不经过|不途经|不含|排除)\\s*$/.test(text.slice(Math.max(0, start - 8), start))) hits.push({ start, end: start + alias.length, place });"
+      },
+      {
+        "line": 29,
+        "text": "        const contextual = candidates.filter(item => item.place.parent && text.includes(item.place.parent.replace(/市$/, '')));"
+      },
+      {
+        "line": 43,
+        "text": "      if (!stop || typeof stop.name !== 'string') { missing.push('未命名站点'); return null; }"
+      },
+      {
+        "line": 61,
+        "text": "     当前后端 stops 既没有 coordinates、名称又是景区，全都匹配不上驻地，"
+      },
+      {
+        "line": 62,
+        "text": "     无条件替换会把用户已经看到的地名路线清空（真实联调缺陷）。 */"
+      },
+      {
+        "line": 67,
+        "text": "    if (located(parsed)) return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };"
+      },
+      {
+        "line": 69,
+        "text": "    return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };"
+      }
+    ]
+  },
+  {
+    "file": "frontend/outing-core.js",
+    "sha256": "30e07951a3b427fc0ff7fdff499986c3c4ce97684a809e1fd243b30dae57b9dd",
+    "lines": []
+  },
+  {
+    "file": "frontend/outing.css",
+    "sha256": "f1a3468aa3d94509fdfe12f18602f3b24abc7e45e2f36e6a84ead402cdcc9b12",
+    "lines": []
+  },
+  {
+    "file": "frontend/outing.js",
+    "sha256": "30a552815a093c327b6f86e69febefdb4dd597a43654cebcc5130beb7e704741",
+    "lines": [
+      {
+        "line": 7,
+        "text": "  const time=v=>{const d=new Date(v);return Number.isFinite(+d)?d.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+'（北京时间）':'未提供';};"
+      },
+      {
+        "line": 10,
+        "text": "    target.append(node('p','查询时间：'+time(record?.fetched_at)+'；可能为缓存结果。'));"
+      },
+      {
+        "line": 12,
+        "text": "      try {const u=new URL(s.source_url);if(u.protocol!=='https:')return;const a=node('a',s.title||'查看来源');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';target.append(a);}catch{}"
+      },
+      {
+        "line": 15,
+        "text": "  function clearRoute(){routeVersion++;$('outing-route-form').querySelector('button').disabled=false;$('outing-route-preview').replaceChildren(node('p','请先确认起终点；查询成功后显示真实道路几何。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();$('outing-route-status').textContent='条件已改变，请重新查询。';}"
+      },
+      {
+        "line": 21,
+        "text": "    const r=await api.lookupCity(selected);if(r.status!=='ok')throw Error(r.message||'城市定位失败。');"
+      },
+      {
+        "line": 22,
+        "text": "    if(r.data.coordinate_system!=='WGS84'||!Number.isFinite(r.data.longitude)||!Number.isFinite(r.data.latitude))throw Error('坐标格式无法确认。');return r.data;"
+      },
+      {
+        "line": 25,
+        "text": "    const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 260');svg.setAttribute('role','img');svg.setAttribute('aria-label','服务返回的道路路线形状示意，无底图，不供逐向导航');"
+      },
+      {
+        "line": 27,
+        "text": "    for(const [i,p] of [[0,points[0]],[1,points.at(-1)]]){const c=document.createElementNS(ns,'circle');c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r','6');svg.append(c);const text=document.createElementNS(ns,'text');text.setAttribute('x',p[0]);text.setAttribute('y',p[1]-12);text.setAttribute('text-anchor','middle');text.setAttribute('fill','currentColor');text.textContent=i?'终':'起';svg.append(text);}return svg;"
+      },
+      {
+        "line": 32,
+        "text": "    button.disabled=true;$('outing-route-status').textContent='正在定位并查询公共道路服务…';"
+      },
+      {
+        "line": 36,
+        "text": "      if(origin.longitude===end.longitude&&origin.latitude===end.latitude)throw Error('起点与终点相同，请选择不同位置。');"
+      },
+      {
+        "line": 38,
+        "text": "      if(r.status!=='ok')throw Error(r.message||'没有可用路线。');"
+      },
+      {
+        "line": 39,
+        "text": "      const d=r.data,points=core.routePoints(d.geometry);if(!points||!Number.isFinite(d.distance_m)||d.distance_m<0||!Number.isFinite(d.duration_seconds)||d.duration_seconds<0)throw Error('路线几何或距离数据不完整，未绘制示意。');"
+      },
+      {
+        "line": 40,
+        "text": "      $('outing-route-preview').replaceChildren(svgRoute(points),node('small','服务返回的道路形状 · 无底图 · 非逐向导航'));"
+      },
+      {
+        "line": 41,
+        "text": "      $('outing-route-metrics').replaceChildren(node('strong',`距离 ${(d.distance_m/1000).toFixed(2)} km`),node('strong',`预计 ${Math.ceil(d.duration_seconds/60)} 分钟`));"
+      },
+      {
+        "line": 43,
+        "text": "      $('outing-route-status').textContent=r.message+(snaps.length?' 起终点吸附道路偏移：'+snaps.map(m=>m.toFixed(0)+'米').join(' / ')+'。':'');"
+      },
+      {
+        "line": 44,
+        "text": "      source($('outing-route-source'),d);const fix=node('a','在 OpenStreetMap 查看／修正地图');fix.href='https://www.openstreetmap.org/';fix.target='_blank';fix.rel='noopener noreferrer';$('outing-route-source').append(node('br'),fix);"
+      },
+      {
+        "line": 45,
+        "text": "    }catch(e){if(version===routeVersion){$('outing-route-status').textContent=e.message||'查询失败，请重试。';$('outing-route-preview').replaceChildren(node('p','本次没有可确认的道路路线，可调整起终点后重试。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();}}"
+      },
+      {
+        "line": 52,
+        "text": "    $('outing-origin').textContent='来自本次活动计划 · 地点文字已带入，请搜索并确认候选';"
+      },
+      {
+        "line": 58,
+        "text": "    $('outing-origin').textContent='来自陈寿对话的行程草案 · 请确认目的地与日期';$('outing-back').hidden=false;"
+      },
+      {
+        "line": 60,
+        "text": "    $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待核验')));"
+      },
+      {
+        "line": 61,
+        "text": "    $('outing-draft-note').textContent=d.stops.length?'已带入结构化站点名称；未将坐标或可行性视为已核验。':'已保留回答原文。当前回答未提供结构化站点，未把文字猜测为可导航路线。';"
+      },
+      {
+        "line": 65,
+        "text": "  $('outing-back').onclick=()=>{if(!back?.())$('outing-origin').textContent='原对话已被删除，可从聊天入口新建对话。';};"
+      }
+    ]
+  },
+  {
+    "file": "frontend/sichuan-boundary.json",
+    "sha256": "d3d36028e76d49412336d5bf8e3220a2f1572cf8d7da3b388aaa2f8c616082d6",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 1
+  },
+  {
+    "file": "frontend/sichuan-cities.json",
+    "sha256": "457c1702dfb6b9d09a5b710166c2c0df0dd87567db820c369eb16c4ed83c80bb",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 21
+  },
+  {
+    "file": "frontend/sichuan-city-boundaries.json",
+    "sha256": "21b23d955e33f1ede05d9d179199ecbeb8b6f5b9036d95e1af96d1e26e3f97ba",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 1
+  },
+  {
+    "file": "frontend/sichuan-counties.json",
+    "sha256": "8aea223363319ef418075152592670c4d53c9e4a2dfe7525e4ea5115be0d4793",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 366
+  },
+  {
+    "file": "frontend/sichuan-county-boundaries.json",
+    "sha256": "c51673da944c88b1e9864b8f18c6d2acbdf1da893fcca1c1316e88a6192ff34b",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 1
+  },
+  {
+    "file": "frontend/sichuan-map-geometry.json",
+    "sha256": "b17164a174264687d13b18711aa8f4dd587e122911620715afcc90e6d3988f6f",
+    "classification": "地理数据/专名，原样保留",
+    "han_line_count": 1
+  },
+  {
+    "file": "frontend/stories.js",
+    "sha256": "f0ce57eba44b2ca28f4d662e232abb3249161834fc79fd807b374dcbca80ea1f",
+    "lines": [
+      {
+        "line": 5,
+        "text": "    { id: 'chenshou', title: '从南充少年到三国史家', phase: '寻源' },"
+      },
+      {
+        "line": 6,
+        "text": "    { id: 'zhangfei', title: '镇守阆中·寻迹张飞', phase: '探秘' },"
+      },
+      {
+        "line": 7,
+        "text": "    { id: 'shudao-xunzong', title: '蜀汉北境·蜀道寻踪', phase: '探秘', chapters: ["
+      },
+      {
+        "line": 8,
+        "text": "      { order: 1, name: '第一幕｜昭化古城', placeId: 'zhaohua' },"
+      },
+      {
+        "line": 9,
+        "text": "      { order: 2, name: '第二幕｜剑门天险', placeId: 'jianmenguan' },"
+      },
+      {
+        "line": 10,
+        "text": "      { order: 3, name: '第三幕｜米仓道', placeId: 'micangdao' }"
+      },
+      {
+        "line": 12,
+        "text": "    { id: 'history-to-place', title: '从史书到现场', phase: '探秘' },"
+      },
+      {
+        "line": 13,
+        "text": "    { id: 'official-history', title: '正史里的三国', phase: '读史' }"
+      },
+      {
+        "line": 18,
+        "text": "    { id: 'wanjuanlou', name: '万卷楼', building: 'tower' },"
+      },
+      {
+        "line": 19,
+        "text": "    { id: 'hanhuanhouci', name: '汉桓侯祠', building: 'shrine' },"
+      },
+      {
+        "line": 20,
+        "text": "    { id: 'jianmenguan', name: '剑门关', building: 'pass', fallbackName: '剑阁县', fallbackParent: '广元市' },"
+      },
+      {
+        "line": 21,
+        "text": "    { id: 'zhaohua', name: '昭化古城', building: 'wall', fallbackName: '昭化区', fallbackParent: '广元市' },"
+      },
+      {
+        "line": 22,
+        "text": "    { id: 'micangdao', name: '米仓道', building: 'road' }"
+      },
+      {
+        "line": 25,
+        "text": "  const phases = ['寻源', '读史', '探秘', '传承'];"
+      },
+      {
+        "line": 26,
+        "text": "  const matchesPhase = (story, phase) => phase === '全部' || phases.includes(story.phase) && story.phase === phase;"
+      },
+      {
+        "line": 28,
+        "text": "  const text = value => typeof value === 'string' && value.trim() ? value.trim() : '待补充';"
+      },
+      {
+        "line": 29,
+        "text": "  const list = value => Array.isArray(value) && value.length ? value.map(text).join(' · ') : '待补充';"
+      },
+      {
+        "line": 38,
+        "text": "    [['核心人物', list(story.people)], ['预计时长', Number.isFinite(story.durationHours) && story.durationHours > 0 ? story.durationHours + ' 小时 · 待核验' : '待补充'], ['涉及地区', list(story.areas)], ['章节数量', Array.isArray(story.chapters) && story.chapters.length ? story.chapters.length + ' 章' : '待补充']].forEach(([key, value]) => {"
+      },
+      {
+        "line": 39,
+        "text": "      if (value === '待补充') return;"
+      },
+      {
+        "line": 48,
+        "text": "    $('#preview-selection').textContent = text(story.title) + (story.chapters.length ? ' · 章节顺序已设定，位置待核验' : ' · 空间走向待补充');"
+      },
+      {
+        "line": 50,
+        "text": "    $('#preview-map-note').textContent=story.chapters.length?'':'本主题章节与地点待补充；仍可与陈寿讨论。';"
+      },
+      {
+        "line": 52,
+        "text": "    detail.replaceChildren(node('p', 'story-disclosure', '文化探索主题 · 向陈寿了解故事与出处'), facts(story));"
+      },
+      {
+        "line": 53,
+        "text": "    for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {"
+      },
+      {
+        "line": 56,
+        "text": "    detail.append(node('p', 'story-empty', '史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));"
+      },
+      {
+        "line": 57,
+        "text": "    $('#story-action-status').textContent = '当前为主题模板，尚未形成可执行行程。';"
+      },
+      {
+        "line": 67,
+        "text": "    d.append(node('summary','', '史料依据 · 资料状态：' + ({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期'}[record.dataStatus] || '待核验')));"
+      },
+      {
+        "line": 68,
+        "text": "    d.append(node('p','', '当前显示：故事主题资料；待确认项：史料出处与具体内容；更新时间：' + (record.updatedAt || '未提供')));"
+      },
+      {
+        "line": 69,
+        "text": "    if (!record.sources?.length) d.append(node('p','', '来源待补充；当前资料中未找到可靠记载。'));"
+      },
+      {
+        "line": 71,
+        "text": "      const row=node('p','',text(s.title)+' · 来源等级：'+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验'));"
+      },
+      {
+        "line": 72,
+        "text": "      try { const url=new URL(s.source_url); if(['http:','https:'].includes(url.protocol)) { const a=node('a','','查看来源'); a.href=url.href; a.target='_blank'; a.rel='noopener noreferrer'; row.append(a); } } catch (_) {}"
+      },
+      {
+        "line": 73,
+        "text": "      if(s.source_level==='C') row.append(node('small','','C 级仅作线索，不能支撑史实结论。'));"
+      },
+      {
+        "line": 80,
+        "text": "    detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',chapters.length?progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length:'尚未开始 · 可先向陈寿了解主题'));"
+      },
+      {
+        "line": 81,
+        "text": "    detail.append(node('h3','','讲解模式'));"
+      },
+      {
+        "line": 83,
+        "text": "    ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{"
+      },
+      {
+        "line": 85,
+        "text": "    }); detail.append(action('带入活动计划',()=>window.TravelModules.openStory(story)));"
+      },
+      {
+        "line": 86,
+        "text": "    detail.append(modes,node('p','map-note','仅改变同一章节的讲解表达；不会切换故事或地点。由现有陈寿对话服务讲解，资料不足时说明待确认。'));"
+      },
+      {
+        "line": 87,
+        "text": "    if(story.people?.length || story.events?.length)detail.append(node('h3','','相关人物与关键事件'),node('p','',[story.people?.length?'人物：'+list(story.people):'',story.events?.length?'事件：'+list(story.events):''].filter(Boolean).join('；')));"
+      },
+      {
+        "line": 88,
+        "text": "    const constraints=[['交通',story.constraints?.transport],['开放时间',story.constraints?.openTime],['游览时长',story.constraints?.duration],['预算',story.constraints?.budget]].filter(([,v])=>v);"
+      },
+      {
+        "line": 89,
+        "text": "    if(constraints.length)detail.append(node('h3','','现实约束'),node('p','',constraints.map(([k,v])=>k+'：'+v).join('；')+' · 待核验'));"
+      },
+      {
+        "line": 94,
+        "text": "      const status=s.skipped.has(i)?'本次跳过':s.completed.has(i)?'已完成 · 已寻迹':s.started&&s.current===i?'当前':'待探索';"
+      },
+      {
+        "line": 95,
+        "text": "      li.dataset.state=status; li.append(node('h4','',c.name+' · '+status),node('p','','地点 / 建筑：'+(place?place.name+' / '+({wall:'城楼',pass:'关楼',road:'古道',tower:'楼阁',shrine:'祠庙'}[place.building]||'形制待补充'):'待补充')),"
+      },
+      {
+        "line": 96,
+        "text": "        node('p','story-disclosure','向陈寿了解本章故事与出处'));"
+      },
+      {
+        "line": 97,
+        "text": "      [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));"
+      },
+      {
+        "line": 98,
+        "text": "      if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));"
+      },
+      {
+        "line": 99,
+        "text": "      if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.openPlace(place.id,{returnTo:'story'})));"
+      },
+      {
+        "line": 100,
+        "text": "      if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));"
+      },
+      {
+        "line": 102,
+        "text": "    }); if(chapters.length)detail.append(node('h3','','章节轴 · 逐幕寻迹'),axis);"
+      },
+      {
+        "line": 104,
+        "text": "      const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));"
+      },
+      {
+        "line": 106,
+        "text": "      const feedback=node('p','map-note','核心章节尚待编辑确认，由你选择；交通和游览时长待核验，不保证半天可完成。');feedback.setAttribute('role','status');"
+      },
+      {
+        "line": 107,
+        "text": "      box.append(action('按选中章节带入活动计划',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';else window.TravelModules.openStory(story);}),action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);"
+      },
+      {
+        "line": 109,
+        "text": "    if(progress.status(story)==='已寻迹') {"
+      },
+      {
+        "line": 110,
+        "text": "      const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');"
+      },
+      {
+        "line": 111,
+        "text": "      detail.append(node('h3','','一卷读罢，山河有迹'),node('p','','你已手动完成本故事全部章节，回顾了：'+visitedPlaces.join('、')+'。相关人物：'+list(story.people)+'。史料仍需核验，探索记录不代表实际到访。'));"
+      },
+      {
+        "line": 112,
+        "text": "      const next=window.SGT_STORIES.find(item=>item.id!==story.id&&progress.status(item)!=='已寻迹');"
+      },
+      {
+        "line": 113,
+        "text": "      if(next)detail.append(action('接着探索：'+next.title,()=>select(next,true)));"
+      },
+      {
+        "line": 114,
+        "text": "    } else if(s.skipped.size && chapters.every((_,i)=>s.skipped.has(i)||s.completed.has(i))) detail.append(node('p','','本次所选章节已完成；仍有跳过章节，整条故事保持探索中。'));"
+      },
+      {
+        "line": 116,
+        "text": "    $('#story-map-open').textContent=chapters.length?'开始探索 →':'开始探索（章节待补充）';"
+      },
+      {
+        "line": 119,
+        "text": "  ['全部','寻源','读史','探秘','传承'].forEach(phase=>{"
+      },
+      {
+        "line": 120,
+        "text": "    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{const story=window.SGT_STORIES.find(item=>item.id===shell.dataset.storyId);shell.hidden=!story||!matchesPhase(story,phase);});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));$('#story-filter-status').textContent=Array.from($('#story-cards').children).some(shell=>!shell.hidden)?'':'可先浏览其他阶段，或向陈寿询问这个主题。';});"
+      },
+      {
+        "line": 121,
+        "text": "    b.setAttribute('aria-pressed',String(phase==='全部'));filters.append(b);"
+      },
+      {
+        "line": 128,
+        "text": "    card.setAttribute('aria-label', '查看故事线：' + story.title);"
+      },
+      {
+        "line": 129,
+        "text": "    if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));"
+      },
+      {
+        "line": 130,
+        "text": "    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '查看文化主题与故事线　↗'));"
+      },
+      {
+        "line": 139,
+        "text": "    const mapButton = node('button', 'story-map-entry', '在故事地图中探索 →'); mapButton.type = 'button';"
+      },
+      {
+        "line": 140,
+        "text": "    mapButton.setAttribute('aria-label', '在故事地图中探索：' + story.title); mapButton.setAttribute('aria-controls', 'map-view');"
+      },
+      {
+        "line": 144,
+        "text": "    if(!story.chapters.length)shell.append(node('p','map-note','本主题章节与地点待补充；可进入主题与陈寿讨论。'));"
+      },
+      {
+        "line": 150,
+        "text": "    window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事线，适合怎么游览？');"
+      },
+      {
+        "line": 151,
+        "text": "    $('#story-action-status').textContent = '已交给向导；如正在回答，问题会保留在对话草稿中。';"
+      },
+      {
+        "line": 176,
+        "text": "    article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));"
+      },
+      {
+        "line": 177,
+        "text": "    article.append(action('读懂'+place.name,()=>window.CulturalNode.openPlace(place.id,{returnTo:'welcome'})));"
+      },
+      {
+        "line": 188,
+        "text": "    $('#story-preview-status').textContent = '四川轮廓示意 · 故事章节地点待确认，未绘制路线。';"
+      },
+      {
+        "line": 189,
+        "text": "  }).catch(() => { $('#story-preview-status').textContent = '地理轮廓暂不可用；可切到行旅地图查看。故事路线仍待补充。'; });"
+      }
+    ]
+  },
+  {
+    "file": "frontend/story-map.js",
+    "sha256": "8769392649cfd51f574c53e4578504e51d07d9d95b55b5fb4d7d1737ff7d36cf",
+    "lines": [
+      {
+        "line": 18,
+        "text": "  const value = text => typeof text === 'string' && text.trim() ? text.trim() : '待确认';"
+      },
+      {
+        "line": 19,
+        "text": "  const list = items => Array.isArray(items) && items.length ? items.map(value).join('、') : '待确认';"
+      },
+      {
+        "line": 32,
+        "text": "    if (!place) return { chapter, place: { name: '地点待确认', building: 'book' }, point: null, exact: false, note: '待定位 · 地点数据待确认' };"
+      },
+      {
+        "line": 35,
+        "text": "      if (parsed?.points[0]) return { chapter, place, point: parsed.points[0], exact: true, note: '景区位置有来源；入口与导航仍待确认' };"
+      },
+      {
+        "line": 40,
+        "text": "    return { chapter, place, point, exact: false, note: point ? '坐标待核验 / 景区待定位 · ' + point.name + '驻地示意（关联待确认）' : '待定位 · 具体遗址与县区待确认' };"
+      },
+      {
+        "line": 43,
+        "text": "    if (state().skipped?.has(index)) return '本次跳过';"
+      },
+      {
+        "line": 44,
+        "text": "    return state().completed.has(index) ? '已寻迹' : state().current === index ? '当前章' : '待探索';"
+      },
+      {
+        "line": 58,
+        "text": "    $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';"
+      },
+      {
+        "line": 60,
+        "text": "    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。到达路线请交给智能体规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';"
+      },
+      {
+        "line": 69,
+        "text": "      li.append(button, node('small', '', item.note), node('small', '', state().skipped?.has(index) ? '本次跳过：由你选择将有限时间留给其他章节。' : state().skipped?.size ? '本次保留：你选取的核心章节，时长待核验。' : '')); $('#story-chapter-list').append(li);"
+      },
+      {
+        "line": 86,
+        "text": "        stamp.append(svgNode('rect',{x:-24,y:26,width:48,height:17,rx:2,class:'chapter-complete-border'}),svgNode('text',{x:0,y:38,'text-anchor':'middle',class:'chapter-complete-stamp'},'已寻迹'));glyph.append(stamp);"
+      },
+      {
+        "line": 97,
+        "text": "    const details = node('details', 'chapter-sources'); details.append(node('summary', '', '展开史料来源 · ' + (record.sources?.length || 0) + ' 条'));"
+      },
+      {
+        "line": 98,
+        "text": "    if (!Array.isArray(record.sources) || !record.sources.length) details.append(node('p', '', '来源待确认。当前模板尚无可核验的史料，不能支撑史实结论。'));"
+      },
+      {
+        "line": 101,
+        "text": "      const title = value(source.title) + ' · ' + (['A','B','C'].includes(source.source_level) ? source.source_level : '等级待确认');"
+      },
+      {
+        "line": 103,
+        "text": "      else row.append(node('span', '', title + ' · 链接待确认'));"
+      },
+      {
+        "line": 104,
+        "text": "      if (source.source_level === 'C') row.append(node('small', '', ' C 级仅作线索，不能支撑史实结论。'));"
+      },
+      {
+        "line": 117,
+        "text": "    const statuses = {pending:'待确认',sample:'示例资料 / 待核验',maintained:'维护资料',live:'实时资料',stale:'过期资料'};"
+      },
+      {
+        "line": 119,
+        "text": "    content.replaceChildren(node('p', 'chapter-trust', '资料状态：' + (statuses[chapter.dataStatus] || '待确认') + (verified ? '' : ' · 史料待核验')),"
+      },
+      {
+        "line": 120,
+        "text": "      node('p', '', '为什么推荐：' + value(chapter.reason)), node('p', '', '在故事中的作用：' + value(chapter.role)),"
+      },
+      {
+        "line": 121,
+        "text": "      node('p', '', '讲解模式：' + (state().mode || '大众体验版')),"
+      },
+      {
+        "line": 122,
+        "text": "      node('p', '', '相关人物：' + list(chapter.people)), node('p', '', '相关事件：' + list(chapter.events)),"
+      },
+      {
+        "line": 123,
+        "text": "      node('p', 'chapter-narrative', typeof chapter.story === 'string' && chapter.story.trim() ? chapter.story : '故事内容待确认。接入可核验史料后，再讲述这一章。'),"
+      },
+      {
+        "line": 124,
+        "text": "      node('p', 'map-note', '更新时间：' + (verified ? chapter.updatedAt : '待确认')), sources(chapter));"
+      },
+      {
+        "line": 126,
+        "text": "    $('#chapter-add').textContent = item.exact ? '加入路线' : item.point ? '加入路线（驻地示意）' : '加入路线（待定位）';"
+      },
+      {
+        "line": 127,
+        "text": "    $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '直接导航暂未提供';"
+      },
+      {
+        "line": 128,
+        "text": "    $('#chapter-complete').textContent = state().completed.has(index) ? '撤销已寻迹' : '标记已寻迹';"
+      },
+      {
+        "line": 130,
+        "text": "    $('#story-node-feedback').textContent = '点击章节后由陈寿接续讲解；资料不足时保留疑问。';"
+      },
+      {
+        "line": 136,
+        "text": "    const question = '【故事章节讲解】讲解模式：' + (state().mode || '大众体验版') + '。大众用清晰易懂的表达，亲子用问题引导，学术侧重史料依据与不确定性；保持当前故事与地点。故事线：' + active.title + '。' +"
+      },
+      {
+        "line": 137,
+        "text": "      (previous ? '上一章（章节顺序，不代表已到访）：' + previous.name + '；已有文本：' + value(previous.story) + '。' : '这是开篇。') +"
+      },
+      {
+        "line": 138,
+        "text": "      '当前第 ' + (index+1) + '/' + resolved.length + ' 幕：' + item.chapter.name + '；地点：' + item.place.name + '；定位情况：' + item.note + '。' +"
+      },
+      {
+        "line": 139,
+        "text": "      '当前章节资料：' + value(item.chapter.story) + '；人物：' + list(item.chapter.people) + '；事件：' + list(item.chapter.events) + '。' +"
+      },
+      {
+        "line": 140,
+        "text": "      (compare ? '请对照正史、演义和地方传说，分别说明依据。' : '请承接上一章的主题介绍本章，只使用可靠资料并说明来源。') +"
+      },
+      {
+        "line": 141,
+        "text": "      '缺资料请明确说待确认，不编造上一章讲解、史实或道路导航，不把驻地当景区入口。';"
+      },
+      {
+        "line": 142,
+        "text": "    window.SGTJourney.ask(question,{displayText:'请陈寿'+(compare?'对照正史与演义，讲解':'讲解')+item.chapter.name+'（'+item.place.name+'，'+(state().mode||'大众体验版')+'）',preserveMap:true});"
+      },
+      {
+        "line": 143,
+        "text": "    $('#story-node-feedback').textContent = '已交给陈寿；正在回答时，本章问题会存入对话草稿。';"
+      },
+      {
+        "line": 166,
+        "text": "      if (request === epoch) { showContentView('map'); $('#map-route-status').textContent='地图资料暂不可用，请刷新后重试。故事模式尚未开启。'; }"
+      },
+      {
+        "line": 196,
+        "text": "        if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；可向陈寿继续了解。';return false; });"
+      },
+      {
+        "line": 198,
+        "text": "      $('#map-route-status').textContent='故事资料不完整，保留当前内容；可向陈寿继续了解。';"
+      },
+      {
+        "line": 221,
+        "text": "  $('#chapter-add').addEventListener('click',()=>{if(!active)return;const item=resolved[state().current];if(!item?.point)return;const added=window.TravelMap.addStoryPlace(item.point);$('#story-node-feedback').textContent=added?'已加入现有路线：'+item.point.name+(item.exact?'。':'驻地示意，不是景区入口。'):'该位置已在当前路线中。';});"
+      },
+      {
+        "line": 222,
+        "text": "  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全章已寻迹！进入故事查看收尾与下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});"
+      }
+    ]
+  },
+  {
+    "file": "frontend/story-progress.js",
+    "sha256": "032895c029430aeaf453f1517b3f10328fc25064dafa3ed78151159c32389d9f",
+    "lines": [
+      {
+        "line": 16,
+        "text": "      mode: ['大众体验版','亲子故事版','学术探索版'].includes(raw.mode) ? raw.mode : '大众体验版' };"
+      },
+      {
+        "line": 27,
+        "text": "  function status(story) { const s=get(story), n=(story.chapters || []).length; return n && s.completed.size===n ? '已寻迹' : s.started || s.completed.size ? '探索中' : '未开始'; }"
+      },
+      {
+        "line": 35,
+        "text": "    notice:()=>available ? '探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。' : '本地存储不可用，探索进度仅本页保留；未与账号或后端同步。'};"
+      }
+    ]
+  },
+  {
+    "file": "frontend/styles.css",
+    "sha256": "c1eae8ef0640892c6c822a8b685a827f9b6059ad9265a8d4ed835cd6f6dde3c9",
+    "lines": [
+      {
+        "line": 2,
+        "text": "   寻迹三国 · 视觉规范 v1"
+      },
+      {
+        "line": 3,
+        "text": "   01 令牌 → 02 基础与框架 → 03 原有模块 → 04 统一组件/状态"
+      },
+      {
+        "line": 4,
+        "text": "   几何尺寸（地图投影、图标描边、断点）不属于排版间距，保留原值。"
+      },
+      {
+        "line": 5,
+        "text": "   用法与组件状态表见 DESIGN-SYSTEM.md；不依赖远程字体或素材。"
+      },
+      {
+        "line": 70,
+        "text": "   三国文化旅游助手 · 界面样式"
+      },
+      {
+        "line": 71,
+        "text": "   基调：宣纸底 + 墨色字 + 朱红/铜金点缀，克制不花哨"
+      },
+      {
+        "line": 730,
+        "text": ".story-map-chapters { padding:var(--space-4) 0; }.story-map-legend { display:flex; flex-wrap:wrap; gap:var(--space-3) var(--space-5); font-size:var(--text-xs); line-height:var(--leading-body); }.story-map-legend span { display:flex; align-items:center; gap:var(--space-2); }.story-map-legend i { display:inline-block; width:28px; flex:none; }.legend-order { border-top:2px dashed var(--ink-soft); }.legend-ink { border-top:5px solid var(--brass); border-radius:50%; }#story-map-status { color:var(--muted); font-size:var(--text-xs); line-height:var(--leading-body); }#story-chapter-list { padding:0; list-style:none; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); }.chapter-list-item { min-width:0; }.chapter-list-button { width:100%; min-height:48px; text-align:left; padding:var(--space-3); background:var(--surface-2); color:var(--ink); border:1px dashed var(--line); border-radius:8px; font-size:var(--text-xs); line-height:var(--leading-body); }.chapter-list-button[aria-current=step] { border:2px solid var(--shu); color:var(--shu); }.chapter-list-button[data-state=已寻迹] { border-style:solid; border-color:var(--jade); }.chapter-list-item small { display:block; margin:var(--space-2) var(--space-1); font-size:var(--text-xs); line-height:var(--leading-body); color:var(--muted); }"
+      },
+      {
+        "line": 745,
+        "text": ".story-card-shell[data-progress=\"探索中\"] { outline:2px solid var(--shu); outline-offset:3px; border-radius:var(--radius); }"
+      },
+      {
+        "line": 747,
+        "text": "[data-progress=\"已寻迹\"] .story-progress-seal { color:var(--shu); border:3px double var(--shu); transform:rotate(-6deg); font-family:'Songti SC','SimSun',serif; }"
+      },
+      {
+        "line": 752,
+        "text": ".story-chapter-axis [data-state=\"当前\"] { border-color:var(--shu); }"
+      },
+      {
+        "line": 753,
+        "text": ".story-chapter-axis [data-state=\"本次跳过\"] { border-style:dashed; color:var(--muted); }"
+      },
+      {
+        "line": 937,
+        "text": "[data-phase=寻源] { --phase-accent:var(--phase-source); }"
+      },
+      {
+        "line": 938,
+        "text": "[data-phase=读史] { --phase-accent:var(--phase-reading); }"
+      },
+      {
+        "line": 939,
+        "text": "[data-phase=探秘] { --phase-accent:var(--phase-explore); }"
+      },
+      {
+        "line": 940,
+        "text": "[data-phase=传承] { --phase-accent:var(--phase-legacy); }"
+      },
+      {
+        "line": 943,
+        "text": ".story-card-shell[data-progress=探索中] { outline-color:var(--shu); }"
+      },
+      {
+        "line": 963,
+        "text": "   章节序号与印章位于 counter-scaled story glyph 内，由父组反缩放；探索志足迹是独立静态 SVG。 */"
+      }
+    ]
+  },
+  {
+    "file": "frontend/travel-api.js",
+    "sha256": "8f2b6a9791994c12bfba3e0cf8b7f5864ed8e025e25468dc510d67d7833ddea9",
+    "lines": [
+      {
+        "line": 9,
+        "text": "    if (!config.enabled) return { status: 'unavailable', message: '资料查询当前已关闭，可向智能体咨询。', data: null };"
+      },
+      {
+        "line": 16,
+        "text": "    if (!response.ok) throw new Error('服务暂时不可用，请稍后重试。');"
+      },
+      {
+        "line": 18,
+        "text": "    if (!result || !['ok', 'empty', 'unavailable'].includes(result.status)) throw new Error('返回格式不符合约定，请联系维护人员。');"
+      },
+      {
+        "line": 19,
+        "text": "    if (result.status === 'ok' && (!result.data || typeof result.data !== 'object')) throw new Error('服务未返回有效数据。');"
+      }
+    ]
+  },
+  {
+    "file": "frontend/travel-map.js",
+    "sha256": "26776c34e0204ae26422d5f9b17ce00d4cfb1991bbda9d3254cc331b1e27376a",
+    "lines": [
+      {
+        "line": 35,
+        "text": "    const labelMargin=20/scale; // 20 屏幕像素转换为当前地图单位，与碰撞布局的像素字号一致。"
+      },
+      {
+        "line": 77,
+        "text": "      const [x,y]=core.project(p.center),capital=p.name==='成都市';"
+      },
+      {
+        "line": 78,
+        "text": "      const name=capital?'成都':p.name.replace('藏族羌族自治州','州').replace('藏族自治州','州').replace('彝族自治州','州');"
+      },
+      {
+        "line": 114,
+        "text": "    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置仍需核验。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '当前为全省县区列表，请选县区定位。';"
+      },
+      {
+        "line": 139,
+        "text": "    $('#map-picker-list').replaceChildren(button('加入当前路线', () => { $('#map-add-stop').click(); $('#map-place-picker').hidden = true; }));"
+      },
+      {
+        "line": 161,
+        "text": "    $('#map-picker-title').textContent = `附近 ${matches.length} 个地点，请选择`;"
+      },
+      {
+        "line": 171,
+        "text": "    const select = $('#map-county'); select.replaceChildren(new Option('选择地点', ''));"
+      },
+      {
+        "line": 200,
+        "text": "      const label = document.createElement('span'); label.textContent = place ? `${place.name}${place.parent ? ' · ' + place.parent : ''}` : '待定位站点（此处不连接）';"
+      },
+      {
+        "line": 201,
+        "text": "      const remove = button('移除', () => { points.splice(index, 1); route.kind = '手动调整的地点顺序'; route.missing = []; route.backendStopsPending = []; drawRoute(); });"
+      },
+      {
+        "line": 202,
+        "text": "      const up = button('上移', () => { [points[index - 1], points[index]] = [points[index], points[index - 1]]; route.kind = '手动调整的地点顺序'; drawRoute(); });"
+      },
+      {
+        "line": 207,
+        "text": "    if (route?.missing?.length) notes.push(`未能唯一定位：${route.missing.join('、')}。请从县级列表补充。`);"
+      },
+      {
+        "line": 208,
+        "text": "    if (route?.backendStopsPending?.length) notes.push(`${route.backendStopsPending.length} 个景区站点（${route.backendStopsPending.join('、')}）暂缺可核对位置，现显示城市或县级驻地示意，不是景区入口；请先核对入口，再规划到达路线。`);"
+      },
+      {
+        "line": 211,
+        "text": "      ? `${route.kind} · ${points.filter(Boolean).length} 个已定位地点。${points.filter(Boolean).length < 2 ? '至少两个地点才显示连线。' : '虚线仅作地点顺序示意，可在下方调整。'}${missing}`"
+      },
+      {
+        "line": 212,
+        "text": "      : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后标出已识别且有位置资料的地点；也可选择县城加入路线。');"
+      },
+      {
+        "line": 216,
+        "text": "    $('#map-load-message').textContent='正在加载地图边界与地点…';"
+      },
+      {
+        "line": 226,
+        "text": "    $('#map-prefecture').replaceChildren(new Option('全省',''),...cityData.map(p=>new Option(p.name,p.name)));"
+      },
+      {
+        "line": 231,
+        "text": "    $('#map-load-message').textContent='地图边界或地点加载失败，请检查网络后在这里重试。';"
+      },
+      {
+        "line": 232,
+        "text": "    $('#map-route-status').textContent='地图加载失败，可在画布内重试。';"
+      },
+      {
+        "line": 238,
+        "text": "  const retryMap=document.createElement('button');retryMap.id='map-load-retry';retryMap.type='button';retryMap.className='module-button';retryMap.textContent='重试加载地图';"
+      },
+      {
+        "line": 243,
+        "text": "  const undoClear=document.createElement('button');undoClear.id='map-undo-clear';undoClear.type='button';undoClear.className='module-button';undoClear.textContent='撤销清除路线';undoClear.hidden=true;"
+      },
+      {
+        "line": 249,
+        "text": "    drawRoute();$('#map-route-status').textContent+=' 已恢复清除前的地点顺序。';"
+      },
+      {
+        "line": 263,
+        "text": "      const cities=[...new Set(points.map(p=>(p.parent||(p.level==='city'?p.name:p.city)||'').replace(/市$/,'')).filter(Boolean))];"
+      },
+      {
+        "line": 272,
+        "text": "      $('#map-route-status').textContent=point.name+' · 位置示意 / 入口待核验';return true;"
+      },
+      {
+        "line": 285,
+        "text": "        $('#map-route-status').textContent=name+' · 市州范围示意 / 景区待定位';return true;"
+      },
+      {
+        "line": 289,
+        "text": "      if(reveal)showContentView('map'); $('#map-route-status').textContent = name + ' · 位置示意 / 景区待定位（县级驻地）'; return true;"
+      },
+      {
+        "line": 303,
+        "text": "      chat.mapRoute={points,missing:stops.filter((_,i)=>!points[i]).map(s=>s.name),kind:'路线位置示意 / 景区待定位（县级驻地）'};"
+      },
+      {
+        "line": 325,
+        "text": "      route.points.push({ ...place }); route.kind = '手动加入的故事地点示意'; activeChat.mapRoute = route;"
+      },
+      {
+        "line": 346,
+        "text": "        $('#map-route-status').textContent='回答提及：'+parsed.points.map(p=>p.name).join('、')+' · 位置示意 / 景区待定位';return true;"
+      },
+      {
+        "line": 356,
+        "text": "      if (text.startsWith('【故事章节讲解】')) return;"
+      },
+      {
+        "line": 357,
+        "text": "      if (!/(旅游|旅行|路线|行程|出发|去|到|游玩|途经|经过|逛)/.test(text)) return;"
+      },
+      {
+        "line": 365,
+        "text": "        chat.mapRoute = { points: parsed.points, missing: parsed.ambiguous, kind: '按你的地名提及顺序' };"
+      },
+      {
+        "line": 394,
+        "text": "      $('#map-route-status').textContent=selected.name+' 已加入当前路线，无需重复加入。';return;"
+      },
+      {
+        "line": 396,
+        "text": "    route.points.push(selected); route.kind = '手动选择的地点顺序'; activeChat.mapRoute = route;"
+      },
+      {
+        "line": 413,
+        "text": "    drawRoute();if(activeChat&&clearedRoutes.has(activeChat))$('#map-route-status').textContent='路线已清除，可点“撤销清除路线”恢复原顺序。';"
+      }
+    ]
+  },
+  {
+    "file": "frontend/travel-modules.js",
+    "sha256": "129682036e830176ddc683a2c37b0b6e94357caf0fec276087afe1f63c7e0886",
+    "lines": [
+      {
+        "line": 6,
+        "text": "  let city = '南充';"
+      },
+      {
+        "line": 13,
+        "text": "  } catch { $('#plan-status').textContent = '无法读取本机保存记录，仍可新建和复制方案。'; }"
+      },
+      {
+        "line": 29,
+        "text": "    const message=label+'查询失败，尚未取得数据。请检查网络或服务连接后重试。';"
+      },
+      {
+        "line": 31,
+        "text": "    const details=node('details');details.append(node('summary','错误详情'),node('p',String(error?.message||error||'未提供')));target.append(details);"
+      },
+      {
+        "line": 32,
+        "text": "    if(retry)target.append(action('重新查询'+label,retry));"
+      },
+      {
+        "line": 36,
+        "text": "    if(typeof value!=='string'||!value.trim())return '待确认';"
+      },
+      {
+        "line": 38,
+        "text": "    if(!calendar)return '待确认';"
+      },
+      {
+        "line": 40,
+        "text": "    if(month<1||month>12||day<1||day>[31,leap?29:28,31,30,31,30,31,31,30,31,30,31][month-1]||Number(calendar[4]||0)>23||Number(calendar[5]||0)>59||Number(calendar[6]||0)>59)return '待确认';"
+      },
+      {
+        "line": 41,
+        "text": "    if(/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return value.replace(/^(\\d{4})-(\\d{2})-(\\d{2})$/,'$1年$2月$3日')+'（北京时间）';"
+      },
+      {
+        "line": 43,
+        "text": "    if(!explicit&&!local)return '时区未提供，时间待核验';"
+      },
+      {
+        "line": 44,
+        "text": "    const date=new Date(explicit?value:value+'+08:00');if(!Number.isFinite(date.getTime()))return '待确认';"
+      },
+      {
+        "line": 47,
+        "text": "    return part('year')+'年'+part('month')+'月'+part('day')+'日 '+part('hour')+':'+part('minute')+'（北京时间）';"
+      },
+      {
+        "line": 51,
+        "text": "    details.append(node('summary', '参考资料与来源'));"
+      },
+      {
+        "line": 52,
+        "text": "    if (!Array.isArray(items) || !items.length) details.append(node('p', '暂无参考来源，相关内容待核验。'));"
+      },
+      {
+        "line": 54,
+        "text": "      const levels={A:'权威资料',B:'较可靠资料',C:'文学/传说'};"
+      },
+      {
+        "line": 55,
+        "text": "      const row = node('p', `${source.title || '未命名来源'} · ${realtime ? '实时信息来源 · 需再核验' : '来源等级 ' + (Object.hasOwn(levels,source.source_level) ? source.source_level+'='+levels[source.source_level] : '待核验')}`);"
+      },
+      {
+        "line": 59,
+        "text": "          const link = node('a', ' 查看出处');"
+      },
+      {
+        "line": 62,
+        "text": "      } catch { /* 无有效链接时保留来源文本 */ }"
+      },
+      {
+        "line": 65,
+        "text": "    details.append(node('p', realtime ? '模型预报、非现场实测；天气与空气信息需在出发前再核验。' : 'C=文学/传说，不能支撑史实结论；其他资料也需核对出处与时效。', 'map-note'));"
+      },
+      {
+        "line": 69,
+        "text": "    const names = { sample: '示例数据', maintained: '维护数据', live: '实时查询', forecast: '模型天气预报', model: '模型估计（非实测）', external: '外部查询', reference_route: '道路参考（非实时路况）', pending: '暂无有效数据', stale: '已过期' };"
+      },
+      {
+        "line": 70,
+        "text": "    return `${names[record.data_status] || '状态未标注'} · ${record.fetched_at ? '查询时间（可能为缓存）' : '更新'}：${record.fetched_at || record.updated_at ? beijingTime(record.fetched_at || record.updated_at) : '未提供'}`;"
+      },
+      {
+        "line": 76,
+        "text": "    $('#plan-destination').textContent = '带入活动计划';"
+      },
+      {
+        "line": 78,
+        "text": "    empty(target, '正在查询景区资料…');"
+      },
+      {
+        "line": 82,
+        "text": "      if (result.status === 'empty') return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');"
+      },
+      {
+        "line": 83,
+        "text": "      if (result.status !== 'ok') throw Error(result.message || '景区资料服务暂不可用。');"
+      },
+      {
+        "line": 84,
+        "text": "      if (!Array.isArray(result.data.spots)) throw new Error('景区数据格式不完整。');"
+      },
+      {
+        "line": 86,
+        "text": "      if (!result.data.spots.length) return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');"
+      },
+      {
+        "line": 89,
+        "text": "        card.append(node('h3', spot.name), node('p', spot.description || '简介待补充'), node('p', dataStatus(spot), 'map-note'));"
+      },
+      {
+        "line": 90,
+        "text": "        if (Array.isArray(spot.themes) && spot.themes.length) card.append(node('p', '文化主题：' + spot.themes.join('、')));"
+      },
+      {
+        "line": 91,
+        "text": "        if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));"
+      },
+      {
+        "line": 92,
+        "text": "        if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));"
+      },
+      {
+        "line": 93,
+        "text": "        card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));"
+      },
+      {
+        "line": 94,
+        "text": "        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。',{displayText:'请介绍'+spot.name+'与三国文化的联系。'}); }), action('带入活动计划', () => chooseCity(spot.city || city, spot.name)));"
+      },
+      {
+        "line": 98,
+        "text": "    } catch (error) { if (version === cityRequest) failure(target, '景区', error, () => loadCity(city)); }"
+      },
+      {
+        "line": 105,
+        "text": "    if(spot && !field('notes').value.includes(spot)) field('notes').value=[field('notes').value.trim(),'希望包含：'+spot].filter(Boolean).join('；');"
+      },
+      {
+        "line": 106,
+        "text": "    const pending=[!nextCity&&'目的地',!field('origin').value.trim()&&'出发地'].filter(Boolean);"
+      },
+      {
+        "line": 107,
+        "text": "    $('#planner-status').textContent='已带入 '+[nextCity,spot].filter(Boolean).join(' · ')+' · '+(pending.length?'请补'+pending.join('、'):'请核对出发地')+'；日期与活动条件已保留或使用默认值，请核对后生成。';"
+      },
+      {
+        "line": 115,
+        "text": "    if(!selection || (!selection.cities.length&&!selection.places.length)){$('#map-plan-status').textContent='请先在地图选择地点或市州，再带入活动计划。';return;}"
+      },
+      {
+        "line": 122,
+        "text": "    if (!current) return empty(target, '还没有行程。先选择目的地和出行条件，生成一份草稿。');"
+      },
+      {
+        "line": 127,
+        "text": "      target.replaceChildren(node('h3',plan.title),node('p',(p.date||p.travel_date||'日期待确认')+' · '+p.people+'人'));"
+      },
+      {
+        "line": 128,
+        "text": "      target.append(window.SGTAnswerTrust ? window.SGTAnswerTrust.render(current.activityEvidence || {}) : node('p','来源 · 待核验；回答提及的文献出处尚未核验，请勿作为已核验引文。','map-note'));"
+      },
+      {
+        "line": 133,
+        "text": "    target.replaceChildren(node('h3', plan.title || `${p.city} ${p.days}天行程`), node('p', `${p.date}出发 · ${p.people}人 · ${p.group} · ${p.transport}`));"
+      },
+      {
+        "line": 134,
+        "text": "    target.append(node('p', current.draft ? '出行草稿 · 可交给智能体进一步安排活动' : dataStatus(plan), 'data-banner'));"
+      },
+      {
+        "line": 135,
+        "text": "    if (p.notes) target.append(node('p', '补充需求：' + p.notes));"
+      },
+      {
+        "line": 138,
+        "text": "      card.append(node('h3', `第 ${day.day} 天`));"
+      },
+      {
+        "line": 139,
+        "text": "      if (!Array.isArray(day.stops) || !day.stops.length) card.append(node('p', '活动顺序与时长待文化向导提供。'));"
+      },
+      {
+        "line": 142,
+        "text": "        day.stops.forEach(stop => list.append(node('li', `${stop.name || '未命名站点'}${stop.stay_minutes ? ` · 建议停留 ${stop.stay_minutes} 分钟` : ''}${stop.note ? ' · ' + stop.note : ''}`)));"
+      },
+      {
+        "line": 151,
+        "text": "  const text = v => typeof v === 'string' && v.trim() ? v.trim() : '待核验';"
+      },
+      {
+        "line": 152,
+        "text": "  const minutes = v => Number.isFinite(v) && v > 0 ? v + ' 分钟' : '待核验';"
+      },
+      {
+        "line": 158,
+        "text": "      status:state.completed.has(i)?'已完成':state.skipped.has(i)?'本次跳过':'本次保留'}));"
+      },
+      {
+        "line": 161,
+        "text": "    $('#planner-story').textContent=planningStory ? '故事线：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事线，可填写普通行程需求。';"
+      },
+      {
+        "line": 162,
+        "text": "    $('#planner-back-story').textContent=planningStory?'返回故事详情调整章节':'返回目的地';"
+      },
+      {
+        "line": 163,
+        "text": "    $('#plan-back-story').textContent=planningStory?'返回故事详情':'返回目的地';"
+      },
+      {
+        "line": 173,
+        "text": "    storyLabel(); $('#planner-status').textContent='请填写现实约束；核心章节按你在故事详情中的选取。';"
+      },
+      {
+        "line": 177,
+        "text": "    const duration={'0.5':'半天','1':'一天','2':'两天'}[p.days];"
+      },
+      {
+        "line": 178,
+        "text": "    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事线：'+story.title+'。':'')+"
+      },
+      {
+        "line": 179,
+        "text": "      '出发地：'+p.origin+'；目的地：'+p.city+'；可用时间：'+duration+'；出发日期：'+(p.date||'待确认')+"
+      },
+      {
+        "line": 180,
+        "text": "      '（活动时长合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+'。'+"
+      },
+      {
+        "line": 181,
+        "text": "      '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认')+'。'+"
+      },
+      {
+        "line": 182,
+        "text": "      '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+"
+      },
+      {
+        "line": 183,
+        "text": "      '先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';"
+      },
+      {
+        "line": 185,
+        "text": "  function visitorSummary(p,story){return '请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+p.explanation+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'')+'。';}"
+      },
+      {
+        "line": 188,
+        "text": "    target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),"
+      },
+      {
+        "line": 189,
+        "text": "      node('p','你的约束：'+p.origin+'出发 · '+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+' · '+p.transport+' · '+p.group+' · '+p.people+'人'),"
+      },
+      {
+        "line": 190,
+        "text": "      node('p','后端路线模板 / 现实可行性待核验；不是道路导航，尚不能保证满足所有条件。','data-banner'),"
+      },
+      {
+        "line": 191,
+        "text": "      node('p','路线简介：'+text(route.summary)),node('p','总体取舍：'+text(result.selection_reason)),"
+      },
+      {
+        "line": 192,
+        "text": "      node('p','风险提示：'+text(route.risk_note)),node('p','更新时间：'+text(route.updated_at)+' · 来源与时效待核验'),"
+      },
+      {
+        "line": 193,
+        "text": "      node('p','后端时长：'+(Number.isFinite(route.duration_hours)&&route.duration_hours>0?route.duration_hours+' 小时':'待核验')+'；交通：'+text(route.transport_mode)));"
+      },
+      {
+        "line": 195,
+        "text": "    if(Number.isFinite(route.duration_hours)&&route.duration_hours>hourLimit)target.append(node('p','时间不符合：后端路线 '+route.duration_hours+' 小时，超过本次 '+hourLimit+' 小时上限。请压缩或重绘，暂不可按此方案执行。','data-banner'));"
+      },
+      {
+        "line": 196,
+        "text": "    if(route.transport_mode && route.transport_mode!==p.transport)target.append(node('p','约束待确认：后端交通方式与所选方式不一致，请调整需求或核验。','data-banner'));"
+      },
+      {
+        "line": 200,
+        "text": "      card.append(node('h3',(stop.stop_order || i+1)+' · '+text(stop.name)),node('p','为什么推荐：'+text(stop.reason)),"
+      },
+      {
+        "line": 201,
+        "text": "        node('p','安排停留：'+minutes(stop.stay_minutes)+'；建议游览：'+minutes(stop.recommended_duration_min)),"
+      },
+      {
+        "line": 202,
+        "text": "        node('p','开放时间：'+text(stop.open_time)+' · 待核验'),node('p','地址：'+text(stop.address)),"
+      },
+      {
+        "line": 203,
+        "text": "        node('p','位置示意 / 待定位：无已核验景区入口，地图仅尝试按地址匹配县级驻地。','map-note'));"
+      },
+      {
+        "line": 205,
+        "text": "      card.append(node('p','故事中的作用：'+(chapter?text(chapter.role):'章节关联待核验')));list.append(card);"
+      },
+      {
+        "line": 208,
+        "text": "      target.append(node('h3','章节取舍对照'));"
+      },
+      {
+        "line": 211,
+        "text": "        let reason=c.status==='已完成'?'本地记录已完成，请求不重复安排。':c.status==='本次跳过'?'你选择将本次时间留给其他章节；故事定义保留。':match?'保留理由：'+text(match.reason):'后端未返回可确认的对应站点；舍弃原因待核验，不能推断。';"
+      },
+      {
+        "line": 212,
+        "text": "        if(match&&c.status!=='本次保留')reason+=' 后端仍返回该站，与你的选取不一致，需核验。';"
+      },
+      {
+        "line": 216,
+        "text": "    target.append(node('p','交通耗时、开放时段、费用与章节匹配未全部核验前，本方案仅供讨论。','map-note'));"
+      },
+      {
+        "line": 225,
+        "text": "      $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，现有方案保持。';"
+      },
+      {
+        "line": 226,
+        "text": "      $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';"
+      },
+      {
+        "line": 231,
+        "text": "      activityAnswer:reply.text,activityEvidence:{sources:reply.data?.sources || [],data_status:reply.data?.data_status,updated_at:reply.data?.updated_at},plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};"
+      },
+      {
+        "line": 233,
+        "text": "    renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');"
+      },
+      {
+        "line": 234,
+        "text": "    $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';"
+      },
+      {
+        "line": 235,
+        "text": "    $('#planner-status').textContent='本次方案已生成，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';"
+      },
+      {
+        "line": 236,
+        "text": "    $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';"
+      },
+      {
+        "line": 242,
+        "text": "    $('#view-current-plan').textContent=current?'查看已有方案':'查看本机保存的方案';"
+      },
+      {
+        "line": 243,
+        "text": "    if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿活动对话；若正在回答，本次需求保留在对话草稿。';window.SGTJourney.ask(attempt.question,{displayText:visitorSummary(attempt.preferences,attempt.story),preserveMap:true,activityPlan});return;}"
+      },
+      {
+        "line": 245,
+        "text": "    $('#planner-status').textContent='正在检索文化资料并生成活动方案；现有方案保持。';"
+      },
+      {
+        "line": 249,
+        "text": "      if(typeof data?.answer!=='string'||!data.answer.trim())throw Error('未返回有效活动回答。');"
+      },
+      {
+        "line": 251,
+        "text": "    } catch(error) {if(version===planRequest){activityState('failed');$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；现有方案保持。':'请求失败：'+error.message+' 可重试；现有方案保持。';$('#planner-retry').hidden=false;}}"
+      },
+      {
+        "line": 260,
+        "text": "      $('#planner-status').textContent='请填写有效出发地、可用时间与人数。';return;"
+      },
+      {
+        "line": 263,
+        "text": "    if(choices.length&&!choices.some(c=>c.status==='本次保留')) {$('#planner-status').textContent='没有待规划的保留章节；可返回故事线调整选取或撤销完成记录。';return;}"
+      },
+      {
+        "line": 268,
+        "text": "    ++planRequest; // 条件改变后，旧活动回答不覆盖方案。"
+      },
+      {
+        "line": 274,
+        "text": "    if(stale)$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新生成活动方案。';"
+      },
+      {
+        "line": 280,
+        "text": "  $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};"
+      },
+      {
+        "line": 281,
+        "text": "  function getRoadDraft(source){const p=source==='plan'&&current?current.preferences:Object.fromEntries(['origin','city','notes'].map(k=>[k,field(k).value]));return {origin:p.origin||'',city:p.city||'',destination:(source==='plan'?current?.chatRoute?.stops?.at(-1)?.name:'') || p.notes?.match(/希望包含：([^；\\n]+)/)?.[1] || p.city || ''};}"
+      },
+      {
+        "line": 283,
+        "text": "  function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；现有方案保持，可修改条件后重试。';}}"
+      },
+      {
+        "line": 288,
+        "text": "    if (!saved.length) return empty(target, '尚未保存方案。');"
+      },
+      {
+        "line": 289,
+        "text": "    if(!current){$('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本机保存的方案';}"
+      },
+      {
+        "line": 292,
+        "text": "      row.append(node('span', `${item.plan.title || item.preferences.city} · ${item.preferences.date}`), action('打开', () => {"
+      },
+      {
+        "line": 297,
+        "text": "        empty($('#travel-results'), '已切换行程，请重新查询出行信息。');"
+      },
+      {
+        "line": 298,
+        "text": "        $('#plan-status').textContent = '已打开本机保存的方案。';"
+      },
+      {
+        "line": 306,
+        "text": "    try { localStorage.setItem(storageKey, JSON.stringify(next)); saved = next; renderSaved(); $('#plan-status').textContent = '已保存到本机（最多保留最近20份）。'; }"
+      },
+      {
+        "line": 307,
+        "text": "    catch { $('#plan-status').textContent = '浏览器无法保存，请使用复制方案。'; }"
+      },
+      {
+        "line": 311,
+        "text": "    try { await navigator.clipboard.writeText($('#plan-results').innerText); $('#plan-status').textContent = '方案已复制。'; }"
+      },
+      {
+        "line": 312,
+        "text": "    catch { $('#plan-status').textContent = '复制失败，可选中方案文字手动复制。'; }"
+      },
+      {
+        "line": 318,
+        "text": "    empty($('#travel-results'),'目的地或日期已带入，点击查询以获取对应天气。');"
+      },
+      {
+        "line": 322,
+        "text": "    $('#travel-status').textContent=cityName?'已带入目的地与日期；点击查询后才会请求天气。':'原回答未确认单一目的地；请手动选城后查询。';"
+      },
+      {
+        "line": 327,
+        "text": "    $('#travel-back').textContent=weatherReturn==='plan'?'返回本次方案':'返回活动需求';"
+      },
+      {
+        "line": 334,
+        "text": "  weatherForm.addEventListener('input',()=>{weatherVersion++;weatherButton.disabled=false;empty(weatherTarget,'条件已改变，点击查询以更新天气。');$('#travel-status').textContent='条件已改变，请重新查询。';});"
+      },
+      {
+        "line": 338,
+        "text": "    weatherButton.disabled=true;$('#travel-status').textContent='正在查询天气与空气质量…';empty(weatherTarget,'正在查询…');"
+      },
+      {
+        "line": 341,
+        "text": "      if(result.status!=='ok')throw Error(result.message||'天气服务暂不可用，请重试。');"
+      },
+      {
+        "line": 344,
+        "text": "      if(days.length){const forecast=node('section',null,'result-card');forecast.append(node('h3','未来七天天气预报'));"
+      },
+      {
+        "line": 345,
+        "text": "        days.forEach(day=>forecast.append(node('p',`${day.date}${date===day.date?'（所选日期）':''} · ${day.temperature_min_c??'—'}～${day.temperature_max_c??'—'}°C · 降雨概率 ${day.rain_probability_percent??'—'}%`)));"
+      },
+      {
+        "line": 348,
+        "text": "      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');const concentration=(key,label)=>{const unit=typeof air.units?.[key]==='string'?air.units[key].trim():'';return label+(unit?' 浓度：':'：')+(air[key]??'—')+(unit?' '+unit:'（单位待确认）');};card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${beijingTime(air.time,true)}；${concentration('pm2_5','PM2.5')}；${concentration('pm10','PM10')}`));weatherTarget.append(card);}"
+      },
+      {
+        "line": 349,
+        "text": "      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources,true);weatherTarget.append(card);});"
+      },
+      {
+        "line": 350,
+        "text": "      if(!days.length&&!data.air_quality&&!items.length)empty(weatherTarget,'暂无可确认的天气或空气数据，可稍后重试。');"
+      },
+      {
+        "line": 352,
+        "text": "      $('#travel-status').textContent=[`${city} · 已完成查询。来源及查询时间见结果卡；出发前请再次核验。`,date&&!days.some(day=>day.date===date)?'所选日期不在预报范围内，不代表该日天气。':'',...warnings].filter(Boolean).join(' ');"
+      },
+      {
+        "line": 353,
+        "text": "    }catch(error){if(version===weatherVersion){$('#travel-status').textContent=failure(weatherTarget,'天气',error,()=>weatherForm.requestSubmit());}}"
+      },
+      {
+        "line": 357,
+        "text": "    empty($('#travel-results'), '填写目的地后可独立查询天气预报与当前空气质量。');"
+      }
+    ]
+  }
+]

@@ -1,0 +1,381 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/行旅地图
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图" [pressed]
+      - button "活动计划"
+      - button "探索志"
+    - text: ＋ − − ＋
+    - region "四川地图":
+      - paragraph: 川东北与四川各地
+      - heading "三国故事地图" [level=2]
+      - generic: 21 个市州 · 183 个县级地点
+      - region "蜀汉北境·蜀道寻踪":
+        - paragraph: 按章节看地图
+        - heading "蜀汉北境·蜀道寻踪" [active] [level=3]
+        - status: 第 2 / 3 幕 · 已寻迹 0 / 3
+        - button "看整条故事"
+        - button "退出故事模式"
+        - paragraph: 探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。
+      - paragraph: 100%–249% 显示市州边界；250% 起叠加县级边界。标注自动避让，全部县区均可从列表选择。
+      - text: 市州筛选
+      - combobox "市州筛选":
+        - option "全省" [selected]
+        - option "成都市"
+        - option "自贡市"
+        - option "攀枝花市"
+        - option "泸州市"
+        - option "德阳市"
+        - option "绵阳市"
+        - option "广元市"
+        - option "遂宁市"
+        - option "内江市"
+        - option "乐山市"
+        - option "南充市"
+        - option "眉山市"
+        - option "宜宾市"
+        - option "广安市"
+        - option "达州市"
+        - option "雅安市"
+        - option "巴中市"
+        - option "资阳市"
+        - option "阿坝藏族羌族自治州"
+        - option "甘孜藏族自治州"
+        - option "凉山彝族自治州"
+      - text: 县城 / 区
+      - combobox "县城 / 区":
+        - option "选择地点" [selected]
+        - option "锦江区 · 成都市"
+        - option "青羊区 · 成都市"
+        - option "金牛区 · 成都市"
+        - option "武侯区 · 成都市"
+        - option "成华区 · 成都市"
+        - option "龙泉驿区 · 成都市"
+        - option "青白江区 · 成都市"
+        - option "新都区 · 成都市"
+        - option "温江区 · 成都市"
+        - option "双流区 · 成都市"
+        - option "郫都区 · 成都市"
+        - option "新津区 · 成都市"
+        - option "金堂县 · 成都市"
+        - option "大邑县 · 成都市"
+        - option "蒲江县 · 成都市"
+        - option "都江堰市 · 成都市"
+        - option "彭州市 · 成都市"
+        - option "邛崃市 · 成都市"
+        - option "崇州市 · 成都市"
+        - option "简阳市 · 成都市"
+        - option "自流井区 · 自贡市"
+        - option "贡井区 · 自贡市"
+        - option "大安区 · 自贡市"
+        - option "沿滩区 · 自贡市"
+        - option "荣县 · 自贡市"
+        - option "富顺县 · 自贡市"
+        - option "东区 · 攀枝花市"
+        - option "西区 · 攀枝花市"
+        - option "仁和区 · 攀枝花市"
+        - option "米易县 · 攀枝花市"
+        - option "盐边县 · 攀枝花市"
+        - option "江阳区 · 泸州市"
+        - option "纳溪区 · 泸州市"
+        - option "龙马潭区 · 泸州市"
+        - option "泸县 · 泸州市"
+        - option "合江县 · 泸州市"
+        - option "叙永县 · 泸州市"
+        - option "古蔺县 · 泸州市"
+        - option "旌阳区 · 德阳市"
+        - option "罗江区 · 德阳市"
+        - option "中江县 · 德阳市"
+        - option "广汉市 · 德阳市"
+        - option "什邡市 · 德阳市"
+        - option "绵竹市 · 德阳市"
+        - option "涪城区 · 绵阳市"
+        - option "游仙区 · 绵阳市"
+        - option "安州区 · 绵阳市"
+        - option "三台县 · 绵阳市"
+        - option "盐亭县 · 绵阳市"
+        - option "梓潼县 · 绵阳市"
+        - option "北川羌族自治县 · 绵阳市"
+        - option "平武县 · 绵阳市"
+        - option "江油市 · 绵阳市"
+        - option "利州区 · 广元市"
+        - option "昭化区 · 广元市"
+        - option "朝天区 · 广元市"
+        - option "旺苍县 · 广元市"
+        - option "青川县 · 广元市"
+        - option "剑阁县 · 广元市"
+        - option "苍溪县 · 广元市"
+        - option "船山区 · 遂宁市"
+        - option "安居区 · 遂宁市"
+        - option "蓬溪县 · 遂宁市"
+        - option "大英县 · 遂宁市"
+        - option "射洪市 · 遂宁市"
+        - option "市中区 · 内江市"
+        - option "东兴区 · 内江市"
+        - option "威远县 · 内江市"
+        - option "资中县 · 内江市"
+        - option "隆昌市 · 内江市"
+        - option "市中区 · 乐山市"
+        - option "沙湾区 · 乐山市"
+        - option "五通桥区 · 乐山市"
+        - option "金口河区 · 乐山市"
+        - option "犍为县 · 乐山市"
+        - option "井研县 · 乐山市"
+        - option "夹江县 · 乐山市"
+        - option "沐川县 · 乐山市"
+        - option "峨边彝族自治县 · 乐山市"
+        - option "马边彝族自治县 · 乐山市"
+        - option "峨眉山市 · 乐山市"
+        - option "顺庆区 · 南充市"
+        - option "高坪区 · 南充市"
+        - option "嘉陵区 · 南充市"
+        - option "南部县 · 南充市"
+        - option "营山县 · 南充市"
+        - option "蓬安县 · 南充市"
+        - option "仪陇县 · 南充市"
+        - option "西充县 · 南充市"
+        - option "阆中市 · 南充市"
+        - option "东坡区 · 眉山市"
+        - option "彭山区 · 眉山市"
+        - option "仁寿县 · 眉山市"
+        - option "洪雅县 · 眉山市"
+        - option "丹棱县 · 眉山市"
+        - option "青神县 · 眉山市"
+        - option "翠屏区 · 宜宾市"
+        - option "南溪区 · 宜宾市"
+        - option "叙州区 · 宜宾市"
+        - option "江安县 · 宜宾市"
+        - option "长宁县 · 宜宾市"
+        - option "高县 · 宜宾市"
+        - option "珙县 · 宜宾市"
+        - option "筠连县 · 宜宾市"
+        - option "兴文县 · 宜宾市"
+        - option "屏山县 · 宜宾市"
+        - option "广安区 · 广安市"
+        - option "前锋区 · 广安市"
+        - option "岳池县 · 广安市"
+        - option "武胜县 · 广安市"
+        - option "邻水县 · 广安市"
+        - option "华蓥市 · 广安市"
+        - option "通川区 · 达州市"
+        - option "达川区 · 达州市"
+        - option "宣汉县 · 达州市"
+        - option "开江县 · 达州市"
+        - option "大竹县 · 达州市"
+        - option "渠县 · 达州市"
+        - option "万源市 · 达州市"
+        - option "雨城区 · 雅安市"
+        - option "名山区 · 雅安市"
+        - option "荥经县 · 雅安市"
+        - option "汉源县 · 雅安市"
+        - option "石棉县 · 雅安市"
+        - option "天全县 · 雅安市"
+        - option "芦山县 · 雅安市"
+        - option "宝兴县 · 雅安市"
+        - option "巴州区 · 巴中市"
+        - option "恩阳区 · 巴中市"
+        - option "通江县 · 巴中市"
+        - option "南江县 · 巴中市"
+        - option "平昌县 · 巴中市"
+        - option "雁江区 · 资阳市"
+        - option "安岳县 · 资阳市"
+        - option "乐至县 · 资阳市"
+        - option "马尔康市 · 阿坝藏族羌族自治州"
+        - option "汶川县 · 阿坝藏族羌族自治州"
+        - option "理县 · 阿坝藏族羌族自治州"
+        - option "茂县 · 阿坝藏族羌族自治州"
+        - option "松潘县 · 阿坝藏族羌族自治州"
+        - option "九寨沟县 · 阿坝藏族羌族自治州"
+        - option "金川县 · 阿坝藏族羌族自治州"
+        - option "小金县 · 阿坝藏族羌族自治州"
+        - option "黑水县 · 阿坝藏族羌族自治州"
+        - option "壤塘县 · 阿坝藏族羌族自治州"
+        - option "阿坝县 · 阿坝藏族羌族自治州"
+        - option "若尔盖县 · 阿坝藏族羌族自治州"
+        - option "红原县 · 阿坝藏族羌族自治州"
+        - option "康定市 · 甘孜藏族自治州"
+        - option "泸定县 · 甘孜藏族自治州"
+        - option "丹巴县 · 甘孜藏族自治州"
+        - option "九龙县 · 甘孜藏族自治州"
+        - option "雅江县 · 甘孜藏族自治州"
+        - option "道孚县 · 甘孜藏族自治州"
+        - option "炉霍县 · 甘孜藏族自治州"
+        - option "甘孜县 · 甘孜藏族自治州"
+        - option "新龙县 · 甘孜藏族自治州"
+        - option "德格县 · 甘孜藏族自治州"
+        - option "白玉县 · 甘孜藏族自治州"
+        - option "石渠县 · 甘孜藏族自治州"
+        - option "色达县 · 甘孜藏族自治州"
+        - option "理塘县 · 甘孜藏族自治州"
+        - option "巴塘县 · 甘孜藏族自治州"
+        - option "乡城县 · 甘孜藏族自治州"
+        - option "稻城县 · 甘孜藏族自治州"
+        - option "得荣县 · 甘孜藏族自治州"
+        - option "西昌市 · 凉山彝族自治州"
+        - option "木里藏族自治县 · 凉山彝族自治州"
+        - option "盐源县 · 凉山彝族自治州"
+        - option "德昌县 · 凉山彝族自治州"
+        - option "会理市 · 凉山彝族自治州"
+        - option "会东县 · 凉山彝族自治州"
+        - option "宁南县 · 凉山彝族自治州"
+        - option "普格县 · 凉山彝族自治州"
+        - option "布拖县 · 凉山彝族自治州"
+        - option "金阳县 · 凉山彝族自治州"
+        - option "昭觉县 · 凉山彝族自治州"
+        - option "喜德县 · 凉山彝族自治州"
+        - option "冕宁县 · 凉山彝族自治州"
+        - option "越西县 · 凉山彝族自治州"
+        - option "甘洛县 · 凉山彝族自治州"
+        - option "美姑县 · 凉山彝族自治州"
+        - option "雷波县 · 凉山彝族自治州"
+      - button "加入路线" [disabled]
+      - status: 这里列出全省县区，选一个就能定位。
+      - button "全省视图"
+      - button "查看整条路线" [disabled]
+      - button "清除路线"
+      - group "四川地理与故事章节地图，可拖动、双指缩放或使用右下角缩放控件":
+        - button "都江堰市，成都市"
+        - button "彭州市，成都市"
+        - button "旌阳区，德阳市":
+          - generic: 旌阳区
+        - button "罗江区，德阳市":
+          - generic: 罗江区
+        - button "中江县，德阳市"
+        - button "广汉市，德阳市"
+        - button "什邡市，德阳市":
+          - generic: 什邡市
+        - button "绵竹市，德阳市":
+          - generic: 绵竹市
+        - button "涪城区，绵阳市":
+          - generic: 涪城区
+        - button "游仙区，绵阳市":
+          - generic: 游仙区
+        - button "安州区，绵阳市":
+          - generic: 安州区
+        - button "三台县，绵阳市":
+          - generic: 三台县
+        - button "盐亭县，绵阳市":
+          - generic: 盐亭县
+        - button "梓潼县，绵阳市":
+          - generic: 梓潼县
+        - button "北川羌族自治县，绵阳市":
+          - generic: 北川羌族自治县
+        - button "平武县，绵阳市":
+          - generic: 平武县
+        - button "江油市，绵阳市":
+          - generic: 江油市
+        - button "利州区，广元市"
+        - button "昭化区，广元市"
+        - button "朝天区，广元市":
+          - generic: 朝天区
+        - button "旺苍县，广元市"
+        - button "青川县，广元市":
+          - generic: 青川县
+        - button "剑阁县，广元市":
+          - generic: 剑阁县
+        - button "苍溪县，广元市":
+          - generic: 苍溪县
+        - button "射洪市，遂宁市"
+        - button "顺庆区，南充市"
+        - button "南部县，南充市":
+          - generic: 南部县
+        - button "营山县，南充市":
+          - generic: 营山县
+        - button "蓬安县，南充市"
+        - button "仪陇县，南充市":
+          - generic: 仪陇县
+        - button "西充县，南充市"
+        - button "阆中市，南充市":
+          - generic: 阆中市
+        - button "通川区，达州市":
+          - generic: 通川区
+        - button "达川区，达州市"
+        - button "宣汉县，达州市":
+          - generic: 宣汉县
+        - button "开江县，达州市"
+        - button "渠县，达州市"
+        - button "万源市，达州市":
+          - generic: 万源市
+        - button "巴州区，巴中市":
+          - generic: 巴州区
+        - button "恩阳区，巴中市":
+          - generic: 恩阳区
+        - button "通江县，巴中市":
+          - generic: 通江县
+        - button "南江县，巴中市":
+          - generic: 南江县
+        - button "平昌县，巴中市":
+          - generic: 平昌县
+        - button "马尔康市，阿坝藏族羌族自治州":
+          - generic: 马尔康市
+        - button "汶川县，阿坝藏族羌族自治州"
+        - button "理县，阿坝藏族羌族自治州":
+          - generic: 理县
+        - button "茂县，阿坝藏族羌族自治州":
+          - generic: 茂县
+        - button "松潘县，阿坝藏族羌族自治州":
+          - generic: 松潘县
+        - button "九寨沟县，阿坝藏族羌族自治州":
+          - generic: 九寨沟县
+        - button "金川县，阿坝藏族羌族自治州":
+          - generic: 金川县
+        - button "小金县，阿坝藏族羌族自治州":
+          - generic: 小金县
+        - button "黑水县，阿坝藏族羌族自治州":
+          - generic: 黑水县
+        - button "壤塘县，阿坝藏族羌族自治州"
+        - button "阿坝县，阿坝藏族羌族自治州":
+          - generic: 阿坝县
+        - button "若尔盖县，阿坝藏族羌族自治州"
+        - button "红原县，阿坝藏族羌族自治州":
+          - generic: 红原县
+        - button "丹巴县，甘孜藏族自治州"
+        - button "道孚县，甘孜藏族自治州"
+        - button "第一幕｜昭化古城，待探索，坐标待核验 / 景区待定位 · 昭化区驻地示意（关联待确认）":
+          - generic: "1"
+          - generic: 昭化古城
+        - button "第二幕｜剑门天险，当前章，坐标待核验 / 景区待定位 · 剑阁县驻地示意（关联待确认）":
+          - generic: "2"
+          - generic: 剑门关
+      - generic: 第 2 / 3 幕 · 已寻迹 0 / 3
+      - group "地图缩放":
+        - generic: 缩放
+        - status: 403%
+        - button "缩小地图": −
+        - slider "缩放": "403"
+        - button "放大地图": ＋
+      - region "故事章节与图例":
+        - generic: 虚线代表地名提及顺序，不是道路导航
+        - generic: 墨迹线代表章节叙事顺序，不是实际道路
+        - paragraph: 地图仅为位置示意，驻地不是景区入口；待定位章节不会连接。当前章高亮，已完成盖“已寻迹”，未标记完成的章节显示待探索。
+        - status: 章节主题模板 / 资料待确认 · 2 个有位置资料的章节（含本次跳过） · 1 个待定位。怎么到达，可以请向导规划。
+        - list:
+          - button "1 · 第一幕｜昭化古城 · 待探索"
+          - generic: 坐标待核验 / 景区待定位 · 昭化区驻地示意（关联待确认）
+          - button "2 · 第二幕｜剑门天险 · 当前章"
+          - generic: 坐标待核验 / 景区待定位 · 剑阁县驻地示意（关联待确认）
+          - button "3 · 第三幕｜米仓道 · 待探索"
+          - generic: 待定位 · 具体遗址与县区待确认
+      - status: 已加载183个县级地点。告诉向导旅游需求后，会标出已识别且有位置资料的地点；也能选择县城加入路线。
+      - list
+      - paragraph: 市州圆点与路线点表示驻地，不代表景区入口；区县地名嵌于各自地块。虚线为地点顺序示意，不提供道路导航或通行时间。可拖动平移、滚轮或双指缩放；点击县域内部或县名即可选中；小地块名称可能省略，全部县区均可从列表选择。
+      - paragraph:
+        - text: 轮廓与坐标来源：
+        - link "阿里云 DataV 地理数据":
+          - /url: https://datav.aliyun.com/portal/school/atlas/area_selector
+        - text: 。
+      - button "带入活动计划"
+      - status
+    - generic: AI 文化向导 · 动态信息请核验
+    - generic "影像来源"
+- button "打开对话，可拖动调整位置":
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行
