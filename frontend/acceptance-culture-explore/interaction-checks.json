@@ -1,0 +1,61 @@
+{
+  "method": "1920×1080真实浏览器点击/输入/选择/键盘；没有模拟后端回答",
+  "primaryAction": "选一条故事线开始",
+  "entryEvidence": {
+    "hero": [
+      "05-final-home"
+    ],
+    "storySelection": [
+      "06-story-detail"
+    ],
+    "storyPreview": [
+      "07-preview",
+      "08-preview-map"
+    ],
+    "chenshou": [
+      "09-chenshou-entry",
+      "18-actual-answers"
+    ],
+    "journeyForm": [
+      "10-journey-form",
+      "13-character-form",
+      "14-form-submit"
+    ],
+    "buildings": [
+      "11-building-node"
+    ],
+    "cultureCards": [
+      "12-culture-cards",
+      "13-character-form",
+      "15-culture-question"
+    ],
+    "mapInvitation": [
+      "16-map-invitation",
+      "17-geography-map"
+    ]
+  },
+  "observations": {
+    "collapsedFormDraftRestored": "本轮层级验收草稿：南充一天，了解陈寿",
+    "characterPrepare": {
+      "disclosureOpen": true,
+      "focus": "hero-message",
+      "mode": "character"
+    },
+    "actualAnswers": 3,
+    "comparisonCard": "前一问在途时追加到对话草稿，未声称该次对照问题已获得回答",
+    "keyboardDisclosure": {
+      "openAttributeAfterFirstEnter": "",
+      "openAttributeAfterSecondEnter": null
+    },
+    "fiveTabs": "见browser-layouts.json，标签与aria-pressed逐次实测对应",
+    "horizontalOverflow": "见browser-layouts.json，1920文档/body和两种聊天布局宽度",
+    "consoleErrors": 0
+  },
+  "uncovered": [
+    "响应式",
+    "用户主观设计确认",
+    "性能/游客研究",
+    "每一故事/建筑的全部内容",
+    "动态回答事实真实性"
+  ]
+}

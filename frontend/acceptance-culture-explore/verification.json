@@ -1,0 +1,221 @@
+{
+  "syntax": [
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\acceptance-batch4\\browser-checks.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\amap-map.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\amap-planner.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\answer-format.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chat-transport.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chenshou-guide.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\cities.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\cultural-node.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\journal.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\landing.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\map-route-core.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\n10-n17.browser-test.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\n8-n9.browser-test.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\outing-core.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\outing.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\stories.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-map.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-progress.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\tests\\map-performance.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-api.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-map.js",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-modules.js",
+      "exitCode": 0,
+      "output": ""
+    }
+  ],
+  "tests": [
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\answer-format.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops\nPASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery\nPASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery\nPASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover\nPASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation\nPASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: persona/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chat-transport.test.cjs",
+      "exitCode": 0,
+      "output": "PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chenshou-guide.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: scholar SVG/four states, default collapsed, honest chapter handoff, completion/undo, context/mode, compression snapshot, drafts/retry/session isolation, three person themes and stale note removal"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\cultural-node.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\design-system.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: original token semantics, complete scales, no raw component colors, text AA min=4.91, controls/focus >=3, reduced motion and touch target contract"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\itinerary-agent-core.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: one activity request form, retired duplicate scripts, road lookup retained"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\journal.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\landing.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls\nPASS: story detail uses the same request/pending-draft bridge"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\map-route.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map\nPASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels\nPASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation\nPASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1500%\nPASS: wide/tall visible bounds and shared city/county geometry\nPASS: shared internal county edges removed from city outline\nPASS: chapter seals reserve label clearance without changing ordinary projection\nPASS: concave/holed/multipart interior labels, 183 county anchors, in-parcel text boxes or omission"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\navigation.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion\nPASS: journal label, aria-pressed, no document scrolling and map preservation"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\outing-core.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\stories.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-map.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-progress.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: local persistence, story isolation, modes, partial completion, undo, selection validation, changed chapters, corrupt/blocked storage"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-api.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: disabled no-network mode, URL encoding, request body, timeout signal, empty/error/invalid responses"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-map.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out\nPASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication\nPASS: general story questions preserve route/view/zoom; explicit destinations still map\nPASS: two-pointer pinch increases zoom\nPASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels"
+    },
+    {
+      "path": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-modules.test.cjs",
+      "exitCode": 0,
+      "output": "PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels"
+    }
+  ]
+}

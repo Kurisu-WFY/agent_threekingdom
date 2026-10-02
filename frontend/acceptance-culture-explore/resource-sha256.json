@@ -1,0 +1,23 @@
+[
+  {
+    "resource": "index.html",
+    "url": "http://localhost:8002/",
+    "localSHA256": "1BB50CDE5B1BCC9EEF04192B3AED6E72FE9592C8E6D4FDC5D72FA0EEAD9CF77C",
+    "httpSHA256": "1BB50CDE5B1BCC9EEF04192B3AED6E72FE9592C8E6D4FDC5D72FA0EEAD9CF77C",
+    "equal": true
+  },
+  {
+    "resource": "styles.css",
+    "url": "http://localhost:8002/styles.css?v=culture-explore-20261002-2",
+    "localSHA256": "1814031BEB6F626EF08635C673CBED40048A9485D41BEBC93919FE929E346622",
+    "httpSHA256": "1814031BEB6F626EF08635C673CBED40048A9485D41BEBC93919FE929E346622",
+    "equal": true
+  },
+  {
+    "resource": "landing.js",
+    "url": "http://localhost:8002/landing.js?v=culture-explore-20261002",
+    "localSHA256": "28A36D2F69DBF32DFE37315411F1E9D13016544DDC24A32C115F863B944B4B82",
+    "httpSHA256": "28A36D2F69DBF32DFE37315411F1E9D13016544DDC24A32C115F863B944B4B82",
+    "equal": true
+  }
+]
