@@ -207,10 +207,16 @@ function messageNode(message) {
   return row;
 }
 
-let renamingChat = null, renameDraft = '';
+let renamingChat = null, renameDraft = '', renderedHistory = [];
 function renderHistory(focusChat = null, focusEditor = false) {
   const editingFocused = document.activeElement?.closest?.('.history-rename');
   if (renamingChat && !chats.includes(renamingChat)) renamingChat = null;
+  const nextHistory = chats.map((chat,index)=>({chat,title:chat.title,active:index===active,editing:chat===renamingChat}));
+  // 回答进度不会改变历史列表。保留原DOM，以免打断光标、按钮焦点和输入法组合输入。
+  if(nextHistory.length===renderedHistory.length && nextHistory.every((entry,index)=>{
+    const previous=renderedHistory[index];return entry.chat===previous.chat&&entry.title===previous.title&&entry.active===previous.active&&entry.editing===previous.editing;
+  }))return;
+  renderedHistory=nextHistory;
   historyList.replaceChildren();
   chats.forEach((chat, index) => {
     const item = document.createElement('div');
@@ -239,6 +245,7 @@ function renderHistory(focusChat = null, focusEditor = false) {
     rename.onclick = () => { renamingChat = chat; renameDraft = chat.title; renderHistory(null, true); };
     item.append(button, rename);
     if (chats.length > 1) item.append(remove);
+    let editField;
     if (renamingChat === chat) {
       const editor = document.createElement('form'); editor.className = 'history-rename';
       const label = document.createElement('label'); label.textContent = '对话名称（最多60字）';
@@ -249,17 +256,18 @@ function renderHistory(focusChat = null, focusEditor = false) {
       const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = '取消';
       const close = () => { renamingChat = null; renameDraft = ''; renderHistory(chat); };
       cancel.onclick = close;
-      field.addEventListener('keydown', event => { if(event.key === 'Escape') { event.preventDefault(); close(); } });
+      field.addEventListener('keydown', event => { if(event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(); } });
       editor.addEventListener('submit', event => {
         event.preventDefault(); const name = field.value.trim();
         if (!name || name.length > 60) { notice.textContent = '请填写1至60字的对话名称。'; field.focus(); return; }
         chat.title = name; chat.customTitle = true; close();
       });
       editor.append(label, notice, save, cancel); item.append(editor);
+      editField = field;
     }
     historyList.append(item);
     if (focusChat === chat) rename.focus();
-    else if (renamingChat === chat && (focusEditor || editingFocused)) item.children[item.children.length - 1].querySelector('input')?.focus();
+    else if (editField && (focusEditor || editingFocused)) editField.focus();
   });
   document.querySelector('#conversation-title').textContent = chats[active].title;
 }
