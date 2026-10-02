@@ -9,7 +9,7 @@ const views=[],asks=[],adds=[],scrolls=[],listeners=[];
 const place={id:'pass',name:'测试关楼',building:'pass'},chapter={name:'第二幕',placeId:'pass',people:[],events:[],story:'未经核验的文字',sources:[{title:'不可靠资料',source_level:'C',source_url:'javascript:alert(1)'}]},story={id:'test',title:'测试故事',chapters:[{},chapter]};
 const window={scrollY:270,scrollTo:o=>scrolls.push(o.top),SGT_STORIES:[story],SGT_PLACES:[place],
  SGTStoryUI:{icon:kind=>Object.assign(new Element('svg'),{textContent:kind}),openStory:id=>views.push(id)},
- StoryProgress:{get:()=>state,save(){listeners.forEach(fn=>fn(story));},subscribe:fn=>listeners.push(fn)},SGTJourney:{ask:q=>asks.push(q)},TravelMap:{addStoryPlace:p=>{adds.push(p);return true;}},
+ StoryProgress:{get:()=>state,save(){listeners.forEach(fn=>fn(story));},subscribe:fn=>listeners.push(fn)},SGTJourney:{ask:(q,o)=>asks.push({q,o})},TravelMap:{addStoryPlace:p=>{adds.push(p);return true;}},
  StoryMap:{describePlace:(p,c)=>({place:p,chapter:c,exact:false,point:null})}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/cultural-node.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t)},showContentView:v=>views.push(v)});
 const api=window.CulturalNode,text=n=>n.textContent+n.children.map(text).join(' '),click=id=>get(id).handlers.click();
@@ -20,7 +20,7 @@ assert.match(text(get('#node-metadata')),/C 级可信度不足/);assert.equal(ge
 get('#node-reading').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-reading').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/亲子共读/);
 api.changeMode('学术探索版');assert.match(text(get('#node-reading-content')),/编纂背景/);assert.equal(get('#node-reading').scrollTop,260);assert.equal(get('#node-reading-content').style.minHeight,'1500px');
 state.mode='亲子故事版';window.StoryProgress.save(story);assert.equal(api.getMode(),'亲子故事版');assert.equal(get('#node-reading').scrollTop,260);api.changeMode('学术探索版');
-click('#node-ask');assert.match(asks.at(-1),/测试关楼/);assert.match(asks.at(-1),/合理推断/);assert.match(asks.at(-1),/学术探索版/);assert.equal(state.current,1);
+click('#node-ask');assert.match(asks.at(-1).q,/测试关楼/);assert.match(asks.at(-1).q,/合理推断/);assert.match(asks.at(-1).q,/学术探索版/);assert.equal(state.current,1);assert.match(asks.at(-1).o.displayText,/测试关楼/);assert.ok(!asks.at(-1).o.displayText.includes('必须分段'));
 click('#node-compare');assert.ok(get('#node-comparison-title').focused);assert.ok(get('#node-comparison-title').scrolled);
 const record=t=>({text:t,data_status:'maintained',updated_at:'2026-09-18T09:00:00+08:00',sources:[{title:'测试用来源',source_level:'A',source_url:'https://example.org/reference',data_status:'maintained'}]});
 const enriched={...chapter,narrative_type:'record',story:'受支持正文',...record(''),history:record('史料侧测试文本'),romance:record('文学侧测试文本'),differences:record('差异测试文本'),disputes:[record('观点甲'),record('观点乙')],inferences:[record('推断测试文本')]};
@@ -28,6 +28,7 @@ api.open({place:{...place,travel:{ticket:{...record(''),data_status:'live',tool_
 assert.match(text(get('#node-comparison')),/史料侧测试文本/);assert.match(text(get('#node-comparison')),/文学侧测试文本/);assert.match(text(get('#node-differences')),/差异测试文本/);assert.match(text(get('#node-disputes')),/存在不同说法/);
 assert.match(text(get('#node-reading-content')),/合理推断 · 非史料原文/);assert.match(text(get('#node-reading-content')),/推断测试文本/);assert.match(text(get('#node-tourism')),/工具来源：测试工具/);assert.ok(!text(get('#node-tourism')).includes('0 元'));
 const pendingRecord=record('不该显示的史料');pendingRecord.sources[0].data_status='pending';api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});assert.ok(!text(get('#node-comparison')).includes('不该显示的史料'));
+assert.ok(!text(get('#node-metadata')).includes('pending'),'U08 raw status not rendered');assert.ok(!text(get('#node-comparison')).includes('pending'));
 click('#node-add-route');assert.equal(adds[0].name,'县级驻地');click('#node-enter-story');assert.equal(views.at(-1),'test');
 const links=[];function walk(n){if(n.tag==='a')links.push(n);n.children.forEach(walk);}nodes.forEach(walk);assert.ok(links.every(a=>/^https?:/.test(a.href)));
 api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').disabled,true);assert.match(get('#node-context').textContent,/待关联/);

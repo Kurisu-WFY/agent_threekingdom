@@ -7,6 +7,7 @@
   const text=v=>typeof v==='string'&&v.trim()?v.trim():'待核验';
   const list=v=>Array.isArray(v)&&v.length?v.map(text).join('、'):'待核验';
   const status=r=>r?.data_status || r?.dataStatus;
+  const statusLabel=r=>({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期',forecast:'天气预报',model:'模型估计'}[status(r)] || '状态待核验');
   const updated=r=>r?.updated_at || r?.updatedAt;
   const sources=r=>Array.isArray(r?.sources)?r.sources.filter(s=>s&&typeof s==='object'):[];
   function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;if(typeof content==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(content))n.setAttribute('data-trust-state','unverified');return n;}
@@ -15,12 +16,12 @@
   function evidence(r){return ['maintained','live'].includes(status(r))&&dated(r)&&sources(r).some(s=>['A','B'].includes(s.source_level)&&['maintained','live'].includes(status(s))&&safeUrl(s.source_url));}
   function provenance(r,label='史料来源'){
     const d=node('details','node-sources');d.append(node('summary','',label+' · '+sources(r).length+' 条'));
-    d.append(node('p','','资料状态：'+text(status(r))+' · 更新时间：'+(dated(r)?updated(r):'待核验')+(evidence(r)?'':' · 待核验')));
+    d.append(node('p','','资料状态：'+statusLabel(r)+' · 更新时间：'+(dated(r)?updated(r):'待核验')+(evidence(r)?'':' · 待核验')));
     if(!sources(r).length)d.append(node('p','','来源待核验。'));
     sources(r).forEach(s=>{
       const row=node('p',''),url=safeUrl(s.source_url), title=text(s.title)+' · 来源等级 '+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验');
       if(url){const a=node('a','',title);a.href=url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);}else row.append(node('span','',title+' · 链接待核验'));
-      row.append(node('span','',' · 资料状态：'+text(status(s))));
+      row.append(node('span','',' · 资料状态：'+statusLabel(s)));
       if(s.source_level==='C')row.append(node('strong','node-unverified',' C 级可信度不足，不能作为史实依据。'));
       d.append(row);
     });return d;
@@ -91,7 +92,7 @@
     $('#node-context').textContent='城市：'+text(place.city)+' · 故事线：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
     $('#node-people').textContent='本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events);
     $('#node-coordinate').textContent=context.exact?'景区坐标有来源；入口和道路导航仍待核验。':'坐标待核验 · '+(context.note || '地点待定位，不猜景区位置。');
-    $('#node-metadata').replaceChildren(node('p','node-unverified','史料标签：'+text(status(chapter))+(evidence(chapter)?' · 来源见下方':' · 待核验')),provenance(chapter));
+    $('#node-metadata').replaceChildren(node('p','node-unverified','史料标签：'+statusLabel(chapter)+(evidence(chapter)?' · 来源见下方':' · 待核验')),provenance(chapter));
     $('#node-reading-content').style.minHeight=readings.get(readingKey)?.height?readings.get(readingKey).height+'px':'';renderReading();comparison();tourism();
     $('#node-enter-story').disabled=!story;$('#node-add-route').disabled=!context.point;
     $('#node-add-route').textContent=context.point?(context.exact?'加入路线':'加入路线（驻地示意）'):'加入路线（待定位）';
@@ -111,7 +112,7 @@
   $('#node-ask').addEventListener('click',()=>{
     if(!context)return;
     window.CharacterChat?.selectPersona('陈寿');
-    window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。');
+    window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+mode+"）"});
     $('#node-feedback').textContent='已交给陈寿；回答或草稿在现有对话中，资料仍需核验。';
   });
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});

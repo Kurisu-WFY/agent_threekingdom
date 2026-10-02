@@ -139,7 +139,7 @@
       '当前章节资料：' + value(item.chapter.story) + '；人物：' + list(item.chapter.people) + '；事件：' + list(item.chapter.events) + '。' +
       (compare ? '请对照正史、演义和地方传说，分别说明依据。' : '请承接上一章的主题介绍本章，只使用可靠资料并说明来源。') +
       '缺资料请明确说待确认，不编造上一章讲解、史实或道路导航，不把驻地当景区入口。';
-    window.SGTJourney.ask(question);
+    window.SGTJourney.ask(question,{displayText:'请陈寿'+(compare?'对照正史与演义，讲解':'讲解')+item.chapter.name+'（'+item.place.name+'，'+(state().mode||'大众体验版')+'）',preserveMap:true});
     $('#story-node-feedback').textContent = '已交给陈寿；正在回答时，本章问题会存入对话草稿。';
   }
   function revealCard() {

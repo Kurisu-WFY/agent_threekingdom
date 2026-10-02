@@ -30,6 +30,7 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('文化主题与故事线'));}
   test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
+  assert.ok(!contents(test.get('#story-detail-content')).includes('pending'),'U08 story status is Chinese');
   const chapterButtons=(function walk(n){return [n,...n.children.flatMap(walk)]})(test.get('#story-detail-content')).filter(n=>n.tag==='button'&&n.textContent==='阅读地点资料');
   assert.equal(chapterButtons.length,3,'each chapter offers a direct detail path from the story');chapterButtons[0].handlers.click();assert.equal(test.nodeCalls[0][1],'story');
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));

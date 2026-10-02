@@ -6,6 +6,13 @@
   const make = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   const status = text => { $('amap-status').textContent = text; };
   const clear = () => { version++; $('amap-results').replaceChildren(); window.AmapRouteMap?.clear(); };
+  window.AmapPlanner={prefill({origin='',destination='',city=''}){
+    clear();$('amap-route-form').hidden=true;
+    $('amap-origin-query').value=origin;$('amap-destination-query').value=destination;$('amap-city').value=city;
+    for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}
+    $('amap-search-form').querySelector('button').disabled=false;
+    status('已带入本次计划的地点文字；请搜索后分别确认具体起终点，尚未选择候选或核验坐标。');
+  }};
   $('amap-search-form').addEventListener('input', () => {clear(); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});
   $('amap-route-form').addEventListener('change', () => {clear(); status('条件已改变，请重新查询路线。');});
   $('amap-search-form').onsubmit = async e => {

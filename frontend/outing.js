@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id), core=window.OutingCore, api=window.TravelApi;
   if (!$('outing-view') || !core || !api) return;
   const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
-  let routeVersion=0,back=null;
+  let routeVersion=0,back=null,chatHandoff=false;
   const time=v=>{const d=new Date(v);return Number.isFinite(+d)?d.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+'（北京时间）':'未提供';};
   function source(target, record) {
     target.replaceChildren();
@@ -45,7 +45,13 @@
     }catch(e){if(version===routeVersion){$('outing-route-status').textContent=e.message||'查询失败，请重试。';$('outing-route-preview').replaceChildren(node('p','本次没有可确认的道路路线，可调整起终点后重试。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();}}
     finally{if(version===routeVersion)button.disabled=false;}
   };
-  window.TravelAssistant={canOpen:core.canOpen,open(message,returnToChat){
+  function prefillPlan(draft){
+    window.AmapPlanner?.prefill(draft);clearRoute();
+    for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}
+    coordinateFields();$('outing-confirm').checked=false;$('outing-back').hidden=true;
+    $('outing-origin').textContent='来自本次活动计划 · 地点文字已带入，请搜索并确认候选';
+  }
+  window.TravelAssistant={canOpen:core.canOpen,prefillPlan,onEnter(source){if(!chatHandoff&&['plan','planner'].includes(source))prefillPlan(window.TravelModules.getRoadDraft(source));},open(message,returnToChat){
     const d=core.draft(message);clearRoute();
     window.TravelModules?.prefillTravel?.(d.city,d.date);back=returnToChat;
     for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}coordinateFields();$('outing-confirm').checked=false;
@@ -53,7 +59,8 @@
     $('outing-original').hidden=false;$('outing-original-text').textContent=window.AgentAnswer?.clean(d.answer)||d.answer;
     $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待核验')));
     $('outing-draft-note').textContent=d.stops.length?'已带入结构化站点名称；未将坐标或可行性视为已核验。':'已保留回答原文。当前回答未提供结构化站点，未把文字猜测为可导航路线。';
-    toggleChat(false);showContentView('outing');$('outing-title').focus({preventScroll:true});
+    window.AmapPlanner?.prefill({origin:message.activityPlan?.preferences?.origin||'',destination:d.stops.at(-1)?.name||d.city,city:d.city});
+    toggleChat(false);chatHandoff=true;showContentView('outing');chatHandoff=false;$('outing-title').focus({preventScroll:true});
   }};
   $('outing-back').onclick=()=>{if(!back?.())$('outing-origin').textContent='原对话已被删除，可从聊天入口新建对话。';};
   if(window.location.hash==='#outing')showContentView('outing');

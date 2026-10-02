@@ -139,6 +139,25 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     await flush();
     assert.equal(errorMessage.error,false);
   }
+  context.fullVisitorRequest='请生成活动，保留核验约束，不编造实时信息。';
+  context.visitorSummary='南充一日文化活动，南充站出发，2人';
+  run('send(fullVisitorRequest,{displayText:visitorSummary,preserveMap:true})');
+  assert.equal(run('chats[active].messages.at(-2).text'),context.visitorSummary,'U01 visitor sees summary');
+  assert.equal(requests.at(-1).body.message,context.fullVisitorRequest,'U01 request keeps constraints');
+  requests.at(-1).resolve({ok:true,json:async()=>({answer:'摘要对应回答'})});await flush();
+  run("send('后续追问')");
+  assert.equal(requests.at(-1).body.history.find(x=>x.content===context.fullVisitorRequest)?.role,'user','full context remains request-only');
+  requests.at(-1).reject(TypeError('Failed to fetch'));await flush();
+  assert.match(run('chats[active].messages.at(-1).text'),/网络连接失败.*重试/,'U07 native fetch error is Chinese');
+  assert.doesNotMatch(textTree(run('bubbleNode(chats[active].messages.at(-1))')),/Failed to fetch/);
+  assert.match(textTree(run('messageNode(chats[active].messages.at(-1))')),/Failed to fetch/,'raw error stays in details');
+  run('requestReply(chats[active],chats[active].messages.at(-1))');requests.at(-1).resolve({ok:true,json:async()=>({answer:'重试恢复'})});await flush();
+  context.queuedActivity={version:99};
+  run("chats[active].draftRequests=[{summary:'游客活动摘要',question:'完整活动约束，不编造坐标',options:{activityPlan:queuedActivity}}];send('补充偏好\\n\\n游客活动摘要')");
+  assert.equal(requests.at(-1).body.message,'补充偏好\n\n完整活动约束，不编造坐标','U01 pending summary expands only in request');
+  assert.equal(run('chats[active].messages.at(-2).text'),'补充偏好\n\n游客活动摘要');
+  assert.equal(run('chats[active].messages.at(-1).activityPlan'),context.queuedActivity);
+  requests.at(-1).resolve({ok:true,json:async()=>({answer:'等待草稿活动回答'})});await flush();
   await assert.rejects(context.window.SGTChat.request('   '),/填写/);
   for(const failure of [{ok:false,status:503},{ok:true,json:async()=>{throw new SyntaxError('bad JSON');}},Object.assign(Error('timeout'),{name:'TimeoutError'})]) {
     const p=context.window.SGTChat.request('请规划路线');const assertion=assert.rejects(p);const req=requests.at(-1);

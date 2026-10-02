@@ -45,3 +45,7 @@ chat.pending=false;context.window.SGTJourney.ask('另一条主题');assert.equal
 console.log('PASS: story detail uses the same request/pending-draft bridge');
 
 chat.pending=true;context.window.SGTJourney.ask('待发送的活动方案',{activityPlan:{version:9}});assert.equal(chat.draftActivityPlan.question,'待发送的活动方案');assert.equal(chat.draftActivityPlan.activityPlan.version,9);
+context.window.SGTJourney.ask('完整生成指令：不编造价格与坐标',{displayText:'南充一日活动',activityPlan:{version:10}});
+assert.ok(input.value.endsWith('南充一日活动'),'U01 queued request shows the visitor summary');
+assert.ok(!input.value.includes('完整生成指令'));
+assert.equal(chat.draftRequests.at(-1).question,'完整生成指令：不编造价格与坐标');

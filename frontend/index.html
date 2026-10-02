@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=culture-explore-20261002-2">
+  <link rel="stylesheet" href="styles.css?v=interaction-batch6-20261002">
 </head>
 <body>
   <header class="topbar">
@@ -291,6 +291,7 @@
       <section class="module-view cultural-node" id="node-view" data-view-panel="node" hidden>
         <button type="button" class="module-button" id="node-back">返回上一视图</button>
         <p id="node-origin" class="welcome-kicker"></p>
+        <div class="module-actions reading-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>请向智能体咨询到达路线</button></div>
         <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">文化节点 · 在故事中读懂这里</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
         <p class="story-art-note">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>
         <div id="node-metadata"></div>
@@ -298,7 +299,6 @@
         <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
         <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
         <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
-        <div class="module-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>请向智能体咨询到达路线</button></div>
         <p class="map-note">前往景点前，可向智能体确认交通方式和参观安排。</p><p id="node-feedback" role="status"></p>
       </section>
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
@@ -313,33 +313,33 @@
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
         <p class="welcome-kicker">把想法整理成活动</p><h2 tabindex="-1">安排文化活动</h2>
         <p>通过文化向导安排活动顺序、时长与文化讲解；开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>
+        <button id="view-current-plan" type="button" class="module-button" data-content-view="plan" hidden>查看本次方案</button>
         <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
         <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
         <form id="trip-form" class="module-form">
-          <label>目的地<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
+          <label>目的地（必填）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
           <datalist id="itinerary-cities"></datalist>
-          <label>出发地<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
-          <label>出发日期<input name="date" type="date"></label>
+          <label>出发地（必填）<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
+          <label>出发日期（选填）<input name="date" type="date"></label>
           <label>可用时间<select name="days"><option value="0.5">半天</option><option value="1" selected>一天</option><option value="2">两天</option></select></label>
-          <label>人数<input name="people" type="number" value="2" min="1" max="50" required></label>
+          <label>人数（必填，1–50人）<input name="people" type="number" value="2" min="1" max="50" required></label>
           <label>同行人群<select name="group"><option>独行</option><option selected>家庭</option><option>亲子</option><option>研学</option></select></label>
           <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
           <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
-          <label class="form-wide">补充需求<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
+          <label class="form-wide">补充需求（选填）<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
           <button class="module-button primary" type="submit">生成活动方案</button>
         </form>
         <p class="map-note">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>
         <div class="module-actions"><button type="button" class="module-button" data-content-view="travel">查询天气与空气质量</button><button type="button" class="module-button" data-content-view="outing">核验道路路线</button></div>
-        <button type="button" class="module-button" data-content-view="plan">查看上一份方案</button>
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
       </section>
 
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">活动方案</h2>
+        <div class="module-actions reading-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
-        <div class="module-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button class="module-button" data-content-view="outing">核验道路路线</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
         <p id="plan-status" role="status"></p>
         <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
         <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
@@ -347,7 +347,7 @@
 
 
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
-        <button type="button" class="module-button" id="travel-back" data-content-view="planner">返回活动计划</button>
+        <button type="button" class="module-button" id="travel-back" data-content-view="planner">返回活动需求</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
         <p>填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。</p>
         <form id="travel-weather-form" class="module-form">
@@ -415,22 +415,22 @@
   <script src="chat-transport.js?v=nuwax-1"></script>
   <script src="answer-format.js?v=visitor-answer-2"></script>
   <script src="outing-core.js?v=frontend-batch3-final"></script>
-  <script src="app.js?v=frontend-batch3-final"></script>
-  <script src="landing.js?v=culture-explore-20261002"></script>
+  <script src="app.js?v=interaction-batch6-20261002"></script>
+  <script src="landing.js?v=interaction-batch6-20261002"></script>
   <script src="travel-api.js?v=demo-ready-1"></script>
   <script src="cities.js?v=frontend-batch3-final"></script>
-  <script src="travel-modules.js?v=frontend-batch4-final"></script>
+  <script src="travel-modules.js?v=interaction-batch6-20261002"></script>
   <script src="map-route-core.js?v=frontend-batch5-final"></script>
-  <script src="travel-map.js?v=frontend-batch5-final"></script>
+  <script src="travel-map.js?v=interaction-batch6-20261002"></script>
   <script src="story-progress.js?v=story-system-1"></script>
-  <script src="stories.js?v=frontend-batch3-final"></script>
-  <script src="story-map.js?v=frontend-batch2"></script>
-  <script src="cultural-node.js?v=frontend-batch3-final"></script>
+  <script src="stories.js?v=interaction-batch6-20261002"></script>
+  <script src="story-map.js?v=interaction-batch6-20261002"></script>
+  <script src="cultural-node.js?v=interaction-batch6-20261002"></script>
   <script src="character-chat.js?v=frontend-batch3-final"></script>
-  <script src="journal.js?v=frontend-batch1"></script>
+  <script src="journal.js?v=interaction-batch6-20261002"></script>
   <script src="chenshou-guide.js?v=frontend-batch3-final"></script>
-  <script src="outing.js?v=frontend-batch3-final"></script>
+  <script src="outing.js?v=interaction-batch6-20261002"></script>
   <script src="amap-map.js?v=1"></script>
-  <script src="amap-planner.js?v=2"></script>
+  <script src="amap-planner.js?v=interaction-batch6-20261002"></script>
 </body>
 </html>

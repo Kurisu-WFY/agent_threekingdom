@@ -28,7 +28,9 @@
     toggleChat(true);
     if (chats[active].pending) {
       // 追加内容，不覆盖尚未发送的会话草稿。
-      input.value = input.value.trim() ? input.value + '\n\n' + question : question;
+      const summary=options.displayText || question;
+      input.value = input.value.trim() ? input.value + '\n\n' + summary : summary;
+      if(options.displayText)(chats[active].draftRequests ||= []).push({summary,question,options});
       if(options.activityPlan)chats[active].draftActivityPlan={question,activityPlan:options.activityPlan};
       saveDraft(); updateComposer();
       $('#journey-feedback').textContent = '向导正在回答，新问题已放入对话草稿，稍后可发送。';
@@ -44,7 +46,7 @@
     if ($('#journey-style').value) preferences.push('讲解偏好：' + $('#journey-style').value);
     if (mode === 'character') preferences.push('请基于史料解读人物，区分史实、演义与推测，不编造人物原话。');
     const question = field.value.trim() + (preferences.length ? '\n\n' + preferences.join('；') : '');
-    ask(question); field.value = ''; drafts[mode] = ''; update();
+    ask(question,{displayText:field.value.trim()+(preferences.length?'（'+preferences.filter(p=>!p.startsWith('请基于')).join('；')+'）':'')}); field.value = ''; drafts[mode] = ''; update();
   });
   document.querySelectorAll('[data-journey-mode]').forEach(button => button.addEventListener('click', () => switchMode(button.dataset.journeyMode)));
   document.querySelectorAll('[data-agent-question]').forEach(button => button.addEventListener('click', () => ask(button.dataset.agentQuestion)));

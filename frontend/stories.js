@@ -64,7 +64,7 @@
   }
   function provenance(record) {
     const d=node('details','chapter-sources');
-    d.append(node('summary','', '史料依据 · 资料状态：' + text(record.dataStatus) + ' · 待核验'));
+    d.append(node('summary','', '史料依据 · 资料状态：' + ({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期'}[record.dataStatus] || '状态待核验') + ' · 待核验'));
     d.append(node('p','', '更新时间：' + (record.updatedAt || '待核验')));
     if (!record.sources?.length) d.append(node('p','', '来源待补充；当前资料中未找到可靠记载。'));
     (record.sources || []).filter(s=>s && typeof s==='object').forEach(s=>{

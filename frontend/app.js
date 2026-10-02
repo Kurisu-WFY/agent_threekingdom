@@ -179,6 +179,7 @@ function messageNode(message) {
     if (actions.children.length) body.append(actions);
   }
   if (message.error) {
+    if(message.errorDetail){const details=document.createElement('details');details.append(Object.assign(document.createElement('summary'),{textContent:'错误详情'}),Object.assign(document.createElement('p'),{textContent:message.errorDetail}));body.append(details);}
     const retry = document.createElement('button');
     retry.className = 'retry';
     retry.textContent = '重新请求 · 请陈寿再查一次';
@@ -372,7 +373,7 @@ window.SGTChat = { async request(text, routePreferences) {
   const message = typeof text === 'string' ? text.trim() : '';
   if (!message) throw new Error('请先填写出行需求。');
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text}));
+    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text)}));
   const data = await ask(message, history, routePreferences?.explanation || window.CharacterChat?.backendMode() || '大众', routePreferences);
   if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
   return data;
@@ -382,23 +383,32 @@ function send(text, options = {}) {
   const trimmed = (text || '').trim();
   if (!trimmed) return;
   if (chats[active].pending) {
-    if (trimmed !== input.value.trim()) input.value = input.value.trim() ? input.value + '\n\n' + trimmed : trimmed;
+    const summary=options.displayText?.trim() || trimmed;
+    if (summary !== input.value.trim()) input.value = input.value.trim() ? input.value + '\n\n' + summary : summary;
+    if(options.displayText)(chats[active].draftRequests ||= []).push({summary,question:trimmed,options});
     saveDraft(); updateComposer(); return;
   }
 
   const chat = chats[active];
   const history = chat.messages
     .filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：' + item.persona + '】' : '') + item.text }));
+    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text) }));
 
-  if (chat.messages.length === 1) chat.title = trimmed.slice(0, 10);
-  const prepared = window.CharacterChat?.prepare(chat, trimmed);
-  chat.messages.push({ role: 'user', text: trimmed, persona: prepared?.persona });
-  const reply = { role: 'assistant', text: '', question: prepared?.question || trimmed, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: trimmed };
+  const visible=options.displayText?.trim() || trimmed;
+  let requestText=trimmed, queuedActivity=null;
+  for(const draft of chat.draftRequests || [])if(visible.includes(draft.summary)){
+    requestText=requestText.replace(draft.summary,draft.question);
+    if(draft.options.activityPlan)queuedActivity=draft.options.activityPlan;
+  }
+  delete chat.draftRequests;
+  if (chat.messages.length === 1) chat.title = visible.slice(0, 10);
+  const prepared = window.CharacterChat?.prepare(chat, requestText);
+  chat.messages.push({ role: 'user', text: visible, requestText, persona: prepared?.persona });
+  const reply = { role: 'assistant', text: '', question: prepared?.question || requestText, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: visible };
   chat.messages.push(reply);
   if (options.preserveMap) reply.preserveMap = true;
   const draftActivity=chat.draftActivityPlan;
-  const activityPlan=options.activityPlan || (draftActivity && trimmed.includes(draftActivity.question) ? draftActivity.activityPlan : null);
+  const activityPlan=options.activityPlan || queuedActivity || (draftActivity && trimmed.includes(draftActivity.question) ? draftActivity.activityPlan : null);
   if (activityPlan) { reply.activityPlan = activityPlan; reply.preserveMap = true; }
   delete chat.draftActivityPlan;
   if (!reply.preserveMap) window.TravelMap?.fromMessage(chat, trimmed);
@@ -413,6 +423,7 @@ function requestReply(chat, reply) {
   chat.pending = true;
   reply.pending = true;
   reply.error = false;
+  delete reply.errorDetail;
   reply.streamText = '';
   reply.progress = '';
   render();
@@ -444,9 +455,13 @@ function requestReply(chat, reply) {
       reply.pending = false;
       reply.error = true;
       if (chats[active] === chat && reply.activityPlan) window.TravelModules?.failActivity?.(reply);
+      reply.errorDetail=error.message || '';
       reply.text = error.name === 'TimeoutError'
         ? '回答等待超时，平台任务可能仍在执行，请先检查女娲会话再决定是否重试。'
-        : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');
+        : /Failed to fetch|NetworkError|Load failed|network.*(?:error|failed)|offline/i.test(error.message || '')
+          ? '网络连接失败，尚未取得回答。请检查网络或服务连接后重试。'
+          : /HTTP \d+/.test(error.message || '') ? '服务暂时无法完成回答，请稍后重试。'
+          : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');
       if (reply.streamText) reply.text += '\n\n以下为未完成的片段（不代表成功回答）：\n' + reply.streamText;
     })
     .finally(() => {
@@ -563,6 +578,7 @@ function showContentView(view) {
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
     if(view==='travel')window.TravelModules?.onEnterTravel?.(leaving?.dataset.viewPanel);
+    if(view==='outing')window.TravelAssistant?.onEnter?.(leaving?.dataset.viewPanel);
     const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气与空气质量', outing:'出发核验', journal:'探索志', node:'文化节点' };
     const taskParent={story:'welcome',plan:'planner',travel:'planner',outing:'planner'};
     const origin=view==='node'?(window.CulturalNode?.getContext?.()?.returnTo||'welcome'):null;

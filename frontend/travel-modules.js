@@ -2,7 +2,7 @@
   const $ = selector => document.querySelector(selector);
   const api = window.TravelApi;
   const storageKey = 'sanguo.travel-plans.v1';
-  let current = null, planningStory = null, planRequest = 0, lastAttempt = null;
+  let current = null, planningStory = null, planRequest = 0, lastAttempt = null, weatherReturn='planner';
   let city = '南充';
   let cityRequest = 0;
   let saved = [];
@@ -68,7 +68,7 @@
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));
         if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));
         card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));
-        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。'); }), action('带入活动计划', () => chooseCity(spot.city || city, spot.name)));
+        card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。',{displayText:'请介绍'+spot.name+'与三国文化的联系。'}); }), action('带入活动计划', () => chooseCity(spot.city || city, spot.name)));
         sources(card, spot.sources);
         target.append(card);
       });
@@ -158,6 +158,7 @@
       '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
       '先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
+  function visitorSummary(p,story){return '请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+p.explanation+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'')+'。';}
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;
     target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),
@@ -197,7 +198,7 @@
     const intent=reply.data?.intent?.intent;
     if(reply.data?.route?.found===true || ['route_planning','budget_ticket'].includes(intent) || reply.data?.generation?.kind==='retrieval_fallback'){
       activityState('other-answer');
-      $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，上一份方案保持。';
+      $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，现有方案保持。';
       $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';
       return;
     }
@@ -206,22 +207,24 @@
       activityAnswer:reply.text,plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
     activityState('valid');
     renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');
-    $('#planner-status').textContent='已收到活动方案，可在对话中继续追问，或查看方案保存与复制。';
+    $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';
+    $('#planner-status').textContent='本次方案已生成，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
     $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';
   }
   async function requestPlan(attempt) {
     const version=++planRequest, button=$('#trip-form').querySelector('[type="submit"]');
     const activityPlan={...attempt,version};
-    activityState('requesting');
-    if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿活动对话；若正在回答，本次需求保留在对话草稿。';window.SGTJourney.ask(attempt.question,{preserveMap:true,activityPlan});return;}
+    activityState('requesting');$('#view-current-plan').hidden=!current&&!saved.length;
+    $('#view-current-plan').textContent=current?'查看已有方案':'查看本机保存的方案';
+    if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿活动对话；若正在回答，本次需求保留在对话草稿。';window.SGTJourney.ask(attempt.question,{displayText:visitorSummary(attempt.preferences,attempt.story),preserveMap:true,activityPlan});return;}
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
-    $('#planner-status').textContent='正在检索文化资料并生成活动方案；上一份方案保持。';
+    $('#planner-status').textContent='正在检索文化资料并生成活动方案；现有方案保持。';
     try {
       const data=await window.SGTChat.request(attempt.question);
       if(version!==planRequest)return;
       if(typeof data?.answer!=='string'||!data.answer.trim())throw Error('未返回有效活动回答。');
       receiveActivity({text:data.answer,data,activityPlan});showContentView('plan');
-    } catch(error) {if(version===planRequest){activityState('failed');$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；上一份方案保持。':'请求失败：'+error.message+' 可重试；上一份方案保持。';$('#planner-retry').hidden=false;}}
+    } catch(error) {if(version===planRequest){activityState('failed');$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；现有方案保持。':'请求失败：'+error.message+' 可重试；现有方案保持。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
   }
   $('#trip-form').onsubmit = event => {
@@ -251,13 +254,15 @@
   const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('destinations');};
   $('#planner-back-story').onclick=$('#plan-back-story').onclick=backStory;
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
-  function getParentView(){return 'planner';}
-  function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；上一份方案保持，可修改条件后重试。';}}
-  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,prefillTravel,getParentView};
+  function getRoadDraft(source){const p=source==='plan'&&current?current.preferences:Object.fromEntries(['origin','city','notes'].map(k=>[k,field(k).value]));return {origin:p.origin||'',city:p.city||'',destination:(source==='plan'?current?.chatRoute?.stops?.at(-1)?.name:'') || p.notes?.match(/希望包含：([^；\n]+)/)?.[1] || p.city || ''};}
+  function getParentView(view){return view==='travel'?weatherReturn:'planner';}
+  function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；现有方案保持，可修改条件后重试。';}}
+  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,prefillTravel,getParentView,getRoadDraft};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();
     if (!saved.length) return empty(target, '尚未保存方案。');
+    if(!current){$('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本机保存的方案';}
     saved.forEach(item => {
       const row = node('div', null, 'saved-plan');
       row.append(node('span', `${item.plan.title || item.preferences.city} · ${item.preferences.date}`), action('打开', () => {
@@ -292,7 +297,11 @@
     prefilledPlanId=current?.id||null;
     $('#travel-status').textContent=cityName?'已带入目的地与日期；点击查询后才会请求天气。':'原回答未确认单一目的地；请手动选城后查询。';
   }
-  function onEnterTravel(){
+  function onEnterTravel(source='planner'){
+    weatherReturn=source==='plan'?'plan':'planner';
+    $('#travel-back').dataset.contentView=weatherReturn;
+    $('#travel-back').textContent=weatherReturn==='plan'?'返回本次方案':'返回活动需求';
+    if(source==='planner'){prefillTravel(field('city').value,field('date').value);return;}
     if(current?.id && current.id!==prefilledPlanId){
       prefillTravel(current.preferences.city,current.preferences.date||current.preferences.travel_date);
     }
