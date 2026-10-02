@@ -66,6 +66,7 @@ const assert=require('node:assert/strict');
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'hidden');
  assert.equal(registry.get('#map-fit').disabled,true,'no-route fit starts disabled');
  const provinceView=svg.attributes.viewBox;
+ assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:[],places:[]},'empty province has no invented cities');
  for(let i=0;i<3;i++){
    select.value='南充市';select.onchange();paintAll();
    assert.equal(svg.attributes.viewBox,provinceView,'changing prefecture does not pan or zoom');
@@ -76,6 +77,7 @@ const assert=require('node:assert/strict');
    assert.equal(svg.attributes.viewBox,provinceView,'province button restores province viewport');
  }
  select.value='南充市';select.onchange();paintAll();
+ assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:['南充'],places:[]},'prefecture filter is a real city selection');
  for(let i=0;i<5;i++)registry.get('#map-zoom-in').onclick();paintAll();
  assert.ok(Number(svg.style['--map-unit'])<1,'map-unit shrinks SVG font units as viewport zooms');
  const oldLayout=window.MapRouteCore.labelLayout;let laidOut=[];
@@ -101,6 +103,7 @@ const assert=require('node:assert/strict');
  svg.listeners.pointerdown(event);assert.equal(svg.captured,undefined);svg.listeners.pointerup(event);svg.listeners.click(event);
  assert.equal(registry.get('#map-county').value,'county-511324');
  assert.equal(registry.get('#map-picker-title').textContent,'仪陇县 · 南充市');
+ assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:['南充'],places:['仪陇县']},'county handoff carries its parent and name');
  const count=registry.get('#county-points').children.length;
  for(let i=0;i<10;i++)svg.listeners.click(event);
  assert.equal(registry.get('#county-points').children.length,count);

@@ -19,7 +19,7 @@ const window={TravelApi:{listSpots:unavailable,createPlan:()=>{throw Error('must
  SGTStoryUI:{openStory(){}},TravelMap:{showPlan:async r=>{mapCalls.push(r);return true;}},
  SGTChat:{request:(q,preferences)=>new Promise((resolve,reject)=>requests.push({q,preferences,resolve,reject}))}};
 const context={window,URL,crypto:{randomUUID:()=>String(Math.random())},localStorage:{getItem:k=>saved[k]||null,setItem:(k,v)=>saved[k]=v},
- document:{querySelector:get,querySelectorAll:()=>[],createElement:t=>new Element(t)},
+ document:{querySelector:get,querySelectorAll:s=>s==='[data-plan-map]'?[get('#map-plan')]:[],createElement:t=>new Element(t)},
  FormData:class{constructor(){return Object.entries(fields).map(([k,v])=>[k,v.value]);}},showContentView:v=>views.push(v),toggleChat(){}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
 const text=n=>n.textContent+n.children.map(text).join(' '),flush=()=>new Promise(r=>setImmediate(r));
@@ -35,6 +35,19 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
 (async()=>{
  const directQuestions=[];window.SGTJourney={ask:q=>directQuestions.push(q)};
  window.TravelModules.openCity('成都','武侯祠');assert.equal(fields.city.value,'成都');assert.match(fields.notes.value,/武侯祠/);assert.equal(views.at(-1),'planner');assert.equal(directQuestions.length,0,'destination action prefills the shared form instead of sending chat');
+ const today=new Date(),localToday=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+ assert.equal(fields.date.value,localToday,'empty date receives local today on destination handoff');
+ fields.origin.value='';fields.date.value='2026-10-07';
+ window.TravelModules.openCity('阆中');
+ assert.equal(fields.origin.value,'','handoff must not invent an origin');assert.equal(fields.date.value,'2026-10-07','user date stays intact');
+ assert.match(get('#planner-status').textContent,/已带入.*阆中.*请补出发地/);
+ const beforeEmptyMap=views.length;window.TravelMap.getPlanSelection=()=>({cities:[],places:[]});get('#map-plan').onclick();
+ assert.equal(views.length,beforeEmptyMap,'empty map selection must not open a fixed-city plan');assert.match(get('#map-plan-status').textContent,/请先在地图选择地点/);
+ window.TravelMap.getPlanSelection=()=>({cities:['南充'],places:['仪陇县']});get('#map-plan').onclick();
+ assert.equal(fields.city.value,'南充');assert.match(fields.notes.value,/仪陇县/);assert.match(get('#planner-status').textContent,/已带入.*仪陇县.*请补出发地/);
+ window.TravelMap.getPlanSelection=()=>({cities:['南充','广元'],places:['仪陇县','剑阁县']});get('#map-plan').onclick();
+ assert.equal(fields.city.value,'南充、广元');assert.match(fields.notes.value,/仪陇县、剑阁县/);
+ fields.origin.value='南充';fields.date.value='';
  fields.city.value='广元';fields.notes.value='少走路';
  delete window.SGTJourney;
  const initialCalls=apiCalls.length;window.TravelModules.onEnterTravel();assert.equal(apiCalls.length,initialCalls,'entering weather view must not request');

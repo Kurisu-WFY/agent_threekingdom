@@ -215,6 +215,12 @@
   window.TravelMap = {
     ready,
     getPlaces() { return places; },
+    getPlanSelection() {
+      const parent=$('#map-prefecture').value;
+      const points=selected?[selected]:parent?[{name:parent,level:'city'}]:(activeChat?.mapRoute?.points||[]).filter(Boolean);
+      const cities=[...new Set(points.map(p=>(p.parent||(p.level==='city'?p.name:p.city)||'').replace(/市$/,'')).filter(Boolean))];
+      return {cities,places:[...new Set(points.filter(p=>p.level!=='city').map(p=>p.name).filter(Boolean))]};
+    },
     getGeometry() { return geometry; },
     textSize,
     clearMentionReturn,
