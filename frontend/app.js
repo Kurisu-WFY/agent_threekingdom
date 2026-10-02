@@ -8,7 +8,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 const viewLabel = document.querySelector('#view-label');
 
 const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
-const WELCOME = '展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。';
+const WELCOME = '我是万卷史官·陈寿，这里的 AI 文化向导。你可以选一条故事线慢慢读，也可以先问人物，或告诉我有多少时间。讲到史实时，有依据才说；没依据的地方会留白。';
 const INTENT_LABELS = {
   culture_qa: '文化问答',
   history_vs_romance: '正史 / 演义',
@@ -138,7 +138,7 @@ function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
   meta.setAttribute('tabindex','0');
-  meta.setAttribute('aria-label','回答元信息，可横向滚动');
+  meta.setAttribute('aria-label','回答类型与来源，可横向滚动');
   const intent = data && data.intent && data.intent.intent;
   if (typeof intent === 'string' && Object.hasOwn(INTENT_LABELS, intent)) meta.append(tag('意图 · ' + INTENT_LABELS[intent]));
   const coverage = data?.retrieval?.coverage;
@@ -201,7 +201,7 @@ function messageNode(message) {
     if(message.errorDetail){const details=document.createElement('details');details.append(Object.assign(document.createElement('summary'),{textContent:'错误详情'}),Object.assign(document.createElement('p'),{textContent:message.errorDetail}));body.append(details);}
     const retry = document.createElement('button');
     retry.className = 'retry';
-    retry.textContent = '重新请求 · 请陈寿再查一次';
+    retry.textContent = '重试，请陈寿再回答一次';
     retry.disabled = !!chats[active].pending;
     retry.onclick = () => requestReply(chats[active], message);
     body.append(retry);
@@ -434,7 +434,7 @@ window.SGTChat = { async request(text, routePreferences) {
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
     .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text)}));
   const data = await ask(message, history, routePreferences?.explanation || window.CharacterChat?.backendMode() || '大众', routePreferences);
-  if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('服务未返回有效回答，请重试。');
+  if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('没有收到有效回答，请重试。');
   return data;
 } };
 
@@ -516,7 +516,7 @@ function requestReply(chat, reply) {
       if (chats[active] === chat && reply.activityPlan) window.TravelModules?.failActivity?.(reply);
       reply.errorDetail=error.message || '';
       reply.text = error.name === 'TimeoutError'
-        ? '回答等待超时，平台任务可能仍在执行，请先检查女娲会话再决定是否重试。'
+        ? '等候回答超时。平台任务可能仍在执行，请先检查女娲会话，再决定是否重试。'
         : /Failed to fetch|NetworkError|Load failed|network.*(?:error|failed)|offline/i.test(error.message || '')
           ? '网络连接失败，尚未取得回答。请检查网络或服务连接后重试。'
           : /HTTP \d+/.test(error.message || '') ? '服务暂时无法完成回答，请稍后重试。'

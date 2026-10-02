@@ -175,7 +175,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     assert.equal(run('chats[active].messages.at(-1).error'),true);
     assert.equal(run('chats[active].pending'),false);
     const errorMessage = run('chats[active].messages.at(-1)');
-    assert.match(textTree(run('messageNode(chats[active].messages.at(-1))')),/重新请求/);
+    assert.match(textTree(run('messageNode(chats[active].messages.at(-1))')),/重试，请陈寿再回答一次/);
     run('requestReply(chats[active],chats[active].messages.at(-1))');
     requests.at(-1).resolve({ok:true,json:async()=>({answer:'重试成功',intent:{intent:'culture_qa'}})});
     await flush();

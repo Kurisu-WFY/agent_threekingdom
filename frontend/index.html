@@ -29,7 +29,7 @@
       </div>
 
       <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">出发核验</h1><p>按需核对道路信息。文化活动需求与结果集中在活动计划中。</p></header>
+        <header><h1 id="outing-title" tabindex="-1">出发核验</h1><p>需要查道路路线时，可以在这里查询。活动需求和结果都在“活动计划”里。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button type="button" class="module-button" data-content-view="planner">活动需求与结果</button><button type="button" class="module-button" data-content-view="travel">天气与空气质量</button><button id="outing-back" type="button" hidden>返回原对话</button></div>
         <details class="itinerary-utilities" open><summary>道路查询工具</summary>
         <div class="outing-columns">
@@ -81,7 +81,7 @@
         </details>
       </section>
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
-        <header class="journal-heading"><p class="welcome-kicker">山河有迹 · 我的文化旅行史</p><h1 tabindex="-1">我的三国探索志</h1><p id="journal-local-notice" role="status"></p></header>
+        <header class="journal-heading"><p class="welcome-kicker">我的阅读与旅行记录</p><h1 tabindex="-1">我的三国探索志</h1><p id="journal-local-notice" role="status"></p></header>
         <div id="journal-empty"></div>
         <nav id="journal-pages" class="journal-pages" aria-label="探索志书页"></nav>
         <article id="journal-book" class="journal-book" aria-label="探索志正文"></article>
@@ -92,38 +92,38 @@
         <div class="agent-hero">
           <div class="hero-copy">
             <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 寻迹三国 · 陈寿文化向导</p>
-            <h1>从一条故事线，开始读懂三国。</h1>
-            <p class="welcome-sub">选一个感兴趣的主题，读章节、看地点，再向陈寿追问。</p>
+            <h1>想了解三国？从一条故事线看起。</h1>
+            <p class="welcome-sub">挑个感兴趣的主题，看看各章讲了什么、提到了哪些地点。有疑问就问陈寿。</p>
             <div class="hero-destinations"><span>南充</span><i aria-hidden="true">—</i><span>阆中</span><i aria-hidden="true">—</i><span>剑阁</span><i aria-hidden="true">—</i><span>广元</span></div>
-            <a class="hero-primary" href="#story-discovery">选一条故事线开始 <span aria-hidden="true">↓</span></a>
-            <span class="hero-footnote">第一次来，先选故事；问答、建筑线索与四川地图可在下方展开。</span>
+            <a class="hero-primary" href="#story-discovery">选一条故事线 <span aria-hidden="true">↓</span></a>
+            <span class="hero-footnote">第一次来可以先选故事。下方也能展开问答、建筑资料和四川地图。</span>
           </div>
           <figure class="hero-photo">
             <img src="assets/jianmen-pass.jpg" alt="剑门关关楼与两侧山崖，石阶通向关门" width="1170" height="1671" fetchpriority="high" decoding="async">
-            <div class="photo-inscription" aria-hidden="true">循蜀道 · 见三国</div>
-            <figcaption><span>第一站，从好奇开始</span><strong>剑门关 / 广元 · 剑阁</strong></figcaption>
+            <div class="photo-inscription" aria-hidden="true">蜀道上的三国故事</div>
+            <figcaption><span>从这里开始</span><strong>剑门关 / 广元 · 剑阁</strong></figcaption>
             <span class="photo-index" aria-hidden="true">01 / 蜀道寻踪</span>
           </figure>
         </div>
 
         <section id="story-discovery" class="story-discovery" aria-labelledby="discovery-title">
-          <div class="desk-intro"><div><h2 id="discovery-title">选择一条三国文化故事线</h2></div><p>点主题看详情；有章节的故事还可以进入地图。</p></div>
+          <div class="desk-intro"><div><h2 id="discovery-title">选择故事线</h2></div><p>点开主题看详情。有章节的故事，也能在地图上看。</p></div>
           <p class="story-disclosure">首批主题模板，部分章节与地点待补充；史料与行程仍需核验。</p>
           <div id="story-phase-filters" class="story-controls" role="group" aria-label="按故事框架筛选"></div>
           <p id="story-filter-status" role="status"></p>
           <div id="story-cards" class="story-cards"></div>
         </section>
         <details class="culture-path culture-preview" id="culture-preview">
-          <summary><strong>预览章节与地图</strong><span>想先看看故事将走向哪里？</span></summary>
+          <summary><strong>预览章节与地图</strong><span>想先看看章节和地点？</span></summary>
           <section class="story-preview" aria-labelledby="preview-title">
-          <div><span class="story-eyebrow">STORY ATLAS · 山河之间</span><h2 id="preview-title">故事将走向哪里？</h2><p id="preview-selection">从南充少年到三国史家</p><p>先看章节顺序，再将地点放回地图。位置与史料尚待核验。</p><p class="map-note">轮廓示意图 · 2026-09-12 地理快照<br>不代表景区位置、交通路线或实时数据。</p><button type="button" class="module-button" id="preview-story-open" aria-controls="map-view">探索这条故事地图 →</button><p id="preview-map-note" class="map-note" role="status"></p></div>
+          <div><span class="story-eyebrow">故事地图</span><h2 id="preview-title">这条故事线经过哪些地方？</h2><p id="preview-selection">从南充少年到三国史家</p><p>这里能看章节顺序和对应地点。位置与史料尚待核验。</p><p class="map-note">轮廓示意图 · 2026-09-12 地理快照<br>不代表景区位置、交通路线或实时数据。</p><button type="button" class="module-button" id="preview-story-open" aria-controls="map-view">打开这条故事线的地图 →</button><p id="preview-map-note" class="map-note" role="status"></p></div>
           <div><svg id="story-preview-map" viewBox="0 0 900 680" role="img" aria-label="四川地理轮廓示意图，故事路线待补充"></svg><p id="story-preview-status" role="status">正在加载地理轮廓示意图…</p></div>
           </section>
         </details>
 
-        <h2 class="culture-other-title">也可以从你的问题或地点开始</h2>
+        <h2 class="culture-other-title">也可以问人物，或找一个地点</h2>
         <details class="culture-path" id="culture-talk">
-          <summary><strong>有问题？问陈寿</strong><span>人物问答、旅程需求与快捷提问</span></summary>
+          <summary><strong>有问题？问陈寿</strong><span>问人物、聊行程，也有现成的问题可选</span></summary>
           <div class="culture-path-body">
         <section class="chenshou-entry" aria-labelledby="chenshou-title">
           <svg class="chenshou-portrait" viewBox="0 0 180 190" role="img" aria-label="手持史册的陈寿艺术化形象，并非历史肖像">
@@ -136,11 +136,11 @@
             <path d="M65 134L90 140L115 134V164L90 170L65 164Z" class="portrait-book"/><path d="M90 140V170M72 144l11 3M72 153l11 3M98 147l10-3M98 156l10-3" class="portrait-line"/>
             <rect x="135" y="38" width="25" height="31" rx="2" class="portrait-stamp"/><text x="147" y="59" text-anchor="middle">史</text>
           </svg>
-          <div><span class="story-eyebrow">万卷史官 · 陈寿</span><h2 id="chenshou-title">从你的好奇，找到故事的开篇。</h2><p>说说你喜欢谁、有几天、从哪里出发，与文化向导一起探索主题。</p><div class="chips"><button type="button" class="chip" data-agent-question="我想从喜欢的人物开始选择三国文化故事线，请先问我喜欢谁，再根据已有资料讨论适合的主题。资料不足时请说明。">我喜欢的人物… ↗</button><a class="chip" href="#journey-desk">我有几天 · 从哪里出发</a></div><small>AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料，主题建议以现有资料为限。</small></div>
+          <div><span class="story-eyebrow">万卷史官 · 陈寿</span><h2 id="chenshou-title">你想先了解谁？</h2><p>喜欢哪个人物？有几天时间，从哪里出发？告诉向导这些，就能一起讨论主题。</p><div class="chips"><button type="button" class="chip" data-agent-question="我想从喜欢的人物开始选择三国文化故事线，请先问我喜欢谁，再根据已有资料讨论适合的主题。资料不足时请说明。">我喜欢的人物… ↗</button><a class="chip" href="#journey-desk">我有几天 · 从哪里出发</a></div><small>AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料，主题建议以现有资料为限。</small></div>
         </section>
 
         <section id="journey-desk" class="journey-desk" aria-labelledby="desk-title">
-          <div class="desk-intro"><div><span class="story-eyebrow">YOUR JOURNEY · 你的旅程</span><h2 id="desk-title">你想怎样走进三国？</h2></div><p>不必准备完整计划，先说一个想法。</p></div>
+          <div class="desk-intro"><div><span class="story-eyebrow">你的行程</span><h2 id="desk-title">这次想怎么逛？</h2></div><p>不必准备完整计划，先说一个想法。</p></div>
           <div class="desk-layout">
             <div class="desk-main">
               <div class="intent-switch" role="group" aria-label="选择对话主题">
@@ -151,49 +151,49 @@
               </div>
               <form id="hero-form" class="hero-composer">
                 <label id="journey-question-label" for="hero-message">想去哪里，和谁一起出发？</label>
-                <p id="journey-mode-hint" class="composer-hint">告诉我时间、出发地和兴趣，一起梳理游览顺序。</p>
+                <p id="journey-mode-hint" class="composer-hint">你有多少时间，从哪里出发，想了解什么？这些能帮向导讨论游览顺序。</p>
                 <textarea id="hero-message" rows="3" maxlength="1600" placeholder="例如：带孩子从南充出发，玩两天，想去阆中，少走路、多听三国故事。" aria-describedby="journey-mode-hint"></textarea>
                 <div class="journey-preferences">
                   <label>同行方式<select id="journey-profile"><option value="">暂不限定</option><option>普通初访</option><option>亲子同行</option><option>研学寻史</option><option>人物追踪</option></select></label>
                   <label>讲解偏好<select id="journey-style"><option value="">自然讲解</option><option>大众讲解</option><option>亲子故事版</option><option>学术探索版</option></select></label>
                 </div>
-                <div class="hero-composer-bottom"><span>进入同一段对话，随时追问</span><button id="hero-send" type="submit" disabled>与向导对话 <span aria-hidden="true">↗</span></button></div>
+                <div class="hero-composer-bottom"><span>在这段对话里，还可以继续问</span><button id="hero-send" type="submit" disabled>与向导对话 <span aria-hidden="true">↗</span></button></div>
               </form>
               <p id="journey-feedback" class="journey-feedback" role="status">主题切换会保留本页草稿。</p>
-              <div class="starters" id="starters"><span class="starters-title">灵感起点 · 直接问向导</span><div class="chips">
+              <div class="starters" id="starters"><span class="starters-title">不知道问什么？试试这些问题</span><div class="chips">
                 <button class="chip" data-q="陈寿和南充有什么关系？">陈寿与南充 ↗</button>
                 <button class="chip" data-q="南充一天三国文化路线">南充一日游 ↗</button>
                 <button class="chip" data-q="南充三国景点门票多少钱，一天的门票费用怎么估算？">票价与预算 ↗</button>
               </div></div>
             </div>
-            <aside class="journey-companion" aria-label="智能向导如何陪伴你">
-              <span class="companion-mark" aria-hidden="true">旅</span><h3>一个向导，陪你一路探索</h3>
+            <aside class="journey-companion" aria-label="向导能帮你做什么">
+              <span class="companion-mark" aria-hidden="true">旅</span><h3>和向导聊聊这次行程</h3>
               <ol class="journey-stages">
-                <li><span class="stage-number">01</span><div><strong>先懂你的旅程</strong><p>时间、同行人、兴趣与预算。</p></div></li>
-                <li><span class="stage-number">02</span><div><strong>再串联三国遗迹</strong><p>地点有顺序，停留有理由。</p></div></li>
-                <li><span class="stage-number">03</span><div><strong>边走边讲人物</strong><p>联系史实、演义与眼前山河。</p></div></li>
-                <li><span class="stage-number">04</span><div><strong>一路追问调整</strong><p>继续提问，让行程更合心意。</p></div></li>
+                <li><span class="stage-number">01</span><div><strong>说说出行条件</strong><p>时间、同行人、兴趣与预算。</p></div></li>
+                <li><span class="stage-number">02</span><div><strong>讨论游览顺序</strong><p>看看地点的先后顺序，为什么在这里停留。</p></div></li>
+                <li><span class="stage-number">03</span><div><strong>聊聊相关人物</strong><p>看看史实和演义，怎么联系到这些地方。</p></div></li>
+                <li><span class="stage-number">04</span><div><strong>有问题就继续问</strong><p>行程哪里不合适，可以接着调整。</p></div></li>
               </ol>
-              <p class="companion-note">本页对话可回看；问题记录另存于此浏览器的探索志，换设备不随行。讲解偏好会随问题发送，实际回答以当前服务为准。</p>
+              <p class="companion-note">本页可以回看对话，问题还会存入这个浏览器的探索志，换设备不会同步。讲解偏好会随问题发送，实际回答以当前服务为准。</p>
             </aside>
           </div>
         </section>
 
-        <div class="welcome-bottom"><div><strong>这一程之后，还有下一次出发。</strong><p>把喜欢的故事、走过的地方或想调整的节奏告诉向导。</p></div><button type="button" data-prepare-review>回顾与调整 <span aria-hidden="true">↗</span></button></div>
+        <div class="welcome-bottom"><div><strong>这次行程有什么想调整的？</strong><p>喜欢什么故事、去过哪里，或者想走慢一点，都可以告诉向导。</p></div><button type="button" data-prepare-review>回顾与调整 <span aria-hidden="true">↗</span></button></div>
           </div>
         </details>
 
         <details class="culture-path" id="culture-places">
-          <summary><strong>从眼前的地点读三国</strong><span>建筑节点与三条文化线索</span></summary>
+          <summary><strong>从地点了解三国</strong><span>建筑资料和三条文化线索</span></summary>
           <div class="culture-path-body">
-        <section class="story-buildings" aria-labelledby="buildings-title"><div class="desk-intro"><div><span class="story-eyebrow">PLACES · 故事发生的空间</span><h2 id="buildings-title">让建筑成为故事节点</h2></div><p>节点与章节的对应关系待确认。</p></div><div id="story-buildings" class="building-grid"></div><p class="map-note">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>
+        <section class="story-buildings" aria-labelledby="buildings-title"><div class="desk-intro"><div><span class="story-eyebrow">建筑与地点</span><h2 id="buildings-title">这些建筑和故事有什么关系？</h2></div><p>节点与章节的对应关系待确认。</p></div><div id="story-buildings" class="building-grid"></div><p class="map-note">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>
 
         <section class="culture-shelf" aria-labelledby="culture-title">
-          <div class="desk-intro"><div><span class="story-eyebrow">READ THE LAND · 山河有迹</span><h2 id="culture-title">不只到过，更读懂过</h2></div><p>从人物、著作与遗迹，找到你的文化线索。</p></div>
+          <div class="desk-intro"><div><span class="story-eyebrow">人物、著作与遗迹</span><h2 id="culture-title">到一个地方，也想知道它的故事</h2></div><p>想了解人物、著作还是遗迹？这里有三条线索。</p></div>
           <div class="culture-grid">
-            <article class="culture-card"><span class="culture-tag">壹 / 陈寿与《三国志》</span><h3>在南充，读一部三国</h3><p>从陈寿的故乡出发，聊聊史家的观察与《三国志》的书写。</p><button type="button" data-agent-question="陈寿与南充有什么关系？请介绍《三国志》的编写背景，并说明资料出处。">循着陈寿去了解 <span aria-hidden="true">↗</span></button></article>
+            <article class="culture-card"><span class="culture-tag">壹 / 陈寿与《三国志》</span><h3>从南充了解陈寿和《三国志》</h3><p>从陈寿的故乡出发，聊聊史家的观察与《三国志》的书写。</p><button type="button" data-agent-question="陈寿与南充有什么关系？请介绍《三国志》的编写背景，并说明资料出处。">了解陈寿与《三国志》 <span aria-hidden="true">↗</span></button></article>
             <article class="culture-card"><span class="culture-tag">贰 / 正史与演义</span><h3>熟悉的故事，哪段是史实？</h3><p>把史书记载、文学加工与地方传说分开来看，保留疑问与依据。</p><button type="button" data-agent-question="张飞的形象在《三国志》和《三国演义》中有什么区别？请区分史实与文学加工并说明依据。">听听两种讲述 <span aria-hidden="true">↗</span></button></article>
-            <article class="culture-card character-card"><span class="culture-tag">叁 / 人物与地点</span><h3>如果能问古人一个问题</h3><p>从诸葛亮、张飞或陈寿切入，探索他们与蜀地的关系。</p><button type="button" data-prepare-character>写下想问的话 <span aria-hidden="true">↗</span></button><small>AI 基于资料解读；不视为历史人物原话。</small></article>
+            <article class="culture-card character-card"><span class="culture-tag">叁 / 人物与地点</span><h3>关于三国人物，你想问什么？</h3><p>可以聊诸葛亮、张飞或陈寿，看看他们和蜀地有什么关系。</p><button type="button" data-prepare-character>写下想问的话 <span aria-hidden="true">↗</span></button><small>AI 基于资料解读；不视为历史人物原话。</small></article>
           </div>
         </section>
 
@@ -205,7 +205,7 @@
           <div class="culture-path-body">
         <section class="story-strip" aria-labelledby="map-invitation-title">
           <img src="assets/langzhong-town.jpg" alt="嘉陵江环绕阆中古城的远景" width="1280" height="835" loading="lazy" decoding="async">
-          <div><span class="story-eyebrow">EXPLORE SICHUAN · 行旅地图</span><h2 id="map-invitation-title">把故事，放回山河之间。</h2><p>21 个市州 · 183 个县级地点<br>选一座城，慢慢走进它的三国记忆。</p><button type="button" data-content-view="map">展开四川地图 <span aria-hidden="true">→</span></button></div>
+          <div><span class="story-eyebrow">EXPLORE SICHUAN · 行旅地图</span><h2 id="map-invitation-title">在地图上找故事里的地点</h2><p>21 个市州 · 183 个县级地点<br>选一座城，看看有哪些三国文化地点。</p><button type="button" data-content-view="map">展开四川地图 <span aria-hidden="true">→</span></button></div>
         </section>
           </div>
         </details>
@@ -224,12 +224,12 @@
 
       <section class="map-view" id="map-view" data-view-panel="map" aria-label="四川地图" hidden>
         <div class="map-heading">
-          <div><p class="welcome-kicker">立足川东北 · 放眼四川</p><h2>三国故事地图</h2></div>
+          <div><p class="welcome-kicker">川东北与四川各地</p><h2>三国故事地图</h2></div>
           <span>21 个市州 · 183 个县级地点</span>
         </div>
         <p class="map-note">朱红色标注成都；重点游览南充—阆中—剑阁—广元。试着告诉助手：“从南充出发，去阆中、剑阁，再到广元旅游”。已识别且有位置资料的地点会标到地图上；缺少景区位置时仅显示城市或县级驻地示意。</p>
         <section id="story-map-toolbar" class="story-map-toolbar" aria-labelledby="story-map-title" hidden>
-          <div><p class="story-eyebrow">STORY MODE · 沿章节寻迹</p><h3 id="story-map-title" tabindex="-1"></h3><p id="story-map-progress" role="status"></p></div>
+          <div><p class="story-eyebrow">按章节看地图</p><h3 id="story-map-title" tabindex="-1"></h3><p id="story-map-progress" role="status"></p></div>
           <div class="module-actions"><button type="button" class="module-button" id="story-fit">看整条故事</button><button type="button" class="module-button" id="story-exit">退出故事模式</button></div>
           <p class="story-map-memory">探索进度仅保存在此浏览器本地，未与账号或后端同步；不代表实际到访或自动定位。</p>
         </section>
@@ -239,7 +239,7 @@
           <label>县城 / 区<select id="map-county"><option value="">选择地点</option></select></label>
           <button type="button" class="module-button" id="map-add-stop" disabled>加入路线</button>
         </div>
-        <p class="map-note" id="map-filter-status" role="status">当前为全省县区列表，请选县区定位。</p>
+        <p class="map-note" id="map-filter-status" role="status">这里列出全省县区，选一个就能定位。</p>
         <div class="module-actions map-tools"><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit" disabled>查看整条路线</button><button class="module-button" id="map-clear">清除路线</button></div>
         <div class="story-map-layout">
         <div class="interactive-map">
@@ -263,7 +263,7 @@
           </div>
         </div>
         <aside id="story-node-card" class="story-node-card" aria-label="故事章节卡" hidden>
-          <div class="story-node-top"><span class="story-eyebrow">循迹 · 读这一幕</span><button type="button" id="story-card-close" class="module-button" aria-label="收起故事章节卡">×</button></div>
+          <div class="story-node-top"><span class="story-eyebrow">这一幕的地点资料</span><button type="button" id="story-card-close" class="module-button" aria-label="收起故事章节卡">×</button></div>
           <div id="story-building-visual" class="story-building-visual"></div>
           <p class="story-art-note">建筑类型艺术示意 · 非实测复原</p>
           <h3 id="story-node-title" tabindex="-1"></h3><p id="story-node-location"></p>
@@ -292,18 +292,18 @@
       <section class="module-view cultural-node" id="node-view" data-view-panel="node" hidden>
         <button type="button" class="module-button" id="node-back">返回上一视图</button>
         <p id="node-origin" class="welcome-kicker"></p>
-        <div class="module-actions reading-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>请向智能体咨询到达路线</button></div>
-        <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">文化节点 · 在故事中读懂这里</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
+        <div class="module-actions reading-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>问向导怎么到达</button></div>
+        <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">地点资料 · 与当前故事的关系</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
         <p class="story-art-note">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>
         <div id="node-metadata"></div>
         <div id="node-modes" class="story-controls" role="group" aria-label="节点讲解深度"></div><p id="node-mode-status" role="status"></p>
         <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
         <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
         <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
-        <p class="map-note">前往景点前，可向智能体确认交通方式和参观安排。</p><p id="node-feedback" role="status"></p>
+        <p class="map-note">去景点前，可以请向导帮你确认交通方式和参观安排。</p><p id="node-feedback" role="status"></p>
       </section>
       <section class="module-view" id="destinations-view" data-view-panel="destinations" hidden>
-        <p class="welcome-kicker">从目的地开始</p><h2>探索四川三国文化目的地</h2>
+        <p class="welcome-kicker">从目的地开始</p><h2>四川有哪些三国文化地点？</h2>
         <p>选择目的地，查看景区资料或带入活动计划。</p>
         <div class="module-actions" id="destination-cities" role="group" aria-label="选择目的地"></div>
         <p class="map-note">范围：川东北及四川其他三国文化目的地。景点库未覆盖的城市仍可交给智能体检索规划，不代表当地没有相关景点。</p>
@@ -312,8 +312,8 @@
       </section>
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
-        <p class="welcome-kicker">把想法整理成活动</p><h2 tabindex="-1">安排文化活动</h2>
-        <p>通过文化向导安排活动顺序、时长与文化讲解；开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>
+        <p class="welcome-kicker">这次的活动安排</p><h2 tabindex="-1">安排文化活动</h2>
+        <p>告诉向导你的条件，讨论活动顺序、时长和文化讲解。开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>
         <button id="view-current-plan" type="button" class="module-button" data-content-view="plan" hidden>查看本次方案</button>
         <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
         <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
@@ -350,7 +350,7 @@
       <section class="module-view" id="travel-view" data-view-panel="travel" hidden>
         <button type="button" class="module-button" id="travel-back" data-content-view="planner">返回活动需求</button>
         <p class="welcome-kicker">出发前再确认</p><h2>天气与空气质量</h2>
-        <p>填写目的地和出行日期，主动查询天气预报与当前空气质量；不需要先生成活动方案。显示来源与查询时间，空气质量为模型估计，不是现场实测。</p>
+        <p>填好目的地和出行日期，就能查询天气预报与当前空气质量，不用先生成活动方案。结果会列出来源与查询时间；空气质量为模型估计，不是现场实测。</p>
         <form id="travel-weather-form" class="module-form">
           <label>目的地<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充"></label>
           <label>出行日期（可选）<input id="travel-date" type="date"></label>
@@ -361,7 +361,7 @@
       </section>
 
       <footer class="content-footer">
-        <span class="note">AI 伴你读史行旅 · 动态信息请核验</span>
+        <span class="note">AI 文化向导 · 动态信息请核验</span>
         <details class="image-credits"><summary>影像来源</summary><div>
           <p>剑门关：<a href="https://commons.wikimedia.org/wiki/File:Jianmen_Pass.jpg" target="_blank" rel="noopener noreferrer">Chensiyu2004 / Wikimedia Commons</a></p>
           <p>阆中古城：<a href="https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg" target="_blank" rel="noopener noreferrer">Panzer VI-II / Wikimedia Commons</a></p>
@@ -384,7 +384,7 @@
     </nav>
     <section class="conversation">
       <header class="chat-heading">
-        <div id="historian-heading"><span id="historian-portrait" aria-hidden="true"></span><strong>万卷史官 · 陈寿</strong><span id="historian-state" role="status">展卷相伴</span>
+        <div id="historian-heading"><span id="historian-portrait" aria-hidden="true"></span><strong>万卷史官 · 陈寿</strong><span id="historian-state" role="status">陈寿文化向导</span>
           <strong id="conversation-title">新对话</strong>
           <span class="sub" data-service-status>正在检查服务…</span>
         </div>
@@ -400,8 +400,8 @@
         </div>
       </form>
       <details class="chat-options"><summary>路线背景与讲解设置</summary><div class="chat-options-body">
-      <details class="historian-context"><summary>此刻行至 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
-      <details class="historian-note" id="guide-note" hidden open><summary>陈寿接卷 · 章节引导</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
+      <details class="historian-context"><summary>当前故事或地点 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
+      <details class="historian-note" id="guide-note" hidden open><summary>本章阅读提示</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
       <section id="character-panel" class="character-panel" aria-label="人物视角">
         <label for="character-select">当前人物视角</label>
         <select id="character-select"><option>陈寿</option><option>诸葛亮</option><option>张飞</option></select>
