@@ -60,7 +60,7 @@ console.log('PASS: 183 counties, ordered names, exclusions, ambiguity, missing-s
 
 // 在所有测试缩放级别下，密集标签都不应在屏幕上重叠。
 const viewCore=require('./map-route-core.js');
-for(const zoom of [1,2.5,5,10]){
+for(const zoom of [1,2.5,5,10,15]){
  const labels=Array.from({length:30},(_,i)=>({id:i,x:450+i*.4,y:340+i*.3,name:'密集县区'+i,size:11}));
  const visible=viewCore.labelLayout(labels,[450-450/zoom,340-340/zoom,900/zoom,680/zoom],375,310);
  assert.ok(visible.length>0&&visible.length<labels.length);
@@ -77,7 +77,7 @@ for(const city of geometry.cities){
  assert.ok(x<=city.bounds[0]&&y<=city.bounds[1]&&x+w>=city.bounds[2]&&y+h>=city.bounds[3]);
  assert.ok(city.d.startsWith('M'));
 }
-console.log('PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1000%');
+console.log('PASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1500%');
 
 // 在较宽或较高面板中，留边显示的 SVG 会露出比标称视口更多的地理区域。
 assert.deepEqual(core.visibleBounds([400,300,90,68],900,340),[355,300,535,368]);

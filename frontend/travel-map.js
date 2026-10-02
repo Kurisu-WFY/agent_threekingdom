@@ -53,7 +53,7 @@
     $('#map-zoom-range').setAttribute('aria-valuetext',percent+'%');
     $('#map-zoom-value').textContent=percent+'%';
     $('#map-zoom-out').disabled=targetView[2]>=900;
-    $('#map-zoom-in').disabled=targetView[2]<=90;
+    $('#map-zoom-in').disabled=targetView[2]<=60;
     updateLabels(rect);
     if(view.some((v,i)=>v!==targetView[i])) frame=schedule(paint); else lastFrame=0;
   }
@@ -90,7 +90,7 @@
   }
   function setView(next, animate = true) {
     $('#map-place-picker').hidden = true;
-    const width = Math.max(90, Math.min(900, next[2]));
+    const width = Math.max(60, Math.min(900, next[2]));
     const height = width * 680 / 900;
     targetView = [Math.max(0, Math.min(900-width,next[0])),Math.max(0, Math.min(680-height,next[1])),width,height];
     animateView = animate;
@@ -359,7 +359,7 @@
     drawRoute(); fit(route.points);
   };
   function zoomTo(percent, animate = true) {
-    const width = 900 / Math.max(1, Math.min(10, percent / 100));
+    const width = 900 / Math.max(1, Math.min(15, percent / 100));
     setView([view[0] + (view[2] - width) / 2, view[1] + (view[3] - width * 680 / 900) / 2, width], animate);
   }
   $('#map-zoom-range').addEventListener('input', event => zoomTo(Number(event.target.value), false));
@@ -373,7 +373,7 @@
     const matrix=svg.getScreenCTM();if(!matrix)return;
     const point=new DOMPoint(event.clientX,event.clientY).matrixTransform(matrix.inverse());
     const delta=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?500:1);
-    const width=Math.max(90,Math.min(900,targetView[2]*Math.exp(Math.max(-100,Math.min(100,delta))*.002)));
+    const width=Math.max(60,Math.min(900,targetView[2]*Math.exp(Math.max(-100,Math.min(100,delta))*.002)));
     const ratio=width/view[2];
     setView([point.x-(point.x-view[0])*ratio,point.y-(point.y-view[1])*ratio,width],false);
   },{passive:false});
@@ -398,7 +398,7 @@
     if(pointers.has(event.pointerId))pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
     if(pinch&&pointers.size===2){
       const [a,b]=[...pointers.values()],distance=Math.hypot(a.x-b.x,a.y-b.y);
-      const width=Math.max(90,Math.min(900,pinch.view[2]*pinch.distance/Math.max(1,distance)));
+      const width=Math.max(60,Math.min(900,pinch.view[2]*pinch.distance/Math.max(1,distance)));
       const current=new DOMPoint((a.x+b.x)/2,(a.y+b.y)/2).matrixTransform(pinch.inverse),ratio=width/pinch.view[2];
       setView([pinch.anchor.x-(current.x-pinch.view[0])*ratio,pinch.anchor.y-(current.y-pinch.view[1])*ratio,width],false);return;
     }

@@ -73,6 +73,28 @@ const assert=require('node:assert/strict');
  svg.listeners.click({target:svg,clientX:hiddenX,clientY:hiddenY});
  assert.equal(registry.get('#map-place-picker').hidden,true,'province blank-area click must not pick hidden counties');
  assert.equal(registry.get('#map-county').value,'');
+ // 第五批：各缩放入口必须到达同一上限，不能被独立的旧钳制提前截断。
+ const range=registry.get('#map-zoom-range');
+ function slide(percent){range.value=String(percent);range.listeners.input({target:range});paintAll();}
+ function atMaximum(entry){
+   assert.equal(Number(svg.attributes.viewBox.split(' ')[2]),60,entry+' reaches width 60');
+   assert.equal(range.value,'1500',entry+' reaches 1500%');
+   assert.equal(range.attributes['aria-valuetext'],'1500%',entry+' announces 1500%');
+   assert.equal(registry.get('#map-zoom-in').disabled,true,entry+' disables further zoom-in');
+ }
+ slide(1200);assert.equal(registry.get('#map-zoom-in').disabled,false,'zoom-in remains enabled above the old 1000% ceiling');
+ slide(1500);atMaximum('slider');slide(2000);atMaximum('slider clamp');
+ slide(100);for(let i=0;i<20;i++)registry.get('#map-zoom-in').onclick();paintAll();atMaximum('button');
+ slide(100);for(let i=0;i<20;i++)svg.listeners.wheel({preventDefault(){},clientX:450,clientY:340,deltaY:-100,deltaMode:0});paintAll();atMaximum('wheel');
+ slide(100);
+ const pinchEvent={preventDefault(){},button:0,target:svg,clientY:340};
+ svg.listeners.pointerdown({...pinchEvent,pointerId:81,clientX:100});
+ svg.listeners.pointerdown({...pinchEvent,pointerId:82,clientX:200});
+ svg.listeners.pointermove({...pinchEvent,pointerId:82,clientX:2100});paintAll();atMaximum('pinch');
+ svg.listeners.pointerup({...pinchEvent,pointerId:81});svg.listeners.pointerup({...pinchEvent,pointerId:82});
+ registry.get('#map-zoom-out').onclick();paintAll();assert.equal(range.value,'1200','zoom-out works at the upper limit');
+ registry.get('#map-reset').onclick();paintAll();
+ console.log('PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out');
  for(let i=0;i<3;i++){
    select.value='南充市';select.onchange();paintAll();
    assert.equal(svg.attributes.viewBox,provinceView,'changing prefecture does not pan or zoom');
