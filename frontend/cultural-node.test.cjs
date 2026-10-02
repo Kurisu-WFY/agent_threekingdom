@@ -28,6 +28,16 @@ api.open({place:{...place,travel:{ticket:{...record(''),data_status:'live',tool_
 assert.match(text(get('#node-comparison')),/史料侧测试文本/);assert.match(text(get('#node-comparison')),/文学侧测试文本/);assert.match(text(get('#node-differences')),/差异测试文本/);assert.match(text(get('#node-disputes')),/存在不同说法/);
 assert.match(text(get('#node-reading-content')),/合理推断 · 非史料原文/);assert.match(text(get('#node-reading-content')),/推断测试文本/);assert.match(text(get('#node-tourism')),/工具来源：测试工具/);assert.ok(!text(get('#node-tourism')).includes('0 元'));
 const pendingRecord=record('不该显示的史料');pendingRecord.sources[0].data_status='pending';api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});assert.ok(!text(get('#node-comparison')).includes('不该显示的史料'));
+const descendants=n=>[n,...n.children.flatMap(descendants)];
+const emptyMaterials=descendants(get('#node-comparison')).filter(n=>n.tag==='details'&&n.className?.includes('node-empty'));
+assert.equal(emptyMaterials.length,2,'U24 unverified history and literature are collapsed separately');
+assert.ok(emptyMaterials.every(n=>!n.open),'U24 empty materials start collapsed');
+assert.match(text(get('#node-metadata')),/资料概况/,'U24 shared missing status is summarized once near the heading');
+assert.match(text(get('#node-metadata')),/正史.*文学.*实时/,'U24 evidence boundaries remain explicit');
+api.open({place,chapter:enriched,story,index:1});
+assert.ok(get('#node-comparison').children.every(n=>n.tag==='section'),'U24 reliable narrative stays visible');
+assert.equal(descendants(get('#node-reading-content')).find(n=>n.className?.split(' ').includes('node-evidence')).tag,'section','U24 supported story stays visible');
+api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});
 assert.ok(!text(get('#node-metadata')).includes('pending'),'U08 raw status not rendered');assert.ok(!text(get('#node-comparison')).includes('pending'));
 click('#node-add-route');assert.equal(adds[0].name,'县级驻地');click('#node-enter-story');assert.equal(views.at(-1),'test');
 const links=[];function walk(n){if(n.tag==='a')links.push(n);n.children.forEach(walk);}nodes.forEach(walk);assert.ok(links.every(a=>/^https?:/.test(a.href)));
