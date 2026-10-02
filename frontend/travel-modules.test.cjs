@@ -5,6 +5,7 @@ class Element {
  append(...ns){this.children.push(...ns);}replaceChildren(...ns){this.children=ns;}setAttribute(){}focus(){}
 }
 const removed=new Set(['#budget-results','#load-budget','#replan-remaining','#remaining-time']);
+const copyCity=new Element('button');copyCity.dataset.city='巴中';
 const nodes=new Map(),get=k=>{if(removed.has(k))return null;if(!nodes.has(k))nodes.set(k,new Element());return nodes.get(k);};
 const values={city:'广元',origin:'南充',date:'',days:'0.5',people:'2',group:'家庭',transport:'自驾',explanation:'亲子故事版',notes:'少走路'};
 const fields=Object.fromEntries(Object.entries(values).map(([k,v])=>[k,Object.assign(new Element(),{value:v})]));
@@ -19,7 +20,7 @@ const window={TravelApi:{listSpots:unavailable,createPlan:()=>{throw Error('must
  SGTStoryUI:{openStory(){}},TravelMap:{showPlan:async r=>{mapCalls.push(r);return true;}},
  SGTChat:{request:(q,preferences)=>new Promise((resolve,reject)=>requests.push({q,preferences,resolve,reject}))}};
 const context={window,URL,crypto:{randomUUID:()=>String(Math.random())},localStorage:{getItem:k=>saved[k]||null,setItem:(k,v)=>saved[k]=v},
- document:{querySelector:get,querySelectorAll:s=>s==='[data-plan-map]'?[get('#map-plan')]:[],createElement:t=>new Element(t)},
+ document:{querySelector:get,querySelectorAll:s=>s==='[data-plan-map]'?[get('#map-plan')]:s==='[data-city]'?[copyCity]:[],createElement:t=>new Element(t)},
  FormData:class{constructor(){return Object.entries(fields).map(([k,v])=>[k,v.value]);}},showContentView:v=>views.push(v),toggleChat(){}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
 const text=n=>n.textContent+n.children.map(text).join(' '),flush=()=>new Promise(r=>setImmediate(r));
@@ -33,6 +34,21 @@ for(const id of ['#outing-start','#outing-end'])assert.deepEqual(get(id).childre
 const weatherForm=get('#travel-weather-form');weatherForm.reportValidity=()=>Boolean(get('#travel-city').value);
 const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需核验路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待核验',address:'广元市剑阁县'}]}};
 (async()=>{
+ const copyFailures=[],copyCheck=(name,fn)=>{try{fn();}catch(e){copyFailures.push(name+': '+e.message);}};
+ const originalSpots=window.TravelApi.listSpots,copyWeather=window.TravelApi.getTravelInfo;
+ for(const status of ['empty','ok']){
+  window.TravelApi.listSpots=async()=>({status,message:'景区演示资料；开放时间及票价须核验。',data:{spots:[]}});
+  await copyCity.onclick();copyCheck('C06 '+status,()=>assert.match(text(get('#destination-results')),/当前资料库暂无该目的地景区资料，不代表当地没有景点/));
+ }
+ window.TravelApi.listSpots=async()=>{throw TypeError('Failed to fetch');};await copyCity.onclick();
+ copyCheck('C02 景区',()=>{assert.match(get('#destination-results').children[0].textContent,/景区查询失败.*检查网络.*重试/);const d=get('#destination-results').children.find(n=>n.tag==='details');assert.ok(d&&!d.open);assert.match(text(d),/Failed to fetch/);assert.ok(get('#destination-results').children.some(n=>n.tag==='button'));});
+ get('#travel-city').value='南充';window.TravelApi.getTravelInfo=async()=>{throw TypeError('Failed to fetch');};await weatherForm.onsubmit({preventDefault(){}});
+ copyCheck('C02 天气',()=>{assert.match(get('#travel-status').textContent,/天气查询失败.*检查网络.*重试/);assert.doesNotMatch(get('#travel-status').textContent,/Failed to fetch/);assert.match(text(get('#travel-results').children.find(n=>n.tag==='details')),/Failed to fetch/);assert.equal(get('#load-travel').disabled,false);});
+ window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:13},items:[{title:'模型',summary:'数据时刻 2026-10-03T01:00（北京时间）；原说明。',fetched_at:'2026-10-02T17:05:03.852032+00:00',data_status:'model'}]}});await weatherForm.onsubmit({preventDefault(){}});
+ copyCheck('C05',()=>{const out=text(get('#travel-results'));assert.match(out,/数据时刻：2026年10月03日 01:00（北京时间）/);assert.match(out,/查询时间（可能为缓存）：2026年10月03日 01:05（北京时间）/);const original=get('#travel-results').children.at(-1).children.find(n=>n.tag==='details'&&text(n).includes('原始服务说明'));assert.match(text(original),/数据时刻 2026-10-03T01:00/);});
+ window.TravelApi.listSpots=originalSpots;window.TravelApi.getTravelInfo=copyWeather;
+ assert.equal(copyFailures.join('\n'),'','C02/C05/C06');
+
  const directQuestions=[];window.SGTJourney={ask:q=>directQuestions.push(q)};
  window.TravelModules.openCity('成都','武侯祠');assert.equal(fields.city.value,'成都');assert.match(fields.notes.value,/武侯祠/);assert.equal(views.at(-1),'planner');assert.equal(directQuestions.length,0,'destination action prefills the shared form instead of sending chat');
  const today=new Date(),localToday=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
@@ -58,7 +74,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.equal(apiCalls.at(-1).city,'南充');assert.match(get('#travel-status').textContent,/待接入|重试/);
  const originalWeather=window.TravelApi.getTravelInfo;
  window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{forecast:[{date:'2026-10-03',temperature_min_c:10,temperature_max_c:20,rain_probability_percent:30}],air_quality:{time:'2026-10-01T08:00:00+08:00',pm2_5:12,pm10:28},items:[{title:'模型天气',summary:'仅供参考',data_status:'forecast',fetched_at:'2026-10-01T08:05:00+08:00',sources:[{title:'公开天气来源',source_url:'https://example.org/weather',source_level:'A'}]}]}});
- await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(text(get('#travel-results')),/2026-10-03（所选日期）/);assert.match(text(get('#travel-results')),/公开天气来源/);assert.match(text(get('#travel-results')),/查询时间.*2026-10-01T08:05:00/);
+ await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(text(get('#travel-results')),/2026-10-03（所选日期）/);assert.match(text(get('#travel-results')),/公开天气来源/);assert.match(text(get('#travel-results')),/查询时间.*2026年10月01日 08:05（北京时间）/);
  window.TravelApi.getTravelInfo=originalWeather;
  let finishOldWeather;
  window.TravelApi.getTravelInfo=()=>new Promise(resolve=>finishOldWeather=resolve);
@@ -85,7 +101,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  for(const data of [{answer:''},{answer:null},{route:{found:true,stops:[null]}}]) {
    const p=form.requestSubmit();requests.at(-1).resolve(data);await p;assert.equal(text(get('#plan-results')),output);assert.equal(get('#planner-retry').hidden,false);
  }
- const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'}});await culture;assert.match(text(get('#plan-results')),/文化活动/);
+ const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'}});await culture;assert.match(text(get('#plan-results')),/文化活动/);assert.match(text(get('#plan-results')),/来源.*待核验.*文献出处尚未核验/,'C01 方案继承缺出处提示');
  const p=form.requestSubmit();requests.at(-1).reject(Object.assign(Error('timeout'),{name:'TimeoutError'}));await p;assert.match(get('#planner-status').textContent,/超时/);
  const question=requests.at(-1).q,retry=get('#planner-retry').onclick();assert.equal(requests.at(-1).q,question);requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null});await retry;
  const changed=form.requestSubmit();form.oninput();requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'旧条件结果'});await changed;assert.ok(!text(get('#plan-results')).includes('旧条件结果'));
@@ -136,5 +152,12 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.match(get('#view-current-plan').textContent,/本机保存/);
  get('#saved-plans').children[0].children[1].onclick();assert.match(text(get('#plan-results')),/先读史/);assert.equal(get('#save-plan').disabled,false);await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
  window.TravelModules.openCity('成都');assert.equal(get('#planner-view').dataset.activityState,'stale','changing the destination leaves the saved answer visible but marks it as old conditions');
+ const copyEvidence={sources:[{title:'原出处',source_url:'https://example.org/source',source_level:'B'}],data_status:'maintained',updated_at:'2026-10-03T01:00:00+08:00'};
+ const copyCalls=[];window.SGTAnswerTrust={render:r=>{copyCalls.push(r);const el=new Element('p');el.textContent=r.sources?.[0]?.title||'来源待核验；文献出处尚未核验';return el;}};
+ await form.requestSubmit();const copyAttempt=journeyCalls.at(-1).o.activityPlan;
+ window.TravelModules.receiveActivity({text:'原活动正文，PDF第3页。',data:copyEvidence,activityPlan:copyAttempt});
+ assert.equal(copyCalls.at(-1).sources[0].source_url,'https://example.org/source','C01 继承真实结构化来源，不猜PDF链接');
+ assert.match(text(get('#plan-results')),/原出处.*原活动正文，PDF第3页/);
+ get('#save-plan').onclick();const copySaved=JSON.parse(saved['sanguo.travel-plans.v1'])[0];assert.equal(copySaved.activityAnswer,'原活动正文，PDF第3页。');assert.equal(copySaved.activityEvidence.sources[0].title,'原出处');
  console.log('PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels');
 })().catch(e=>{console.error(e);process.exitCode=1;});

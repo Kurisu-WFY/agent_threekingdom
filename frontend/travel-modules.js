@@ -25,6 +25,23 @@
     button.onclick = handler;
     return button;
   }
+  function failure(target, label, error, retry) {
+    const message=label+'查询失败，尚未取得数据。请检查网络或服务连接后重试。';
+    empty(target,message);
+    const details=node('details');details.append(node('summary','错误详情'),node('p',String(error?.message||error||'未提供')));target.append(details);
+    if(retry)target.append(action('重新查询'+label,retry));
+    return message;
+  }
+  function beijingTime(value, local=false) {
+    if(typeof value!=='string'||!value.trim())return '待确认';
+    if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1年$2月$3日')+'（北京时间）';
+    const explicit=/(?:Z|[+-]\d{2}:\d{2})$/.test(value);
+    if(!explicit&&!local)return '时区未提供，时间待核验';
+    const date=new Date(explicit?value:value+'+08:00');if(!Number.isFinite(date.getTime()))return '待确认';
+    const parts=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);
+    const part=type=>parts.find(p=>p.type===type).value;
+    return part('year')+'年'+part('month')+'月'+part('day')+'日 '+part('hour')+':'+part('minute')+'（北京时间）';
+  }
   function sources(target, items) {
     const details = node('details');
     details.append(node('summary', '参考资料与来源'));
@@ -45,7 +62,7 @@
   }
   function dataStatus(record) {
     const names = { sample: '示例数据', maintained: '维护数据', live: '实时查询', forecast: '模型天气预报', model: '模型估计（非实测）', external: '外部查询', reference_route: '道路参考（非实时路况）', pending: '暂无有效数据', stale: '已过期' };
-    return `${names[record.data_status] || '状态未标注'} · ${record.fetched_at ? '查询时间（可能为缓存）' : '更新'}：${record.fetched_at || record.updated_at || '未提供'}`;
+    return `${names[record.data_status] || '状态未标注'} · ${record.fetched_at ? '查询时间（可能为缓存）' : '更新'}：${record.fetched_at || record.updated_at ? beijingTime(record.fetched_at || record.updated_at) : '未提供'}`;
   }
   async function loadCity(nextCity) {
     city = nextCity;
@@ -57,10 +74,11 @@
     try {
       const result = await api.listSpots(city);
       if (version !== cityRequest) return;
-      if (result.status !== 'ok') return empty(target, result.message || '暂无景区资料。');
+      if (result.status === 'empty') return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');
+      if (result.status !== 'ok') throw Error(result.message || '景区资料服务暂不可用。');
       if (!Array.isArray(result.data.spots)) throw new Error('景区数据格式不完整。');
       target.replaceChildren();
-      if (!result.data.spots.length) return empty(target, '该目的地暂未提供景区资料。');
+      if (!result.data.spots.length) return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');
       result.data.spots.forEach(spot => {
         const card = node('article', null, 'result-card');
         card.append(node('h3', spot.name), node('p', spot.description || '简介待补充'), node('p', dataStatus(spot), 'map-note'));
@@ -72,7 +90,7 @@
         sources(card, spot.sources);
         target.append(card);
       });
-    } catch (error) { if (version === cityRequest) empty(target, error.message); }
+    } catch (error) { if (version === cityRequest) failure(target, '景区', error, () => loadCity(city)); }
   }
   function chooseCity(nextCity, spot = '') {
     ++planRequest; planningStory=null; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false; storyLabel();
@@ -102,6 +120,7 @@
     const { preferences: p, plan } = current;
     if(current.activityAnswer) {
       target.replaceChildren(node('h3',plan.title),node('p',(p.date||p.travel_date||'日期待确认')+' · '+p.people+'人'));
+      target.append(window.SGTAnswerTrust ? window.SGTAnswerTrust.render(current.activityEvidence || {}) : node('p','来源 · 待核验；回答提及的文献出处尚未核验，请勿作为已核验引文。','map-note'));
       target.append(window.AgentAnswer ? window.AgentAnswer.render(current.activityAnswer) : node('p',current.activityAnswer));
       $('#save-plan').disabled=$('#copy-plan').disabled=false;
       return;
@@ -204,7 +223,7 @@
     }
     planningStory=attempt.story||null;storyLabel();
     current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
-      activityAnswer:reply.text,plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
+      activityAnswer:reply.text,activityEvidence:{sources:reply.data?.sources || [],data_status:reply.data?.data_status,updated_at:reply.data?.updated_at},plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
     activityState('valid');
     renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');
     $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';
@@ -321,12 +340,12 @@
         days.forEach(day=>forecast.append(node('p',`${day.date}${date===day.date?'（所选日期）':''} · ${day.temperature_min_c??'—'}～${day.temperature_max_c??'—'}°C · 降雨概率 ${day.rain_probability_percent??'—'}%`)));
         weatherTarget.append(forecast);
       }
-      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${air.time||'未提供'}；PM2.5：${air.pm2_5??'—'}；PM10：${air.pm10??'—'}`));weatherTarget.append(card);}
-      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),node('p',item.summary||'摘要待补充'),node('p',dataStatus(item),'map-note'));sources(card,item.sources);weatherTarget.append(card);});
+      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${beijingTime(air.time,true)}；PM2.5：${air.pm2_5??'—'}；PM10：${air.pm10??'—'}`));weatherTarget.append(card);}
+      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources);weatherTarget.append(card);});
       if(!days.length&&!data.air_quality&&!items.length)empty(weatherTarget,'暂无可确认的天气或空气数据，可稍后重试。');
       const warnings=Array.isArray(data.warnings)?data.warnings:[];
       $('#travel-status').textContent=[`${city} · 已完成查询。来源及查询时间见结果卡；出发前请再次核验。`,date&&!days.some(day=>day.date===date)?'所选日期不在预报范围内，不代表该日天气。':'',...warnings].filter(Boolean).join(' ');
-    }catch(error){if(version===weatherVersion){empty(weatherTarget,'本次没有可确认的数据，可修改条件后重试。');$('#travel-status').textContent=(error.message||'查询失败').replace(/[。；，\s]+$/,'')+'；请重试。';}}
+    }catch(error){if(version===weatherVersion){$('#travel-status').textContent=failure(weatherTarget,'天气',error,()=>weatherForm.requestSubmit());}}
     finally{if(version===weatherVersion)weatherButton.disabled=false;}
   };
   activityState('idle');renderPlan(); renderSaved(); loadCity(city);

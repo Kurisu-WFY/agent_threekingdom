@@ -27,3 +27,10 @@ console.log('PASS: honest empty state, real chapter completion/undo, people/even
 
 const old=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'old-prompt',text:'请生成三国文化活动方案，只输出活动安排。出发地：南充站；目的地：南充；可用时间：一天；不要编造实时交通。'}])}});old.get('#journal-next').handlers.click();assert.ok(!text(old.get('#journal-book')).includes('只输出活动安排'),'U01 old generated prompts are presented as visitor summaries');
 const legacy=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'legacy',text:'请由智能体为我生成三国文化活动方案，只输出活动安排。\n出发地：南充站；目的地：南充；游玩时间：一日；先检索文化资料。'}])}});legacy.get('#journal-next').handlers.click();assert.ok(!text(legacy.get('#journal-book')).includes('只输出活动安排'),'U01 earlier form records also show summary');
+
+const copyJournalFailures=[];
+for(const [code,fn] of [
+ ['C05',()=>{const raw={id:'clock',text:'时间样本',recordedAt:'2026-10-02T17:05:03.481Z'};const clock=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([raw])}});clock.get('#journal-next').handlers.click();assert.match(text(clock.get('#journal-book')),/记录时间：2026年10月03日 01:05（北京时间）/);assert.equal(JSON.parse(clock.store['sgt.journal.questions.v1'])[0].recordedAt,raw.recordedAt);}],
+ ['C07',()=>{const raw='请生成巴中三国文化活动方案。先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。';const oldRecord={id:'old-city',text:raw};const oldCity=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([oldRecord,{id:'normal',text:'请生成巴中三国文化活动方案。希望多看古建筑。'}])}});oldCity.get('#journal-next').handlers.click();assert.match(text(oldCity.get('#journal-book')),/请安排巴中的文化活动/);assert.match(text(oldCity.get('#journal-book')),/希望多看古建筑/);assert.equal(JSON.parse(oldCity.store['sgt.journal.questions.v1'])[0].text,raw);assert.doesNotMatch(text(oldCity.get('#journal-book')),/先确认出发地/);}]
+]){try{fn();}catch(e){copyJournalFailures.push(code+': '+e.message);}}
+assert.equal(copyJournalFailures.join('\n'),'');

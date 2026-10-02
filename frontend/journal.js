@@ -12,7 +12,15 @@
   } catch(_){available=false;damaged=true;}
   function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
   function button(text,fn){const b=node('button','module-button',text);b.type='button';b.addEventListener('click',fn);return b;}
+  function recordedTime(value){
+    if(typeof value!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(value))return value?'时区未提供，时间待核验':'待确认';
+    const date=new Date(value);if(!Number.isFinite(date.getTime()))return '待确认';
+    const parts=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date),part=type=>parts.find(p=>p.type===type).value;
+    return part('year')+'年'+part('month')+'月'+part('day')+'日 '+part('hour')+':'+part('minute')+'（北京时间）';
+  }
   function visitorText(text){
+    const oldCity=text.match(/^请生成([^。；\n]{1,30})三国文化活动方案。(?:希望包含：[^。\n]{1,100}。)?先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。$/);
+    if(oldCity)return '请安排'+oldCity[1]+'的文化活动';
     if(/^(?:请生成|请由智能体为我生成)三国文化活动方案，只输出活动安排。/.test(text)){
       const value=label=>text.match(new RegExp(label+'：([^；。\\n]+)'))?.[1] || '待确认';
       return '请安排'+value('目的地')+'的'+(value('可用时间')==='待确认'?value('游玩时间'):value('可用时间'))+'文化活动：'+value('出发地')+'出发。';
@@ -75,7 +83,7 @@
     $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 问题记录'+(available?'保存在此浏览器本地，最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'存储不可用，当前问题仅本页保留。');
     const empty=$('#journal-empty');empty.replaceChildren();if(!m.started){empty.append(node('h2','','你还没有开始第一段旅程'),node('p','','从一个人物、一处古道或一个疑问出发。亲手记下第一幕，书页就会留下你的印章。'),button('开始探索故事线',()=>showContentView('story')));}
     if(page===0){heading(book,'完成过的故事线');if(!m.completed.length)book.append(node('p','','还没有整条完成的故事线，未走完的章节也值得保留。'));m.completed.forEach(x=>storyRow(book,x));heading(book,'正在写下的旅程');const begun=m.pending.filter(x=>x.state.started||x.state.completed.size);if(!begun.length)book.append(node('p','','暂无进行中的旅程。'));begun.forEach(x=>storyRow(book,x));footprints(book,m);}
-    if(page===1){heading(book,'已解锁的人物与事件');book.append(node('p','','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问或切换人物不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));heading(book,'曾经问过的三国');if(!questions.length)book.append(node('p','','你还没有留下问题。向陈寿、诸葛亮或张飞提问，疑问也会成为旅程的一部分。'));[...questions].reverse().forEach(q=>{const row=node('section','journal-question');row.append(node('span','journal-seal',q.comparison?'正史 × 演义探索':'文化提问'),node('p','',visitorText(q.text)),node('small','', '记录时间：'+(q.recordedAt||'待确认')+(q.persona?' · '+q.persona+'视角':'')));book.append(row);});heading(book,'最感兴趣的人物与文化主题');book.append(node('p','','按最近200条本地问题及已完成章节中的关键词出现次数统计；每条同一关键词最多计一次，非历史事实或人物关系判断。'));if(!m.ranked.length)book.append(node('p','','尚无足够的本地兴趣记录。'));m.ranked.forEach(([n,count])=>book.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));}
+    if(page===1){heading(book,'已解锁的人物与事件');book.append(node('p','','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问或切换人物不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));heading(book,'曾经问过的三国');if(!questions.length)book.append(node('p','','你还没有留下问题。向陈寿、诸葛亮或张飞提问，疑问也会成为旅程的一部分。'));[...questions].reverse().forEach(q=>{const row=node('section','journal-question');row.append(node('span','journal-seal',q.comparison?'正史 × 演义探索':'文化提问'),node('p','',visitorText(q.text)),node('small','', '记录时间：'+recordedTime(q.recordedAt)+(q.persona?' · '+q.persona+'视角':'')));book.append(row);});heading(book,'最感兴趣的人物与文化主题');book.append(node('p','','按最近200条本地问题及已完成章节中的关键词出现次数统计；每条同一关键词最多计一次，非历史事实或人物关系判断。'));if(!m.ranked.length)book.append(node('p','','尚无足够的本地兴趣记录。'));m.ranked.forEach(([n,count])=>book.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));}
     if(page===2){heading(book,'待探索的故事线');if(!m.pending.length)book.append(node('p','','当前已知故事线均已记录完成，可以重读章节，等待新的主题。'));m.pending.forEach(x=>storyRow(book,x));book.append(node('p','','下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。'));}
     tabs.forEach((b,i)=>b.setAttribute('aria-pressed',String(i===page)));$('#journal-page-number').textContent='第 '+(page+1)+' / 3 页';$('#journal-prev').disabled=page===0;$('#journal-next').disabled=page===2;
     const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事线推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('翻开下一段故事',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
