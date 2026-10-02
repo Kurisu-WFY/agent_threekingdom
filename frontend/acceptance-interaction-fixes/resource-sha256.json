@@ -1,0 +1,86 @@
+[
+  {
+    "resource": "index.html",
+    "url": "http://localhost:8002/",
+    "localSHA256": "8b0a92b75fb4b08911f59e4ea2389272f24c9a29ec7b499583492b4e9818da16",
+    "httpSHA256": "8b0a92b75fb4b08911f59e4ea2389272f24c9a29ec7b499583492b4e9818da16",
+    "equal": true
+  },
+  {
+    "resource": "styles.css",
+    "url": "http://localhost:8002/styles.css?v=interaction-batch6-20261002",
+    "localSHA256": "85eb27c0bac0585f57630d964cb60ba7dc7cb02f25f8abcbb7ce9abcf842ac03",
+    "httpSHA256": "85eb27c0bac0585f57630d964cb60ba7dc7cb02f25f8abcbb7ce9abcf842ac03",
+    "equal": true
+  },
+  {
+    "resource": "app.js",
+    "url": "http://localhost:8002/app.js?v=interaction-batch6-20261002",
+    "localSHA256": "353ecd53b3196ee5f8fb2e63296e4ffa9ac4b4325b5c84d424094c14223c934c",
+    "httpSHA256": "353ecd53b3196ee5f8fb2e63296e4ffa9ac4b4325b5c84d424094c14223c934c",
+    "equal": true
+  },
+  {
+    "resource": "travel-map.js",
+    "url": "http://localhost:8002/travel-map.js?v=interaction-batch6-20261002",
+    "localSHA256": "fad3c01925cdf9cd11acb472756c7386c827b13de25e9454c95a79c7b7c63191",
+    "httpSHA256": "fad3c01925cdf9cd11acb472756c7386c827b13de25e9454c95a79c7b7c63191",
+    "equal": true
+  },
+  {
+    "resource": "travel-modules.js",
+    "url": "http://localhost:8002/travel-modules.js?v=interaction-batch6-20261002",
+    "localSHA256": "db831abdc7c5e2875e2b5fe7f085ba024368512cb65576495ccb03fd54142201",
+    "httpSHA256": "db831abdc7c5e2875e2b5fe7f085ba024368512cb65576495ccb03fd54142201",
+    "equal": true
+  },
+  {
+    "resource": "landing.js",
+    "url": "http://localhost:8002/landing.js?v=interaction-batch6-20261002",
+    "localSHA256": "6ec509335fcd5d23b3055d9804b32921cc4b74004bd1e3877c8d90bcf8f3e787",
+    "httpSHA256": "6ec509335fcd5d23b3055d9804b32921cc4b74004bd1e3877c8d90bcf8f3e787",
+    "equal": true
+  },
+  {
+    "resource": "cultural-node.js",
+    "url": "http://localhost:8002/cultural-node.js?v=interaction-batch6-20261002",
+    "localSHA256": "4e6ac1796069b5501edaf3570ec05e63f9a4f09d290de58390d0f209940f4375",
+    "httpSHA256": "4e6ac1796069b5501edaf3570ec05e63f9a4f09d290de58390d0f209940f4375",
+    "equal": true
+  },
+  {
+    "resource": "stories.js",
+    "url": "http://localhost:8002/stories.js?v=interaction-batch6-20261002",
+    "localSHA256": "fc11c053cb40bfd20a1a73422408636425b2da4864cf96e6c00dd910b984abad",
+    "httpSHA256": "fc11c053cb40bfd20a1a73422408636425b2da4864cf96e6c00dd910b984abad",
+    "equal": true
+  },
+  {
+    "resource": "story-map.js",
+    "url": "http://localhost:8002/story-map.js?v=interaction-batch6-20261002",
+    "localSHA256": "c7dcbb84d6bfe12f08b5a7a95178b59358534b5f0e9b9b77d8557adf696c6c4c",
+    "httpSHA256": "c7dcbb84d6bfe12f08b5a7a95178b59358534b5f0e9b9b77d8557adf696c6c4c",
+    "equal": true
+  },
+  {
+    "resource": "journal.js",
+    "url": "http://localhost:8002/journal.js?v=interaction-batch6-20261002",
+    "localSHA256": "32c8ed266fe1b4347c8374929ca0a6d1f167592e8c323875bfa495484927ed04",
+    "httpSHA256": "32c8ed266fe1b4347c8374929ca0a6d1f167592e8c323875bfa495484927ed04",
+    "equal": true
+  },
+  {
+    "resource": "outing.js",
+    "url": "http://localhost:8002/outing.js?v=interaction-batch6-20261002",
+    "localSHA256": "30a552815a093c327b6f86e69febefdb4dd597a43654cebcc5130beb7e704741",
+    "httpSHA256": "30a552815a093c327b6f86e69febefdb4dd597a43654cebcc5130beb7e704741",
+    "equal": true
+  },
+  {
+    "resource": "amap-planner.js",
+    "url": "http://localhost:8002/amap-planner.js?v=interaction-batch6-20261002",
+    "localSHA256": "766793454a950f8d22b573e474fb78f38a70aa810a660166fa0824fd6e60bb47",
+    "httpSHA256": "766793454a950f8d22b573e474fb78f38a70aa810a660166fa0824fd6e60bb47",
+    "equal": true
+  }
+]

@@ -1,0 +1,127 @@
+[
+  {
+    "name": "01-culture-preserved.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "02-U02-map-failure.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "03-U05-repeat.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "04-U06-cleared.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "05-U06-restored.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "06-U09-required.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "07-U10-weather-from-form.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "08-U01-generation-summary.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "09-U03-current-entry.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "10-U04-plan-actions.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "11-U04-save-copy.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "12-U10-weather-from-plan.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "13-U11-road-prefill.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "14-U01-U08-journal.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "15-U01-U08-journal-final.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "16-U07-offline.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "17-U07-retry-success.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "18-U20-hit-targets.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "19-U08-story-status.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "20-U04-U08-node-actions.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "21-U01-node-summary.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "22-U03-final-generating.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "23-U03-final-result-entry.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "24-U04-final-plan.jpg",
+    "width": 1920,
+    "height": 1080
+  },
+  {
+    "name": "25-final-culture-preserved.jpg",
+    "width": 1920,
+    "height": 1080
+  }
+]

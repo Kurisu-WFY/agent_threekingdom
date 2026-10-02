@@ -1,0 +1,13 @@
+[
+  {
+    "method": "Network.loadingFailed",
+    "errorText": "",
+    "blockedReason": "inspector",
+    "type": "Fetch"
+  },
+  {
+    "method": "Network.loadingFailed",
+    "errorText": "net::ERR_INTERNET_DISCONNECTED",
+    "type": "Fetch"
+  }
+]
