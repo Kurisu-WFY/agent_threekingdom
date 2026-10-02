@@ -89,7 +89,7 @@
       window.scrollTo({top:20,behavior:'instant'});await wait(300);
       const documentScroll=scrollY>4;
       if(!documentScroll) { q('#welcome-view').scrollTop=100;await wait(300); }
-      assert(parseFloat(style(brand).opacity)<1&&brand.getBoundingClientRect().width<baseWidth,'N11 scrolled brand');
+      assert(parseFloat(style(brand).opacity)<1&&Math.abs(brand.getBoundingClientRect().width-baseWidth)<1,'N11/F5 scrolled brand keeps width');
       assert(header.getBoundingClientRect().height===headerHeight,'N11 header height unchanged');
       const compactWidth=brand.getBoundingClientRect().width;
       window.scrollTo({top:0,behavior:'instant'});q('#welcome-view').scrollTop=0;await wait(300);
