@@ -28,10 +28,12 @@
     $('#county-boundaries').setAttribute('display',detailed?'inline':'none');
     $('#county-points').setAttribute('visibility', detailed ? 'visible' : 'hidden');
     $('#county-points').setAttribute('display',detailed?'inline':'none');
+    $('#city-points').setAttribute('visibility', detailed ? 'hidden' : 'visible');
+    $('#city-points').setAttribute('display',detailed?'none':'inline');
     const labelMargin=20/scale; // 20 屏幕像素转换为当前地图单位，与碰撞布局的像素字号一致。
     labels.filter(l=>l.point).forEach(l=>{const visible=l.x>=extent[0]-labelMargin&&l.x<=extent[2]+labelMargin&&l.y>=extent[1]-labelMargin&&l.y<=extent[3]+labelMargin;if(l.pointVisible!==visible){l.point.setAttribute('display',visible?'inline':'none');l.pointVisible=visible;}});
     const storyLabels = window.StoryMap?.getLabels() || [];
-    const candidates = [...storyLabels, ...labels.filter(l => l.city || detailed)].sort((a,b) => (b.story?200:b.selected?100: b.capital?90:b.city?50:0)-(a.story?200:a.selected?100:a.capital?90:a.city?50:0));
+    const candidates = [...storyLabels, ...labels.filter(l => detailed ? !l.city : l.city)].sort((a,b) => (b.story?200:b.selected?100: b.capital?90:b.city?50:0)-(a.story?200:a.selected?100:a.capital?90:a.city?50:0));
     const positions = new Map(core.labelLayout(candidates, view, rect.width, rect.height).map(l => [l.id,l]));
     [...labels, ...storyLabels].forEach(l => {
       const pos = positions.get(l.id);

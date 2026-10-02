@@ -95,6 +95,21 @@ const assert=require('node:assert/strict');
  registry.get('#map-zoom-out').onclick();paintAll();assert.equal(range.value,'1200','zoom-out works at the upper limit');
  registry.get('#map-reset').onclick();paintAll();
  console.log('PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out');
+ // 市州文字与圆点随县级模式互斥，候选集合也不能让隐藏市标签挤占县标签。
+ const cityGroup=registry.get('#city-points'),countyGroup=registry.get('#county-points');
+ for(const [percent,cityVisibility,countyVisibility] of [[249,'visible','hidden'],[250,'hidden','visible'],[1500,'hidden','visible'],[100,'visible','hidden']]){
+   slide(percent);
+   assert.equal(cityGroup.attributes.visibility,cityVisibility,percent+'% city labels/dots visibility');
+   assert.equal(cityGroup.attributes.display,cityVisibility==='visible'?'inline':'none');
+   assert.equal(countyGroup.attributes.visibility,countyVisibility,percent+'% county visibility');
+ }
+ const provinceLayout=window.MapRouteCore.labelLayout;let provinceCandidates=[];
+ window.MapRouteCore.labelLayout=(items,...args)=>{provinceCandidates=items;return provinceLayout(items,...args);};
+ window.TravelMap.refreshLabels();
+ assert.ok(provinceCandidates.length>0&&provinceCandidates.every(item=>item.city),'province layout contains only city labels');
+ assert.equal(provinceCandidates[0].size,15,'city collision box uses CSS screen-size token');
+ window.MapRouteCore.labelLayout=provinceLayout;
+ assert.ok(registry.get('#city-boundaries').children.some(n=>n.attributes.class.startsWith('city-outline')),'city outlines remain when switching label levels');
  for(let i=0;i<3;i++){
    select.value='南充市';select.onchange();paintAll();
    assert.equal(svg.attributes.viewBox,provinceView,'changing prefecture does not pan or zoom');
@@ -111,7 +126,8 @@ const assert=require('node:assert/strict');
  const oldLayout=window.MapRouteCore.labelLayout;let laidOut=[];
  window.MapRouteCore.labelLayout=(items,...args)=>{laidOut=items;return oldLayout(items,...args);};
  window.TravelMap.refreshLabels();
- assert.equal(laidOut.find(item=>item.city)?.size,15,'city collision box uses CSS screen-size token');
+ assert.ok(laidOut.length>0&&laidOut.every(item=>!item.city),'county layout excludes all city labels');
+ assert.equal(cityGroup.attributes.display,'none','city labels and dots are hidden in detailed mode');
  assert.equal(laidOut.find(item=>!item.city)?.size,9,'county collision box uses CSS screen-size token');
  window.MapRouteCore.labelLayout=oldLayout;
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'visible');
