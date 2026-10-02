@@ -1,0 +1,157 @@
+{
+  "product_head": "bb0124a676bf30ece78697f08face4c4024f5e84",
+  "states": [
+    {
+      "tab": "文化探索",
+      "state": "closed",
+      "active": [
+        "文化探索",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": true,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "文化探索",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "目的地",
+      "state": "closed",
+      "active": [
+        "目的地",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": true,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "目的地",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "行旅地图",
+      "state": "closed",
+      "active": [
+        "行旅地图",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": true,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "行旅地图",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "活动计划",
+      "state": "closed",
+      "active": [
+        "活动计划",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": true,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "活动计划",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "探索志",
+      "state": "closed",
+      "active": [
+        "探索志",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": true,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "探索志",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "文化探索",
+      "state": "open",
+      "active": [
+        "文化探索",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": false,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "文化探索",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "目的地",
+      "state": "open",
+      "active": [
+        "目的地",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": false,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "目的地",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "行旅地图",
+      "state": "open",
+      "active": [
+        "行旅地图",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": false,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "行旅地图",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "活动计划",
+      "state": "open",
+      "active": [
+        "活动计划",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": false,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "活动计划",
+      "width": 1920,
+      "passed": true
+    },
+    {
+      "tab": "探索志",
+      "state": "open",
+      "active": [
+        "探索志",
+        "卷一 · 山河足迹",
+        "我有一天时间，想了解"
+      ],
+      "chatHidden": false,
+      "documentWidth": 1920,
+      "height": 1080,
+      "view": "探索志",
+      "width": 1920,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "scope": "页面横向溢出；内部独立滚动区仍保留"
+}

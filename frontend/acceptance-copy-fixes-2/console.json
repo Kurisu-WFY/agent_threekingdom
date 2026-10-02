@@ -1,0 +1,9 @@
+{
+  "levels": [
+    "warn",
+    "error"
+  ],
+  "logs": [],
+  "product_error_count": 0,
+  "product_warning_count": 0
+}

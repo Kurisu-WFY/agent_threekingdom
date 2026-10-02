@@ -1,0 +1,219 @@
+- banner:
+  - generic: 蜀
+  - text: 寻迹三国
+  - generic: 南充 · 阆中 · 广元/文化探索 · 文化节点
+  - status "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+- main:
+  - region "主内容区":
+    - generic: 陈寿笔下的蜀汉记忆
+    - navigation "主内容视图":
+      - button "文化探索"
+      - button "目的地"
+      - button "行旅地图"
+      - button "活动计划"
+      - button "探索志"
+    - text: ＋ ＋ ＋ ＋
+    - button "返回上一视图"
+    - paragraph: 来自文化探索 · 地点资料
+    - button "进入故事"
+    - button "问陈寿"
+    - button "阅读对照材料"
+    - button "加入路线（驻地示意）"
+    - button "请向智能体咨询到达路线" [disabled]
+    - paragraph: 文化节点 · 在故事中读懂这里
+    - heading "剑门关" [level=2]
+    - paragraph: 城市：待核验 · 故事线：蜀汉北境·蜀道寻踪 · 第 2 幕 / 第二幕｜剑门天险
+    - paragraph: 本章人物与事件资料待补充。
+    - paragraph: 当前显示：剑阁县驻地示意（关联待确认）；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：未提供
+    - paragraph: 建筑类型艺术示意 · 非实测复原，不作为历史形制依据
+    - paragraph: 资料概况：本章故事、正史、文学尚缺可靠材料，空区块已收起，可展开查看核验说明。
+    - paragraph: 正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。
+    - group "节点讲解深度":
+      - button "大众体验版" [pressed]
+      - button "亲子故事版"
+      - button "学术探索版"
+    - status: 当前为大众体验版；同一故事、章节与地点，阅读位置保留。
+    - region "本章讲解，可独立滚动阅读":
+      - heading "先读懂这里" [level=3]
+      - paragraph: 先看这里是什么、为什么值得看，再联系当前故事。
+      - generic "本章故事 · 资料待补充"
+      - generic "章节说明 · 资料待补充"
+      - generic "合理推断 · 资料待补充"
+    - heading "正史 × 演义" [level=3]
+    - generic "正史｜《三国志》及可靠史料 · 资料待补充"
+    - generic "演义｜文学表达 · 资料待补充"
+    - paragraph: 文学表达 · 不等于历史事实
+    - paragraph: 尚未补充可核对的文学文本/版本出处
+    - generic "文学文本来源 · 0 条"
+    - paragraph: 资料状态：状态待核验；当前显示：资料条目；待确认项：出处与内容依据；更新时间：未提供
+    - paragraph: 来源待核验。
+    - generic "两条叙事的差异 · 资料待补充"
+    - generic "学术争议 · 资料待补充"
+    - region "实时旅游信息":
+      - heading "出行信息 · 与历史史料分开核验" [level=3]
+      - generic "查看待查询的出行资料（3项）"
+    - paragraph: 前往景点前，可向智能体确认交通方式和参观安排。
+    - status: 史料不足时保留问题；AI讲解不作为已核验史实。
+    - generic: AI 伴你读史行旅 · 动态信息请核验
+    - generic "影像来源"
+- button "关闭对话" [expanded]:
+  - img "陈寿史官插画，持书卷与印章，非历史肖像":
+    - generic: 已寻迹
+  - generic: 陈寿伴行
+- complementary "对话面板":
+  - navigation "历史对话":
+    - button "新建对话": ＋ 新对话
+    - button "南充三国景点门票多少" [pressed]
+    - button "重命名对话：南充三国景点门票多少": 改名
+  - strong: 万卷史官 · 陈寿
+  - generic "已配置不代表连接测试通过；请查看每条回答的来源与工具记录。": 模型已配置
+  - button "关闭对话": ×
+  - log:
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph: 展卷相迎。我是万卷史官·陈寿，你的 AI 文化向导。选一条故事线，我们逐章寻迹；有据说史，无据留白。你也可以先问一个人物，或告诉我可用时间。
+    - generic: 你
+    - generic: 你
+    - paragraph: 南充三国景点门票多少钱，一天的门票费用怎么估算？
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - generic: 本次未取得可核对的门票费用，以下仅为住宿预算。请提供具体景区，以便继续查询门票。
+    - paragraph:
+      - generic: 南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。
+    - paragraph:
+      - generic: 说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。
+    - generic: 住宿价格仅供估算，请以预订平台当天报价为准。上述住宿预算为 200.0 - 380.0 元/晚/间。
+    - button "在地图查看提及地点"
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 预算票价
+      - generic: 回答 · 待核验
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+      - generic: 价格信息待核验；未知金额不能认定为免费
+    - generic: 你
+    - generic: 你
+    - paragraph: 我有一天，想了解张飞
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph:
+      - generic: 【人物视角：陈寿】一天时间看张飞，主线建议放在
+      - strong:
+        - generic: 阆中
+      - generic: ：张飞不是“演义里那个只会吼的猛将”，在正史里他是蜀汉的
+      - strong:
+        - generic: 巴西太守
+      - generic: ，而巴西郡的治所就在今天的阆中一带。所以“镇守阆中·寻迹张飞”这个主题，核心不是看一座庙，而是理解：
+      - strong:
+        - generic: 一个武将如何成为一方军政长官，又如何在地方记忆里被供奉千年。
+    - paragraph:
+      - strong:
+        - generic: 这一章属于哪条线？
+    - paragraph:
+      - text: 属于“探迹”——把《三国志》里张飞的记载，接到今天阆中的
+      - button "汉桓侯祠"
+      - text: （张飞庙）和古城空间上。往前连“读史”（陈寿怎么写张飞），往后连“传承”（为什么阆中人至今认他）。
+    - paragraph:
+      - strong:
+        - generic: 史料边界，先说清楚：
+    - list:
+      - generic: 正史依据：《三国志·蜀书·张飞传》记张飞曾任巴西太守、后被部下所害，这是基本框架。具体原文我手头没有逐字核对，不给你编引文。
+      - generic: 地方传说与文旅表达：张飞在阆中“镇守七年”“种柏树”“巡城”等说法，很多属于地方记忆和后世附会，需要和正史分开看。
+      - generic: 演义加工：《三国演义》里张飞的形象更夸张，不能当史料用。
+      - text: 现有资料不足以确认的：张飞在阆中的具体日常、确切驻守年限、
+      - button "汉桓侯祠"
+      - text: 始建细节，都还需要更细的史料和考古材料支撑，我不替它下结论。
+    - paragraph:
+      - strong:
+        - generic: 一天怎么走（大众体验版，站点顺序）：
+    - list:
+      - strong:
+        - generic: 阆中古城
+      - generic: ——先建立空间感：这是巴西郡治所在，张飞管的不只是打仗，还有民政、治安、粮道。
+      - strong:
+        - button "汉桓侯祠"
+        - text: （张飞庙）
+      - generic: ——看“桓侯”这个谥号，看后人怎么把一个历史人物变成地方守护神。注意区分：祠庙是纪念空间，不等于张飞当年的官署原址。
+      - strong:
+        - generic: 古城墙、嘉陵江边
+      - generic: ——站在江边想一想：阆中为什么是川北要冲，张飞守这里，守的是什么。
+    - paragraph:
+      - strong:
+        - generic: 提醒：
+      - generic: 门票、开放时间、交通耗时属于 Demo 维护数据或需实时确认，请以景区官方和地图服务为准，我不编具体价格和时刻。
+    - paragraph:
+      - strong:
+        - generic: 这一章目前仍待补充：
+      - text: 张飞在巴西郡的具体治理细节、
+      - button "汉桓侯祠"
+      - text: 的沿革、阆中地方传说与正史的对应关系，都还需要更多材料。
+    - paragraph:
+      - generic: 你这一天，是想
+      - strong:
+        - generic: 偏史实
+      - generic: （多讲《三国志》和制度），还是
+      - strong:
+        - generic: 偏体验
+      - generic: （古城慢逛、听地方故事）？告诉我，我再帮你把这一天排细。
+    - button "在地图查看提及地点"
+    - paragraph: 镇守阆中·寻迹张飞：主题模板已匹配，章节与史料待补充。已按一天考虑，可继续调整。
+    - button "进入镇守阆中·寻迹张飞"
+    - button "在地图中查看阆中"
+    - button "切换到张飞视角"
+    - paragraph: 故事线推荐 · 选择进入相关主题，不自动修改路线。
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 文化问答
+      - generic: 检索到相关资料，回答仍需核对出处
+      - generic: 回答 · 待核验
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+    - generic: 你
+    - generic: 你
+    - paragraph: 南充一天三国文化路线
+    - img "陈寿史官插画，持书卷与印章，非历史肖像":
+      - generic: 已寻迹
+    - generic: 陈寿
+    - paragraph:
+      - generic: 推荐路线：陈寿笔下的蜀汉记忆·南充一日线，8.0小时，打车/公交
+    - paragraph:
+      - generic: 以陈寿和地方蜀汉遗迹为主线，适合展示文化解释、路线推荐和预算估算能力。
+    - list:
+      - text: 西山风景区·
+      - button "万卷楼"
+      - text: ，停留约 120 分钟。用陈寿与《三国志》建立核心叙事。
+      - generic: 鹤鸣山景区·王平墓，停留约 60 分钟。补充蜀汉人物在川东北的地方记忆。
+    - paragraph:
+      - generic: 注意：王平墓开放状态和讲解资料需核验。
+    - generic: 当前内容为文化游览参考；实际到达路线、开放时间与费用请在出发前逐项核验。
+    - button "在地图查看提及地点"
+    - generic "回答元信息，可横向滚动":
+      - generic: 意图 · 路线规划
+      - generic: 回答 · 演示数据
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+      - generic: 路线 · 演示数据
+      - generic: 更新时间 · 待核验
+      - generic: 来源 · 待核验
+      - generic: 回答提及的文献出处尚未核验，请勿作为已核验引文。
+    - generic: 陈寿笔下的蜀汉记忆·南充一日线 · 8 小时
+    - paragraph: 风险提示：王平墓开放状态和讲解资料需核验。
+    - list:
+      - listitem: 西山风景区·万卷楼 · 推荐理由：用陈寿与《三国志》建立核心叙事。 · 本次安排：120 分钟 · 资料中的一般游览参考：90 分钟（仍需核验） · 开放时间：以景区当日公告为准
+      - listitem: 鹤鸣山景区·王平墓 · 推荐理由：补充蜀汉人物在川东北的地方记忆。 · 本次安排：60 分钟 · 资料中的一般游览参考：60 分钟（仍需核验） · 开放时间：以当地公告为准
+    - button "查看出行方案"
+  - generic: 输入消息
+  - textbox "输入消息":
+    - /placeholder: 问陈寿：这一章讲什么？我只有半天…
+  - button "发送消息" [disabled]: ↑
+  - generic "路线背景与讲解设置"
+  - option "陈寿" [selected]
+  - option "诸葛亮"
+  - option "张飞"
+  - option "大众体验版" [selected]
+  - option "亲子故事版"
+  - option "学术探索版"

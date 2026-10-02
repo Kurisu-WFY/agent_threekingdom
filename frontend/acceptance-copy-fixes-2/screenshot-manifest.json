@@ -1,0 +1,254 @@
+{
+  "count": 31,
+  "captures": [
+    {
+      "file": "01-C19-home.jpg",
+      "dom_file": "01-C19-home.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "8df2acbc84ad8f0cc8c5ad1c878e66827a06512d356de911b66791ed277118cd"
+    },
+    {
+      "file": "02-C11-budget.jpg",
+      "dom_file": "02-C11-budget.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "8990f2dd3de83af0822f491d5fb4ed7787dc80fdf9a82f8d03f254eb766bb031"
+    },
+    {
+      "file": "03-C11-budget-final.jpg",
+      "dom_file": "03-C11-budget-final.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "a902db540b542a255658fa75cfdd36f01417bf5727f5c258722b479c2fcb2ef9"
+    },
+    {
+      "file": "04-C21-real-pending.jpg",
+      "dom_file": "04-C21-real-pending.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3ec66044bff175f08f4e0354d0ae43761ffb0daa7dfb729271bbb6b2c18387b2"
+    },
+    {
+      "file": "05-C12-authoritative-source.jpg",
+      "dom_file": "05-C12-authoritative-source.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "108e8e5f49816d8d620b947c2c8105d71cc9b81c5e6de1188c4fbc5a8a07670a"
+    },
+    {
+      "file": "06-C17-story-status.jpg",
+      "dom_file": "06-C17-story-status.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "fc3379c5238bf562b6ce98257a5a08177a712cd25fe511660277df1355b69378"
+    },
+    {
+      "file": "07-C17-node-location.jpg",
+      "dom_file": "07-C17-node-location.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "af3b46a64e7d93638eb989c0de7d7f43fb7b1d99873f54ab63b963605d2cb8e9"
+    },
+    {
+      "file": "08-C18-literary-empty.jpg",
+      "dom_file": "08-C18-literary-empty.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "14c98e0cfaf10c6ece73d5099816166a5b80870313494ebe9a7cb48fb09e3d65"
+    },
+    {
+      "file": "09-C18-stable-literary-empty.jpg",
+      "dom_file": "09-C18-stable-literary-empty.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "03c7860993de90c79a82475815edaf8a90e16b89a204c8249ce78cda3a97d2de"
+    },
+    {
+      "file": "10-C14-one-day-recommendation.jpg",
+      "dom_file": "10-C14-one-day-recommendation.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ea4e0f815b60077a8c4340d928023d598d21c4f94aa5927112708106172fe9a6"
+    },
+    {
+      "file": "11-C11-C16-route.jpg",
+      "dom_file": "11-C11-C16-route.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "76f51c07395b6bf8954237935a832089dce8c19bfcaa41fd576c98958a78025d"
+    },
+    {
+      "file": "12-C20-journal.jpg",
+      "dom_file": "12-C20-journal.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f90a65d59e3f509ef13e542bafecaa87f15520e8823111dc6bbefd03a060bd45"
+    },
+    {
+      "file": "13-C15-air-units.jpg",
+      "dom_file": "13-C15-air-units.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "56520c3762a1fe2fda86b678f42ec45fec1d0d10a472cf13a8ea7986795518d1"
+    },
+    {
+      "file": "14-C12-model-source.jpg",
+      "dom_file": "14-C12-model-source.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "2955efd7f39d097a401796e7ca665708860758c1c65f1ce11f93cf06606a6a24"
+    },
+    {
+      "file": "15-C19-final-trust.jpg",
+      "dom_file": "15-C19-final-trust.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "0e361e7eb332df42707484602d00b9e58bb1238449bf7e3a9c7d7691ac0cce50"
+    },
+    {
+      "file": "16-C13-final-legend.jpg",
+      "dom_file": "16-C13-final-legend.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ed942d7dc577add0462c302c851a611d6a975a123e909d1a2468ee19a926cf3c"
+    },
+    {
+      "file": "17-C21-final-real-pending.jpg",
+      "dom_file": "17-C21-final-real-pending.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ea68740a55b5ca2cad214771a18bbfa8f6fc281da01cd52f892fefd98fed9967"
+    },
+    {
+      "file": "18-C14-final-confirmed-day.jpg",
+      "dom_file": "18-C14-final-confirmed-day.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "ba65cc5a3c9bca41d6a49d50aeba2a1ba8083c6262f484de5700602aba45c0c3"
+    },
+    {
+      "file": "19-C17-final-story-status.jpg",
+      "dom_file": "19-C17-final-story-status.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "470b40a85c9a8439130ee26aa1d6c5f217661ac0c265ea4c4cbee59b2932151e"
+    },
+    {
+      "file": "20-C17-final-node-location.jpg",
+      "dom_file": "20-C17-final-node-location.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "a2b50461dae37179fdeaaaafd3e754164217300cad46fd91b9576bf502d540d2"
+    },
+    {
+      "file": "21-C18-final-literary-empty.jpg",
+      "dom_file": "21-C18-final-literary-empty.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "6830f6001c9543780d85130f71a5de21e4217de3fd76367540a88b64c178400c"
+    },
+    {
+      "file": "22-layout-closed-culture.jpg",
+      "dom_file": "22-layout-closed-culture.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "214e5fa1b698886fbb741836c9b8e38c912963a282d71b24c14015cf5a437e5d"
+    },
+    {
+      "file": "22-layout-closed-destinations.jpg",
+      "dom_file": "22-layout-closed-destinations.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "45ac3512bde9c9f10f271a0420feaaf82f2d45f661d7b9313a667246e3efd4c3"
+    },
+    {
+      "file": "22-layout-closed-journal.jpg",
+      "dom_file": "22-layout-closed-journal.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "1434d8c193d0ab6ade8cf7761c14e5621d8faeeca928ddb20060052728bc464c"
+    },
+    {
+      "file": "22-layout-closed-map.jpg",
+      "dom_file": "22-layout-closed-map.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3529f6060101e2105d698b96b654fc1b4a09767698755ab91535ef7b17196b71"
+    },
+    {
+      "file": "22-layout-closed-plan.jpg",
+      "dom_file": "22-layout-closed-plan.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "eb910a40ae7d5337cd5c2950ae8a2e8cef30ef669ca253c2b0d03763ef7b34c5"
+    },
+    {
+      "file": "23-layout-open-culture.jpg",
+      "dom_file": "23-layout-open-culture.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "f6726d94d3b618eaef2e06db75ff12ba50ab783fb62818d59a241b4c1e542c25"
+    },
+    {
+      "file": "23-layout-open-destinations.jpg",
+      "dom_file": "23-layout-open-destinations.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "4f00b7b1a4f2719580b746707a6c69a25d7a9f9664e899b2febde8c7aa6d7ddb"
+    },
+    {
+      "file": "23-layout-open-journal.jpg",
+      "dom_file": "23-layout-open-journal.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "d6d47a017710e62b669049a1ae60874fbe2fed559ca1922d725dba578b06ac04"
+    },
+    {
+      "file": "23-layout-open-map.jpg",
+      "dom_file": "23-layout-open-map.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "0efce4e437ec5f9ed6c74af87a444ebb7b610e1d8df118efe4095d36c2fc887b"
+    },
+    {
+      "file": "23-layout-open-plan.jpg",
+      "dom_file": "23-layout-open-plan.dom.txt",
+      "format": "JPEG",
+      "width": 1920,
+      "height": 1080,
+      "sha256": "43749c2382f1b68be26fa79b83d31f039d6c852066bb957c41299f8cc7bbb4d7"
+    }
+  ],
+  "unmodified_native_bytes": true
+}
