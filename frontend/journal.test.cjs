@@ -38,3 +38,13 @@ for(const [code,fn] of [
  ['C07',()=>{const raw='请生成巴中三国文化活动方案。先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。';const oldRecord={id:'old-city',text:raw};const oldCity=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([oldRecord,{id:'normal',text:'请生成巴中三国文化活动方案。希望多看古建筑。'}])}});oldCity.get('#journal-next').handlers.click();assert.match(text(oldCity.get('#journal-book')),/请安排巴中的文化活动/);assert.match(text(oldCity.get('#journal-book')),/希望多看古建筑/);assert.equal(JSON.parse(oldCity.store['sgt.journal.questions.v1'])[0].text,raw);assert.doesNotMatch(text(oldCity.get('#journal-book')),/先确认出发地/);}]
 ]){try{fn();}catch(e){copyJournalFailures.push(code+': '+e.message);}}
 assert.equal(copyJournalFailures.join('\n'),'');
+
+
+const ninthJournal=setup(),ninthNotice=ninthJournal.get('#journal-local-notice').textContent;
+for(const phrase of ['最多保留最近200条','删除本页会话','撤销可恢复','不代表实际到访','換設備']){if(phrase!=='換設備')assert.ok(ninthNotice.includes(phrase),'C20 '+phrase);}
+assert.match(ninthNotice,/换设备不会同步|未与账号.*同步/);
+const ninthHtml=fs.readFileSync(__dirname+'/index.html','utf8'),ninthHeader=ninthHtml.match(/<header class="journal-heading">[\s\S]*?<\/header>/)[0];
+assert.equal((ninthHeader.match(/不代表实际到访/g)||[]).length,0,'C20 boundary is owned by dynamic single notice');
+assert.ok(ninthHtml.includes('未标记完成的章节显示待探索'),'C13 chapter progress is not physical arrival');
+assert.ok(ninthHtml.includes('读史请核对依据：'),'C19 cautious introduction');
+assert.ok(ninthHtml.includes('票价、天气与班次等动态信息，出发前请再核验'));
