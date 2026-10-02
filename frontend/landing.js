@@ -50,7 +50,10 @@
   document.querySelectorAll('[data-agent-question]').forEach(button => button.addEventListener('click', () => ask(button.dataset.agentQuestion)));
   function prepare(next) {
     switchMode(next);
-    $('#journey-desk').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+    const desk = $('#journey-desk');
+    const disclosure = desk.closest('details');
+    if (disclosure) disclosure.open = true;
+    desk.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     field.focus({ preventScroll: true });
   }
   $('[data-prepare-character]').addEventListener('click', () => prepare('character'));

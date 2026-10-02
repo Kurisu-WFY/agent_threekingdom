@@ -4,6 +4,8 @@ function node(id){if(!nodes.has(id))nodes.set(id,{value:'',dataset:{},handlers:{
 const question=node('question');question.dataset.agentQuestion='阆中的故事';
 const modes=['plan','culture','character','review'].map(mode=>{const n=node(mode);n.dataset.journeyMode=mode;return n;});
 const calls=[],chat={pending:false},input={value:''};
+const journeyDisclosure={open:false};
+node('#journey-desk').closest=()=>journeyDisclosure;
 const context={document:{querySelector:node,querySelectorAll:s=>s==='[data-journey-mode]'?modes:s==='[data-agent-question]'?[question]:[]},window:{matchMedia:()=>({matches:false})},chats:[chat],active:0,input,toggleChat:()=>calls.push('open'),send:q=>calls.push(q),saveDraft:()=>calls.push('draft'),updateComposer:()=>{}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/landing.js','utf8'),context);
 const field=node('#hero-message'),submit=node('#hero-send'),form=node('#hero-form');
@@ -23,6 +25,15 @@ modes[2].handlers.click();field.value='张飞与阆中';submitForm();assert.ok(c
 chat.pending=true;input.value='原有对话草稿';question.handlers.click();assert.equal(input.value,'原有对话草稿\n\n阆中的故事');assert.equal(calls.at(-1),'draft');
 assert.equal(calls.filter(c=>c==='阆中的故事').length,0);
 node('[data-prepare-review]').handlers.click();assert.equal(modes[3].attrs['aria-pressed'],'true');assert.ok(field.focused);assert.ok(node('#journey-desk').scrolled);
+assert.equal(journeyDisclosure.open,true,'prepare must reveal the collapsed journey form');
+const beforePrepare=calls.length;
+field.value='未发送的回顾草稿';journeyDisclosure.open=false;
+node('[data-prepare-character]').handlers.click();
+assert.equal(journeyDisclosure.open,true);assert.equal(modes[2].attrs['aria-pressed'],'true');
+field.value='未发送的人物草稿';journeyDisclosure.open=false;
+node('[data-prepare-review]').handlers.click();
+assert.equal(journeyDisclosure.open,true);assert.equal(field.value,'未发送的回顾草稿');
+assert.equal(calls.length,beforePrepare,'preparing a collapsed form must not send a request');
 const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(/<nav class="content-switch"[\s\S]*?<\/nav>/)[0];assert.equal((nav.match(/data-content-view=/g)||[]).length,5);assert.ok(nav.includes('data-content-view="destinations"'));assert.ok(nav.includes('data-content-view="planner"'));assert.ok(!nav.includes('data-content-view="outing"'));
 for(const id of ['map-view','route-map','map-prefecture','map-county','map-zoom-range'])assert.ok(html.includes('id="'+id+'"'));
 for(const asset of ['jianmen-pass.jpg','langzhong-town.jpg'])assert.ok(fs.statSync(__dirname+'/assets/'+asset).size>10000);

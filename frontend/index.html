@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=frontend-batch5-final">
+  <link rel="stylesheet" href="styles.css?v=culture-explore-20261002-2">
 </head>
 <body>
   <header class="topbar">
@@ -92,11 +92,11 @@
         <div class="agent-hero">
           <div class="hero-copy">
             <p class="welcome-kicker"><span class="hero-seal" aria-hidden="true">蜀</span> 寻迹三国 · 陈寿文化向导</p>
-            <h1>一段旅程，<br>读懂<span class="title-accent">三国</span>。</h1>
-            <p class="welcome-sub">沿着《三国志》，走进陈寿笔下的蜀汉记忆。</p>
+            <h1>从一条故事线，开始读懂三国。</h1>
+            <p class="welcome-sub">选一个感兴趣的主题，读章节、看地点，再向陈寿追问。</p>
             <div class="hero-destinations"><span>南充</span><i aria-hidden="true">—</i><span>阆中</span><i aria-hidden="true">—</i><span>剑阁</span><i aria-hidden="true">—</i><span>广元</span></div>
-            <a class="hero-primary" href="#story-discovery">开始我的三国之旅 <span aria-hidden="true">↓</span></a>
-            <span class="hero-footnote">寻源 → 读史 → 探秘 → 传承</span>
+            <a class="hero-primary" href="#story-discovery">选一条故事线开始 <span aria-hidden="true">↓</span></a>
+            <span class="hero-footnote">第一次来，先选故事；问答、建筑线索与四川地图可在下方展开。</span>
           </div>
           <figure class="hero-photo">
             <img src="assets/jianmen-pass.jpg" alt="剑门关关楼与两侧山崖，石阶通向关门" width="1170" height="1671" fetchpriority="high" decoding="async">
@@ -107,16 +107,24 @@
         </div>
 
         <section id="story-discovery" class="story-discovery" aria-labelledby="discovery-title">
-          <div class="desk-intro"><div><span class="story-eyebrow">STORIES · 循史而行</span><h2 id="discovery-title">选择一条三国文化故事线</h2></div><p>先选一个想探索的主题。</p></div>
-          <p class="story-disclosure">首批主题模板 · 后端数据待确认，缺项待补充；史料与行程待核验。</p>
+          <div class="desk-intro"><div><h2 id="discovery-title">选择一条三国文化故事线</h2></div><p>点主题看详情；有章节的故事还可以进入地图。</p></div>
+          <p class="story-disclosure">首批主题模板，部分章节与地点待补充；史料与行程仍需核验。</p>
           <div id="story-phase-filters" class="story-controls" role="group" aria-label="按故事框架筛选"></div>
           <p id="story-filter-status" role="status"></p>
           <div id="story-cards" class="story-cards"></div>
         </section>
-        <section class="story-preview" aria-labelledby="preview-title">
+        <details class="culture-path culture-preview" id="culture-preview">
+          <summary><strong>预览章节与地图</strong><span>想先看看故事将走向哪里？</span></summary>
+          <section class="story-preview" aria-labelledby="preview-title">
           <div><span class="story-eyebrow">STORY ATLAS · 山河之间</span><h2 id="preview-title">故事将走向哪里？</h2><p id="preview-selection">从南充少年到三国史家</p><p>先看章节顺序，再将地点放回地图。位置与史料尚待核验。</p><p class="map-note">轮廓示意图 · 2026-09-12 地理快照<br>不代表景区位置、交通路线或实时数据。</p><button type="button" class="module-button" id="preview-story-open" aria-controls="map-view">探索这条故事地图 →</button><p id="preview-map-note" class="map-note" role="status"></p></div>
           <div><svg id="story-preview-map" viewBox="0 0 900 680" role="img" aria-label="四川地理轮廓示意图，故事路线待补充"></svg><p id="story-preview-status" role="status">正在加载地理轮廓示意图…</p></div>
-        </section>
+          </section>
+        </details>
+
+        <h2 class="culture-other-title">也可以从你的问题或地点开始</h2>
+        <details class="culture-path" id="culture-talk">
+          <summary><strong>有问题？问陈寿</strong><span>人物问答、旅程需求与快捷提问</span></summary>
+          <div class="culture-path-body">
         <section class="chenshou-entry" aria-labelledby="chenshou-title">
           <svg class="chenshou-portrait" viewBox="0 0 180 190" role="img" aria-label="手持史册的陈寿艺术化形象，并非历史肖像">
             <ellipse cx="90" cy="178" rx="65" ry="7" class="portrait-shadow"/>
@@ -171,6 +179,13 @@
           </div>
         </section>
 
+        <div class="welcome-bottom"><div><strong>这一程之后，还有下一次出发。</strong><p>把喜欢的故事、走过的地方或想调整的节奏告诉向导。</p></div><button type="button" data-prepare-review>回顾与调整 <span aria-hidden="true">↗</span></button></div>
+          </div>
+        </details>
+
+        <details class="culture-path" id="culture-places">
+          <summary><strong>从眼前的地点读三国</strong><span>建筑节点与三条文化线索</span></summary>
+          <div class="culture-path-body">
         <section class="story-buildings" aria-labelledby="buildings-title"><div class="desk-intro"><div><span class="story-eyebrow">PLACES · 故事发生的空间</span><h2 id="buildings-title">让建筑成为故事节点</h2></div><p>节点与章节的对应关系待确认。</p></div><div id="story-buildings" class="building-grid"></div><p class="map-note">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>
 
         <section class="culture-shelf" aria-labelledby="culture-title">
@@ -182,11 +197,18 @@
           </div>
         </section>
 
+          </div>
+        </details>
+
+        <details class="culture-path" id="culture-geography">
+          <summary><strong>先看看四川的地点</strong><span>打开行旅地图，按市州和县区探索</span></summary>
+          <div class="culture-path-body">
         <section class="story-strip" aria-labelledby="map-invitation-title">
           <img src="assets/langzhong-town.jpg" alt="嘉陵江环绕阆中古城的远景" width="1280" height="835" loading="lazy" decoding="async">
           <div><span class="story-eyebrow">EXPLORE SICHUAN · 行旅地图</span><h2 id="map-invitation-title">把故事，放回山河之间。</h2><p>21 个市州 · 183 个县级地点<br>选一座城，慢慢走进它的三国记忆。</p><button type="button" data-content-view="map">展开四川地图 <span aria-hidden="true">→</span></button></div>
         </section>
-        <div class="welcome-bottom"><div><strong>这一程之后，还有下一次出发。</strong><p>把喜欢的故事、走过的地方或想调整的节奏告诉向导。</p></div><button type="button" data-prepare-review>回顾与调整 <span aria-hidden="true">↗</span></button></div>
+          </div>
+        </details>
         <p class="journey-trust">内容有据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。</p>
         <button type="button" id="open-culture" hidden>与向导对话</button>
       </div>
@@ -394,7 +416,7 @@
   <script src="answer-format.js?v=visitor-answer-2"></script>
   <script src="outing-core.js?v=frontend-batch3-final"></script>
   <script src="app.js?v=frontend-batch3-final"></script>
-  <script src="landing.js?v=agent-planning-2"></script>
+  <script src="landing.js?v=culture-explore-20261002"></script>
   <script src="travel-api.js?v=demo-ready-1"></script>
   <script src="cities.js?v=frontend-batch3-final"></script>
   <script src="travel-modules.js?v=frontend-batch4-final"></script>

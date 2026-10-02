@@ -1105,3 +1105,53 @@ body.chat-open .content > [data-node-source] { display:none; }
 
 /* 正文里的待核验字样仍是正文，不套用全站状态卡片排版。 */
 .character-answer [data-trust-state=unverified] { color:inherit; font:inherit; background:transparent; border:0; padding:0; }
+
+/* 文化探索：故事选择是主路径，其余内容按需展开。仅作用于 welcome。 */
+#welcome-view .agent-hero { grid-template-columns:minmax(0,1fr) minmax(280px,30%); align-items:center; gap:40px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+#welcome-view .hero-copy { padding:0; }
+#welcome-view h1 { font-size:32px; line-height:1.35; margin:0; }
+#welcome-view .welcome-kicker { margin:0 0 10px; }
+#welcome-view .welcome-sub { margin:12px 0; font-size:16px; }
+#welcome-view .hero-destinations { gap:12px; }
+#welcome-view .hero-primary { margin-top:16px; font-size:16px; padding:10px 20px; }
+#welcome-view .hero-footnote { margin-top:8px; color:var(--muted); }
+#welcome-view .hero-photo { height:210px; border-radius:8px; }
+#welcome-view .photo-inscription,#welcome-view .photo-index { display:none; }
+#welcome-view .hero-photo figcaption { left:20px; bottom:18px; }
+#welcome-view .hero-photo figcaption span { letter-spacing:0; }
+#welcome-view .story-discovery { margin-top:20px; scroll-margin-top:16px; }
+#welcome-view .desk-intro h2 { font-size:22px; }
+#welcome-view .story-discovery .desk-intro { align-items:center; }
+#welcome-view .story-disclosure { margin:6px 0 10px; padding:0; border:0; background:transparent; color:var(--muted); }
+#welcome-view .story-controls { gap:8px; }
+#welcome-view .story-cards { margin-top:12px; gap:12px; }
+#welcome-view .story-card { display:grid; grid-template-columns:24px minmax(0,1fr); align-content:start; gap:6px 8px; padding:12px; background:var(--surface); box-shadow:none; }
+#welcome-view .story-number { grid-column:1; grid-row:1; width:24px; height:24px; margin:0; font-size:14px; }
+#welcome-view .story-card-title { grid-column:2; grid-row:1; min-height:24px; font-size:16px; }
+#welcome-view .story-facts { grid-column:1 / -1; margin:0; }
+#welcome-view .story-facts:empty { display:none; }
+#welcome-view .story-card-end { grid-column:1 / -1; margin-top:4px; padding-top:6px; }
+#welcome-view .story-progress-seal { grid-column:1 / -1; font-size:12px; padding:0; }
+#welcome-view .story-map-entry:disabled { background:transparent; border-color:var(--line); }
+#welcome-view .culture-path { border-top:1px solid var(--line); scroll-margin-top:16px; }
+#welcome-view .culture-preview { margin-top:20px; }
+#welcome-view .culture-path > summary { display:flex; align-items:center; flex-wrap:wrap; gap:8px 24px; min-height:60px; padding:12px 0; cursor:pointer; list-style:none; color:var(--ink); }
+#welcome-view .culture-path > summary::-webkit-details-marker { display:none; }
+#welcome-view .culture-path > summary::after { content:'＋'; margin-left:auto; color:var(--jade); font-size:20px; }
+#welcome-view .culture-path[open] > summary::after { content:'−'; }
+#welcome-view .culture-path > summary strong { font-size:16px; font-weight:600; }
+#welcome-view .culture-path > summary span { color:var(--muted); font-size:14px; }
+#welcome-view .culture-other-title { margin:22px 0 10px; font-size:16px; font-weight:400; color:var(--muted); }
+#welcome-view .culture-path-body { padding:4px 0 24px; }
+#welcome-view .culture-preview .story-preview { margin:0 0 20px; }
+#welcome-view .culture-path-body > .chenshou-entry { margin:0; padding:16px 0; }
+#welcome-view .chenshou-portrait { width:100px; }
+#welcome-view .culture-path-body > .journey-desk { margin-top:24px; }
+#welcome-view .culture-path-body > .story-buildings { margin-top:0; }
+#welcome-view .building-grid { grid-template-columns:repeat(5,minmax(0,1fr)); }
+#welcome-view .culture-path-body > .culture-shelf { margin-top:24px; }
+#welcome-view .culture-path-body > .story-strip { margin:0; }
+#welcome-view .journey-trust { margin:16px 0 0; }
+body.chat-open #welcome-view .agent-hero { grid-template-columns:minmax(0,1fr) minmax(220px,30%); gap:24px; }
+body.chat-open #welcome-view .story-cards { grid-template-columns:repeat(3,minmax(0,1fr)); }
+body.chat-open #welcome-view .building-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
