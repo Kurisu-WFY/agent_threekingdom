@@ -46,7 +46,7 @@
         if(meta.scrollWidth>meta.clientWidth) { meta.scrollLeft=meta.scrollWidth;assert(meta.scrollLeft>0,'N13 horizontal scrolling'); }
       }
       report.N13={metaHeight:q('.meta').offsetHeight,tagHeight:q('.tag').offsetHeight,scrollWidth:q('.meta').scrollWidth,clientWidth:q('.meta').clientWidth};
-      const prose=q('.agent-prose'),bubble=q('.bubble'),font=style(prose).fontFamily;
+      const prose=answer.querySelector('.agent-prose'),bubble=q('#messages .bubble'),font=style(prose).fontFamily;
       assert(font.startsWith('-apple-system')&&font.includes('Segoe UI')&&!/Noto Serif|Songti/.test(font),'N15 DSH font');
       assert(parseFloat(style(bubble).fontSize)>=16,'N15 size');
       assert(style(q('.message.user .bubble')).color===style(bubble).color,'N15 user正文近黑');

@@ -551,3 +551,23 @@
 - [x] 375宽仅回归“没有更差”：无横向溢出，聊天全宽、关闭与发送入口可见；未做响应式改造。
 - [x] 只提交 `frontend/**`，不引依赖；`docs/TASKS.md`、`docs/HANDOFF.md` 的既存未提交内容仅追加且不纳入提交；`frontend/audit-ia/` 未纳入提交。
 - [ ] 未取得：城市文字的独立浏览器点击、空白附近拾取的独立浏览器点击、静态足迹文字逐档外框、真实后端全空站点数据；受控测试与浏览器故障注入均已标注，不冒充真实接口结果。M4-3低严重度遮挡留给后续。第三批五tab/统一活动工作区/节点详情与“目的地与行程 vs 出行助手”的职责重划，本批未做。
+
+## 2026-10-01—2026-10-02 · 第三批前端实施（五 tab / 活动域 / 模块合并 / footer）
+
+- 工作单：docs/WORKORDER-frontend-batch3-restructure-20261001.md；开工已核对 feat/frontend-acceptance-20260929@245d97a。本轮按 T5→T1→T2→T3→T4+T6→T7 小步实施；2026-10-02 恢复工作时核对 HEAD=41e5a90，仅 stories 两文件有未提交跟进改动，未重做前两批。
+- 提交：f35db7c（节点来源与侧栏）、5671434（五 tab）、1914977（单活动表单与状态）、d6bd4af（单天气组件）、35c20f1（八城目录与文案）、41e5a90（footer）、6306b14（节点直接来源、天气失效隔离、活动条件提示及审查修复）；最终验收提交另见 git log。全部仅 frontend/**，未 push/merge/强推。
+- 顶级结构为文化探索/目的地/行旅地图/活动计划/探索志；story 归文化探索，planner/plan/travel/outing 是活动域内部状态，保留旧视图ID用于兼容。活动只保留 trip-form，删除 itinerary-form 与 itinerary.js/core/css；一个活动请求状态机，只有归属正确的 activityPlan 元数据允许更新方案。所有安排入口统一带入工作区，非活动回答保留旧方案。
+- 天气仅 travel-weather-form，8城共用 cities.js，与道路工具/目录/草案识别共享；无方案可查、有方案预填不自动请求。天气预填主动使旧请求失效。对照动作区分阅读材料与向陈寿提问。footer 实测69→45px，summary44px；优先真实高度与点击面积，未按估算值强压到36px。
+- 浏览器：1920×1080、1280×800 n8-n9/n10-n17通过；375×812九视图无文档横向溢出，节点完整页、独立阅读区319px，n10-n17通过。节点五来源逐条返回：首页、故事直接地点资料、地图章节、探索志重读第1/3页、真实回答万卷楼链接。测试印章已撤销。
+- 真实 route_planning/culture_qa/budget_ticket 正常；真实南充活动表单得到有效 llm 活动回答并进入valid，保存/复制通过。真实有方案天气预填南充/2026-10-04，Network进入时零请求，点击正常查询；2027-01-01明确超出预报范围。再次活动请求故意要求路线模板，真实响应为other-answer，旧方案保留并明示未收到活动方案。旧保存格式浏览器使用标注夹具验证后恢复原key字节。
+- 最终：19/19组回归，22/22个现存JS语法（基线23，删2加1）；health=ok；14个改动JS/CSS/HTML本地与8002 SHA256一致；Console error日志=[]。独立只读审查发现活动条件改变后可见提示缺口，红→绿修复；城市重复识别目录及向导对照文案按工作单必须项补齐并全套通过。浏览器断言限定到聊天回答，避免有活动结果时误取活动正文。
+- 逐条验收与证据边界见 acceptance-batch3/README.md；数值为 browser-reports.json；最终命令为 verification.txt；截图 node-1920.png、node-375.png、activity-1280.png。真实断网/超时、费用/摘录作为活动响应、原会话删除以及全部地图组合没有本轮真实浏览器证据，相关受控断言不可当实测。M4-3既存低严重度交叉未修；真实预算后端仍含酒店文字，前端未恢复住宿UI。响应式系统改造仍搁置。
+- Ruling：保留内部视图ID与有效兼容入口，迁移顶级任务归属；代价是DOM仍有多个内部panel。聊天展开时节点独占余下内容区、保留来源DOM原位返回；代价是此时不能同时阅读来源和节点。footer45px保证44px点击高度；代价是高于推导36px目标9px。无新增延后小问题。
+- 既存 docs/HANDOFF.md、docs/TASKS.md 原始字节前缀保留，仅末尾追加，不纳入提交；既存未跟踪docs文件及 frontend/audit-ia/保留。
+
+### 本轮产物与改动面（245d97a → 本轮最终提交）
+
+功能：app.js、character-chat.js、chenshou-guide.js、cities.js（新增）、cultural-node.js、index.html、outing-core.js、outing.css、outing.js、stories.js、styles.css、travel-modules.js。
+删除：itinerary-agent-core.js、itinerary.js、itinerary.css。
+回归：character-chat.test.cjs、cultural-node.test.cjs、design-system.test.cjs、itinerary-agent-core.test.cjs（退休契约）、landing.test.cjs、navigation.test.cjs、outing-core.test.cjs、stories.test.cjs、travel-modules.test.cjs、n8-n9.browser-test.js、n10-n17.browser-test.js。
+记录：HANDOFF.md；acceptance-batch3/README.md、browser-reports.json、verification.txt、node-1920.png、node-375.png、activity-1280.png。
