@@ -338,12 +338,18 @@ copyCheck('C04',()=>{
  assert.equal(allNodes(run('metaNode({retrieval:{coverage:0}})')).filter(n=>n.textContent==='检索到相关资料，回答仍需核对出处').length,0);
 });
 copyCheck('C10',()=>{
- const hotel={intent:{intent:'budget_ticket'},answer:'南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。\n说明：景区票价为维护数据。'};context.copyHotel=hotel;
- assert.match(textTree(run('metaNode(copyHotel)')),/本次未取得可核对的门票费用，以下仅为住宿预算/);
+ const hotel={intent:{intent:'budget_ticket'},answer:'南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。\n说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。'};context.copyHotel=hotel;
+ assert.match(run('budgetScope(copyHotel)'),/本次未取得可核对的门票费用，以下仅为住宿预算.*请提供具体景区/);
+ const rendered=run('messageNode({role:"assistant",text:copyHotel.answer,data:copyHotel})');
+ const body=allNodes(rendered).find(n=>n.className==='body');
+ assert.match(textTree(body.children[0]),/以下仅为住宿预算/);assert.equal(body.children[1].className,'bubble','范围提示在原回答前');
  const withTicket={...hotel,answer:hotel.answer+'\n景区票价：剑门关：50 - 50 CNY'};context.copyTicket=withTicket;
- assert.doesNotMatch(textTree(run('metaNode(copyTicket)')),/以下仅为住宿预算/);
+ assert.equal(run('budgetScope(copyTicket)'),'');
+ for(const answer of ['南充门票：50元；'+hotel.answer,hotel.answer.replace('说明：','说明：门票50元；'),hotel.answer.replace('南充舒适型','未知格式')]){
+  context.copyAmbiguous={...hotel,answer};assert.equal(run('budgetScope(copyAmbiguous)'),'','已有门票或未知格式不能误标住宿范围');
+ }
  context.copyUnknown={intent:{intent:'budget_ticket'},answer:'文化参观费用需核验。'};
- assert.doesNotMatch(textTree(run('metaNode(copyUnknown)')),/以下仅为住宿预算/);
+ assert.equal(run('budgetScope(copyUnknown)'),'');
  assert.equal(hotel.answer,context.copyHotel.answer,'原回答不改写');
 });
 assert.equal(copyFailures.join('\n'),'','第八批文案断言');

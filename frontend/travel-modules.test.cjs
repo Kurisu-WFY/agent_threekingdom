@@ -47,6 +47,11 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:13},items:[{title:'模型',summary:'数据时刻 2026-10-03T01:00（北京时间）；原说明。',fetched_at:'2026-10-02T17:05:03.852032+00:00',data_status:'model'}]}});await weatherForm.onsubmit({preventDefault(){}});
  copyCheck('C05',()=>{const out=text(get('#travel-results'));assert.match(out,/数据时刻：2026年10月03日 01:00（北京时间）/);assert.match(out,/查询时间（可能为缓存）：2026年10月03日 01:05（北京时间）/);const original=get('#travel-results').children.at(-1).children.find(n=>n.tag==='details'&&text(n).includes('原始服务说明'));assert.match(text(original),/数据时刻 2026-10-03T01:00/);});
  window.TravelApi.listSpots=originalSpots;window.TravelApi.getTravelInfo=copyWeather;
+ for(const time of ['2026-99-99','2026-02-30T01:00:00Z','2026-04-31T01:00']){
+  window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time},items:[{title:'非法时间',fetched_at:time,data_status:'model'}]}});
+  await weatherForm.onsubmit({preventDefault(){}});assert.match(text(get('#travel-results')),/数据时刻：待确认/,'C05 非法日历日期不冒充有效时刻');
+ }
+ window.TravelApi.getTravelInfo=copyWeather;
  assert.equal(copyFailures.join('\n'),'','C02/C05/C06');
 
  const directQuestions=[];window.SGTJourney={ask:q=>directQuestions.push(q)};

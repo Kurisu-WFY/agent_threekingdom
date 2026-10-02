@@ -124,6 +124,13 @@ function trustNode(record, label = '回答') {
 }
 window.SGTAnswerTrust = { render: trustNode };
 
+function budgetScope(data) {
+  // 仅识别已确认的服务整段格式；前缀或说明中出现门票明细时不下范围结论。
+  const hotelOnly = /^(?:南充|阆中|广元)(?:经济型|舒适型|品质型)酒店预算：\d+(?:\.\d+)? - \d+(?:\.\d+)? CNY\/晚\/间。\n说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。$/;
+  return data?.intent?.intent === 'budget_ticket' && typeof data.answer === 'string' && hotelOnly.test(data.answer.trim())
+    ? '本次未取得可核对的门票费用，以下仅为住宿预算。请提供具体景区，以便继续查询门票。' : '';
+}
+
 function metaNode(data) {
   const meta = document.createElement('div');
   meta.className = 'meta';
@@ -137,11 +144,6 @@ function metaNode(data) {
   }
   meta.append(trustNode(data));
   if (intent === 'budget_ticket') meta.append(tag('价格信息待核验；未知金额不能认定为免费'));
-  // 仅识别现有服务的住宿预算格式；不猜测未知回答或改写原文。
-  if (intent === 'budget_ticket' && typeof data.answer === 'string' &&
-      /^[^\n]+酒店预算：[^\n]+CNY\/晚\/间。(?:\n说明：[^\n]*)?$/.test(data.answer.trim())) {
-    meta.append(tag('本次未取得可核对的门票费用，以下仅为住宿预算'));
-  }
   const route = intent === 'route_planning' && data?.route?.found === true && data.route.route;
   if (route) {
     meta.append(trustNode(route, '路线'));
@@ -180,6 +182,8 @@ function messageNode(message) {
   name.className = 'message-name';
   name.textContent = message.role === 'user' ? '你' : message.persona || '陈寿';
   identity.append(avatar, name);
+  const scope = message.role === 'assistant' && !message.pending && !message.error && budgetScope(message.data);
+  if (scope) body.append(tag(scope));
   body.append(bubbleNode(message));
   if (message.role === 'assistant' && !message.pending && !message.error && window.CharacterChat?.actions) {
     const actions = window.CharacterChat.actions(message);

@@ -34,6 +34,10 @@
   }
   function beijingTime(value, local=false) {
     if(typeof value!=='string'||!value.trim())return '待确认';
+    const calendar=value.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?$/);
+    if(!calendar)return '待确认';
+    const [year,month,day]=calendar.slice(1,4).map(Number),leap=year%4===0&&(year%100!==0||year%400===0);
+    if(month<1||month>12||day<1||day>[31,leap?29:28,31,30,31,30,31,31,30,31,30,31][month-1]||Number(calendar[4]||0)>23||Number(calendar[5]||0)>59||Number(calendar[6]||0)>59)return '待确认';
     if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1年$2月$3日')+'（北京时间）';
     const explicit=/(?:Z|[+-]\d{2}:\d{2})$/.test(value);
     if(!explicit&&!local)return '时区未提供，时间待核验';
