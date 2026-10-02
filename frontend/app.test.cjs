@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 class Element {
   constructor(tag) { this.tag = tag; this.value = ''; this.children = []; this.dataset = {}; this.style = {}; this.hidden = true; this.events = {}; const classes = new Set(); this.classList = { toggle(c,on) { if(on) classes.add(c); else classes.delete(c); }, add(c) { classes.add(c); }, remove(c) { classes.delete(c); }, contains(c) { return classes.has(c); } }; }
   querySelector() { return get('submit'); }
-  setAttribute() {}
+  setAttribute(k,v) { (this.attrs ||= {})[k]=v; }
   addEventListener(type,fn) { this.events[type]=fn; }
   setPointerCapture() {}
   append(...nodes) { this.children.push(...nodes); }
@@ -353,3 +353,31 @@ copyCheck('C10',()=>{
  assert.equal(hotel.answer,context.copyHotel.answer,'原回答不改写');
 });
 assert.equal(copyFailures.join('\n'),'','第八批文案断言');
+
+const batch9Failures=[];
+function batch9Check(code,fn){try{fn();}catch(e){batch9Failures.push(code+': '+e.message);}}
+batch9Check('C11',()=>{
+ const raw=context.copyHotel.answer, row=run('messageNode({role:"assistant",text:copyHotel.answer,data:copyHotel})');
+ assert.match(textTree(row),/住宿价格仅供估算，请以预订平台当天报价为准/);
+ assert.match(textTree(row),/200\.0.*380\.0.*元\/晚\/间/);
+ const originalBubble=textTree(allNodes(row).find(n=>n.className==='bubble'));
+ for(const line of raw.split('\n'))assert.ok(originalBubble.includes(line),'C11 原回答每行保留');
+ assert.equal(context.copyHotel.answer,raw);
+ context.batch9Foreign={...context.copyHotel,answer:raw.replace('CNY','USD')};
+ assert.doesNotMatch(textTree(run('messageNode({role:"assistant",text:batch9Foreign.answer,data:batch9Foreign})')),/元\/晚\/间/);
+});
+batch9Check('C12',()=>{
+ for(const [level,label] of [['A','权威资料'],['B','较可靠资料'],['C','文学/传说']]){
+  context.batch9Level={sources:[{title:'出处',source_url:'https://example.org',source_level:level}]};
+  assert.match(textTree(run('trustNode(batch9Level)')),new RegExp(level+'.*'+label));
+ }
+ context.batch9Realtime={data_status:'forecast',sources:[{title:'天气模型',source_url:'https://example.org',source_level:'C'}]};
+ const out=textTree(run('trustNode(batch9Realtime)'));assert.match(out,/模型预报、非现场实测/);assert.doesNotMatch(out,/文学|来源等级|史实结论/);
+});
+batch9Check('C16',()=>{
+ const out=textTree(run('routeCard({name:"参考路线"},[{name:"万卷楼",stay_minutes:120,recommended_duration_min:90}])'));
+ assert.match(out,/本次安排：120 分钟/);assert.match(out,/资料中的一般游览参考：90 分钟（仍需核验）/);
+ assert.match(textTree(run('routeCard({name:"参考路线"},[{name:"未知",stay_minutes:null,recommended_duration_min:null}])')),/时长含义待确认/);
+});
+batch9Check('C21',()=>{const out=run('bubbleNode({pending:true})');assert.equal(out.textContent,'陈寿正在整理回答，请稍候');assert.equal(out.attrs['aria-label'],out.textContent);});
+assert.equal(batch9Failures.join('\n'),'','第九批app断言');

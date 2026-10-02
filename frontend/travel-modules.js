@@ -46,12 +46,13 @@
     const part=type=>parts.find(p=>p.type===type).value;
     return part('year')+'年'+part('month')+'月'+part('day')+'日 '+part('hour')+':'+part('minute')+'（北京时间）';
   }
-  function sources(target, items) {
+  function sources(target, items, realtime=false) {
     const details = node('details');
     details.append(node('summary', '参考资料与来源'));
     if (!Array.isArray(items) || !items.length) details.append(node('p', '暂无参考来源，相关内容待核验。'));
     else items.filter(source => source && typeof source === 'object').forEach(source => {
-      const row = node('p', `${source.title || '未命名来源'} · 来源等级 ${source.source_level || '未标注'}`);
+      const levels={A:'权威资料',B:'较可靠资料',C:'文学/传说'};
+      const row = node('p', `${source.title || '未命名来源'} · ${realtime ? '实时信息来源 · 需再核验' : '来源等级 ' + (Object.hasOwn(levels,source.source_level) ? source.source_level+'='+levels[source.source_level] : '待核验')}`);
       try {
         const url = new URL(source.source_url);
         if (['https:', 'http:'].includes(url.protocol)) {
@@ -61,7 +62,7 @@
       } catch { /* 无有效链接时保留来源文本 */ }
       details.append(row);
     });
-    details.append(node('p', 'C 级来源不用于支撑史实结论。', 'map-note'));
+    details.append(node('p', realtime ? '模型预报、非现场实测；天气与空气信息需在出发前再核验。' : 'C=文学/传说，不能支撑史实结论；其他资料也需核对出处与时效。', 'map-note'));
     target.append(details);
   }
   function dataStatus(record) {
@@ -344,8 +345,8 @@
         days.forEach(day=>forecast.append(node('p',`${day.date}${date===day.date?'（所选日期）':''} · ${day.temperature_min_c??'—'}～${day.temperature_max_c??'—'}°C · 降雨概率 ${day.rain_probability_percent??'—'}%`)));
         weatherTarget.append(forecast);
       }
-      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${beijingTime(air.time,true)}；PM2.5：${air.pm2_5??'—'}；PM10：${air.pm10??'—'}`));weatherTarget.append(card);}
-      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources);weatherTarget.append(card);});
+      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');const concentration=(key,label)=>{const unit=typeof air.units?.[key]==='string'?air.units[key].trim():'';return label+(unit?' 浓度：':'：')+(air[key]??'—')+(unit?' '+unit:'（单位待确认）');};card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${beijingTime(air.time,true)}；${concentration('pm2_5','PM2.5')}；${concentration('pm10','PM10')}`));weatherTarget.append(card);}
+      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources,true);weatherTarget.append(card);});
       if(!days.length&&!data.air_quality&&!items.length)empty(weatherTarget,'暂无可确认的天气或空气数据，可稍后重试。');
       const warnings=Array.isArray(data.warnings)?data.warnings:[];
       $('#travel-status').textContent=[`${city} · 已完成查询。来源及查询时间见结果卡；出发前请再次核验。`,date&&!days.some(day=>day.date===date)?'所选日期不在预报范围内，不代表该日天气。':'',...warnings].filter(Boolean).join(' ');

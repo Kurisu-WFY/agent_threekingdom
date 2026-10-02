@@ -84,7 +84,7 @@ function routeCard(route, stops) {
     list.className = 'route-stops';
     stops.filter(stop => stop && typeof stop.name === 'string').forEach(stop => {
       const li = document.createElement('li');
-      li.textContent = stop.name + ' · 推荐理由：' + (stop.reason || '待核验') + ' · 安排停留：' + (Number.isFinite(stop.stay_minutes) && stop.stay_minutes > 0 ? stop.stay_minutes + ' 分钟' : '待核验') + ' · 建议游览：' + (Number.isFinite(stop.recommended_duration_min) && stop.recommended_duration_min > 0 ? stop.recommended_duration_min + ' 分钟' : '待核验') + ' · 开放时间：' + (stop.open_time || '待核验');
+      li.textContent = stop.name + ' · 推荐理由：' + (stop.reason || '待核验') + ' · 本次安排：' + (Number.isFinite(stop.stay_minutes) && stop.stay_minutes > 0 ? stop.stay_minutes + ' 分钟' : '时长含义待确认') + ' · 资料中的一般游览参考：' + (Number.isFinite(stop.recommended_duration_min) && stop.recommended_duration_min > 0 ? stop.recommended_duration_min + ' 分钟（仍需核验）' : '时长含义待确认') + ' · 开放时间：' + (stop.open_time || '待核验');
       list.append(li);
     });
     card.append(list);
@@ -95,9 +95,12 @@ function routeCard(route, stops) {
 function trustNode(record, label = '回答') {
   const box = document.createElement('div');
   box.className = 'trust-info';
-  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'请以官方公告确认', stale:'请确认最新公告'};
+  const realtime = ['forecast','model'].includes(record?.data_status);
+  const levels = {A:'权威资料',B:'较可靠资料',C:'文学/传说'};
+  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'请以官方公告确认', stale:'请确认最新公告',forecast:'模型天气预报',model:'空气质量模型估计'};
   const status = record && Object.hasOwn(statuses, record.data_status) ? statuses[record.data_status] : null;
   box.append(tag(label + ' · ' + (status || '待核验')));
+  if (realtime) box.append(tag('模型预报、非现场实测；天气与空气信息需在出发前再核验。'));
   const date = record && record.updated_at;
   const validDate = typeof date === 'string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(date) && Number.isFinite(Date.parse(date));
   box.append(tag(validDate ? '更新时间 · ' + date : '更新时间 · 待核验'));
@@ -113,13 +116,13 @@ function trustNode(record, label = '回答') {
     link.textContent = source.title;
     if (safe) { link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; accessible += 1; }
     const level = ['A','B','C'].includes(source.source_level) ? source.source_level : '待核验';
-    line.append(link, tag('来源等级 · ' + level));
+    line.append(link, tag(realtime ? '实时信息来源 · 需再核验' : '来源等级 · ' + level + (levels[level] ? '=' + levels[level] : '')));
     if (!safe) line.append(tag('来源链接待核验'));
-    if (level === 'C') line.append(tag('仅供参考，不能支撑史实结论'));
+    if (!realtime && level === 'C') line.append(tag('文学/传说不能支撑史实结论'));
     box.append(line); count += 1;
   });
   if (!count) box.append(tag('来源 · 待核验'));
-  if (!accessible) box.append(tag('回答提及的文献出处尚未核验，请勿作为已核验引文。'));
+  if (!accessible) box.append(tag(realtime ? '实时信息出处尚未核验，请查询最新预报。' : '回答提及的文献出处尚未核验，请勿作为已核验引文。'));
   return box;
 }
 window.SGTAnswerTrust = { render: trustNode };
@@ -155,8 +158,8 @@ function bubbleNode(message) {
   const bubble = document.createElement('div');
   if (message.pending) {
     bubble.className = 'bubble typing';
-    bubble.setAttribute('aria-label', '陈寿正在查阅史料，请稍候');
-    bubble.textContent = '正在整理回答，请稍候…';
+    bubble.setAttribute('aria-label', '陈寿正在整理回答，请稍候');
+    bubble.textContent = '陈寿正在整理回答，请稍候';
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
@@ -185,6 +188,11 @@ function messageNode(message) {
   const scope = message.role === 'assistant' && !message.pending && !message.error && budgetScope(message.data);
   if (scope) body.append(tag(scope));
   body.append(bubbleNode(message));
+  if (scope) {
+    const price = message.data.answer.match(/酒店预算：(\d+(?:\.\d+)?) - (\d+(?:\.\d+)?) CNY\/晚\/间/);
+    body.append(tag('住宿价格仅供估算，请以预订平台当天报价为准。' + (price ? '上述住宿预算为 ' + price[1] + ' - ' + price[2] + ' 元/晚/间。' : '')));
+  }
+  if (message.role === 'assistant' && !message.pending && !message.error && message.data?.intent?.intent === 'route_planning' && /适合展示文化解释、路线推荐和预算估算能力/.test(message.text || '')) body.append(tag('当前内容为文化游览参考；实际到达路线、开放时间与费用请在出发前逐项核验。'));
   if (message.role === 'assistant' && !message.pending && !message.error && window.CharacterChat?.actions) {
     const actions = window.CharacterChat.actions(message);
     if (actions.children.length) body.append(actions);

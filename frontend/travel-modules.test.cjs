@@ -34,6 +34,20 @@ for(const id of ['#outing-start','#outing-end'])assert.deepEqual(get(id).childre
 const weatherForm=get('#travel-weather-form');weatherForm.reportValidity=()=>Boolean(get('#travel-city').value);
 const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需核验路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待核验',address:'广元市剑阁县'}]}};
 (async()=>{
+ const ninthFailures=[],ninthCheck=(c,fn)=>{try{fn();}catch(e){ninthFailures.push(c+': '+e.message);}};
+ const ninthSpots=window.TravelApi.listSpots,ninthWeather=window.TravelApi.getTravelInfo;
+ window.TravelApi.listSpots=async()=>({status:'ok',data:{spots:[{name:'测试景区',sources:['A','B','C'].map(source_level=>({title:'测试出处',source_url:'https://example.org',source_level}))}]}});
+ await copyCity.onclick();ninthCheck('C12 历史',()=>{const out=text(get('#destination-results'));for(const v of ['A=权威资料','B=较可靠资料','C=文学/传说','不能支撑史实结论'])assert.ok(out.includes(v),v);});
+ get('#travel-city').value='南充';
+ for(const units of [{pm2_5:'μg/m³',pm10:'μg/m³'},undefined,{pm2_5:'',pm10:42}]){
+ window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:20,units},items:[{title:'天气',data_status:'forecast',updated_at:'2026-10-03T01:00:00+08:00',sources:[{title:'Open-Meteo',source_level:'C',source_url:'https://open-meteo.com'}]}]}});
+ await weatherForm.onsubmit({preventDefault(){}});
+ ninthCheck('C12 实时',()=>{const out=text(get('#travel-results'));assert.match(out,/模型预报、非现场实测/);assert.doesNotMatch(out,/来源等级|文学\/传说|史实结论/);assert.match(out,/Open-Meteo/);});
+ ninthCheck('C15 '+JSON.stringify(units),()=>{const out=text(get('#travel-results'));if(units?.pm2_5){assert.match(out,/PM2.5 浓度：13 μg\/m³/);assert.match(out,/PM10 浓度：20 μg\/m³/);}else {assert.doesNotMatch(out,/μg\/m³/);assert.match(out,/单位待确认/);}assert.match(out,/模型估计，非现场实测/);});
+ }
+ window.TravelApi.listSpots=ninthSpots;window.TravelApi.getTravelInfo=ninthWeather;
+ assert.equal(ninthFailures.join('\n'),'','C12/C15');
+
  const copyFailures=[],copyCheck=(name,fn)=>{try{fn();}catch(e){copyFailures.push(name+': '+e.message);}};
  const originalSpots=window.TravelApi.listSpots,copyWeather=window.TravelApi.getTravelInfo;
  for(const status of ['empty','ok']){
