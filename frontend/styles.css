@@ -1085,6 +1085,8 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 @media (max-width:760px) {
   .content > [data-node-source] { display:none; }
 }
+/* 聊天占用右侧空间时，节点正文独占内容区；来源 DOM 保留用于原位返回。 */
+body.chat-open .content > [data-node-source] { display:none; }
 
 .meta .tag { flex:none; white-space:nowrap; line-height:var(--leading-title); }
 .meta > .trust-info { max-width:none; overflow:visible; }

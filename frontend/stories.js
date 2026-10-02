@@ -96,6 +96,7 @@
         node('p','story-disclosure','向陈寿了解本章故事与出处'));
       [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));
       if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
+      if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.openPlace(place.id,{returnTo:'story'})));
       if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
       axis.append(li);
     }); if(chapters.length)detail.append(node('h3','','章节轴 · 逐幕寻迹'),axis);

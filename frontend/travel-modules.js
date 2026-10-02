@@ -233,10 +233,12 @@
   };
   $('#trip-form').addEventListener('input',()=>{
     ++planRequest; // 条件改变后，旧活动回答不覆盖方案。
-    activityState(current||$('#planner-view').dataset.activityState==='requesting'?'stale':'idle');
+    const stale=current||['requesting','stale','other-answer','failed'].includes($('#planner-view').dataset.activityState);
+    activityState(stale?'stale':'idle');
 
     const button=$('#trip-form').querySelector('[type="submit"]');
-    if(button.disabled){button.disabled=false;$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新规划。';}
+    button.disabled=false;
+    if(stale)$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新生成活动方案。';
     lastAttempt=null;$('#planner-retry').hidden=true;
   });
   $('#planner-retry').onclick=()=>{if(lastAttempt&&!$('#trip-form').querySelector('[type="submit"]').disabled)return requestPlan(lastAttempt);};
@@ -276,6 +278,9 @@
   };
   let prefilledPlanId=null, weatherVersion=0;
   function prefillTravel(cityName,date){
+    ++weatherVersion;
+    $('#load-travel').disabled=false;
+    empty($('#travel-results'),'目的地或日期已带入，点击查询以获取对应天气。');
     $('#travel-city').value=cityName||'';
     $('#travel-date').value=date||'';
     prefilledPlanId=current?.id||null;

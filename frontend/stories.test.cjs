@@ -6,12 +6,12 @@ class Element {
 }
 function setup(fail=false,mutation=''){
   const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
-  const requests=[],views=[],questions=[];
-  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id)}};
+  const requests=[],views=[],questions=[],nodeCalls=[];
+  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id)},CulturalNode:{openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
   const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v),fetch:url=>{requests.push(url);return fail?Promise.reject(Error('offline')):Promise.resolve({ok:true,json:()=>Promise.resolve({cities:[{d:'M0 0L1 1Z'}]})});}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);
   vm.runInNewContext(fs.readFileSync(__dirname+'/stories.js','utf8').replace('  const progress =',mutation+'\n  const progress ='),ctx);
-  return {get,window,requests,views,questions,mapCalls};
+  return {get,window,requests,views,questions,mapCalls,nodeCalls};
 }
 function contents(n){return n.textContent+n.children.map(contents).join(' ');}
 (async()=>{
@@ -30,6 +30,8 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('文化主题与故事线'));}
   test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
   cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
+  const chapterButtons=(function walk(n){return [n,...n.children.flatMap(walk)]})(test.get('#story-detail-content')).filter(n=>n.tag==='button'&&n.textContent==='阅读地点资料');
+  assert.equal(chapterButtons.length,3,'each chapter offers a direct detail path from the story');chapterButtons[0].handlers.click();assert.equal(test.nodeCalls[0][1],'story');
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
   test.get('#story-map-open').handlers.click();assert.equal(test.mapCalls[1],'shudao-xunzong');
   cards[0].handlers.click();assert.equal(test.get('#story-map-open').disabled,true);assert.equal(test.get('#preview-story-open').disabled,true);assert.match(test.get('#preview-map-note').textContent,/章节与地点待补充/);

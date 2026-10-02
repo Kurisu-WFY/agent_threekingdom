@@ -45,6 +45,14 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{forecast:[{date:'2026-10-03',temperature_min_c:10,temperature_max_c:20,rain_probability_percent:30}],air_quality:{time:'2026-10-01T08:00:00+08:00',pm2_5:12,pm10:28},items:[{title:'模型天气',summary:'仅供参考',data_status:'forecast',fetched_at:'2026-10-01T08:05:00+08:00',sources:[{title:'公开天气来源',source_url:'https://example.org/weather',source_level:'A'}]}]}});
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(text(get('#travel-results')),/2026-10-03（所选日期）/);assert.match(text(get('#travel-results')),/公开天气来源/);assert.match(text(get('#travel-results')),/查询时间.*2026-10-01T08:05:00/);
  window.TravelApi.getTravelInfo=originalWeather;
+ let finishOldWeather;
+ window.TravelApi.getTravelInfo=()=>new Promise(resolve=>finishOldWeather=resolve);
+ const oldWeather=weatherForm.onsubmit({preventDefault(){}});
+ window.TravelModules.prefillTravel('成都','2026-10-05');
+ assert.equal(get('#load-travel').disabled,false,'prefill must release an obsolete weather request');
+ finishOldWeather({status:'ok',data:{items:[{title:'旧南充天气',summary:'迟到结果'}]}});await oldWeather;
+ assert.doesNotMatch(text(get('#travel-results')),/旧南充天气/,'previous city weather must not overwrite prefilled destination');
+ window.TravelApi.getTravelInfo=originalWeather;
  window.TravelModules.openStory(story);assert.equal(views.at(-1),'planner');
  assert.equal(window.TravelModules.getParentView('planner'),'planner');
  window.TravelModules.onEnterTravel('plan');assert.equal(window.TravelModules.getParentView('travel'),'planner');assert.equal(get('#travel-back').dataset.contentView||'planner','planner');
@@ -93,7 +101,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  window.TravelModules.receiveActivity({text:'推荐路线与预算',data:{intent:{intent:'route_planning'},route:{found:true}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
  window.TravelModules.receiveActivity({text:'资料摘录不是活动方案',data:{generation:{kind:'retrieval_fallback'}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
  window.TravelModules.receiveActivity({text:'住宿预算800元',data:{intent:{intent:'budget_ticket'}},activityPlan:simple});assert.equal(text(get('#plan-results')),oldOutput);assert.match(get('#planner-status').textContent,/尚未收到活动方案/);
- await form.requestSubmit();form.oninput();const changedPrimary=journeyCalls.at(-1).o.activityPlan;window.TravelModules.receiveActivity({text:'输入变化后不覆盖',activityPlan:changedPrimary});assert.equal(text(get('#plan-results')),oldOutput);window.TravelModules.receiveActivity({text:'旧活动不得覆盖',activityPlan:activity.o.activityPlan});assert.equal(text(get('#plan-results')),oldOutput);
+ await form.requestSubmit();form.oninput();assert.match(get('#planner-status').textContent,/条件已修改.*旧请求不会覆盖.*重新/,'chat activity request changes need visible guidance');const changedPrimary=journeyCalls.at(-1).o.activityPlan;window.TravelModules.receiveActivity({text:'输入变化后不覆盖',activityPlan:changedPrimary});assert.equal(text(get('#plan-results')),oldOutput);window.TravelModules.receiveActivity({text:'旧活动不得覆盖',activityPlan:activity.o.activityPlan});assert.equal(text(get('#plan-results')),oldOutput);
  vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
  get('#saved-plans').children[0].children[1].onclick();assert.match(text(get('#plan-results')),/先读史/);assert.equal(get('#save-plan').disabled,false);await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
  window.TravelModules.openCity('成都');assert.equal(get('#planner-view').dataset.activityState,'stale','changing the destination leaves the saved answer visible but marks it as old conditions');

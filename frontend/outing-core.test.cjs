@@ -4,6 +4,10 @@ const m={role:'assistant',text:'南充 2026-09-28 一日行程。<script>alert(1
 assert.equal(canOpen(m),true);assert.equal(canOpen({...m,pending:true}),false);assert.equal(canOpen({...m,error:true}),false);
 assert.equal(draft(m).city,'南充');assert.equal(draft(m).date,'2026-09-28');assert.deepEqual(draft(m).stops,[]);
 assert.equal(draft({...m,text:'南充出发到广元'}).city,'');
+const fs=require('node:fs'),vm=require('node:vm');
+const cityContext={window:{SGTCities:['测试新增城市']}};
+vm.runInNewContext(fs.readFileSync(__dirname+'/outing-core.js','utf8'),cityContext);
+assert.equal(cityContext.window.OutingCore.draft({...m,text:'测试新增城市一日行程'}).city,'测试新增城市','draft recognition consumes the shared city source');
 assert.equal(draft({...m,text:'2026-02-30 南充'}).date,'');
 const d=draft({...m,data:{route:{stops:[{name:'万卷楼',latitude:1,longitude:1}]}}});
 assert.deepEqual(d.stops,[{name:'万卷楼'}]);

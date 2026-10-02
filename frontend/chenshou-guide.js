@@ -54,7 +54,7 @@
     else box.append(node('p','本章史料摘要：当前资料中未找到可靠记载。章节模板仅作行旅引导，不能代替史实。'));
     $('#guide-actions').replaceChildren();
     action('这一章有什么可靠史料？',()=>window.SGTJourney.ask('请讲解当前章节“'+(c.chapter?.name||c.place?.name||'待关联')+'”，列出可靠史料；缺资料请明确说明。'));
-    action('正史与演义有何不同？',()=>window.SGTJourney.ask('当前章节的正史与演义有何不同？请保留当前地点，列出处。'));
+    action('请陈寿解释区别',()=>window.SGTJourney.ask('当前章节的正史与演义有何不同？请保留当前地点，列出处。'));
     if(next)action('接着探索：'+next.name,async()=>{if(window.StoryMap.getContext()?.story?.id===c.story.id||await window.StoryMap.open(c.story.id))window.StoryMap.selectChapter(chapters.indexOf(next));});
     if(c.story&&c.chapter)action(s.completed.has(i)?'撤销本章已寻迹':'标记本章已寻迹',()=>{if(s.completed.has(i)){s.completed.delete(i);window.StoryProgress.save(c.story);narrate(c);}else{s.completed.add(i);window.StoryProgress.save(c.story);}});
     if(c.story)action('只有半天 · 选择保留章节',()=>window.SGTStoryUI.openStory(c.story.id,c.story));

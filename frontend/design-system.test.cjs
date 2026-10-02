@@ -80,5 +80,6 @@ assert.ok(/id="node-compare"[^>]*>阅读对照材料</.test(html),'local compari
 assert.ok(/id="chapter-compare"[^>]*>请陈寿解释区别</.test(html),'chat comparison sends a question');
 assert.ok(/id="travel-back"[^>]*data-content-view="planner"[^>]*>返回活动计划</.test(html),'weather returns to activity domain');
 assert.ok(fs.readFileSync(__dirname+'/stories.js','utf8').includes("action('带入活动计划'"),'story activity entry uses shared wording');
+assert.ok(fs.readFileSync(__dirname+'/chenshou-guide.js','utf8').includes("'请陈寿解释区别'"),'guide comparison uses the shared question-action label');
 assert.ok(/\.content-footer\s*\{\s*padding:0 var\(--space-4\)/.test(css),'footer uses measured compact height');
 assert.ok(/\.image-credits summary\s*\{[^}]*min-height:var\(--target-size\)/.test(css),'credit disclosure keeps a 44px target');

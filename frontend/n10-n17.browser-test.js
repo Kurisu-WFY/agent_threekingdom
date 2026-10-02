@@ -13,6 +13,12 @@
     const savedScroll=[...document.querySelectorAll('[data-view-panel]')].map(n=>[n,n.scrollTop]);
     const oldY=scrollY;
     try {
+      toggleChat(false);showContentView('welcome');
+      q('#story-buildings button').click();toggleChat(true);await wait(500);
+      const source=q('[data-node-source]'),detail=q('#node-view');
+      assert(source&&style(source).display==='none','shared node source must not stack above detail when chat is open');
+      assert(q('#node-reading').clientHeight>=300&&style(q('#node-reading')).overflowY==='auto'&&style(detail).overflowY==='auto','shared node retains independent reading and reachable outer scroll');
+      q('#node-back').click();
       toggleChat(true);await wait(500);
       const fixture={role:'assistant',persona:'诸葛亮',text:'## 剑门关与三国文化\n### 走进关楼\n#### 从材料开始\n**剑门关**与阆中，可以从人物和地点理解。\n- 第一段说明\n- 第二段说明\n| 名称 | 状态 |\n| --- | --- |\n| 剑门关 | 待核验 |',data:{intent:{intent:'culture_qa'},data_status:'sample',sources:[{title:'公开资料标题（仅渲染夹具）',source_url:'https://example.com',source_level:'C'}]}};
       q('#messages').replaceChildren(...['陈寿','诸葛亮','张飞'].map(persona=>messageNode({...fixture,persona})),messageNode({role:'user',text:'我想了解这个地方。'}));

@@ -1,7 +1,9 @@
 /* 可选目的地一处维护；未知城市仍可在自由文本中填写。 */
-(() => {
+((root) => {
   const cities=Object.freeze(['南充','阆中','广元','成都','绵阳','德阳','巴中','达州']);
-  window.SGTCities=cities;
+  root.SGTCities=cities;
+  if(typeof module!=='undefined')module.exports=cities;
+  if(typeof document==='undefined')return;
   const directory=document.querySelector('#destination-cities');
   const choices=document.querySelector('#itinerary-cities');
   if(directory){
@@ -19,4 +21,4 @@
     const manual=document.createElement('option');manual.value='manual';manual.textContent='手动 WGS84 坐标';
     select.replaceChildren(first,...cities.map(city=>{const option=document.createElement('option');option.value=city;option.textContent=city+' · 城市中心';return option;}),manual);
   }
-})();
+})(typeof window!=='undefined'?window:globalThis);

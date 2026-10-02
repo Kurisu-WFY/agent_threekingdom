@@ -3,7 +3,8 @@
   function draft(message) {
     const answer = String(message?.text || message?.data?.answer || '').slice(0,24000);
     const question = String(message?.originalQuestion || message?.question || '').slice(0,2000);
-    const cities = [...new Set((question + '\n' + answer).match(/南充|阆中|广元|成都|绵阳|德阳|巴中|达州/g) || [])];
+    const catalog=root.SGTCities||(typeof module!=='undefined'?require('./cities.js'):[]);
+    const cities=catalog.filter(city=>(question+'\n'+answer).includes(city));
     const dates = [...new Set((question + '\n' + answer).match(/\b20\d{2}-\d{2}-\d{2}\b/g) || [])].filter(v => {
       const d = new Date(v+'T00:00:00Z'); return Number.isFinite(+d) && d.toISOString().slice(0,10) === v;
     });
