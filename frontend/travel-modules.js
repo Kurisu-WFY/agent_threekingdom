@@ -119,7 +119,7 @@
 
   function renderPlan() {
     const target = $('#plan-results');
-    if (!current) return empty(target, '还没有行程。先选择目的地和出行条件，生成一份草稿。');
+    if (!current) return empty(target, '还没有行程草稿。选好目的地和出行条件后，就能生成。');
     if (current.chatRoute) { renderChatPlan(target); return; }
     $('#plan-map').disabled = true;
     const { preferences: p, plan } = current;
@@ -131,12 +131,12 @@
       return;
     }
     target.replaceChildren(node('h3', plan.title || `${p.city} ${p.days}天行程`), node('p', `${p.date}出发 · ${p.people}人 · ${p.group} · ${p.transport}`));
-    target.append(node('p', current.draft ? '出行草稿 · 可交给智能体进一步安排活动' : dataStatus(plan), 'data-banner'));
+    target.append(node('p', current.draft ? '出行草稿 · 可请向导继续安排活动' : dataStatus(plan), 'data-banner'));
     if (p.notes) target.append(node('p', '补充需求：' + p.notes));
     plan.days.forEach(day => {
       const card = node('article', null, 'result-card');
       card.append(node('h3', `第 ${day.day} 天`));
-      if (!Array.isArray(day.stops) || !day.stops.length) card.append(node('p', '活动顺序与时长待文化向导提供。'));
+      if (!Array.isArray(day.stops) || !day.stops.length) card.append(node('p', '活动顺序和时长还需向导提供。'));
       else {
         const list = node('ol');
         day.stops.forEach(stop => list.append(node('li', `${stop.name || '未命名站点'}${stop.stay_minutes ? ` · 建议停留 ${stop.stay_minutes} 分钟` : ''}${stop.note ? ' · ' + stop.note : ''}`)));
@@ -170,7 +170,7 @@
     activityState(current?'stale':'idle');
     $('#trip-form').querySelector('[type="submit"]').disabled=false;
     planningStory=story; field('explanation').value=window.StoryProgress.get(story).mode;
-    storyLabel(); $('#planner-status').textContent='请填写现实约束；核心章节按你在故事详情中的选取。';
+    storyLabel(); $('#planner-status').textContent='请填写出行条件。核心章节会沿用你在故事详情中的选择。';
     showContentView('planner');
   }
   function makeQuestion(p,story,choices) {
@@ -186,14 +186,14 @@
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;
     target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),
-      node('p','你的约束：'+p.origin+'出发 · '+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+' · '+p.transport+' · '+p.group+' · '+p.people+'人'),
-      node('p','后端路线模板 / 现实可行性待核验；不是道路导航，尚不能保证满足所有条件。','data-banner'),
+      node('p','你的出行条件：'+p.origin+'出发 · '+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+' · '+p.transport+' · '+p.group+' · '+p.people+'人'),
+      node('p','服务返回的路线模板 / 现实可行性待核验；不是道路导航，尚不能保证满足所有条件。','data-banner'),
       node('p','路线简介：'+text(route.summary)),node('p','总体取舍：'+text(result.selection_reason)),
       node('p','风险提示：'+text(route.risk_note)),node('p','更新时间：'+text(route.updated_at)+' · 来源与时效待核验'),
-      node('p','后端时长：'+(Number.isFinite(route.duration_hours)&&route.duration_hours>0?route.duration_hours+' 小时':'待核验')+'；交通：'+text(route.transport_mode)));
+      node('p','返回的时长：'+(Number.isFinite(route.duration_hours)&&route.duration_hours>0?route.duration_hours+' 小时':'待核验')+'；交通：'+text(route.transport_mode)));
     const hourLimit={0.5:4,1:8,2:16}[p.days];
-    if(Number.isFinite(route.duration_hours)&&route.duration_hours>hourLimit)target.append(node('p','时间不符合：后端路线 '+route.duration_hours+' 小时，超过本次 '+hourLimit+' 小时上限。请压缩或重绘，暂不可按此方案执行。','data-banner'));
-    if(route.transport_mode && route.transport_mode!==p.transport)target.append(node('p','约束待确认：后端交通方式与所选方式不一致，请调整需求或核验。','data-banner'));
+    if(Number.isFinite(route.duration_hours)&&route.duration_hours>hourLimit)target.append(node('p','时间不符合：返回的路线 '+route.duration_hours+' 小时，超过本次 '+hourLimit+' 小时上限。请压缩或重绘，暂不可按此方案执行。','data-banner'));
+    if(route.transport_mode && route.transport_mode!==p.transport)target.append(node('p','出行条件待确认：返回的交通方式与你所选的不一致，请调整需求或核验。','data-banner'));
     const list=node('ol',null,'route-stop-cards');
     result.stops.forEach((stop,i)=>{
       const card=node('li',null,'result-card');
@@ -208,8 +208,8 @@
       target.append(node('h3','章节取舍对照'));
       choices.forEach(c=>{
         const match=result.stops.find(stop=>(c.placeId&&stop.spot_id===c.placeId)||(c.place&&stop.name===c.place));
-        let reason=c.status==='已完成'?'本地记录已完成，请求不重复安排。':c.status==='本次跳过'?'你选择将本次时间留给其他章节；故事定义保留。':match?'保留理由：'+text(match.reason):'后端未返回可确认的对应站点；舍弃原因待核验，不能推断。';
-        if(match&&c.status!=='本次保留')reason+=' 后端仍返回该站，与你的选取不一致，需核验。';
+        let reason=c.status==='已完成'?'本地记录已完成，请求不重复安排。':c.status==='本次跳过'?'你选择将本次时间留给其他章节；故事定义保留。':match?'保留理由：'+text(match.reason):'没有收到可确认的对应站点；舍弃原因待核验，不能推断。';
+        if(match&&c.status!=='本次保留')reason+=' 返回的结果仍包含该站，与你的选取不一致，需核验。';
         target.append(node('p',c.name+' · '+c.status+'：'+reason));
       });
     }
@@ -222,8 +222,8 @@
     const intent=reply.data?.intent?.intent;
     if(reply.data?.route?.found===true || ['route_planning','budget_ticket'].includes(intent) || reply.data?.generation?.kind==='retrieval_fallback'){
       activityState('other-answer');
-      $('#planner-status').textContent=(intent==='budget_ticket'?'后端返回费用回答':reply.data?.route?.found===true || intent==='route_planning'?'后端返回路线模板':'后端返回资料摘录')+'，尚未收到活动方案；原回答保留在对话中，现有方案保持。';
-      $('#plan-status').textContent='尚未更新活动方案；请待后端支持活动生成后重试。';
+      $('#planner-status').textContent=(intent==='budget_ticket'?'服务返回了费用回答':reply.data?.route?.found===true || intent==='route_planning'?'服务返回了路线模板':'服务返回了资料摘录')+'，尚未收到活动方案；原回答保留在对话中，现有方案保持。';
+      $('#plan-status').textContent='尚未更新活动方案；请等服务支持生成活动方案后再试。';
       return;
     }
     planningStory=attempt.story||null;storyLabel();
@@ -240,7 +240,7 @@
     const activityPlan={...attempt,version};
     activityState('requesting');$('#view-current-plan').hidden=!current&&!saved.length;
     $('#view-current-plan').textContent=current?'查看已有方案':'查看本机保存的方案';
-    if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿活动对话；若正在回答，本次需求保留在对话草稿。';window.SGTJourney.ask(attempt.question,{displayText:visitorSummary(attempt.preferences,attempt.story),preserveMap:true,activityPlan});return;}
+    if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿的活动对话。如果正在回答，本次需求会留在对话草稿里。';window.SGTJourney.ask(attempt.question,{displayText:visitorSummary(attempt.preferences,attempt.story),preserveMap:true,activityPlan});return;}
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
     $('#planner-status').textContent='正在检索文化资料并生成活动方案；现有方案保持。';
     try {
@@ -315,11 +315,11 @@
   function prefillTravel(cityName,date){
     ++weatherVersion;
     $('#load-travel').disabled=false;
-    empty($('#travel-results'),'目的地或日期已带入，点击查询以获取对应天气。');
+    empty($('#travel-results'),'目的地或日期已带入，点击查询后可查询对应天气。');
     $('#travel-city').value=cityName||'';
     $('#travel-date').value=date||'';
     prefilledPlanId=current?.id||null;
-    $('#travel-status').textContent=cityName?'已带入目的地与日期；点击查询后才会请求天气。':'原回答未确认单一目的地；请手动选城后查询。';
+    $('#travel-status').textContent=cityName?'目的地和日期已带入，点击查询才会请求天气。':'原回答没有确认一个目的地，请先手动选城再查询。';
   }
   function onEnterTravel(source='planner'){
     weatherReturn=source==='plan'?'plan':'planner';

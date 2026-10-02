@@ -11,7 +11,7 @@
     $('amap-origin-query').value=origin;$('amap-destination-query').value=destination;$('amap-city').value=city;
     for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}
     $('amap-search-form').querySelector('button').disabled=false;
-    status('已带入本次计划的地点文字；请搜索后分别确认具体起终点，尚未选择候选或核验坐标。');
+    status('本次计划的地点文字已带入。请搜索并确认具体起终点；候选地点尚未选择，坐标也未核验。');
   }};
   $('amap-search-form').addEventListener('input', () => {clear(); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});
   $('amap-route-form').addEventListener('change', () => {clear(); status('条件已改变，请重新查询路线。');});
@@ -65,9 +65,9 @@
   const incoming=new URLSearchParams(location.search),origin=incoming.get('amap_origin'),destination=incoming.get('amap_destination'),mode=incoming.get('amap_mode')||'transit';
   if(origin||destination){
     if(/^[A-Za-z0-9]{5,40}$/.test(origin||'')&&/^[A-Za-z0-9]{5,40}$/.test(destination||'')&&['transit','walking','driving'].includes(mode)){
-      const open=make('button','加载智能体规划的路线地图');open.type='button';
+      const open=make('button','加载向导规划的路线地图');open.type='button';
       open.onclick=()=>{open.disabled=true;queryRoute({origin_id:origin,destination_id:destination,mode}).finally(()=>{open.disabled=false;});};
-      $('amap-planner').prepend(open);status('已接收智能体的起终点，点击加载后向高德重新核验路线。');
+      $('amap-planner').prepend(open);status('向导给出的起终点已收到，点击加载后会向高德重新核验路线。');
       requestAnimationFrame(()=>open.scrollIntoView({block:'center'}));
     }else status('路线链接参数无效，请手动搜索地点。');
   }

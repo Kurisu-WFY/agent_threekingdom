@@ -36,7 +36,7 @@
       for(const path of lines) overlays.push(new A.Polyline({path,strokeColor:color,strokeWeight:6,strokeOpacity:.9}));
       map.add(overlays);map.setFitView(overlays,false,[35,35,35,35]);
       observer=new ResizeObserver(()=>{if(current===generation)map.setFitView(overlays,false,[35,35,35,35]);});observer.observe(document.getElementById('amap-map'));
-      note.textContent=lines.length?'高德实际返回路段 · 可拖动、缩放；未返回的路段不补画。':'仅显示起终点：本方案未返回道路轨迹，不用直线代替路线。';
+      note.textContent=lines.length?'高德返回的路段 · 可拖动、缩放；未返回的路段不补画。':'仅显示起终点：本方案未返回道路轨迹，不用直线代替路线。';
     }catch(error){if(current===generation)note.textContent=error.message+'。文字路线仍可查看。';}
   }
   window.AmapRouteMap={draw,clear};

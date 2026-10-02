@@ -64,9 +64,9 @@
     if (!parsed) return existing || null;
     const known = existing?.missing || [];
     const backendStopsPending = [...new Set(parsed.missing || [])].filter(name => !known.includes(name));
-    if (located(parsed)) return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
+    if (located(parsed)) return { points: parsed.points, missing: known, kind: '服务返回的站点顺序', backendStopsPending };
     if (located(existing)) return { points: existing.points, missing: known, kind: existing.kind, backendStopsPending };
-    return { points: parsed.points, missing: known, kind: '后端返回的站点顺序', backendStopsPending };
+    return { points: parsed.points, missing: known, kind: '服务返回的站点顺序', backendStopsPending };
   }
   // 视口辅助函数使用地图投影单位，文字碰撞检测使用屏幕像素。
   function fitBounds(bounds, aspect = 900 / 680) {

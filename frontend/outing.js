@@ -12,7 +12,7 @@
       try {const u=new URL(s.source_url);if(u.protocol!=='https:')return;const a=node('a',s.title||'查看来源');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';target.append(a);}catch{}
     });
   }
-  function clearRoute(){routeVersion++;$('outing-route-form').querySelector('button').disabled=false;$('outing-route-preview').replaceChildren(node('p','请先确认起终点；查询成功后显示真实道路几何。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();$('outing-route-status').textContent='条件已改变，请重新查询。';}
+  function clearRoute(){routeVersion++;$('outing-route-form').querySelector('button').disabled=false;$('outing-route-preview').replaceChildren(node('p','请先确认起终点，查询成功后会显示返回的道路形状。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();$('outing-route-status').textContent='条件已改变，请重新查询。';}
   function coordinateFields(){for(const side of ['start','end']){const manual=$('outing-'+side).value==='manual';$('outing-'+side+'-coords').hidden=!manual;for(const axis of ['lon','lat']){$('outing-'+side+'-'+axis).required=manual;$('outing-'+side+'-'+axis).disabled=!manual;}}const manual=['start','end'].some(s=>$('outing-'+s).value==='manual');$('outing-confirm-row').hidden=!manual;$('outing-confirm').required=manual;if(!manual)$('outing-confirm').checked=false;}
   $('outing-route-form').addEventListener('input',()=>{clearRoute();coordinateFields();});coordinateFields();
   async function point(side){
@@ -58,7 +58,7 @@
     $('outing-origin').textContent='来自陈寿对话的行程草案 · 请确认目的地与日期';$('outing-back').hidden=false;
     $('outing-original').hidden=false;$('outing-original-text').textContent=window.AgentAnswer?.clean(d.answer)||d.answer;
     $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待核验')));
-    $('outing-draft-note').textContent=d.stops.length?'已带入结构化站点名称；未将坐标或可行性视为已核验。':'已保留回答原文。当前回答未提供结构化站点，未把文字猜测为可导航路线。';
+    $('outing-draft-note').textContent=d.stops.length?'已带入站点名称；坐标和可行性仍未核验。':'回答原文已保留。当前回答没有可直接使用的站点资料，不会把文字猜成可导航路线。';
     window.AmapPlanner?.prefill({origin:message.activityPlan?.preferences?.origin||'',destination:d.stops.at(-1)?.name||d.city,city:d.city});
     toggleChat(false);chatHandoff=true;showContentView('outing');chatHandoff=false;$('outing-title').focus({preventScroll:true});
   }};

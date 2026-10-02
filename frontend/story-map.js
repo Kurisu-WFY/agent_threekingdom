@@ -57,7 +57,7 @@
     const notice = $('.story-map-memory'); if(notice && window.StoryProgress)notice.textContent=window.StoryProgress.notice();
     $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';
     $('#story-map-badge').textContent = $('#story-map-progress').textContent;
-    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。到达路线请交给智能体规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
+    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。怎么到达，可以请向导规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
     resolved.forEach((item, index) => {
       const status = currentStatus(index);
       const li = node('li', 'chapter-list-item');
@@ -127,7 +127,7 @@
     $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '直接导航暂未提供';
     $('#chapter-complete').textContent = state().completed.has(index) ? '撤销已寻迹' : '标记已寻迹';
     $('#chapter-next').disabled = !resolved.some((_,i)=>i>index&&!state().skipped?.has(i));
-    $('#story-node-feedback').textContent = '点击章节后由陈寿接续讲解；资料不足时保留疑问。';
+    $('#story-node-feedback').textContent = '点开章节后，陈寿会继续讲解；资料不足时保留疑问。';
   }
   function askCurrent(compare) {
     if (!active || !resolved.length) return;
@@ -140,7 +140,7 @@
       (compare ? '请对照正史、演义和地方传说，分别说明依据。' : '请承接上一章的主题介绍本章，只使用可靠资料并说明来源。') +
       '缺资料请明确说待确认，不编造上一章讲解、史实或道路导航，不把驻地当景区入口。';
     window.SGTJourney.ask(question,{displayText:'请陈寿'+(compare?'对照正史与演义，讲解':'讲解')+item.chapter.name+'（'+item.place.name+'，'+(state().mode||'大众体验版')+'）',preserveMap:true});
-    $('#story-node-feedback').textContent = '已交给陈寿；正在回答时，本章问题会存入对话草稿。';
+    $('#story-node-feedback').textContent = '已发给陈寿。正在回答时，本章问题会存入对话草稿。';
   }
   function revealCard() {
     if (!active || !cardOpen || $('#map-view').hidden) return;
@@ -219,7 +219,7 @@
   $('#chapter-ask').addEventListener('click',()=>askCurrent(false));
   $('#chapter-compare').addEventListener('click',()=>askCurrent(true));
   $('#chapter-add').addEventListener('click',()=>{if(!active)return;const item=resolved[state().current];if(!item?.point)return;const added=window.TravelMap.addStoryPlace(item.point);$('#story-node-feedback').textContent=added?'已加入现有路线：'+item.point.name+(item.exact?'。':'驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
-  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全章已寻迹！进入故事查看收尾与下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
+  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全部章节已标为“已寻迹”。打开故事可以回顾，也能看下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
   $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(resolved.findIndex((_,i)=>i>state().current&&!state().skipped?.has(i)));});
   if(window.StoryProgress)window.StoryProgress.subscribe(story=>{if(active?.id===story.id&&resolved.length){draw();renderCard();}});
   window.StoryMap = {getContext:()=>active?{story:active,chapter:resolved[state().current]?.chapter,place:resolved[state().current]?.place,index:state().current}:null,describePlace:(place,chapter)=>locate(chapter,[place]),getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};

@@ -111,7 +111,7 @@
   function drawCounties() {
     const group = $('#county-points'); group.replaceChildren();
     const parent = $('#map-prefecture').value;
-    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置仍需核验。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '当前为全省县区列表，请选县区定位。';
+    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置仍需核验。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '这里列出全省县区，选一个就能定位。';
     labels = labels.filter(l=>l.city);
     boundaryNodes.filter(b=>b.county).forEach(b=>b.node.classList.toggle('county-area-selected',String(b.adcode)===String(selected?.adcode)));
     for (const place of counties.filter(p => !parent || p.parent === parent)) {
@@ -209,7 +209,7 @@
     const missing = notes.length ? ' ' + notes.join('') : '';
     $('#map-route-status').textContent = points.length
       ? `${route.kind} · ${points.filter(Boolean).length} 个已定位地点。${points.filter(Boolean).length < 2 ? '至少两个地点才显示连线。' : '虚线仅作地点顺序示意，可在下方调整。'}${missing}`
-      : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后标出已识别且有位置资料的地点；也可选择县城加入路线。');
+      : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。告诉向导旅游需求后，会标出已识别且有位置资料的地点；也能选择县城加入路线。');
   }
   async function loadMap() {
     $('#map-load-error').hidden=false;

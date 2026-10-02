@@ -48,7 +48,7 @@ const located = core.structured({ route: { stops: [
   { name: '鹤鸣山景区·王平墓', coordinates: [106.1163, 30.7839], coordinate_system: 'GCJ-02' }
 ] } }, places);
 const replaced = core.resolveRoute(mentioned, located);
-assert.equal(replaced.kind, '后端返回的站点顺序');
+assert.equal(replaced.kind, '服务返回的站点顺序');
 assert.deepEqual(replaced.points.map(p => p.center), [[106.0842, 30.8163], [106.1163, 30.7839]]);
 assert.deepEqual(replaced.backendStopsPending, []);
 // 3) 双方都落不到位时保留后端顺序与缺口，不伪造点位
