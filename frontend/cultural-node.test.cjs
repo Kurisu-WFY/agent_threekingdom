@@ -55,3 +55,11 @@ click('#node-back');assert.equal(views.at(-1),'welcome');
 console.log('PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building');
 
 assert.match(text(get('#node-tourism')),/尚未查询所在地天气，可查询预报；景区开放另查公告/,'C08 天气缺数据不套用景区公告');
+
+
+const ninthNodeFailures=[];
+for(const [code,fn] of [
+ ['C17',()=>{api.open({place,chapter,story,index:1,exact:false,note:'坐标待核验 / 景区待定位 · 剑阁县驻地示意（关联待确认）'});const out=get('#node-coordinate').textContent;assert.match(out,/当前显示：.*剑阁县驻地示意/);assert.match(out,/待确认项：/);assert.match(out,/更新时间：/);assert.ok((out.match(/待核验/g)||[]).length<=1);const details=get('#node-metadata').children.find(n=>n.tag==='details');assert.equal((details.children[1].textContent.match(/待核验/g)||[]).length,1,'C17 one record status; distinct source states retained');} ],
+ ['C18',()=>{api.open({place,chapter,story,index:1});const literary=get('#node-comparison').children[1];assert.match(text(literary),/尚未补充可核对的文学文本\/版本出处/);assert.match(text(literary),/文学文本来源/);assert.match(text(literary),/不等于历史事实/);assert.doesNotMatch(text(literary),/未找到可靠记载|史料来源/);}]
+]){try{fn();}catch(e){ninthNodeFailures.push(code+': '+e.message);}}
+assert.equal(ninthNodeFailures.join('\n'),'','C17/C18');

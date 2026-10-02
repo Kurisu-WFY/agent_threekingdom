@@ -20,7 +20,7 @@
   }
   function provenance(r,label='史料来源'){
     const d=node('details','node-sources');d.append(node('summary','',label+' · '+sources(r).length+' 条'));
-    d.append(node('p','','资料状态：'+statusLabel(r)+' · 更新时间：'+(dated(r)?updated(r):'待核验')+(evidence(r)?'':' · 待核验')));
+    d.append(node('p','','资料状态：'+statusLabel(r)+'；当前显示：资料条目；待确认项：'+(evidence(r)?'具体内容与时效':'出处与内容依据')+'；更新时间：'+(dated(r)?updated(r):'未提供')));
     if(!sources(r).length)d.append(node('p','','来源待核验。'));
     sources(r).forEach(s=>{
       const row=node('p',''),url=safeUrl(s.source_url), title=text(s.title)+' · 来源等级 '+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验');
@@ -35,8 +35,8 @@
     const block=node(usable?'section':'details','node-evidence '+kind+(usable?'':' node-empty'));
     block.append(node(usable?'h4':'summary','',title+(usable?'':' · 资料待补充')));
     block.append(node('p','node-evidence-label',kind==='node-inference'?'合理推断 · 非史料原文':kind==='node-literature'?'文学表达 · 不等于历史事实':'史料记载'));
-    block.append(node('p','',usable?record.text:missing));
-    block.append(provenance(record));return block;
+    block.append(node('p','',usable?record.text:kind==='node-literature'?'尚未补充可核对的文学文本/版本出处':missing));
+    block.append(provenance(record,kind==='node-literature'?'文学文本来源':'史料来源'));return block;
   }
   function renderReading(){
     const chapter=context.chapter || {}, box=$('#node-reading-content');
@@ -103,7 +103,8 @@
     $('#node-title').textContent=place.name;
     $('#node-context').textContent='城市：'+text(place.city)+' · 故事线：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
     $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';
-    $('#node-coordinate').textContent=context.exact?'景区坐标有来源；入口和道路导航仍待核验。':'坐标待核验 · '+(context.note || '地点待定位，不猜景区位置。');
+    const locationNote=(context.note || '地点待定位，不猜景区位置。').replace(/^坐标待核验(?:\s*\/\s*景区待定位)?\s*·\s*/, '');
+    $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
     const narrative={...chapter,text:['record','inference','literature'].includes(chapter?.narrative_type)?chapter.story:''};
     const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);
     $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，空区块已收起，可展开查看核验说明。':'资料概况：已有来源的正文在下方展开，可逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));

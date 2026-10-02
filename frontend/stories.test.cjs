@@ -66,3 +66,8 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   const offline=setup(true);await new Promise(resolve=>setImmediate(resolve));assert.ok(offline.get('#story-preview-status').textContent.includes('暂不可用'));assert.equal(offline.get('#story-cards').children.length,5);
   console.log('PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+
+
+const ninthStory=setup();ninthStory.get('#story-cards').children[0].children[0].handlers.click();
+const nthDetails=ninthStory.get('#story-detail-content').children.filter(n=>n.tag==='details'&&n.className==='chapter-sources');
+assert.ok(nthDetails.length);for(const d of nthDetails){const summary=contents(d.children[0]);assert.equal((summary.match(/待核验/g)||[]).length,1,'C17 a single status');assert.match(contents(d),/当前显示：/);assert.match(contents(d),/待确认项：/);assert.match(contents(d),/更新时间：/);}

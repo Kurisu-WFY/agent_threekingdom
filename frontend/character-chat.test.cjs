@@ -57,3 +57,11 @@ const all=n=>[n,...n.children.flatMap(x=>typeof x==='object'?all(x):[])],text=n=
  assert.ok(!all(rendered).some(n=>n.tag==='button'&&/^(查看地点：|为.+规划路线|地图定位：|加入路线：|定位阆中)/.test(n.textContent)));
  console.log('PASS: persona/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, discovery vs comparison, polymorphic responses, portrait differences and delete/undo');
 })();
+
+
+// C14：只使用明确且唯一的游客条件，原回答不变。
+for(const [question,want] of [['我有一天，想了解张飞','已按一天考虑，可继续调整'],['可用时间：半天；目的地：阆中','已按半天考虑，可继续调整'],['游玩时间：两天','已按两天考虑，可继续调整'],['我想了解张飞','你有半天、一天还是两天？'],['一天或两天都行','你有半天、一天还是两天？']]){
+ const msg={text:'原回答：你有半天、一天还是两天？',originalQuestion:question,characterAction:'discover',discovered:'张飞'};
+ assert.ok(text(ctx.window.CharacterChat.actions(msg)).includes(want),'C14 '+question+' => '+want);
+ assert.equal(msg.text,'原回答：你有半天、一天还是两天？');
+}
