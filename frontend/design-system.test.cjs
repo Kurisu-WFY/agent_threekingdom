@@ -72,9 +72,9 @@ for(const selector of ['chapter-number-text','chapter-complete-stamp']){
 assert.ok(css.includes('counter-scaled story glyph'),'chapter and stamp text inherit a screen-sized glyph');
 assert.ok(/\.topbar\s*\{[^}]*justify-content:flex-start/.test(css),'desktop topbar groups brand, location, status');
 assert.ok(/\.topbar-center\s*\{[^}]*flex:none;\s*text-align:left/.test(css),'location label does not stretch across the header');
-assert.equal(value('header-height'),'64px','topbar height stays unchanged');
+assert.equal(value('header-height'),'48px','F4 desktop header shrinks to 48px; workspace/content continue using this token');
 assert.ok(/\.content\s*\{[^}]*width:100%;\s*max-width:none;[^}]*margin:0;/.test(css),'closed workspace uses available width');
-assert.ok(/@media\(min-width:1051px\)\s*\{\s*body:not\(\.chat-open\) \.content\s*\{\s*height:calc\(100dvh - var\(--header-height\) - var\(--space-5\) - calc\(var\(--space-1\)\*12\)\)/.test(css),'closed desktop content height subtracts actual workspace padding');
+assert.ok(/@media\(min-width:1051px\)\s*\{\s*\.content\s*\{\s*height:calc\(100dvh - var\(--header-height\) - var\(--space-5\) - calc\(var\(--space-1\)\*12\)\)/.test(css),'both desktop chat states subtract actual workspace padding');
 assert.ok(/\.map-view\s*>\s*p,\s*\.module-view\s*>\s*p\s*\{\s*max-inline-size:var\(--measure-reading\)/.test(css),'wide workspace keeps direct prose readable');
 assert.ok(/id="node-compare"[^>]*>阅读对照材料</.test(html),'local comparison reads material');
 assert.ok(/id="chapter-compare"[^>]*>请陈寿解释区别</.test(html),'chat comparison sends a question');
