@@ -23,6 +23,7 @@ function makeNode(tag = 'div') {
     querySelector() { return makeNode(); }
   };
   Object.defineProperty(node, 'firstElementChild', { writable: true, value: undefined });
+  Object.defineProperty(node,'id',{set(value){registry.set('#'+value,this);},get(){return [...registry].find(([,n])=>n===this)?.[0]?.slice(1);}});
   return node;
 }
 const registry = new Map();
@@ -42,7 +43,9 @@ global.document = {
 global.Option = class Option { constructor(text, value) { this.text = text; this.value = value; } };
 global.DOMPoint = class DOMPoint { constructor(x, y) { this.x = x; this.y = y; } matrixTransform(){return this;} };
 global.getComputedStyle=()=>({getPropertyValue(name){return {'--map-text-city':'15px','--map-text-county':'9px'}[name]||'';}});
+let blockCounties=true;
 global.fetch = async url => {
+  if(blockCounties && String(url)==='sichuan-counties.json')throw TypeError('Failed to fetch');
   const file = path.join(FE, String(url));
   return { ok: fs.existsSync(file), json: async () => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')) };
 };
@@ -62,6 +65,12 @@ vm.runInThisContext(fs.readFileSync(path.join(FE, 'travel-map.js'), 'utf8'), { f
 const assert=require('node:assert/strict');
 (async()=>{
  await new Promise(resolve=>setImmediate(resolve));paintAll();
+ assert.equal(document.querySelector('#map-load-error').hidden,false,'U02 failure is visible inside the canvas');
+ assert.match(document.querySelector('#map-load-message').textContent,/加载失败.*重试/);
+ assert.equal(typeof document.querySelector('#map-load-retry').onclick,'function','U02 has a local retry');
+ blockCounties=false;await document.querySelector('#map-load-retry').onclick();paintAll();
+ assert.equal(document.querySelector('#map-load-error').hidden,true);
+ assert.equal(window.TravelMap.getPlaces().filter(p=>p.level==='county').length,183);
  const svg=registry.get('#route-map'),select=registry.get('#map-prefecture');
  assert.equal(registry.get('#county-boundaries').attributes.visibility,'hidden');
  assert.equal(registry.get('#map-fit').disabled,true,'no-route fit starts disabled');
@@ -215,9 +224,20 @@ const assert=require('node:assert/strict');
  assert.equal(select.value,'南充市');assert.equal(registry.get('#map-county').value,'county-511324');
  assert.equal(registry.get('#map-fit').disabled,true,'no-route fit is unavailable');
  registry.get('#map-add-stop').onclick();paintAll();
+ registry.get('#map-add-stop').onclick();paintAll();
+ assert.equal(chat.mapRoute.points.length,1,'U05 repeated station stays one stop');
+ assert.match(registry.get('#map-route-status').textContent,/已加入/);
  select.value='广元市';select.onchange();registry.get('#map-county').value='county-510823';registry.get('#map-county').onchange();paintAll();
  registry.get('#map-add-stop').onclick();registry.get('#map-fit').onclick();paintAll();
  assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:['南充','广元'],places:['仪陇县','剑阁县']},'viewing the full route carries both manually added stops');
+ const undoOrder=chat.mapRoute.points.map(p=>p.id);chat.mapQuestion='本次路线';
+ registry.get('#map-clear').onclick();assert.equal(document.querySelector('#map-undo-clear').hidden,false);
+ registry.get('#map-clear').onclick();document.querySelector('#map-undo-clear').onclick();
+ assert.deepEqual(chat.mapRoute.points.map(p=>p.id),undoOrder,'U06 repeated clear does not discard original order');
+ assert.equal(chat.mapQuestion,'本次路线');
+ registry.get('#map-clear').onclick();window.TravelMap.syncChat({messages:[]});
+ assert.equal(document.querySelector('#map-undo-clear').hidden,true,'undo belongs to the source chat');
+ window.TravelMap.syncChat(chat);document.querySelector('#map-undo-clear').onclick();
  select.value='';select.onchange();chat.mapQuestion='坐标景点路线';
  window.TravelMap.fromResponse(chat,chat.mapQuestion,{map_route:{stops:[{name:'剑门关',city:'广元',coordinates:[105.58,32.22],coordinate_system:'GCJ-02'}]}});
  await new Promise(resolve=>setImmediate(resolve));paintAll();

@@ -8,6 +8,7 @@
   let planSource = 'selection';
   let view = [0, 0, 900, 680];
   let loaded = false, geometry = null, cityPlaces = [], labels = [], boundaryNodes = [];
+  const clearedRoutes = new WeakMap();
   const labelAreas = new Map();
   let targetView = [...view], frame = 0, animateView = false;
   const schedule = window.requestAnimationFrame?.bind(window) || (fn => setTimeout(() => fn(Date.now()), 16));
@@ -176,6 +177,8 @@
     if (!loaded) return;
     const route = activeChat?.mapRoute;
     const points = route?.points || [];
+    if(route && activeChat)clearedRoutes.delete(activeChat);
+    $('#map-undo-clear').hidden=!activeChat || !clearedRoutes.has(activeChat);
     planSource = points.some(Boolean) ? 'route' : 'selection';
     $('#map-fit').disabled=!points.some(Boolean);
     $('#route-lines').replaceChildren(); $('#route-points').replaceChildren(); $('#map-route-list').replaceChildren();
@@ -207,7 +210,11 @@
       ? `${route.kind} · ${points.filter(Boolean).length} 个已定位地点。${points.filter(Boolean).length < 2 ? '至少两个地点才显示连线。' : '虚线仅作地点顺序示意，可在下方调整。'}${missing}`
       : (route ? `没有识别到可唯一定位的目的地。${missing}` : '已加载183个县级地点。发送旅游需求后自动标点；也可选择县城加入路线。');
   }
-  const ready = Promise.all([
+  async function loadMap() {
+    $('#map-load-error').hidden=false;
+    $('#map-load-message').textContent='正在加载地图边界与地点…';
+    $('#map-load-retry').disabled=true;
+    return Promise.all([
     fetch('sichuan-counties.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     fetch('sichuan-cities.json').then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     fetch('sichuan-map-geometry.json', { cache: 'no-store' }).then(r => { if(!r.ok) throw new Error(); return r.json(); })
@@ -215,17 +222,38 @@
     geometry=boundaryData; cityPlaces=cityData;
     counties = countyData.map(p => ({ ...p, id: 'county-' + p.adcode, level: 'county' }));
     places = [...cityData.map(p => ({ ...p, id: 'city-' + p.name, level: 'city' })), ...counties];
-    cityData.forEach(p => $('#map-prefecture').append(new Option(p.name, p.name)));
+    $('#map-prefecture').replaceChildren(new Option('全省',''),...cityData.map(p=>new Option(p.name,p.name)));
     loaded = true; populateCounties(); drawRoute(); setView([0, 0, 900, 680], false);
+    $('#map-load-error').hidden=true;
     return true;
-  }).catch(() => { $('#map-route-status').textContent = '地图边界或点位加载失败，请刷新页面重试。'; return false; });
+  }).catch(() => {
+    $('#map-load-message').textContent='地图边界或地点加载失败，请检查网络后在这里重试。';
+    $('#map-route-status').textContent='地图加载失败，可在画布内重试。';
+    $('#map-load-error').hidden=false; return false;
+  }).finally(()=>{$('#map-load-retry').disabled=false;});
+  }
+  const loadBox=document.createElement('div');loadBox.id='map-load-error';loadBox.className='map-load-error';loadBox.setAttribute('role','status');
+  const loadMessage=document.createElement('p');loadMessage.id='map-load-message';
+  const retryMap=document.createElement('button');retryMap.id='map-load-retry';retryMap.type='button';retryMap.className='module-button';retryMap.textContent='重试加载地图';
+  loadBox.append(loadMessage,retryMap);$('.interactive-map').append(loadBox);
+  // DOM桩与浏览器均通过同一入口重试；所有后续等待读取最新加载任务。
+  let ready=loadMap();
+  retryMap.onclick=()=>{if(retryMap.disabled)return ready;ready=loadMap();return ready;};
+  const undoClear=document.createElement('button');undoClear.id='map-undo-clear';undoClear.type='button';undoClear.className='module-button';undoClear.textContent='撤销清除路线';undoClear.hidden=true;
+  $('.map-tools').append(undoClear);
+  undoClear.onclick=()=>{
+    const saved=activeChat&&clearedRoutes.get(activeChat);if(!saved)return;
+    clearedRoutes.delete(activeChat);activeChat.mapRoute=saved.route;
+    if(saved.question!==undefined)activeChat.mapQuestion=saved.question;
+    drawRoute();$('#map-route-status').textContent+=' 已恢复清除前的地点顺序。';
+  };
 
   let storySnapshot = null;
   let mentionReturn=null;
   function clearMentionReturn(){mentionReturn=null;$('#map-back-mention').hidden=true;}
   $('#map-back-mention').onclick=()=>{const origin=mentionReturn;clearMentionReturn();if(origin)showContentView(origin);};
   window.TravelMap = {
-    ready,
+    get ready(){return ready;},
     getPlaces() { return places; },
     getPlanSelection() {
       const parent=$('#map-prefecture').value;
@@ -361,6 +389,9 @@
   $('#map-add-stop').onclick = () => {
     if (!selected || !activeChat) return;
     const route = activeChat.mapRoute || { points: [], missing: [] };
+    if(route.points.some(point=>point && point.id===selected.id)){
+      $('#map-route-status').textContent=selected.name+' 已加入当前路线，无需重复加入。';return;
+    }
     route.points.push(selected); route.kind = '手动选择的地点顺序'; activeChat.mapRoute = route;
     drawRoute(); fit(route.points);
   };
@@ -373,7 +404,13 @@
   $('#map-zoom-out').onclick = () => zoomTo(900 / targetView[2] * 80);
   $('#map-reset').onclick = () => { $('#map-prefecture').value=''; populateCounties(); setView([0, 0, 900, 680]); };
   $('#map-fit').onclick = () => { planSource = 'route'; fit(activeChat?.mapRoute?.points || []); };
-  $('#map-clear').onclick = () => { if (activeChat) { delete activeChat.mapRoute; delete activeChat.mapQuestion; } drawRoute(); };
+  $('#map-clear').onclick = () => {
+    if(activeChat){
+      if(activeChat.mapRoute?.points?.length)clearedRoutes.set(activeChat,{route:JSON.parse(JSON.stringify(activeChat.mapRoute)),question:activeChat.mapQuestion});
+      delete activeChat.mapRoute;delete activeChat.mapQuestion;
+    }
+    drawRoute();if(activeChat&&clearedRoutes.has(activeChat))$('#map-route-status').textContent='路线已清除，可点“撤销清除路线”恢复原顺序。';
+  };
   svg.addEventListener('wheel',event=>{
     event.preventDefault();
     const matrix=svg.getScreenCTM();if(!matrix)return;

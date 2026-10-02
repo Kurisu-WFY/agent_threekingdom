@@ -27,15 +27,15 @@ assert.ok(/--panel-width:min\(680px,42vw\)/.test(css));
 assert.ok(!/body\.chat-open \.content\s*\{[^}]*\b(?:transform|height|margin):/.test(css));
 assert.ok(!/body\.chat-open \.content-heading\s*>\s*span\s*\{\s*display:none/.test(css));
 assert.ok(/\.composer-send\s*\{[^}]*border-radius:50%/.test(css));
-assert.ok(/\.composer textarea\s*\{[^}]*padding:[^;]*48px/.test(css));
-assert.ok(/\.composer-send\s*\{[^}]*width:32px; height:32px; min-width:32px!important; min-height:32px!important/.test(css));
+assert.ok(/\.composer textarea\s*\{[^}]*padding:[^;]*60px/.test(css));
+assert.ok(/\.composer-send\s*\{[^}]*width:44px; height:44px; min-width:44px!important; min-height:44px!important/.test(css));
 assert.ok(/@media\(max-width:760px\)\s*\{\s*\.chat-panel \.composer textarea\s*\{[^}]*min-height:56px; padding-right:64px;[^}]*\}\s*\.chat-panel \.composer-send\s*\{[^}]*min-width:44px!important; min-height:44px!important/.test(css));
 assert.ok(/\.messages\s*\{[^}]*padding:\s*var\(--space-3\)[^}]*gap:\s*var\(--space-2\)/.test(css));
 assert.ok(/\.bubble\s*\{[^}]*padding:\s*var\(--space-2\) var\(--space-3\);\s*font-size:\s*var\(--text-base\);\s*line-height:\s*var\(--leading-body\)/.test(css));
 assert.ok(/\.agent-prose p\s*\{\s*margin:var\(--space-1\) 0/.test(css));
 assert.ok(/\.character-answer \.module-button\s*\{[^}]*display:inline-flex[^}]*min-height:30px!important[^}]*border-radius:999px/.test(css));
 assert.ok(/@media\(max-width:760px\)\s*\{\s*\.character-answer \.module-button\s*\{\s*min-height:var\(--target-size\)!important/.test(css));
-assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-height:0!important[^}]*margin:0/.test(css));
+assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-height:44px!important[^}]*margin:0/.test(css));
 assert.ok(/\.workspace\s*\{[^}]*transition:padding-right var\(--layout-duration\) var\(--layout-easing\)/.test(css));
 assert.ok(/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\*,\*::before,\*::after\s*\{[^}]*transition:none!important/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
@@ -78,7 +78,7 @@ assert.ok(/@media\(min-width:1051px\)\s*\{\s*\.content\s*\{\s*height:calc\(100dv
 assert.ok(/\.map-view\s*>\s*p,\s*\.module-view\s*>\s*p\s*\{\s*max-inline-size:var\(--measure-reading\)/.test(css),'wide workspace keeps direct prose readable');
 assert.ok(/id="node-compare"[^>]*>阅读对照材料</.test(html),'local comparison reads material');
 assert.ok(/id="chapter-compare"[^>]*>请陈寿解释区别</.test(html),'chat comparison sends a question');
-assert.ok(/id="travel-back"[^>]*data-content-view="planner"[^>]*>返回活动计划</.test(html),'weather returns to activity domain');
+assert.ok(/id="travel-back"[^>]*data-content-view="planner"[^>]*>返回活动需求</.test(html),'weather returns to activity domain');
 assert.ok(fs.readFileSync(__dirname+'/stories.js','utf8').includes("action('带入活动计划'"),'story activity entry uses shared wording');
 assert.ok(fs.readFileSync(__dirname+'/chenshou-guide.js','utf8').includes("'请陈寿解释区别'"),'guide comparison uses the shared question-action label');
 assert.ok(/\.content-footer\s*\{\s*padding:0 var\(--space-4\)/.test(css),'footer uses measured compact height');
@@ -87,3 +87,6 @@ const outlineRules=[...css.matchAll(/\.city-outline(?:\.boundary-selected)?\s*\{
 assert.equal(outlineRules.length,2,'ordinary and selected outline each have one rule');
 const outlineWidths=outlineRules.map(rule=>Number(rule[1].match(/stroke-width:\s*([\d.]+)/)?.[1]));
 assert.ok(outlineWidths[0]>=2.5&&outlineWidths[1]>outlineWidths[0],'F3 ordinary outline is thick and selected outline is stronger');
+
+assert.ok(/\.chat-options > summary\s*\{[^}]*min-height:44px!important/.test(css),'U20 settings target at least44');
+assert.ok(/\.character-answer \.character-place-link\s*\{[^}]*min-width:44px!important/.test(css),'U20 answer place hit width');
