@@ -67,6 +67,12 @@ const assert=require('node:assert/strict');
  assert.equal(registry.get('#map-fit').disabled,true,'no-route fit starts disabled');
  const provinceView=svg.attributes.viewBox;
  assert.deepEqual(window.TravelMap.getPlanSelection(),{cities:[],places:[]},'empty province has no invented cities');
+ const hiddenCounty=window.TravelMap.getPlaces().find(p=>String(p.adcode)==='511324');
+ const [hiddenX,hiddenY]=window.MapRouteCore.project(hiddenCounty.center);
+ registry.get('#map-place-picker').hidden=true;
+ svg.listeners.click({target:svg,clientX:hiddenX,clientY:hiddenY});
+ assert.equal(registry.get('#map-place-picker').hidden,true,'province blank-area click must not pick hidden counties');
+ assert.equal(registry.get('#map-county').value,'');
  for(let i=0;i<3;i++){
    select.value='南充市';select.onchange();paintAll();
    assert.equal(svg.attributes.viewBox,provinceView,'changing prefecture does not pan or zoom');

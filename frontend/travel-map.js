@@ -11,12 +11,13 @@
   const schedule = window.requestAnimationFrame?.bind(window) || (fn => setTimeout(() => fn(Date.now()), 16));
   const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   let lastFrame = 0;
+  const countyDetailed = () => 900 / view[2] >= 2.5;
   function updateLabels(rect = svg.getBoundingClientRect()) {
     if (!rect.width || !rect.height) return;
     const scale = Math.min(rect.width / view[2], rect.height / view[3]);
     svg.style.setProperty?.('--map-unit', String(1 / scale));
     const extent=core.visibleBounds(view,rect.width,rect.height);
-    const detailed = 900 / view[2] >= 2.5;
+    const detailed = countyDetailed();
     for(const boundary of boundaryNodes){
       const b=boundary.bounds;
       const visible=(!boundary.county||detailed)&&b[0]<=extent[2]&&b[2]>=extent[0]&&b[1]<=extent[3]&&b[3]>=extent[1];
@@ -137,6 +138,7 @@
     if (storyNode) { window.StoryMap?.selectChapter(Number(storyNode.getAttribute('data-story-chapter'))); return; }
     // 文字可能嵌在县区按钮内；先拦截标签，再判断区域及空白处的附近拾取。
     if (['text','tspan'].includes(String(event.target.localName || event.target.tagName).toLowerCase())) return;
+    if (!countyDetailed()) { $('#map-place-picker').hidden = true; return; }
     const code=event.target.closest('[data-county-code]')?.getAttribute('data-county-code');
     if(code){const county=counties.find(c=>String(c.adcode)===code);if(county)return selectPlace(county);}
     const matrix = svg.getScreenCTM();
