@@ -32,5 +32,5 @@
     if(s.skipped.has(s.current)) s.current=[...valid][0]; save(story); return true;
   }
   window.StoryProgress = {get,save,status,choose,subscribe:fn=>listeners.push(fn),
-    notice:()=>available ? '探索进度仅保存在此浏览器本地，未与账号或后端同步；手动记录不代表实际到访。' : '本地存储不可用，探索进度仅本页保留；未与账号或后端同步。'};
+    notice:()=>available ? '探索进度仅保存在此浏览器本地，未与账号或服务器同步；手动记录不代表实际到访。' : '本地存储不可用，探索进度仅本页保留；未与账号或服务器同步。'};
 })();

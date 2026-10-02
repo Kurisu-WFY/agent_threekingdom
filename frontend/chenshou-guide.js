@@ -38,7 +38,7 @@
     const chat=chats[active], pending=chat.messages.find(m=>m.pending), planning=pending&&/路线|半天|规划|时间/.test(pending.originalQuestion||pending.question||'');
     const state=pending?(planning?'planning':'research'):Date.now()<celebration?'complete':'idle';
     $('#chat-panel').dataset.guideState=state;$('#launcher').dataset.guideState=state;
-    $('#historian-state').textContent={idle:'陈寿文化向导 · 有依据才说史，没依据就留白',research:'陈寿正在查阅史料',planning:'陈寿正在筹划故事路线',complete:'已寻迹 · 已记下这一章'}[state];
+    $('#historian-state').textContent={idle:'陈寿文化向导 · 有依据才说史，没依据就留白',research:'陈寿正在整理回答，请稍候',planning:'陈寿正在整理回答，请稍候',complete:'已寻迹 · 已记下这一章'}[state];
   }
   function action(label,fn){const b=node('button',label);b.type='button';b.className='module-button';b.addEventListener('click',fn);$('#guide-actions').append(b);}
   function narrate(c,finished=false){

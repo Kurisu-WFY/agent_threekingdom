@@ -520,7 +520,7 @@ function requestReply(chat, reply) {
         : /Failed to fetch|NetworkError|Load failed|network.*(?:error|failed)|offline/i.test(error.message || '')
           ? '网络连接失败，尚未取得回答。请检查网络或服务连接后重试。'
           : /HTTP \d+/.test(error.message || '') ? '服务暂时无法完成回答，请稍后重试。'
-          : (error.message || '连接失败，尚未取得完整回答，请检查后端服务。');
+          : (error.message || '连接失败，尚未取得完整回答，请检查服务连接。');
       if (reply.streamText) reply.text += '\n\n以下为未完成的片段（不代表成功回答）：\n' + reply.streamText;
     })
     .finally(() => {
@@ -585,7 +585,7 @@ async function checkHealth() {
   } catch { /* 将不可达状态显示在界面中 */ }
   document.querySelectorAll('[data-service-status]').forEach(node => {
     node.textContent = connected ? (chatMode === 'nuwax' ? '女娲智能体已配置' : modelConfigured ? '模型已配置' : '检索演示模式') : '服务暂不可达';
-    node.title = connected ? (chatWarning || '已配置不代表连接测试通过；请查看每条回答的来源与工具记录。') : '请检查后端是否启动。';
+    node.title = connected ? (chatWarning || '已配置不代表连接测试通过；请查看每条回答的来源与工具记录。') : '请检查服务是否启动。';
     node.dataset.state = connected ? 'online' : 'offline';
   });
 }

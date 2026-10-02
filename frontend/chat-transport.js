@@ -15,7 +15,7 @@
         .map(line => line.slice(5).trimStart()).join('\n');
       if (!data) return;
       const event = JSON.parse(data);
-      if (event.type === 'error') throw new Error(event.message || '智能体执行失败。');
+      if (event.type === 'error') throw new Error(event.message || '向导暂时未能完成回答。');
       onEvent(event);
       if (event.type === 'result') result = event.data;
     }
