@@ -776,7 +776,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .node-material-summary { padding:12px 16px; border-left:3px solid var(--brass); background:var(--surface-2); }
 .cultural-node:has(#node-reading-content > .node-empty) .node-reading { height:auto; max-height:340px; }
 .node-disputes:has(> .node-empty:only-child) { padding:0; border:0; background:transparent; }
-.node-comparison { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); }
+.node-comparison { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); align-items:start; }
 .node-evidence { padding:var(--space-4); border:1px solid var(--line); border-left:4px solid var(--jade); margin:var(--space-2) 0; background:var(--surface); min-width:0; }
 .node-literature { border-left-color:var(--brass); background:var(--surface-2); }
 .node-inference { border-left:4px dashed var(--shu); padding:var(--space-3); background:var(--surface-2); }

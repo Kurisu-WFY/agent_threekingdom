@@ -105,6 +105,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   get('#message').value = '保留的草稿';
   get('#new-chat').onclick();
   run("send('文化问题')");
+  assert.equal(run('chats[0].title'),'文化问题','U21 untouched conversations keep default first-question naming');
   assert.equal(requests.length, 2);
   requests[0].resolve({ ok: true, json: async () => ({ answer: '南充路线', session_id:'session-a' }) });
   await flush();
