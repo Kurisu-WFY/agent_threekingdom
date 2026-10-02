@@ -207,7 +207,10 @@ function messageNode(message) {
   return row;
 }
 
-function render() {
+let renamingChat = null, renameDraft = '';
+function renderHistory(focusChat = null, focusEditor = false) {
+  const editingFocused = document.activeElement?.closest?.('.history-rename');
+  if (renamingChat && !chats.includes(renamingChat)) renamingChat = null;
   historyList.replaceChildren();
   chats.forEach((chat, index) => {
     const item = document.createElement('div');
@@ -229,10 +232,39 @@ function render() {
     remove.title = '删除此对话';
     remove.setAttribute('aria-label', '删除对话：' + chat.title);
     remove.onclick = () => deleteChat(chat);
-    item.append(button);
+    const rename = document.createElement('button');
+    rename.type = 'button'; rename.className = 'rename-chat'; rename.textContent = '改名';
+    rename.setAttribute('aria-label', '重命名对话：' + chat.title);
+    rename.setAttribute('aria-expanded', String(renamingChat === chat));
+    rename.onclick = () => { renamingChat = chat; renameDraft = chat.title; renderHistory(null, true); };
+    item.append(button, rename);
     if (chats.length > 1) item.append(remove);
+    if (renamingChat === chat) {
+      const editor = document.createElement('form'); editor.className = 'history-rename';
+      const label = document.createElement('label'); label.textContent = '对话名称（最多60字）';
+      const field = document.createElement('input'); field.type = 'text'; field.required = true; field.maxLength = 60; field.value = renameDraft;
+      field.addEventListener('input', () => { renameDraft = field.value; }); label.append(field);
+      const notice = document.createElement('p'); notice.className = 'history-rename-notice'; notice.setAttribute('role', 'alert');
+      const save = document.createElement('button'); save.type = 'submit'; save.textContent = '保存';
+      const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = '取消';
+      const close = () => { renamingChat = null; renameDraft = ''; renderHistory(chat); };
+      cancel.onclick = close;
+      field.addEventListener('keydown', event => { if(event.key === 'Escape') { event.preventDefault(); close(); } });
+      editor.addEventListener('submit', event => {
+        event.preventDefault(); const name = field.value.trim();
+        if (!name || name.length > 60) { notice.textContent = '请填写1至60字的对话名称。'; field.focus(); return; }
+        chat.title = name; chat.customTitle = true; close();
+      });
+      editor.append(label, notice, save, cancel); item.append(editor);
+    }
     historyList.append(item);
+    if (focusChat === chat) rename.focus();
+    else if (renamingChat === chat && (focusEditor || editingFocused)) item.children[item.children.length - 1].querySelector('input')?.focus();
   });
+  document.querySelector('#conversation-title').textContent = chats[active].title;
+}
+function render() {
+  renderHistory();
   messages.replaceChildren();
   chats[active].messages.forEach(message => messages.append(messageNode(message)));
   messages.scrollTop = messages.scrollHeight;
@@ -401,7 +433,7 @@ function send(text, options = {}) {
     if(draft.options.activityPlan)queuedActivity=draft.options.activityPlan;
   }
   delete chat.draftRequests;
-  if (chat.messages.length === 1) chat.title = visible.slice(0, 10);
+  if (chat.messages.length === 1 && !chat.customTitle) chat.title = visible.slice(0, 10);
   const prepared = window.CharacterChat?.prepare(chat, requestText);
   chat.messages.push({ role: 'user', text: visible, requestText, persona: prepared?.persona });
   const reply = { role: 'assistant', text: '', question: prepared?.question || requestText, history: prepared ? [...history, {role:'user',content:prepared.context}] : history, persona: prepared?.persona, storyId: prepared?.storyId, discovered: prepared?.discovered, mode: prepared?.mode || '大众', preserveMap: prepared?.preserveMap, characterAction: prepared?.action, originalQuestion: visible };
