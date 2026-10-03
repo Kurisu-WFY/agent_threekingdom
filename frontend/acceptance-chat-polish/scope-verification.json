@@ -1,0 +1,21 @@
+{
+  "productPaths": [
+    "frontend/app.js",
+    "frontend/app.test.cjs",
+    "frontend/character-chat.js",
+    "frontend/character-chat.test.cjs",
+    "frontend/chat-polish.test.cjs",
+    "frontend/chat-test-double.cjs",
+    "frontend/chenshou-guide.js",
+    "frontend/chenshou-guide.test.cjs",
+    "frontend/cultural-node.js",
+    "frontend/index.html",
+    "frontend/journal.js",
+    "frontend/styles.css"
+  ],
+  "deliveryDirectory": "frontend/acceptance-chat-polish/",
+  "productCommit": "cf0e4c4",
+  "outsideFrontend": "开工已有 AGENTS.md 与 docs 修改，未编辑或暂存；仅 frontend 路径进入本轮提交",
+  "base": "ea2eb0d",
+  "productOnlyFrontend": true
+}

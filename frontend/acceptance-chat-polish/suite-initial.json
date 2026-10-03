@@ -1,0 +1,102 @@
+[
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\answer-format.test.cjs",
+    "output": "PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status"
+  },
+  {
+    "exit": 1,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.test.cjs",
+    "output": "PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops\nPASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery\nPASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'陈寿' !== '诸葛亮'\n\n    at D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.test.cjs:41:12\n    at Object.<anonymous> (D:\\DSH Workspace\\agent_threekingdom\\frontend\\app.test.cjs:229:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: '陈寿',\n  expected: '诸葛亮',\n  operator: 'strictEqual',\n  diff: 'simple'\n}"
+  },
+  {
+    "exit": 1,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.test.cjs",
+    "output": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.test.cjs:14\n const baseline=JSON.stringify(c);get('#character-select').value='诸葛亮';get('#character-select').handlers.change();assert.equal(JSON.stringify(c),baseline);assert.equal(actions.length,0);\n                                                                                                         ^\n\nTypeError: get(...).handlers.change is not a function\n    at D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.test.cjs:14:106\n    at Object.<anonymous> (D:\\DSH Workspace\\agent_threekingdom\\frontend\\character-chat.test.cjs:59:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49\n\nNode.js v22.20.0"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chat-polish.test.cjs",
+    "output": "PASS: 1 陈寿唯一向导、无切换入口、旧身份不回流\nPASS: 2 无冗余大标题、状态位于右下角\nPASS: 4 设置保留讲解模式与上下文\nPASS: 6 单行/多行输入的发送按钮垂直居中\nPASS: 5 屏幕行逐行淡入、正文保真、历史不重播\nPASS: 3 删除前确认、取消完整保留、轻量撤销\nPASS: 减少动态偏好直接展示完整回答\nPASS: 1920×1080 无横向溢出、Console 零报错"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chat-transport.test.cjs",
+    "output": "PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure"
+  },
+  {
+    "exit": 1,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\chenshou-guide.test.cjs",
+    "output": "TypeError: ctx.window.CharacterChat.selectPersona is not a function\n    at D:\\DSH Workspace\\agent_threekingdom\\frontend\\chenshou-guide.test.cjs:24:66\n    at Object.<anonymous> (D:\\DSH Workspace\\agent_threekingdom\\frontend\\chenshou-guide.test.cjs:38:3)\n    at Module._compile (node:internal/modules/cjs/loader:1706:14)\n    at Object..js (node:internal/modules/cjs/loader:1839:10)\n    at Module.load (node:internal/modules/cjs/loader:1441:32)\n    at Function._load (node:internal/modules/cjs/loader:1263:12)\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\n    at node:internal/main/run_main_module:36:49"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\cultural-node.test.cjs",
+    "output": "PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\design-system.test.cjs",
+    "output": "PASS: original token semantics, complete scales, no raw component colors, text AA min=4.91, controls/focus >=3, reduced motion and touch target contract"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\itinerary-agent-core.test.cjs",
+    "output": "PASS: one activity request form, retired duplicate scripts, road lookup retained"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\journal.test.cjs",
+    "output": "PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\landing.test.cjs",
+    "output": "PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls\nPASS: story detail uses the same request/pending-draft bridge"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\map-route.test.cjs",
+    "output": "PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map\nPASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels\nPASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation\nPASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1500%\nPASS: wide/tall visible bounds and shared city/county geometry\nPASS: shared internal county edges removed from city outline\nPASS: chapter seals reserve label clearance without changing ordinary projection\nPASS: concave/holed/multipart interior labels, 183 county anchors, in-parcel text boxes or omission"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\navigation.test.cjs",
+    "output": "PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion\nPASS: journal label, aria-pressed, no document scrolling and map preservation"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\outing-core.test.cjs",
+    "output": "PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection\nPASS: U11 plan endpoint text, stale candidate invalidation, no automatic lookup or invented coordinates"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\stories.test.cjs",
+    "output": "PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-map.test.cjs",
+    "output": "PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\story-progress.test.cjs",
+    "output": "PASS: local persistence, story isolation, modes, partial completion, undo, selection validation, changed chapters, corrupt/blocked storage"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-api.test.cjs",
+    "output": "PASS: disabled no-network mode, URL encoding, request body, timeout signal, empty/error/invalid responses"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-map.test.cjs",
+    "output": "PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out\nPASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication\nPASS: general story questions preserve route/view/zoom; explicit destinations still map\nPASS: two-pointer pinch increases zoom\nPASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels"
+  },
+  {
+    "exit": 0,
+    "file": "D:\\DSH Workspace\\agent_threekingdom\\frontend\\travel-modules.test.cjs",
+    "output": "PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels"
+  }
+]

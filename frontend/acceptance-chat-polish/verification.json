@@ -1,0 +1,298 @@
+{
+  "generatedAt": "2026-10-03T00:34:45.334Z",
+  "syntax": [
+    {
+      "file": "frontend/acceptance-batch4/browser-checks.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/amap-map.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/amap-planner.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/answer-format.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/app.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/character-chat.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/chat-transport.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/chenshou-guide.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/cities.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/cultural-node.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/journal.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/landing.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/map-route-core.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/n10-n17.browser-test.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/n8-n9.browser-test.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/outing-core.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/outing.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/stories.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/story-map.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/story-progress.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/tests/map-performance.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/travel-api.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/travel-map.js",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "frontend/travel-modules.js",
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "tests": [
+    {
+      "file": "frontend/answer-format.test.cjs",
+      "exit": 0,
+      "output": "PASS: safe Markdown table/headings/code/lists/links, inert HTML, process cleanup and latest tool status\n"
+    },
+    {
+      "file": "frontend/app.test.cjs",
+      "exit": 0,
+      "output": "PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops\nPASS: N9 story-card scroll restoration, equivalent close controls, body state, focus and drag/cancel recovery\nPASS: N11 passive scroll, 100-event coalescing, stable state, internal scroll and top recovery\nPASS: HTTP 422, invalid JSON, missing answer and timeout render retry and recover\nPASS: single-chat delete guard, no phantom chat on undo, empty-chat reuse, pending response isolation\nPASS: initial state, duplicate guard, independent requests, drafts, retry payload and recovery\n"
+    },
+    {
+      "file": "frontend/character-chat.test.cjs",
+      "exit": 0,
+      "output": "PASS: fixed Chenshou/context isolation, history prefix, pending drafts, immutable retry, direct prose without evidence wrappers, C/URL gating, verbatim inference/romance, cultural discovery vs comparison, polymorphic responses, one portrait and delete/undo\n"
+    },
+    {
+      "file": "frontend/chat-polish.test.cjs",
+      "exit": 0,
+      "output": "PASS: 1 陈寿唯一向导、无切换入口、旧身份不回流\nPASS: 2 无冗余大标题、状态位于右下角\nPASS: 4 设置保留讲解模式与上下文\nPASS: 6 单行/多行输入的发送按钮垂直居中\nPASS: 5 屏幕行逐行淡入、正文保真、历史不重播\nPASS: 3 删除前确认、取消完整保留、轻量撤销\nPASS: 减少动态偏好直接展示完整回答\nPASS: 旧失败消息重试统一陈寿，保留原讲解模式与章节快照\nPASS: 探索志不再提示切换向导\nPASS: 1920×1080 无横向溢出、Console 零报错\n"
+    },
+    {
+      "file": "frontend/chat-transport.test.cjs",
+      "exit": 0,
+      "output": "PASS SSE: chunked UTF8, LF/CRLF, session/tool events, incomplete/error/HTTP failure\n"
+    },
+    {
+      "file": "frontend/chenshou-guide.test.cjs",
+      "exit": 0,
+      "output": "PASS: scholar SVG/four states, default collapsed, honest chapter handoff, completion/undo, context/mode, compression snapshot, drafts/retry/session isolation, three person themes and stale note removal\n"
+    },
+    {
+      "file": "frontend/cultural-node.test.cjs",
+      "exit": 0,
+      "output": "PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building\n"
+    },
+    {
+      "file": "frontend/design-system.test.cjs",
+      "exit": 0,
+      "output": "PASS: original token semantics, complete scales, no raw component colors, text AA min=4.91, controls/focus >=3, reduced motion and touch target contract\n"
+    },
+    {
+      "file": "frontend/itinerary-agent-core.test.cjs",
+      "exit": 0,
+      "output": "PASS: one activity request form, retired duplicate scripts, road lookup retained\n"
+    },
+    {
+      "file": "frontend/journal.test.cjs",
+      "exit": 0,
+      "output": "PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage\n"
+    },
+    {
+      "file": "frontend/landing.test.cjs",
+      "exit": 0,
+      "output": "PASS: journey drafts, preference submission, character boundaries, pending draft preservation, five-item navigation and map controls\nPASS: story detail uses the same request/pending-draft bridge\n"
+    },
+    {
+      "file": "frontend/map-route.test.cjs",
+      "exit": 0,
+      "output": "PASS: backend stops without GCJ-02 coordinates keep the mention-based route instead of wiping the map\nPASS: overlapping points remain selectable; hit radius stays 20 screen pixels across zoom levels\nPASS: 183 counties, ordered names, exclusions, ambiguity, missing-stop gaps and coordinate-system validation\nPASS: 21/183 real boundaries, regional fit includes full bounds, collision-free screen labels at 100–1500%\nPASS: wide/tall visible bounds and shared city/county geometry\nPASS: shared internal county edges removed from city outline\nPASS: chapter seals reserve label clearance without changing ordinary projection\nPASS: concave/holed/multipart interior labels, 183 county anchors, in-parcel text boxes or omission\n"
+    },
+    {
+      "file": "frontend/navigation.test.cjs",
+      "exit": 0,
+      "output": "PASS: story/map/home labels, focus fallback, rapid cancellation, zero document scrolling, preserved map and reduced motion\nPASS: journal label, aria-pressed, no document scrolling and map preservation\n"
+    },
+    {
+      "file": "frontend/outing-core.test.cjs",
+      "exit": 0,
+      "output": "PASS: conservative draft handoff, no guessed stops/coordinates, invalid and ambiguous dates, safe route projection\nPASS: U11 plan endpoint text, stale candidate invalidation, no automatic lookup or invented coordinates\n"
+    },
+    {
+      "file": "frontend/stories.test.cjs",
+      "exit": 0,
+      "output": "PASS: five pending templates, missing-field labels, no invented coordinates, story selection, shared chat bridge, safe text and map-load failure\n"
+    },
+    {
+      "file": "frontend/story-map.test.cjs",
+      "exit": 0,
+      "output": "PASS: story IDs, county fallback, missing-node gaps, three states, progress isolation, contextual ask, explicit route add, safe sources, verified coordinates, backend adapter and async cancellation\n"
+    },
+    {
+      "file": "frontend/story-progress.test.cjs",
+      "exit": 0,
+      "output": "PASS: local persistence, story isolation, modes, partial completion, undo, selection validation, changed chapters, corrupt/blocked storage\n"
+    },
+    {
+      "file": "frontend/travel-api.test.cjs",
+      "exit": 0,
+      "output": "PASS: disabled no-network mode, URL encoding, request body, timeout signal, empty/error/invalid responses\n"
+    },
+    {
+      "file": "frontend/travel-map.test.cjs",
+      "exit": 0,
+      "output": "PASS: slider/buttons/wheel/pinch share the 1500% upper limit and can zoom back out\nPASS: story overlay picking, chat isolation, filter/zoom/route restoration, explicit add deduplication\nPASS: general story questions preserve route/view/zoom; explicit destinations still map\nPASS: two-pointer pinch increases zoom\nPASS: actual map county-area click, no capture before drag, drag does not select, stable markers, boundary zoom levels\n"
+    },
+    {
+      "file": "frontend/travel-modules.test.cjs",
+      "exit": 0,
+      "output": "PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels\n"
+    }
+  ],
+  "resources": [
+    {
+      "file": "index.html",
+      "httpStatus": 200,
+      "local": "1d61a941458ff1c4a496a227447fbff8cfc1986ff29c5f597345504792000202",
+      "remote": "1d61a941458ff1c4a496a227447fbff8cfc1986ff29c5f597345504792000202",
+      "equal": true
+    },
+    {
+      "file": "app.js",
+      "httpStatus": 200,
+      "local": "41c03288b7e9e080ab56af01d44162c437553eab2f46536e95cbd19f2686c0d1",
+      "remote": "41c03288b7e9e080ab56af01d44162c437553eab2f46536e95cbd19f2686c0d1",
+      "equal": true
+    },
+    {
+      "file": "character-chat.js",
+      "httpStatus": 200,
+      "local": "2e2ba48f21daa8ab141180f3e84739fe0418f56c0e1ade808c17b1a2bf81bf0b",
+      "remote": "2e2ba48f21daa8ab141180f3e84739fe0418f56c0e1ade808c17b1a2bf81bf0b",
+      "equal": true
+    },
+    {
+      "file": "chenshou-guide.js",
+      "httpStatus": 200,
+      "local": "dfc9e1125aaa121fe11b76b7c054924f79b116ed6ed0a385b692c92a37ac39b1",
+      "remote": "dfc9e1125aaa121fe11b76b7c054924f79b116ed6ed0a385b692c92a37ac39b1",
+      "equal": true
+    },
+    {
+      "file": "cultural-node.js",
+      "httpStatus": 200,
+      "local": "a25d492ff50c09efccde705cd189b569a79b5c090cb789d5592ffea1e56c550d",
+      "remote": "a25d492ff50c09efccde705cd189b569a79b5c090cb789d5592ffea1e56c550d",
+      "equal": true
+    },
+    {
+      "file": "journal.js",
+      "httpStatus": 200,
+      "local": "b10fdbc110059b86d4fe1ba40c33f603554b998c9b7a1bb11b40b7a210242c82",
+      "remote": "b10fdbc110059b86d4fe1ba40c33f603554b998c9b7a1bb11b40b7a210242c82",
+      "equal": true
+    },
+    {
+      "file": "styles.css",
+      "httpStatus": 200,
+      "local": "d6c7fd8301ec7246187a77851e6f4c8ab36e082200de1e1cf90bbab59b85cd01",
+      "remote": "d6c7fd8301ec7246187a77851e6f4c8ab36e082200de1e1cf90bbab59b85cd01",
+      "equal": true
+    }
+  ],
+  "staged": [
+    "frontend/app.js",
+    "frontend/app.test.cjs",
+    "frontend/character-chat.js",
+    "frontend/character-chat.test.cjs",
+    "frontend/chat-polish.test.cjs",
+    "frontend/chat-test-double.cjs",
+    "frontend/chenshou-guide.js",
+    "frontend/chenshou-guide.test.cjs",
+    "frontend/cultural-node.js",
+    "frontend/index.html",
+    "frontend/journal.js",
+    "frontend/styles.css"
+  ],
+  "stagedOnlyFrontend": true,
+  "diffCheck": {
+    "exit": 0,
+    "output": ""
+  },
+  "passed": true
+}

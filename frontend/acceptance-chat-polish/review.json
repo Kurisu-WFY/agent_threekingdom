@@ -1,0 +1,15 @@
+{
+  "source": "只读独立子代理复核 + 作者截图复查；修复后按测试验证，不二次派发复核",
+  "critical": [],
+  "fixed": [
+    {"severity": "Important", "finding": "旧失败消息重试仍可能发送旧向导背景", "evidence": "旧失败消息重试统一陈寿，保留原讲解模式与章节快照：RED→GREEN"},
+    {"severity": "Minor", "finding": "探索志残留切换向导文案", "evidence": "探索志不再提示切换向导：RED→GREEN"},
+    {"severity": "Important", "finding": "超长回答滚到底部令淡入首行不可见", "evidence": "长回答淡入时首行必须在消息视口内：RED→GREEN"}
+  ],
+  "rulings": [
+    "根据本轮禁止修改 docs 的直接要求，把进度与交接记录放 frontend/acceptance-chat-polish/README.md；启动文档由 DSH 同步。",
+    "多人物向导移除，诸葛亮/张飞作为文化讨论主题保留，以避免回退既有主题与地图功能。",
+    "后台完成回答首次显示播放一次，之后历史重绘不再播放；减少动态偏好直接显示。"
+  ],
+  "deferred": []
+}
