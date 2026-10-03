@@ -3,14 +3,19 @@
   const $ = selector => document.querySelector(selector);
   const field = $('#hero-message'), submit = $('#hero-send');
   const modes = {
-    plan: ['想去哪里，和谁一起出发？', '你有多少时间，从哪里出发，想了解什么？这些能帮向导讨论游览顺序。', '例如：带孩子从南充出发，玩两天，想去阆中，少走路、多听三国故事。'],
+    plan: ['还有什么想法？（选填）', '填一项也可以，陈寿会与你继续讨论。', '例如：想去阆中，少走路，多听三国故事。'],
     culture: ['这个地方有什么三国故事？', '人物、事件、景点都可以问。也请向导说清正史与演义的区别，交代资料依据。', '例如：陈寿为什么写《三国志》？万卷楼与他有什么关系？'],
     character: ['关于这个人物，你想问什么？', '这是基于资料的 AI 人物解读，不是历史人物原话；不确定的内容应明确说明。', '例如：我想问张飞，他与阆中有什么关系？哪些是史实，哪些来自演义？'],
     review: ['这次行程想改哪里？', '去过哪些地方，喜欢什么故事，或有了新想法，都可以在这段对话里接着说。', '例如：把刚才的路线改得轻松一点，少走路，多留时间听陈寿的故事。']
   };
   let mode = 'plan';
   const drafts = {};
-  function update() { submit.disabled = !field.value.trim(); }
+  const conditionIds = ['journey-days', 'journey-origin', 'journey-interest', 'journey-person'];
+  function conditions() {
+    const [days, origin, interest, person] = conditionIds.map(id => $('#' + id)?.value?.trim() || '');
+    return [days ? '游览时间：' + (days === '4' ? '4 天及以上' : days + ' 天') : '', origin ? '出发地：' + origin : '', interest ? '兴趣：' + interest : '', person ? '想了解的人物：' + person : ''].filter(Boolean);
+  }
+  function update() { submit.disabled = !field.value.trim() && !conditions().length; }
   function switchMode(next) {
     if (!modes[next] || next === mode) return;
     drafts[mode] = field.value;
@@ -20,6 +25,7 @@
     $('#journey-mode-hint').textContent = modes[mode][1];
     field.placeholder = modes[mode][2];
     document.querySelectorAll('[data-journey-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.journeyMode === mode)));
+    $('#journey-return-plan').hidden = mode === 'plan';
     $('#journey-feedback').textContent = field.value ? '已恢复这个主题的草稿。' : '已切换主题。其他主题的草稿还在本页。';
     update();
   }
@@ -38,15 +44,17 @@
   }
   window.SGTJourney = { ask };
   field.addEventListener('input', update);
+  conditionIds.forEach(id => { const control = $('#' + id); control?.addEventListener('input', update); control?.addEventListener('change', update); });
   $('#hero-form').addEventListener('submit', event => {
     event.preventDefault();
-    if (!field.value.trim()) return;
-    const preferences = [];
+    if (!field.value.trim() && !conditions().length) return;
+    const preferences = conditions();
     if ($('#journey-profile').value) preferences.push('同行方式：' + $('#journey-profile').value);
     if ($('#journey-style').value) preferences.push('讲解偏好：' + $('#journey-style').value);
     if (mode === 'character') preferences.push('请基于史料解读人物，区分史实、演义与推测，不编造人物原话。');
-    const question = field.value.trim() + (preferences.length ? '\n\n' + preferences.join('；') : '');
-    ask(question,{displayText:field.value.trim()+(preferences.length?'（'+preferences.filter(p=>!p.startsWith('请基于')).join('；')+'）':'')}); field.value = ''; drafts[mode] = ''; update();
+    const summary = field.value.trim() || '请陈寿根据这些条件推荐三国文化主题与行程';
+    const question = summary + (preferences.length ? '\n\n' + preferences.join('；') : '');
+    ask(question,{displayText:summary+(preferences.length?'（'+preferences.filter(p=>!p.startsWith('请基于')).join('；')+'）':'')}); field.value = ''; drafts[mode] = ''; update();
   });
   document.querySelectorAll('[data-journey-mode]').forEach(button => button.addEventListener('click', () => switchMode(button.dataset.journeyMode)));
   document.querySelectorAll('[data-agent-question]').forEach(button => button.addEventListener('click', () => ask(button.dataset.agentQuestion)));
@@ -60,5 +68,6 @@
   }
   $('[data-prepare-character]').addEventListener('click', () => prepare('character'));
   $('[data-prepare-review]').addEventListener('click', () => prepare('review'));
+  $('#journey-return-plan').addEventListener('click', () => prepare('plan'));
   update();
 })();

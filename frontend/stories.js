@@ -42,12 +42,23 @@
     return dl;
   }
   let selected = window.SGT_STORIES[0];
+  let previewStory = null;
+  function preview(story) {
+    previewStory = story;
+    const chapters = $('#preview-chapters');
+    chapters.replaceChildren();
+    $('#preview-selection').textContent = story ? text(story.title) : '点选上方主题，预览章节。';
+    (story?.chapters || []).forEach(chapter => chapters.append(node('li', '', chapter.name)));
+    $('#preview-map-note').textContent = story ? (story.chapters.length ? '章节顺序已设定；地点与史料待核验。' : '本主题章节与地点待补充；地图入口先打开普通四川地图，也可与陈寿讨论。') : '也可以直接打开四川地图，按市州与县区找地点。';
+    $('#preview-story-open').disabled = false;
+    $('#preview-story-open').textContent = story ? '进入故事地图' : '打开四川地图';
+    $('#preview-detail-open').disabled = !story;
+    $('#preview-clear').hidden = !story;
+    Array.from($('#story-cards').children).forEach(shell => shell.children[0].setAttribute('aria-pressed', String(shell.dataset.storyId === story?.id)));
+  }
   function select(story, open) {
     selected = story;
     $('#story-title').textContent = text(story.title);
-    $('#preview-selection').textContent = text(story.title) + (story.chapters.length ? ' · 章节顺序已设定，位置待核验' : ' · 对应地点待补充');
-    $('#preview-story-open').disabled=!story.chapters.length;
-    $('#preview-map-note').textContent=story.chapters.length?'':'本主题章节与地点待补充；仍可与陈寿讨论。';
     const detail = $('#story-detail-content');
     detail.replaceChildren(node('p', 'story-disclosure', '想了解这个主题的故事和出处，可以问陈寿'), facts(story));
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
@@ -56,7 +67,7 @@
     detail.append(node('p', 'story-empty', '史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
     $('#story-action-status').textContent = '当前为主题模板，尚未形成可执行行程。';
     renderSystem(story, detail);
-    if (open) showContentView('story');
+    if (open) { preview(story); showContentView('story'); }
     window.CharacterChat?.refresh();
   }
   function action(label, fn) {
@@ -99,7 +110,11 @@
       if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.openPlace(place.id,{returnTo:'story'})));
       if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
       axis.append(li);
-    }); if(chapters.length)detail.append(node('h3','','章节顺序'),axis);
+    });
+    const sidebar = $('#story-detail-sidebar');
+    sidebar.replaceChildren(node('h3', '', '章节顺序'));
+    if (chapters.length) sidebar.append(axis);
+    else sidebar.append(node('p', 'story-empty', '章节与地点待补充，可先与陈寿讨论主题。'));
     if(chapters.length) {
       const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));
       const inputs=chapters.map((c,i)=>{const label=node('label',''),input=node('input');input.type='checkbox';input.checked=!s.skipped.has(i);label.append(input,node('span','',c.name));box.append(label);return input;});
@@ -124,28 +139,39 @@
   const cards = $('#story-cards');
   window.SGT_STORIES.forEach((story, index) => {
     const card = node('button', 'story-card'); card.type = 'button';
-    card.dataset.contentView = 'story'; card.setAttribute('aria-controls', 'story-view'); card.setAttribute('aria-pressed', 'false');
-    card.setAttribute('aria-label', '查看故事线：' + story.title);
+    card.setAttribute('aria-controls', 'culture-preview'); card.setAttribute('aria-pressed', 'false');
+    card.setAttribute('aria-label', '预览故事线：' + story.title);
     if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));
-    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', '查看故事详情　↗'));
+    card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', story.chapters.length ? '预览章节与地点' : '章节与地点待补充'));
     if(story.summary)card.append(node('span','story-summary',story.summary));
-    card.addEventListener('click', () => select(story, true));
+    card.addEventListener('click', () => { select(story, false); preview(story); });
     const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id; shell.dataset.phase = story.phase || "";
     shell.dataset.phase = story.phase;
     const badge = node('span', 'story-progress-seal', progress.status(story));
     card.append(badge);
     shell.dataset.progress = progress.status(story);
     progress.subscribe(() => { badge.textContent = progress.status(story); shell.dataset.progress = progress.status(story); });
-    const mapButton = node('button', 'story-map-entry', '打开故事地图 →'); mapButton.type = 'button';
-    mapButton.setAttribute('aria-label', '在故事地图中探索：' + story.title); mapButton.setAttribute('aria-controls', 'map-view');
-    mapButton.disabled=!story.chapters.length;
-    mapButton.addEventListener('click', () => {if(story.chapters.length)window.StoryMap.open(story.id);});
-    shell.append(card, mapButton);
-    if(!story.chapters.length)shell.append(node('p','map-note','本主题章节与地点待补充；可进入主题与陈寿讨论。'));
+    shell.append(card);
     cards.append(shell);
   });
   $('#story-map-open').addEventListener('click', () => {if(selected.chapters.length)window.StoryMap.open(selected.id);});
-  $('#preview-story-open').addEventListener('click', () => {if(selected.chapters.length)window.StoryMap.open(selected.id);});
+  $('#preview-story-open').addEventListener('click', () => {
+    if (previewStory?.chapters.length) window.StoryMap.open(previewStory.id);
+    else { window.StoryMap.exit(); showContentView('map'); if (previewStory) $('#map-route-status').textContent = '本主题章节与地点待补充，当前打开普通四川地图；尚未开启故事模式。'; }
+  });
+  $('#preview-detail-open').addEventListener('click', () => { if (previewStory) select(previewStory, true); });
+  $('#preview-clear').addEventListener('click', () => preview(null));
+  ['prev', 'next'].forEach(direction => $('#story-scroll-' + direction)?.addEventListener('click', () => cards.scrollBy({ left: (direction === 'prev' ? -1 : 1) * cards.clientWidth * .75, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })));
+  // 一个轮廓组件在目录与详情之间移动，不复制 SVG 或改变几何计算。
+  const sharedMap = $('#culture-shared-map');
+  if (window.MutationObserver) {
+    const moveMap = () => {
+      const destination = $('#story-view').hidden ? $('#culture-map-home') : $('#story-detail-map');
+      if (sharedMap.parentElement !== destination) destination.append(sharedMap);
+    };
+    new window.MutationObserver(moveMap).observe($('#story-view'), { attributes: true, attributeFilter: ['hidden'] });
+    moveMap();
+  }
   $('#story-ask').addEventListener('click', () => {
     window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事线，适合怎么游览？');
     $('#story-action-status').textContent = '已发给向导。如果正在回答，问题会留在对话草稿里。';
@@ -178,6 +204,7 @@
     $('#story-buildings').append(article);
   });
   select(selected, false);
+  preview(null);
   fetch('sichuan-map-geometry.json').then(response => { if (!response.ok) throw new Error('map'); return response.json(); }).then(data => {
     if (!Array.isArray(data.cities) || !data.cities.length) throw new Error('geometry');
     const svg = $('#story-preview-map');

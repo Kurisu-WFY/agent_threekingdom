@@ -15,7 +15,7 @@ const outside=css.replace(root,'');assert.equal(/#[a-f\d]{3,8}\b|rgba?\([\d.,\s]
 assert.ok(css.includes('min-height:var(--target-size)!important'));
 assert.ok(css.includes('--layout-duration:0ms'));assert.ok(css.includes('animation:none!important'));
 const html=fs.readFileSync(__dirname+'/index.html','utf8');
-assert.ok(/data-q="[^"]*门票[^"]*"[^>]*>票价与预算/.test(html));
+// 第十四批移除首屏快捷问题；票价核验边界保留在推荐表单与地点区，浏览器验收覆盖入口。
 assert.ok(!/data-q="[^"]*(?:酒店|住宿|房间)/.test(html));
 const conversationStart=html.indexOf('<section class="conversation">');
 const conversation=html.slice(conversationStart,html.indexOf('</aside>',conversationStart));

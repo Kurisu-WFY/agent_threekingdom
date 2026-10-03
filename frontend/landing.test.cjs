@@ -49,3 +49,21 @@ context.window.SGTJourney.ask('完整生成指令：不编造价格与坐标',{d
 assert.ok(input.value.endsWith('南充一日活动'),'U01 queued request shows the visitor summary');
 assert.ok(!input.value.includes('完整生成指令'));
 assert.equal(chat.draftRequests.at(-1).question,'完整生成指令：不编造价格与坐标');
+
+// 行程条件无需重复抄进自由文本，也必须进入同一请求与等待草稿流程。
+chat.pending=false;modes[0].handlers.click();field.value='';
+node('#journey-days').value='2';node('#journey-origin').value='南充';
+node('#journey-interest').value='史书与遗迹';node('#journey-person').value='诸葛亮';
+assert.equal(typeof node('#journey-days').handlers.change,'function','trip condition changes must update submit availability');
+node('#journey-days').handlers.change();assert.equal(submit.disabled,false);
+submitForm();
+for(const part of ['2 天','南充','史书与遗迹','诸葛亮'])assert.ok(calls.at(-1).includes(part),'structured trip condition reaches request: '+part);
+chat.pending=true;input.value='保留原草稿';submitForm();
+assert.ok(input.value.startsWith('保留原草稿'));assert.ok(input.value.includes('诸葛亮'));
+assert.ok(chat.draftRequests.at(-1).question.includes('出发地：南充'));
+
+modes[0].handlers.click();field.value='待恢复的推荐草稿';
+node('[data-prepare-character]').handlers.click();
+assert.equal(node('#journey-return-plan').hidden,false,'character mode exposes a return path');
+assert.equal(typeof node('#journey-return-plan').handlers.click,'function','return recommendation restores its draft');
+node('#journey-return-plan').handlers.click();assert.equal(field.value,'待恢复的推荐草稿');

@@ -7,7 +7,7 @@ class Element {
 function setup(fail=false,mutation=''){
   const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
   const requests=[],views=[],questions=[],nodeCalls=[];
-  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id)},CulturalNode:{openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
+  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id),exit:()=>mapCalls.push('exit')},CulturalNode:{openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
   const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v),fetch:url=>{requests.push(url);return fail?Promise.reject(Error('offline')):Promise.resolve({ok:true,json:()=>Promise.resolve({cities:[{d:'M0 0L1 1Z'}]})});}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);
   vm.runInNewContext(fs.readFileSync(__dirname+'/stories.js','utf8').replace('  const progress =',mutation+'\n  const progress ='),ctx);
@@ -16,27 +16,33 @@ function setup(fail=false,mutation=''){
 function contents(n){return n.textContent+n.children.map(contents).join(' ');}
 (async()=>{
   const test=setup();
+  assert.equal(test.get('#preview-story-open').disabled,false,'unselected preview opens ordinary map');
+  test.get('#preview-story-open').handlers.click();assert.deepEqual(test.views,['map']);assert.deepEqual(test.mapCalls,['exit']);
+  test.views.length=0;test.mapCalls.length=0;
   const cards=test.get('#story-cards').children.map(shell=>shell.children[0]);
   assert.equal(cards.length,5);assert.equal(test.window.SGT_STORIES.length,5);
   for(const record of test.window.SGT_STORIES){assert.equal(record.durationHours,null);assert.equal(record.chapters.length,record.id==='shudao-xunzong'?3:0);assert.equal(record.sources.length,0);assert.equal(record.updatedAt,null);assert.equal(record.dataStatus,'pending');}
   for(const record of test.window.SGT_STORIES)assert.ok(['寻源','读史','探秘','传承'].includes(record.phase));
   assert.equal(test.window.SGT_STORIES.find(s=>s.id==='history-to-place').phase,'探秘');
-  assert.ok(!contents(cards[0]).includes('待补充'));assert.ok(contents(cards[2]).includes('3 章'));
+  assert.equal((contents(cards[0]).match(/待补充/g)||[]).length,1,'pending theme has one concise missing-chapter notice');assert.ok(contents(cards[2]).includes('3 章'));
   for(const [i,shell] of test.get('#story-cards').children.entries()){
-    assert.equal(shell.children[1].disabled,i!==2);
+    assert.equal(shell.children.length,1,'story selection has one primary action');
     if(i!==2)assert.match(contents(shell),/章节与地点待补充/);
   }
   for(const place of test.window.SGT_PLACES)assert.equal(place.coordinates,null);
-  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'story-view');assert.ok(contents(card).includes('故事详情'));}
-  test.get('#story-cards').children[2].children[1].handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
-  cards[2].handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
+  for(const card of cards){assert.equal(card.tag,'button');assert.equal(card.type,'button');assert.equal(card.attrs['aria-controls'],'culture-preview');}
+  cards[2].handlers.click();assert.deepEqual(test.views,[],'selecting a story stays in combined preview');
+  assert.equal(cards[2].attrs['aria-pressed'],'true');assert.equal(cards[0].attrs['aria-pressed'],'false');
+  test.get('#preview-story-open').handlers.click();assert.deepEqual(test.mapCalls,['shudao-xunzong']);
+  test.get('#preview-detail-open').handlers.click();assert.deepEqual(test.views,['story']);assert.equal(test.get('#story-title').textContent,'蜀汉北境·蜀道寻踪');assert.ok(test.get('#preview-selection').textContent.includes('蜀道寻踪'));
   assert.ok(!contents(test.get('#story-detail-content')).includes('pending'),'U08 story status is Chinese');
-  const chapterButtons=(function walk(n){return [n,...n.children.flatMap(walk)]})(test.get('#story-detail-content')).filter(n=>n.tag==='button'&&n.textContent==='阅读地点资料');
+  const chapterButtons=(function walk(n){return [n,...n.children.flatMap(walk)]})(test.get('#story-detail-sidebar')).filter(n=>n.tag==='button'&&n.textContent==='阅读地点资料');
   assert.equal(chapterButtons.length,3,'each chapter offers a direct detail path from the story');chapterButtons[0].handlers.click();assert.equal(test.nodeCalls[0][1],'story');
   assert.ok(contents(test.get('#story-detail-content')).includes('暂不生成历史讲解或路线'));
   test.get('#story-map-open').handlers.click();assert.equal(test.mapCalls[1],'shudao-xunzong');
-  cards[0].handlers.click();assert.equal(test.get('#story-map-open').disabled,true);assert.equal(test.get('#preview-story-open').disabled,true);assert.match(test.get('#preview-map-note').textContent,/章节与地点待补充/);
-  test.get('#preview-story-open').handlers.click();assert.equal(test.mapCalls.length,2,'empty preview must not open map');
+  cards[0].handlers.click();assert.equal(test.get('#story-map-open').disabled,true);assert.equal(test.get('#preview-story-open').disabled,false);assert.match(test.get('#preview-map-note').textContent,/章节与地点待补充/);
+  test.get('#preview-story-open').handlers.click();assert.equal(test.mapCalls.at(-1),'exit','a pending theme falls back to ordinary map without changing chapter logic');assert.equal(test.views.at(-1),'map');
+  test.get('#preview-clear').handlers.click();test.get('#preview-story-open').handlers.click();assert.equal(test.mapCalls.at(-1),'exit');assert.equal(test.views.at(-1),'map');
   test.get('#story-ask').handlers.click();assert.match(test.questions.at(-1),/从南充少年到三国史家/);
   cards[2].handlers.click();
   test.get('#story-ask').handlers.click();assert.equal(test.questions.length,2);assert.equal(test.questions[1],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[1].includes('模板'));
