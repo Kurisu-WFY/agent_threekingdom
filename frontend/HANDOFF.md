@@ -590,3 +590,14 @@
 回归：travel-modules.test.cjs、travel-map.test.cjs、map-route.test.cjs、design-system.test.cjs、n10-n17.browser-test.js。
 记录：HANDOFF.md；acceptance-batch4/README.md、implementation-plan.md、browser-checks.js、browser-reports.json、verification.txt。
 截图：acceptance-batch4/city-prefill-1920.png、map-prefill-1920.png、map-province-1920.png、map-detail-1920.png，均随前端提交入库。
+
+
+## 2026-10-03 · 第十四批文化探索重构
+
+- 开工核对 feat/frontend-acceptance-20260929@9e90dc7；只写本轮 frontend 文件，既存文档/audit/旧批次验收差异不提交，不 push/merge。最新工作单禁止改根 AGENTS.md 与 docs，共享启动文档由 DSH 回填。
+- 陈寿 SVG 迎接 + 指定主副句；左五故事横滑/章节横滑/共用四川轮廓预览同框，右几天/出发地/兴趣/人物表单进入现有陈寿对话。点击故事先预览，详情单独进入；详情左章节轴右正文与地图。五 tab 与地点建筑/文化卡保留。
+- 协调者先要求地点常展开并改上下两档分页，后明确恢复连续滚动。最终地点常展开、文化探索为连续纵向滚动，分页脚本、两页轨道与滚轮拦截均移除；实测滚轮可停在中间位置。
+- 四个无章节主题的地图入口先明示回退普通地图；仅蜀道寻踪进入原故事地图。不改故事数据、章节逻辑、地图几何计算、聊天模块、文化节点 SVG、探索志或模型原文。
+- 独立审查发现隐藏主题切换使推荐草稿无可见返回入口，新增“返回行程推荐”并红→绿验证。准备人物/回顾仍只恢复草稿，不自动发送。
+- 全量25 JS语法、22 test.cjs；真实8002/Edge/1920浏览器无被测横向溢出、Console/Page错误零；四个改动网页资源 SHA256一致。详见 acceptance-culture-restructure/README.md 与三个 JSON。模型回答内容正确性、移动/响应式未取得验收，不冒充已测。
+- 旧测试自写验收材料，早期直接运行曾刷新旧产物；最终 verify-all.cjs 在 finally 恢复运行前字节，这些旧批次材料不纳入本轮提交。

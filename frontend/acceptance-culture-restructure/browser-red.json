@@ -1,0 +1,141 @@
+{
+  "url": "http://localhost:8002",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "browser": "Edge Chromium headless",
+  "fixture": false,
+  "checks": [
+    {
+      "name": "hero and two entrances are visible on first screen",
+      "pass": true,
+      "entryBounds": [
+        {
+          "x": 81,
+          "y": 343.78125,
+          "right": 1135,
+          "bottom": 901.75
+        },
+        {
+          "x": 1159,
+          "y": 343.78125,
+          "right": 1839,
+          "bottom": 905.71875
+        }
+      ]
+    },
+    {
+      "name": "initial width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "welcome-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "five themes scroll horizontally",
+      "pass": true
+    },
+    {
+      "name": "selected width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "welcome-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "selecting a story updates chapters and shared map without navigating",
+      "pass": true
+    },
+    {
+      "name": "detail width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "story-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "story detail has chapter sidebar and reading with same SVG",
+      "pass": true,
+      "columns": "320px 1406px"
+    },
+    {
+      "name": "story map width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "map-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "chaptered story enters original story map",
+      "pass": true
+    },
+    {
+      "name": "ordinary map width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "map-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "cleared selection opens ordinary map",
+      "pass": true
+    },
+    {
+      "name": "pending theme opens ordinary map with explicit boundary",
+      "pass": true
+    },
+    {
+      "name": "places width",
+      "pass": true,
+      "viewport": 1920,
+      "document": 1920,
+      "panels": [
+        {
+          "id": "welcome-view",
+          "width": 1838,
+          "scrollWidth": 1838
+        }
+      ]
+    },
+    {
+      "name": "five building nodes and three culture cards preserved",
+      "pass": true
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "pass": false,
+  "failure": "page.waitForRequest: Timeout 30000ms exceeded while waiting for event \"request\"\n    at D:\\DSH Workspace\\agent_threekingdom\\frontend\\acceptance-culture-restructure\\browser-verify.cjs:86:33",
+  "observedAt": "2026-10-03T02:25:25.896Z"
+}

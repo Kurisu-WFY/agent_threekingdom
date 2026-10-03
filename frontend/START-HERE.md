@@ -139,3 +139,7 @@ node frontend/travel-map.test.cjs
 先读本文和实际 git status/diff，再读主工作树 AGENTS.md、docs/TASKS.md 及前端 HANDOFF.md 最新段落。继续以智能体为中心，根据用户反馈调整视觉和对话体验，不恢复模块清单式首页。真正手机上的触摸体验与具体设备性能可按需求补验；没有待完成的本轮代码任务。
 
 代码只提交 frontend/**，提交信息 `<type>(frontend): 描述`，收工更新 frontend/HANDOFF.md 和共享 TASKS/HANDOFF；不 push、不合并。若现场状态与本文不同，先查差异，保护用户的新改动。
+
+## 2026-10-03 · 第十四批文化探索
+
+基线 `feat/frontend-acceptance-20260929@9e90dc7`。陈寿迎接、故事与地图预览同框、推荐表单并排、详情左章节轴右正文+地图；地点区常展开，最终按协调者反馈恢复连续纵向滚动。验收与复跑见 `acceptance-culture-restructure/README.md`。没有保留上下两档分页代码。最新工作单禁止写根 AGENTS.md / docs，本轮交接仅写 frontend；共享进度由 DSH 回填。
