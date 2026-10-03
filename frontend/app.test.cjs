@@ -18,7 +18,7 @@ function get(id) { if (!nodes.has(id)) nodes.set(id, new Element()); return node
 const requests = [];
 const context = vm.createContext({
   document: { querySelector: get, querySelectorAll: () => [], createElement: tag => new Element(tag), body: new Element(), events: {}, addEventListener(type,fn) { this.events[type]=fn; } },
-  window: { events: {}, addEventListener(type, fn) { this.events[type] = fn; } }, AbortSignal, URL, setTimeout, clearTimeout,
+  window: { events: {}, confirm:()=>true, addEventListener(type, fn) { this.events[type] = fn; } }, AbortSignal, URL, setTimeout, clearTimeout,
   fetch: (url, options) => url === '/health' ? Promise.resolve({ ok: true, json: async () => ({ status: 'ok' }) }) : new Promise((resolve, reject) => requests.push({ resolve, reject, body: JSON.parse(options.body) }))
 });
 // 应用状态测试使用通信替身；SSE 字节级解析另行测试。
@@ -34,7 +34,7 @@ const run = code => vm.runInContext(code, context);
 const flush = () => new Promise(resolve => setImmediate(resolve));
 (async () => {
   const flatten = n => [n,...n.children.flatMap(x=>typeof x==='object'?flatten(x):[])];
-  for (const [role,persona,name] of [['assistant',undefined,'陈寿'],['assistant','诸葛亮','诸葛亮'],['assistant','张飞','张飞'],['user','陈寿','你']]) {
+  for (const [role,persona,name] of [['assistant',undefined,'陈寿'],['assistant','诸葛亮','陈寿'],['assistant','张飞','陈寿'],['user','陈寿','你']]) {
     context.messageFixture={role,persona,text:'正文'};
     const row=run('messageNode(messageFixture)');
     assert.equal(row.className,'message '+role);
@@ -136,6 +136,12 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   assert.equal(run('chats[0].messages.length'), 3);
   assert.equal(run('chats[0].messages[2].error'), false);
   assert.equal(run('chats[0].pending'), false);
+  context.window.confirm=()=>false;
+  const beforeCancel=run('chats[0]');
+  run('deleteChat(chats[0])');
+  assert.equal(run('chats.length'),2);
+  assert.equal(run('chats[0]'),beforeCancel,'取消删除保留原会话');
+  context.window.confirm=()=>true;
   run('deleteChat(chats[0])');
   assert.equal(run('chats.length'), 1);
   assert.equal(get('#message').value, '保留的草稿');

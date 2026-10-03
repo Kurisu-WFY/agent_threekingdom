@@ -1,36 +1,47 @@
-/* 在现有 /chat 会话中展示人物视角和证据。 */
+/* 固定由陈寿讲解；文化主题推荐与向导身份分离。 */
 (() => {
   'use strict';
   const $=s=>document.querySelector(s);
-  const profiles={
-    '陈寿':{style:'史官视角：审慎、简洁，先核对材料再解释，不虚构见闻。',basis:'史料依据摘要待核验；可从《三国志》的编纂与记载入手，具体引文和出处待补充。',story:'chenshou'},
-    '诸葛亮':{style:'筹划者视角：条理清楚，讨论选择与条件，不虚构本人动机和原话。',basis:'史料依据摘要待核验；可从《三国志》相关传记入手，具体引文和出处待补充。',story:'shudao-xunzong'},
-    '张飞':{style:'守城者视角：直率、朴实，不以演义性格代替历史人物，不虚构亲历。',basis:'史料依据摘要待核验；可从《三国志》相关传记入手，具体引文和出处待补充。',story:'zhangfei'}
+  const guideStyle='史官视角：审慎、简洁，先核对材料再解释，不虚构见闻。';
+  const themes={
+    '陈寿':{story:'chenshou',city:'南充市'},
+    '诸葛亮':{story:'shudao-xunzong',city:'剑阁县'},
+    '张飞':{story:'zhangfei',city:'阆中市'}
   };
   function node(tag,cls,text){const n=document.createElement(tag);n.className=cls||'';if(text!==undefined)n.textContent=text;if(typeof text==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(text))n.setAttribute('data-trust-state','unverified');return n;}
   function button(text,fn){const n=node('button','module-button',text);n.type='button';n.addEventListener('click',fn);return n;}
-  function portrait(name){
-    if(name==='陈寿'&&window.ChenshouGuide)return window.ChenshouGuide.portrait();
-    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 80 90');svg.setAttribute('role','img');svg.setAttribute('aria-label',name+'人物视角插画，非历史肖像');svg.setAttribute('class','character-portrait');
-    const paths=['M10 84Q10 56 40 55Q70 56 70 84Z','M26 27Q25 13 40 13Q56 13 54 29L52 46Q40 60 28 46Z',name==='陈寿'?'M25 22V10H55V22ZM19 62H40V83H19ZM23 66H36M23 72H36':name==='诸葛亮'?'M23 24L28 8L42 13L55 8L58 24ZM54 79L65 48M65 48Q40 43 50 29Q59 26 63 41Q65 18 73 30Q81 45 65 48':'M23 24Q40 2 57 24L54 29H26ZM27 44L30 58L40 65L50 58L53 44M18 64L40 78L62 64'];
+  function portrait(){
+    if(window.ChenshouGuide)return window.ChenshouGuide.portrait();
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 80 90');svg.setAttribute('role','img');svg.setAttribute('aria-label','陈寿史官插画，非历史肖像');svg.setAttribute('class','character-portrait');
+    const paths=['M10 84Q10 56 40 55Q70 56 70 84Z','M26 27Q25 13 40 13Q56 13 54 29L52 46Q40 60 28 46Z','M25 22V10H55V22ZM19 62H40V83H19ZM23 66H36M23 72H36'];
     paths.forEach((d,i)=>{const path=document.createElementNS(svg.namespaceURI||'http://www.w3.org/2000/svg','path');path.setAttribute('d',d);path.setAttribute('class','portrait-layer layer-'+i);svg.append(path);});return svg;
   }
-  function sync(chat){window.ChenshouGuide?.refresh();$('#character-notice').textContent=chat.characterNotice||'';$('#character-mode').value=getMode();const name=profiles[chat.persona]?chat.persona:'陈寿';$('#character-select').value=name;const box=$('#character-card');box.replaceChildren(portrait(name),node('strong','',name+' · '+profiles[name].style),node('p','',profiles[name].basis));const story=window.SGT_STORIES?.find(s=>s.id===profiles[name].story);if(story)box.append(button('相关主题：'+story.title,()=>window.SGTStoryUI.openStory(story.id)));}
+  function sync(chat){window.ChenshouGuide?.refresh();$('#character-notice').textContent=chat.characterNotice||'';$('#character-mode').value=getMode();}
   function context(){return window.CulturalNode?.getContext()||($('#story-view').hidden===false?window.SGTStoryUI?.getContext():null)||window.StoryMap?.getContext()||window.SGTStoryUI?.getContext()||{};}
   const modeMap={'大众体验版':'大众','亲子故事版':'亲子','学术探索版':'学术'};
   function getMode(){const story=context().story;if(!story&&window.CulturalNode?.getContext())return window.CulturalNode.getMode();return (story&&window.StoryProgress?window.StoryProgress.get(story).mode:chats[active].readingMode)||'大众体验版';}
   function backendMode(){return modeMap[getMode()]||'大众';}
+  function normalizeHistory(history){
+    // 旧失败消息只迁移向导元信息；保留问题、原回答和请求中的章节/模式快照。
+    return history.map((entry,index)=>{
+      if(typeof entry.content!=='string'||!/^【人物视角：[^】]+】/.test(entry.content))return entry;
+      let content=entry.content.replace(/^【人物视角：[^】]+】/,'【人物视角：陈寿】');
+      const mode=content.indexOf(' 讲解模式：');
+      if(index===history.length-1&&entry.role==='user'&&mode>=0&&content.includes('这是AI人物解读，不是本人原话。'))content='【人物视角：陈寿】'+guideStyle+content.slice(mode);
+      return {...entry,content};
+    });
+  }
   function setMode(mode){if(!modeMap[mode])return;const story=context().story;if(story&&window.StoryProgress){window.StoryProgress.get(story).mode=mode;window.StoryProgress.save(story);}else {chats[active].readingMode=mode;if(window.CulturalNode?.getContext())window.CulturalNode.changeMode(mode);}sync(chats[active]);}
   // 探索志优先使用请求中保存的操作；旧消息使用同一分类器。
   const isComparison=text=>/历史上|正史|演义|真是这样|史实/.test(String(text).split('\n')[0]);
   function prepare(chat,text){
     const userQuestion=text.split('\n')[0];
     const compare=isComparison(userQuestion);
-    const discovered=!compare&&Object.keys(profiles).find(name=>new RegExp('(?:想|要|希望).{0,4}了解'+name).test(userQuestion));
-    const discover=Boolean(discovered), theme=discover?window.SGT_STORIES?.find(s=>s.id===profiles[discovered].story):null, city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[discovered];
-    if(discover){chat.characterNotice='已匹配“'+(theme?.title||'人物故事主题')+'”，地图预选'+city+'；当前人物与阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}
-    const persona=profiles[chat.persona]?chat.persona:'陈寿',c=context();
-    const snapshot='【人物视角：'+persona+'】'+profiles[persona].style+' 讲解模式：'+getMode()+'；当前故事线：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';
+    const discovered=!compare&&Object.keys(themes).find(name=>new RegExp('(?:想|要|希望).{0,4}了解'+name).test(userQuestion));
+    const discover=Boolean(discovered), theme=discover?window.SGT_STORIES?.find(s=>s.id===themes[discovered].story):null, city=themes[discovered]?.city;
+    if(discover){chat.characterNotice='已匹配“'+(theme?.title||'人物故事主题')+'”，地图预选'+city+'；阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}
+    const persona='陈寿',c=context();
+    const snapshot='【人物视角：'+persona+'】'+guideStyle+' 讲解模式：'+getMode()+'；当前故事线：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';
     if(compare&&window.CulturalNode?.getContext())window.CulturalNode.compare();
     const rules='这是AI人物解读，不是本人原话。按问题需要区分史料、推断与演义，不机械输出空栏目；史料有出处时提供实际来源，C级不能独立支撑史实。不编造引文或把演义当亲历。背景只作辅助，当前用户问题优先，不要复述内部背景。';
     return {persona,discovered,storyId:c.story?.id,mode:backendMode(),context:snapshot+rules+(window.ChenshouGuide?.requestContext(text)||'')+(discover?' 请介绍“'+(theme?.title||'人物故事主题')+'”主题，说明章节和史料仍待补充，并询问游客可用时间（半天/一天/两天）。':''),question:text,preserveMap:compare||discover,action:discover?'discover':compare?'compare':null};
@@ -61,19 +72,17 @@
   function actions(message){
     const box=node('div','character-actions');
     if(window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));
-    if(message.characterAction==='discover'){const name=profiles[message.discovered]?message.discovered:'张飞',id=profiles[name].story,title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题',city={'陈寿':'南充市','诸葛亮':'剑阁县','张飞':'阆中市'}[name];
+    if(message.characterAction==='discover'&&themes[message.discovered]){const {story:id,city}=themes[message.discovered],title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题';
       const question=String(message.originalQuestion||'');
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));
       const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
-      box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})),button('切换到'+name+'视角',()=>selectPersona(name)));}
+      box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
     if(message.characterAction==='discover')box.append(node('p','','故事线推荐 · 你可以打开相关主题，路线不会自动修改。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
     if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     return box;
   }
-  function selectPersona(name){if(!profiles[name])return;chats[active].persona=name;chats[active].characterNotice='已切换为'+name+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';sync(chats[active]);}
-  $('#character-select').addEventListener('change',()=>{selectPersona($('#character-select').value);$('#character-notice').textContent='已切换为'+chats[active].persona+'；故事、章节与地点保持。已发请求仍使用发出时的人物。';});
   $('#character-mode').addEventListener('change',()=>setMode($('#character-mode').value));
-  window.CharacterChat={context,refresh:()=>sync(chats[active]),selectPersona,sync,portrait,prepare,answer,actions,reliable,isComparison,getMode,setMode,backendMode};window.StoryProgress?.subscribe(()=>sync(chats[active]));sync(chats[active]);
+  window.CharacterChat={context,refresh:()=>sync(chats[active]),sync,portrait,prepare,answer,actions,reliable,isComparison,getMode,setMode,backendMode,normalizeHistory};window.StoryProgress?.subscribe(()=>sync(chats[active]));sync(chats[active]);
 })();

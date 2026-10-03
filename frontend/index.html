@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=preference-batch7-final-20261003">
+  <link rel="stylesheet" href="styles.css?v=chat-polish11-20261003">
 </head>
 <body>
   <header class="topbar">
@@ -384,10 +384,7 @@
     </nav>
     <section class="conversation">
       <header class="chat-heading">
-        <div id="historian-heading"><span id="historian-portrait" aria-hidden="true"></span><strong>万卷史官 · 陈寿</strong><span id="historian-state" role="status">陈寿文化向导</span>
-          <strong id="conversation-title">新对话</strong>
-          <span class="sub" data-service-status>正在检查服务…</span>
-        </div>
+        <span id="conversation-title" class="sr-only">新对话</span>
         <button id="close-chat" class="close" aria-label="关闭对话">×</button>
       </header>
       <div id="messages" class="messages" role="log" aria-live="polite"></div>
@@ -399,24 +396,22 @@
           <button class="composer-send" type="submit" aria-label="发送消息">↑</button>
         </div>
       </form>
-      <details class="chat-options"><summary>路线背景与讲解设置</summary><div class="chat-options-body">
+      <details class="chat-options"><summary>讲解设置与当前背景</summary><div class="chat-options-body">
       <details class="historian-context"><summary>当前故事或地点 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
       <details class="historian-note" id="guide-note" hidden open><summary>本章阅读提示</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
-      <section id="character-panel" class="character-panel" aria-label="人物视角">
-        <label for="character-select">当前人物视角</label>
-        <select id="character-select"><option>陈寿</option><option>诸葛亮</option><option>张飞</option></select>
-        <details><summary>人物依据与相关故事</summary><div id="character-card"></div></details>
+      <section id="character-panel" class="character-panel" aria-label="陈寿讲解设置">
         <label for="character-mode">讲解模式</label><select id="character-mode"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select>
         <p>AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志</p><p id="character-notice" role="status"></p>
       </section>
       </div></details>
+      <small class="chat-service-status" data-service-status role="status">正在检查服务…</small>
     </section>
   </aside>
 
   <script src="chat-transport.js?v=deai10-final-20261003"></script>
   <script src="answer-format.js?v=deai10-final-20261003"></script>
   <script src="outing-core.js?v=deai10-final-20261003"></script>
-  <script src="app.js?v=deai10-final-20261003"></script>
+  <script src="app.js?v=chat-polish11-20261003"></script>
   <script src="landing.js?v=deai10-final-20261003"></script>
   <script src="travel-api.js?v=deai10-final-20261003"></script>
   <script src="cities.js?v=deai10-final-20261003"></script>
@@ -426,10 +421,10 @@
   <script src="story-progress.js?v=deai10-final-20261003"></script>
   <script src="stories.js?v=deai10-final-20261003"></script>
   <script src="story-map.js?v=deai10-final-20261003"></script>
-  <script src="cultural-node.js?v=deai10-final-20261003"></script>
-  <script src="character-chat.js?v=deai10-final-20261003"></script>
-  <script src="journal.js?v=deai10-final-20261003"></script>
-  <script src="chenshou-guide.js?v=deai10-final-20261003"></script>
+  <script src="cultural-node.js?v=chat-polish11-20261003"></script>
+  <script src="character-chat.js?v=chat-polish11-20261003"></script>
+  <script src="journal.js?v=chat-polish11-20261003"></script>
+  <script src="chenshou-guide.js?v=chat-polish11-20261003"></script>
   <script src="outing.js?v=deai10-final-20261003"></script>
   <script src="amap-map.js?v=deai10-final-20261003"></script>
   <script src="amap-planner.js?v=deai10-final-20261003"></script>

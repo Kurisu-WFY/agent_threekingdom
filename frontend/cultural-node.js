@@ -127,7 +127,6 @@
   $('#node-enter-story').addEventListener('click',()=>{if(context?.story)window.SGTStoryUI.openStory(context.story.id,context.story);});
   $('#node-ask').addEventListener('click',()=>{
     if(!context)return;
-    window.CharacterChat?.selectPersona('陈寿');
     window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+mode+"）"});
     $('#node-feedback').textContent='已发给陈寿。回答或草稿在当前对话里，资料仍需核验。';
   });

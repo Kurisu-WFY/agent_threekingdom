@@ -38,7 +38,6 @@
     const chat=chats[active], pending=chat.messages.find(m=>m.pending), planning=pending&&/路线|半天|规划|时间/.test(pending.originalQuestion||pending.question||'');
     const state=pending?(planning?'planning':'research'):Date.now()<celebration?'complete':'idle';
     $('#chat-panel').dataset.guideState=state;$('#launcher').dataset.guideState=state;
-    $('#historian-state').textContent={idle:'陈寿文化向导 · 有依据才说史，没依据就留白',research:'陈寿正在整理回答，请稍候',planning:'陈寿正在整理回答，请稍候',complete:'已寻迹 · 已记下这一章'}[state];
   }
   function action(label,fn){const b=node('button',label);b.type='button';b.className='module-button';b.addEventListener('click',fn);$('#guide-actions').append(b);}
   function narrate(c,finished=false){
@@ -68,6 +67,6 @@
     if(added.length){const i=added[added.length-1],chapter=story.chapters[i],place=(window.StoryMap?.getPlaces(story.id)||window.SGT_PLACES||[]).find(p=>p.id===chapter.placeId);celebration=Date.now()+3500;narrate({story,chapter,place,index:i},true);clearTimeout(timer);timer=setTimeout(refresh,3500);}
     refresh();
   });
-  $('#historian-portrait').append(portrait());const launch=$('#launcher');launch.querySelector('svg')?.remove();launch.prepend(portrait());
+  const launch=$('#launcher');launch.querySelector('svg')?.remove();launch.prepend(portrait());
   window.ChenshouGuide={portrait,refresh,enter,requestContext,context};refresh();render();
 })();

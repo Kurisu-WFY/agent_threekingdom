@@ -21,7 +21,7 @@ const guide=ctx.window.ChenshouGuide,progress=ctx.window.StoryProgress;
  const mark=get('#guide-actions').children.find(n=>n.textContent==='标记本章已寻迹');mark.click();assert.equal(progress.get(story).completed.has(0),true);assert.equal(get('#chat-panel').dataset.guideState,'complete');assert.match(text(get('#guide-narration')),/接下来可以读“第2幕”/);assert.match(text(get('#guide-context')),/已寻迹.*昭化古城/);
  get('#guide-actions').children.find(n=>n.textContent==='撤销本章已寻迹').click();assert.equal(progress.get(story).completed.size,0);
  current={story,chapter:story.chapters[1],place:places[1],index:1};guide.enter(current);assert.match(text(get('#guide-narration')),/上章“第1幕”之后/);assert.match(text(get('#guide-transition')),/第 2 幕/);
- const baseline=JSON.stringify(current);ctx.window.CharacterChat.selectPersona('诸葛亮');ctx.window.CharacterChat.setMode('学术探索版');assert.equal(JSON.stringify(current),baseline);assert.match(text(get('#guide-context')),/学术探索版/);
+ const baseline=JSON.stringify(current);assert.equal(ctx.window.CharacterChat.prepare({persona:'诸葛亮'},'普通问题').persona,'陈寿');ctx.window.CharacterChat.setMode('学术探索版');assert.equal(JSON.stringify(current),baseline);assert.match(text(get('#guide-context')),/学术探索版/);
  progress.get(story).completed.add(0);progress.save(story);
  run("send('我只有半天')");assert.equal(requests.length,1);assert.equal(get('#chat-panel').dataset.guideState,'planning');assert.match(text(run('bubbleNode(chats[active].messages.at(-1))')),/正在整理回答/);
  assert.match(requests[0].body.history.at(-1).content,/已寻迹节点.*昭化古城/);assert.match(requests[0].body.history.at(-1).content,/核心章节由游客选择/);assert.equal(requests[0].body.mode,'学术');

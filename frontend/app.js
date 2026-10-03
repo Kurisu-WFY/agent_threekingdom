@@ -23,6 +23,7 @@ let deletedChat = null;
 function deleteChat(chat) {
   const index = chats.indexOf(chat);
   if (index < 0 || chats.length <= 1) return;
+  if (!window.confirm('确认删除“' + chat.title + '”对话？删除后可撤销。')) return;
   saveDraft();
   const current = chats[active];
   deletedChat = { chat, index };
@@ -174,7 +175,7 @@ function messageNode(message) {
   row.className = 'message ' + (message.role === 'user' ? 'user' : 'assistant');
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  if (message.persona && message.role !== 'user' && window.CharacterChat) avatar.append(window.CharacterChat.portrait(message.persona));
+  if (message.role !== 'user' && window.CharacterChat) avatar.append(window.CharacterChat.portrait());
   else if (message.role !== 'user' && window.ChenshouGuide) avatar.append(window.ChenshouGuide.portrait());
   else avatar.textContent = message.role === 'user' ? '你' : '寿';
   const body = document.createElement('div');
@@ -183,7 +184,7 @@ function messageNode(message) {
   identity.className = 'message-identity';
   const name = document.createElement('span');
   name.className = 'message-name';
-  name.textContent = message.role === 'user' ? '你' : message.persona || '陈寿';
+  name.textContent = message.role === 'user' ? '你' : '陈寿';
   identity.append(avatar, name);
   const scope = message.role === 'assistant' && !message.pending && !message.error && budgetScope(message.data);
   if (scope) body.append(tag(scope));
@@ -290,10 +291,75 @@ function renderHistory(focusChat = null, focusEditor = false) {
   });
   document.querySelector('#conversation-title').textContent = chats[active].title;
 }
+const revealedAnswers = new WeakSet();
+function revealAnswer(message, row) {
+  // 完整回答首次显示时播放一次；历史重绘、用户消息、错误与减少动态偏好直接显示。
+  if (message.role !== 'assistant' || !message.data || message.pending || message.error || revealedAnswers.has(message) || panel.hidden || !document.createTreeWalker) return;
+  revealedAnswers.add(message);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const bubble = row.querySelector('.bubble');
+  bubble.classList.add('answer-measuring');
+  window.requestAnimationFrame(() => {
+    if (!bubble.isConnected) return;
+    try {
+      const walker = document.createTreeWalker(bubble, NodeFilter.SHOW_TEXT);
+      const range = document.createRange(), chunks = [];
+      // 先完成布局测量再写 DOM；按 Unicode 字符边界分段，保留格式和原链接节点。
+      for (let textNode = walker.nextNode(); textNode; textNode = walker.nextNode()) {
+        const text = textNode.textContent;
+        if (!text.trim()) continue;
+        const offsets = [0];
+        for (const char of text) offsets.push(offsets.at(-1) + char.length);
+        const rectAt = i => {
+          range.setStart(textNode, offsets[i]); range.setEnd(textNode, offsets[i + 1]);
+          return range.getBoundingClientRect();
+        };
+        const parts = [];
+        for (let start = 0; start < offsets.length - 1;) {
+          const top = rectAt(start).top;
+          let low = start, high = offsets.length - 2;
+          while (low < high) {
+            const mid = Math.ceil((low + high) / 2);
+            if (Math.abs(rectAt(mid).top - top) < 1) low = mid;
+            else high = mid - 1;
+          }
+          parts.push({top, text: text.slice(offsets[start], offsets[low + 1])});
+          start = low + 1;
+        }
+        chunks.push({textNode, parts});
+      }
+      const tops = [];
+      chunks.flatMap(chunk => chunk.parts).sort((a, b) => a.top - b.top).forEach(part => {
+        let line = tops.findIndex(top => Math.abs(top - part.top) < 8);
+        if (line < 0) { line = tops.length; tops.push(part.top); }
+        part.line = line;
+      });
+      chunks.forEach(({textNode, parts}) => {
+        const fragment = document.createDocumentFragment();
+        parts.forEach(part => {
+          const span = document.createElement('span');
+          span.className = 'answer-line'; span.dataset.line = String(part.line);
+          span.style.animationDelay = part.line * 85 + 'ms';
+          span.textContent = part.text; fragment.append(span);
+        });
+        textNode.replaceWith(fragment);
+      });
+      // 超过消息视口的回答从首行开始读，避免只看到尚未淡入的尾部。
+      if (row.offsetHeight > messages.clientHeight - 44) {
+        messages.scrollTop += row.getBoundingClientRect().top - messages.getBoundingClientRect().top - 44;
+      }
+    } finally { bubble.classList.remove('answer-measuring'); }
+  });
+}
+
 function render() {
   renderHistory();
   messages.replaceChildren();
-  chats[active].messages.forEach(message => messages.append(messageNode(message)));
+  chats[active].messages.forEach(message => {
+    const row = messageNode(message);
+    messages.append(row);
+    revealAnswer(message, row);
+  });
   messages.scrollTop = messages.scrollHeight;
   document.querySelector('#conversation-title').textContent = chats[active].title;
   updateComposer();
@@ -432,7 +498,7 @@ window.SGTChat = { async request(text, routePreferences) {
   const message = typeof text === 'string' ? text.trim() : '';
   if (!message) throw new Error('请先填写出行需求。');
   const history = chats[active].messages.filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text)}));
+    .map(item => ({role:item.role === 'user' ? 'user' : 'assistant', content:(item.persona ? '【人物视角：陈寿】' : '') + (item.requestText || item.text)}));
   const data = await ask(message, history, routePreferences?.explanation || window.CharacterChat?.backendMode() || '大众', routePreferences);
   if (!data || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error('没有收到有效回答，请重试。');
   return data;
@@ -451,7 +517,7 @@ function send(text, options = {}) {
   const chat = chats[active];
   const history = chat.messages
     .filter(item => item.text && !item.error && !item.pending)
-    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：' + item.persona + '】' : '') + (item.requestText || item.text) }));
+    .map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: (item.persona ? '【人物视角：陈寿】' : '') + (item.requestText || item.text) }));
 
   const visible=options.displayText?.trim() || trimmed;
   let requestText=trimmed, queuedActivity=null;
@@ -479,6 +545,10 @@ function send(text, options = {}) {
 
 function requestReply(chat, reply) {
   if (chat.pending) return;
+  if (reply.persona && reply.persona !== '陈寿' && window.CharacterChat) {
+    reply.history = window.CharacterChat.normalizeHistory(reply.history);
+    reply.persona = '陈寿';
+  }
   chat.pending = true;
   reply.pending = true;
   reply.error = false;
