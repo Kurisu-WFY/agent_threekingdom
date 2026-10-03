@@ -71,7 +71,7 @@
   }
   function actions(message){
     const box=node('div','character-actions');
-    if(window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));
+    if(window.AmapChat?.hasMentions(message.text||'')||window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.AmapChat?window.AmapChat.showMentions(message.text):window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));
     if(message.characterAction==='discover'&&themes[message.discovered]){const {story:id,city}=themes[message.discovered],title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题';
       const question=String(message.originalQuestion||'');
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));

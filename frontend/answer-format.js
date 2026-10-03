@@ -24,7 +24,8 @@
       const token=match[0];
       if(token.startsWith('`'))parent.append(element('code',token.slice(1,-1)));
       else if(token.startsWith('**')){const strong=element('strong');if(decorateText)strong.append(decorateText(token.slice(2,-2)));else strong.textContent=token.slice(2,-2);parent.append(strong);}
-      else {const parts=/^\[([^\]]+)\]\((.+)\)$/.exec(token);const a=element('a',parts[1]);a.href=parts[2];a.target='_blank';a.rel='noopener noreferrer';parent.append(a);}
+      else {const parts=/^\[([^\]]+)\]\((.+)\)$/.exec(token);const a=element('a',parts[1]);a.href=parts[2];a.target='_blank';a.rel='noopener noreferrer';
+        if(typeof a.addEventListener==='function')a.addEventListener('click',event=>{const params=root.AmapChat?.routeParams(parts[2]);if(params&&root.AmapPlanner?.openRoute(params))event.preventDefault();});parent.append(a);}
       end=match.index+token.length;
     }
     if(end<text.length)parent.append(decorateText?decorateText(text.slice(end)):element('span',text.slice(end)));

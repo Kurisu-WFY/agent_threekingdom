@@ -5,8 +5,14 @@
   let version = 0;
   const make = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   const status = text => { $('amap-status').textContent = text; };
-  const clear = () => { version++; $('amap-results').replaceChildren(); window.AmapRouteMap?.clear(); };
-  window.AmapPlanner={prefill({origin='',destination='',city=''}){
+  const clear = () => { version++; window.AmapChat?.cancel(); $('amap-results').replaceChildren(); window.AmapRouteMap?.clear(); };
+  window.AmapPlanner={openRoute(params){
+    if(!/^[A-Za-z0-9]{5,40}$/.test(params.origin_id||'')||!/^[A-Za-z0-9]{5,40}$/.test(params.destination_id||'')||!['transit','walking','driving'].includes(params.mode))return false;
+    window.toggleChat?.(false);window.showContentView?.('outing');
+    document.querySelector('#outing-view > details').open=true;
+    queryRoute(params);return true;
+  },prefill({origin='',destination='',city=''}){
+    window.AmapChat?.cancel();
     clear();$('amap-route-form').hidden=true;
     $('amap-origin-query').value=origin;$('amap-destination-query').value=destination;$('amap-city').value=city;
     for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}
@@ -35,12 +41,14 @@
     finally {button.disabled=false;}
   };
   async function queryRoute(params) {
+    window.AmapChat?.cancel();
     clear(); const current=version, button=$('amap-route-form').querySelector('button'); button.disabled=true; status('正在查询高德路线…');
     try {
       const r = await api.amapRoute(params);
       if(current!==version) return;
       if(r.status!=='ok' || !r.data?.alternatives?.length) throw Error(r.message || '当前没有可用路线。');
       status(r.message); const d=r.data, target=$('amap-results');
+      $('amap-place-view').hidden=true;
       target.append(make('h3', `${d.origin.name} → ${d.destination.name}`));
       d.alternatives.forEach((p,i) => {
         const details=make('details',''); details.open=i===0;
@@ -53,7 +61,8 @@
         const list=make('ol',''); for(const step of p.steps||[]) list.append(make('li',step)); details.append(list); target.append(details);
       });
       target.append(make('p', '来源：高德地图 · 查询时间：'+new Date(d.queried_at).toLocaleString('zh-CN')));
-      window.AmapRouteMap?.draw(d,0);
+      await window.AmapRouteMap?.draw(d,0);
+      if(current===version)$('amap-map-region').scrollIntoView({block:'nearest'});
     } catch(error) {if(current===version) status(error.message || '路线查询失败，请重试。');}
     finally {button.disabled=false;}
   }

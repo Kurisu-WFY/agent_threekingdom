@@ -39,5 +39,20 @@
       note.textContent=lines.length?'高德返回的路段 · 可拖动、缩放；未返回的路段不补画。':'仅显示起终点：本方案未返回道路轨迹，不用直线代替路线。';
     }catch(error){if(current===generation)note.textContent=error.message+'。文字路线仍可查看。';}
   }
-  window.AmapRouteMap={draw,clear};
+  async function drawPlaces(items){
+    clear();const current=generation,region=document.getElementById('amap-map-region'),note=document.getElementById('amap-map-note');
+    region.hidden=false;note.textContent='正在加载高德地点地图…';
+    try{
+      const A=await sdk();if(current!==generation)return;
+      const places=items.filter(p=>p.coordinate_system==='GCJ02'&&typeof p.location==='string'&&p.location.split(',').length===2&&p.location.split(',').map(Number).every(Number.isFinite));
+      if(!places.length)throw Error('没有可定位的高德地点');
+      map=new A.Map('amap-map',{zoom:15,center:places[0].location.split(',').map(Number),viewMode:'2D'});
+      // 标签使用DOM文本，不能将外部地点名称作为HTML插入。
+      const markers=places.map(p=>{const label=document.createElement('span');label.textContent=p.name;return new A.Marker({position:p.location.split(',').map(Number),title:p.name,label:{content:label,direction:'top'}});});
+      map.add(markers);map.setFitView(markers,false,[35,35,35,35]);
+      observer=new ResizeObserver(()=>{if(current===generation)map.setFitView(markers,false,[35,35,35,35]);});observer.observe(document.getElementById('amap-map'));
+      note.textContent='高德搜索候选地点 · 请核对名称和地址；地点标记不是已规划的道路路线。';
+    }catch(error){if(current===generation)note.textContent=error.message+'。可查看地点文字资料并重试。';}
+  }
+  window.AmapRouteMap={draw,drawPlaces,clear};
 })();
