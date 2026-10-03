@@ -1,41 +1,41 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-class Element{constructor(tag='div'){this.tag=tag;this.children=[];this.attrs={};this.handlers={};this.textContent='';this.style={};}append(...n){this.children.push(...n);}replaceChildren(...n){this.children=n;}setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,f){this.handlers[k]=f;}focus(){this.focused=true;}}
+class Element{constructor(tag='div'){this.tag=tag;this.children=[];this.attrs={};this.handlers={};this.textContent='';this.style={};}append(...n){this.children.push(...n);}replaceChildren(...n){this.children=n;}setAttribute(k,v){this.attrs[k]=v;}addEventListener(k,f){this.handlers[k]=f;}focus(){this.focused=true;}querySelectorAll(selector){return flatten(this).slice(1).filter(n=>selector==='details'&&n.tag==='details');}}
 const flatten=n=>[n,...n.children.flatMap(flatten)],text=n=>flatten(n).map(x=>x.textContent).join(' ');
-function setup({saved={},blocked=false,broken=false}={}){
+function setup({saved={},blocked=false,broken=false,additionalStories=[]}={}){
  const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);},views=[],map=[];
  const store={...saved};if(broken)store['sgt.journal.questions.v1']='{broken';
  const story={id:'shudao-xunzong',title:'蜀道寻踪',chapters:[{name:'剑门',placeId:'pass',people:['诸葛亮'],events:['示例事件']},{name:'古道',placeId:'road',people:[],events:[]}]};
- const chats=[{messages:[{role:'assistant',text:'欢迎'}]}];const window={localStorage:{getItem:k=>{if(blocked)throw Error('blocked');return store[k]||null;},setItem:(k,v)=>{if(blocked)throw Error('blocked');store[k]=v;}},SGT_STORIES:[story,{id:'zhangfei',title:'镇守阆中·寻迹张飞',chapters:[]}],SGT_PLACES:[{id:'pass',name:'剑门关',building:'pass'},{id:'road',name:'古道',building:'road'}],SGTStoryUI:{icon:()=>new Element('svg'),openStory:id=>views.push(id)},StoryMap:{describePlace:p=>({point:p.id==='pass'?{name:'剑阁县',center:[105,32]}:null,exact:false})},TravelMap:{focusStoryPoint:p=>map.push(p)},MapRouteCore:{project:c=>c},CulturalNode:{openPlace:id=>views.push(id)}};
+ const chats=[{messages:[{role:'assistant',text:'欢迎'}]}];const window={localStorage:{getItem:k=>{if(blocked)throw Error('blocked');return store[k]||null;},setItem:(k,v)=>{if(blocked)throw Error('blocked');store[k]=v;}},SGT_STORIES:[story,{id:'zhangfei',title:'镇守阆中·寻迹张飞',chapters:[]},...additionalStories],SGT_PLACES:[{id:'pass',name:'剑门关',building:'pass'},{id:'road',name:'古道',building:'road'}],SGTStoryUI:{icon:()=>new Element('svg'),openStory:id=>views.push(id)},StoryMap:{describePlace:p=>({point:p.id==='pass'?{name:'剑阁县',center:[105,32]}:null,exact:false})},TravelMap:{focusStoryPoint:p=>map.push(p)},MapRouteCore:{project:c=>c},CulturalNode:{openPlace:id=>views.push(id)}};
  const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},chats,showContentView:v=>views.push(v)};
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);vm.runInNewContext(fs.readFileSync(__dirname+'/journal.js','utf8'),ctx);
  return {get,window,story,chats,store,views,map};
 }
 const t=setup(),journal=t.window.ExplorationJournal,progress=t.window.StoryProgress;
-assert.ok(text(t.get('#journal-empty')).includes('你还没开始读故事'));assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('兴趣记录还不够'));
+assert.ok(text(t.get('#journal-empty')).includes('去读一条故事线、问陈寿一个问题，这里就会记下来'));assert.match(text(t.get('#journal-overview')),/已寻迹 0 幕 · 读完 0 条 · 还有 2 条待探索/);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('兴趣记录还不够'));
 t.get('#journal-empty').children.at(-1).handlers.click();assert.deepEqual(t.views,['story']);
 const s=progress.get(t.story);s.started=true;s.current=1;s.completed.add(0);progress.save(t.story);
 assert.equal(journal.model().explored.length,1);assert.equal(journal.model().people[0],'诸葛亮');assert.equal(journal.model().events[0],'示例事件');assert.ok(text(t.get('#journal-book')).includes('第 2 / 2 幕'));assert.ok(text(t.get('#journal-book')).includes('驻地示意'));assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);
 s.completed.add(1);progress.save(t.story);assert.equal(journal.model().completed.length,1);assert.equal(journal.model().explored.length,2);assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);s.completed.delete(0);progress.save(t.story);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,0);
 const q={role:'user',text:'历史上的张飞与演义有什么不同？',persona:'陈寿'};t.chats[0].messages.push(q,{role:'assistant',characterAction:'compare'});journal.sync(t.chats);journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,1);assert.equal(journal.model().next.story.id,'zhangfei');assert.ok(journal.model().reason.includes('张飞'));assert.equal(journal.model().people.length,0);
-t.get('#journal-next').handlers.click();assert.ok(!text(t.get('#journal-book')).includes('people / events'),'U08 no internal fields');assert.ok(text(t.get('#journal-book')).includes('已完成章节的人物与事件'));assert.ok(text(t.get('#journal-book')).includes('人物（0）'));assert.ok(text(t.get('#journal-book')).includes(q.text));assert.ok(text(t.get('#journal-book')).includes('正史 × 演义探索'));assert.equal(t.get('#journal-page-number').textContent,'第 2 / 3 页');
+assert.ok(!text(t.get('#journal-book')).includes('people / events'),'U08 no internal fields');assert.ok(text(t.get('#journal-book')).includes('已完成章节的人物与事件'));assert.ok(text(t.get('#journal-book')).includes('人物（0）'));assert.ok(text(t.get('#journal-book')).includes(q.text));assert.ok(text(t.get('#journal-book')).includes('正史 × 演义探索'));
 journal.sync([]);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,0);journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,1);
-const reload=setup({saved:t.store});reload.get('#journal-next').handlers.click();assert.ok(text(reload.get('#journal-book')).includes(q.text));assert.equal(reload.window.ExplorationJournal.model().explored.length,1);
+const reload=setup({saved:t.store});assert.ok(text(reload.get('#journal-book')).includes(q.text));assert.equal(reload.window.ExplorationJournal.model().explored.length,1);
 for(let i=0;i<210;i++)t.chats[0].messages.push({role:'user',text:'问题 '+i});journal.sync(t.chats);assert.equal(JSON.parse(t.store['sgt.journal.questions.v1']).length,200);
-const failure=setup({blocked:true});failure.chats[0].messages.push({role:'user',text:'存储失败仍可看'});failure.window.ExplorationJournal.sync(failure.chats);failure.get('#journal-next').handlers.click();assert.ok(text(failure.get('#journal-book')).includes('存储失败仍可看'));assert.ok(failure.get('#journal-local-notice').textContent.includes('仅本页保留'));
+const failure=setup({blocked:true});failure.chats[0].messages.push({role:'user',text:'存储失败仍可看'});failure.window.ExplorationJournal.sync(failure.chats);assert.ok(text(failure.get('#journal-book')).includes('存储失败仍可看'));assert.ok(failure.get('#journal-local-notice').textContent.includes('仅本页保留'));
 const corrupt=setup({broken:true});assert.ok(corrupt.get('#journal-local-notice').textContent.includes('读取失败'));assert.equal(corrupt.window.ExplorationJournal.model().completed.length,0);
-console.log('PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, book pagination, corrupt/blocked storage');
+console.log('PASS: honest empty state, real chapter completion/undo, people/events gating, verified county footprint only, local question dedupe/reload/delete/undo/cap, interest-based reason, single-page rendering, corrupt/blocked storage');
 
-const old=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'old-prompt',text:'请生成三国文化活动方案，只输出活动安排。出发地：南充站；目的地：南充；可用时间：一天；不要编造实时交通。'}])}});old.get('#journal-next').handlers.click();assert.ok(!text(old.get('#journal-book')).includes('只输出活动安排'),'U01 old generated prompts are presented as visitor summaries');
-const legacy=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'legacy',text:'请由智能体为我生成三国文化活动方案，只输出活动安排。\n出发地：南充站；目的地：南充；游玩时间：一日；先检索文化资料。'}])}});legacy.get('#journal-next').handlers.click();assert.ok(!text(legacy.get('#journal-book')).includes('只输出活动安排'),'U01 earlier form records also show summary');
+const old=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'old-prompt',text:'请生成三国文化活动方案，只输出活动安排。出发地：南充站；目的地：南充；可用时间：一天；不要编造实时交通。'}])}});assert.ok(!text(old.get('#journal-book')).includes('只输出活动安排'),'U01 old generated prompts are presented as visitor summaries');
+const legacy=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'legacy',text:'请由智能体为我生成三国文化活动方案，只输出活动安排。\n出发地：南充站；目的地：南充；游玩时间：一日；先检索文化资料。'}])}});assert.ok(!text(legacy.get('#journal-book')).includes('只输出活动安排'),'U01 earlier form records also show summary');
 
 const copyJournalFailures=[];
 for(const recordedAt of ['2026-02-30T01:00:00Z','2026-04-31T01:00:00+08:00']){
- const invalid=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'invalid',text:'非法时间',recordedAt}])}});invalid.get('#journal-next').handlers.click();
+ const invalid=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([{id:'invalid',text:'非法时间',recordedAt}])}});
  assert.match(text(invalid.get('#journal-book')),/记录时间：待确认/,'C05 不将非法日期滚动成有效日期');
 }
 for(const [code,fn] of [
- ['C05',()=>{const raw={id:'clock',text:'时间样本',recordedAt:'2026-10-02T17:05:03.481Z'};const clock=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([raw])}});clock.get('#journal-next').handlers.click();assert.match(text(clock.get('#journal-book')),/记录时间：2026年10月03日 01:05（北京时间）/);assert.equal(JSON.parse(clock.store['sgt.journal.questions.v1'])[0].recordedAt,raw.recordedAt);}],
- ['C07',()=>{const raw='请生成巴中三国文化活动方案。先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。';const oldRecord={id:'old-city',text:raw};const oldCity=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([oldRecord,{id:'normal',text:'请生成巴中三国文化活动方案。希望多看古建筑。'}])}});oldCity.get('#journal-next').handlers.click();assert.match(text(oldCity.get('#journal-book')),/请安排巴中的文化活动/);assert.match(text(oldCity.get('#journal-book')),/希望多看古建筑/);assert.equal(JSON.parse(oldCity.store['sgt.journal.questions.v1'])[0].text,raw);assert.doesNotMatch(text(oldCity.get('#journal-book')),/先确认出发地/);}]
+ ['C05',()=>{const raw={id:'clock',text:'时间样本',recordedAt:'2026-10-02T17:05:03.481Z'};const clock=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([raw])}});assert.match(text(clock.get('#journal-book')),/记录时间：2026年10月03日 01:05（北京时间）/);assert.equal(JSON.parse(clock.store['sgt.journal.questions.v1'])[0].recordedAt,raw.recordedAt);}],
+ ['C07',()=>{const raw='请生成巴中三国文化活动方案。先确认出发地、时间与人数，再检索文化资料，只说明景点与活动顺序、每项时长、文化讲解要点。不要编造实时交通、开放时段或空位。缺少本地模板不代表该城市没有文化景点；资料不足请说明。';const oldRecord={id:'old-city',text:raw};const oldCity=setup({saved:{'sgt.journal.questions.v1':JSON.stringify([oldRecord,{id:'normal',text:'请生成巴中三国文化活动方案。希望多看古建筑。'}])}});assert.match(text(oldCity.get('#journal-book')),/请安排巴中的文化活动/);assert.match(text(oldCity.get('#journal-book')),/希望多看古建筑/);assert.equal(JSON.parse(oldCity.store['sgt.journal.questions.v1'])[0].text,raw);assert.doesNotMatch(text(oldCity.get('#journal-book')),/先确认出发地/);}]
 ]){try{fn();}catch(e){copyJournalFailures.push(code+': '+e.message);}}
 assert.equal(copyJournalFailures.join('\n'),'');
 
@@ -48,3 +48,24 @@ assert.equal((ninthHeader.match(/不代表实际到访/g)||[]).length,0,'C20 bou
 assert.ok(ninthHtml.includes('未标记完成的章节显示待探索'),'C13 chapter progress is not physical arrival');
 assert.ok(ninthHtml.includes('读史请核对依据：'),'C19 cautious introduction');
 assert.ok(ninthHtml.includes('票价、天气与班次等动态信息，出发前请再核验'));
+
+// Missing grouping, wrong sorting or stale totals must fail with real progress state.
+const extra={id:'fresh',title:'未开始的两幕故事',chapters:[{name:'新章一'},{name:'新章二'}]},mixed=setup({additionalStories:[extra]});
+const ms=mixed.window.StoryProgress.get(mixed.story);ms.started=true;ms.current=1;ms.completed.add(0);mixed.window.StoryProgress.save(mixed.story);
+const cards=()=>flatten(mixed.get('#journal-book')).filter(n=>n.className?.split(' ').includes('journal-story'));
+assert.deepEqual(cards().map(n=>text(n.children.find(c=>c.tag==='h3'))),['蜀道寻踪','镇守阆中·寻迹张飞','未开始的两幕故事']);
+assert.match(text(mixed.get('#journal-overview')),/已寻迹 1 幕 · 读完 0 条 · 还有 3 条待探索/);
+const details=()=>mixed.get('#journal-book').querySelectorAll('details');
+assert.equal(details().length,3);assert.ok(details().every(d=>!d.open),'records collapsed by default');
+assert.deepEqual(details().map(d=>d.children[0].textContent),['我问过的问题 (0)','感兴趣的主题 (2)','解锁的人物与事件 (2)']);
+const questionBlock=details().find(d=>d.id==='journal-questions');questionBlock.open=true;
+mixed.chats[0].messages.push({role:'user',text:'陈寿怎样编纂三国志？'});mixed.window.ExplorationJournal.sync(mixed.chats);
+assert.ok(details().find(d=>d.id==='journal-questions').open,'sync preserves open records');
+assert.equal(details().find(d=>d.id==='journal-questions').children[0].textContent,'我问过的问题 (1)');
+ms.completed.add(1);mixed.window.StoryProgress.save(mixed.story);
+assert.match(text(mixed.get('#journal-overview')),/已寻迹 2 幕 · 读完 1 条 · 还有 2 条待探索/);
+const complete=details().find(d=>d.id==='journal-completed');assert.ok(complete&&!complete.open);assert.equal(complete.children[0].textContent,'已完成的故事线 (1)');
+assert.deepEqual(cards().map(n=>text(n.children.find(c=>c.tag==='h3'))),['镇守阆中·寻迹张飞','未开始的两幕故事','蜀道寻踪']);
+flatten(complete).find(n=>n.tag==='button'&&n.textContent==='继续阅读').handlers.click();assert.equal(mixed.views.at(-1),'shudao-xunzong');
+flatten(mixed.get('#journal-recommendation')).find(n=>n.tag==='button').handlers.click();assert.equal(mixed.views.at(-1),mixed.window.ExplorationJournal.model().next.story.id);
+console.log('PASS: overview totals, reading/pending/completed ordering, collapsed records and completed stories, expansion preserved through sync, reading/recommendation actions');

@@ -1,0 +1,134 @@
+{
+  "source": "真实 localhost:8002 / Edge Chromium，1920×1080；本地进度与提问使用标注夹具，无接口拦截",
+  "time": "2026-10-03T02:05:02.724Z",
+  "checks": [
+    {
+      "name": "空态总览、开始引导、三记录默认收起、无三卷翻页",
+      "passed": true,
+      "detail": {
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920,
+        "viewWidth": 1838,
+        "viewScrollWidth": 1838
+      }
+    },
+    {
+      "name": "真实故事进度、首卡排序、足迹 SVG 与节点列表保留",
+      "passed": true,
+      "detail": {
+        "titles": [
+          "蜀汉北境·蜀道寻踪",
+          "从南充少年到三国史家",
+          "镇守阆中·寻迹张飞",
+          "从史书到现场",
+          "正史里的三国"
+        ],
+        "layout": {
+          "width": 1920,
+          "height": 1080,
+          "scrollWidth": 1920,
+          "viewWidth": 1838,
+          "viewScrollWidth": 1838
+        }
+      }
+    },
+    {
+      "name": "记录可展开、数量与详情、同步保留展开",
+      "passed": true,
+      "detail": [
+        "我问过的问题 (2)",
+        "感兴趣的主题 (6)",
+        "解锁的人物与事件 (0)"
+      ]
+    },
+    {
+      "name": "继续阅读、重读节点和在地图查看跳转",
+      "passed": true
+    },
+    {
+      "name": "已完成单独折叠、展开可重读、推荐保留",
+      "passed": true
+    },
+    {
+      "name": "刷新保留本地进度与提问、重新进入默认收起",
+      "passed": true
+    },
+    {
+      "name": "关闭/打开陈寿栏均无横向溢出",
+      "passed": true,
+      "detail": {
+        "closed": {
+          "width": 1920,
+          "height": 1080,
+          "scrollWidth": 1920,
+          "viewWidth": 1838,
+          "viewScrollWidth": 1838
+        },
+        "open": {
+          "width": 1920,
+          "height": 1080,
+          "scrollWidth": 1920,
+          "viewWidth": 1158,
+          "viewScrollWidth": 1158
+        }
+      }
+    },
+    {
+      "name": "改动资源 SHA256 与 8002 一致",
+      "passed": true,
+      "detail": [
+        {
+          "file": "index.html",
+          "status": 200,
+          "local": "55ea12fcc8db882db4de6038833964d420bfb3bd84de595fb17d07d2b2c718ae",
+          "served": "55ea12fcc8db882db4de6038833964d420bfb3bd84de595fb17d07d2b2c718ae",
+          "match": true
+        },
+        {
+          "file": "journal.js",
+          "status": 200,
+          "local": "d5fa6fca12b8caade7bec99fc71f7912eca5b4de1531033fc184e55895dd4a23",
+          "served": "d5fa6fca12b8caade7bec99fc71f7912eca5b4de1531033fc184e55895dd4a23",
+          "match": true
+        },
+        {
+          "file": "styles.css",
+          "status": 200,
+          "local": "9fa38471516ed271923f56ae24d5838abafda046ad40fef266728af6c7a0d74b",
+          "served": "9fa38471516ed271923f56ae24d5838abafda046ad40fef266728af6c7a0d74b",
+          "match": true
+        }
+      ]
+    },
+    {
+      "name": "Console 零报错",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "resources": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "local": "55ea12fcc8db882db4de6038833964d420bfb3bd84de595fb17d07d2b2c718ae",
+      "served": "55ea12fcc8db882db4de6038833964d420bfb3bd84de595fb17d07d2b2c718ae",
+      "match": true
+    },
+    {
+      "file": "journal.js",
+      "status": 200,
+      "local": "d5fa6fca12b8caade7bec99fc71f7912eca5b4de1531033fc184e55895dd4a23",
+      "served": "d5fa6fca12b8caade7bec99fc71f7912eca5b4de1531033fc184e55895dd4a23",
+      "match": true
+    },
+    {
+      "file": "styles.css",
+      "status": 200,
+      "local": "9fa38471516ed271923f56ae24d5838abafda046ad40fef266728af6c7a0d74b",
+      "served": "9fa38471516ed271923f56ae24d5838abafda046ad40fef266728af6c7a0d74b",
+      "match": true
+    }
+  ]
+}

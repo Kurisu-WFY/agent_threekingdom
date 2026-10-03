@@ -1,0 +1,17 @@
+{
+  "base": "9c2647b",
+  "checks": [
+    {
+      "name": "本地记录读取/时间/同步/推荐/兴趣/人物事件",
+      "unchanged": true,
+      "baseSHA256": "7d6e5e1d559be33de26ad6319125f3e34c4829cd9d4c14b27a1dde4c35f8fb7e",
+      "currentSHA256": "7d6e5e1d559be33de26ad6319125f3e34c4829cd9d4c14b27a1dde4c35f8fb7e"
+    },
+    {
+      "name": "足迹SVG计算",
+      "unchanged": true,
+      "baseSHA256": "54b31116d1fb067110386706d1d4e0c5a041cdb960fedc1b398755a78933c286",
+      "currentSHA256": "54b31116d1fb067110386706d1d4e0c5a041cdb960fedc1b398755a78933c286"
+    }
+  ]
+}

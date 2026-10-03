@@ -95,7 +95,8 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
    assert.equal(body.mode,'学术');assert.equal(body.story_id,'shudao-xunzong');return body;
  });
  await check('探索志不再提示切换向导',async()=>{
-   await page.evaluate(()=>{showContentView('journal');document.querySelector('#journal-next').click();});
+   await page.evaluate(()=>showContentView('journal'));
+   await page.locator('#journal-questions summary').click();
    assert.doesNotMatch(await page.locator('#journal-book').innerText(),/切换人物|问过陈寿、诸葛亮或张飞/);
    await page.evaluate(()=>showContentView('welcome'));
  });
