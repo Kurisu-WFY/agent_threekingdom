@@ -78,7 +78,7 @@ assert.ok(/@media\(min-width:1051px\)\s*\{\s*\.content\s*\{\s*height:calc\(100dv
 assert.ok(/\.map-view\s*>\s*p,\s*\.module-view\s*>\s*p\s*\{\s*max-inline-size:var\(--measure-reading\)/.test(css),'wide workspace keeps direct prose readable');
 assert.ok(/id="node-compare"[^>]*>阅读对照材料</.test(html),'local comparison reads material');
 assert.ok(/id="chapter-compare"[^>]*>请陈寿解释区别</.test(html),'chat comparison sends a question');
-assert.ok(/id="travel-back"[^>]*data-content-view="planner"[^>]*>返回活动需求</.test(html),'weather returns to activity domain');
+assert.ok(html.includes('class="inline-weather"'),'weather remains inside the activity domain');
 assert.ok(fs.readFileSync(__dirname+'/stories.js','utf8').includes("action('带入活动计划'"),'story activity entry uses shared wording');
 assert.ok(fs.readFileSync(__dirname+'/chenshou-guide.js','utf8').includes("'请陈寿解释区别'"),'guide comparison uses the shared question-action label');
 assert.ok(/\.content-footer\s*\{\s*padding:0 var\(--space-4\)/.test(css),'footer uses measured compact height');

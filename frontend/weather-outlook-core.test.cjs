@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+assert.ok(fs.existsSync(path.join(__dirname,'weather-outlook-core.js')),'缺少三日天气与图标的日期/数据转换');
+const core=require('./weather-outlook-core.js');
+assert.deepEqual(core.datesFromToday('2026-12-31T16:05:00Z'),['2027-01-01','2027-01-02','2027-01-03']);
+assert.deepEqual(core.datesFromToday('2028-02-27T18:00:00Z'),['2028-02-28','2028-02-29','2028-03-01']);
+assert.equal(core.temperatureRange({temperature_min_c:10.4,temperature_max_c:20.7}),'10～21°C');
+assert.equal(core.temperatureRange({temperature_min_c:-0.4,temperature_max_c:0.4}),'0～0°C');
+for(const x of [{temperature_min_c:null,temperature_max_c:20},{temperature_min_c:21,temperature_max_c:10},{temperature_min_c:'10',temperature_max_c:20}])assert.equal(core.temperatureRange(x),'温度未取得');
+for(const [code,icon,label] of [[0,'sun','晴'],[2,'cloud','多云'],[3,'overcast','阴'],[61,'rain','雨'],[71,'snow','雪'],[45,'fog','雾'],[95,'storm','雷雨'],[96,'storm','雷雨'],[99,'storm','雷雨'],[97,'unknown','状况未取得'],[null,'unknown','状况未取得'],[999,'unknown','状况未取得']])assert.deepEqual(core.condition(code),{icon,label});
+const base={forecast:[{date:'2026-10-02',temperature_min_c:99,temperature_max_c:100},{date:'2026-10-05',temperature_min_c:10.4,temperature_max_c:20.7},{date:'2026-10-03',temperature_min_c:0,temperature_max_c:1.4}]};
+const extra={daily:{time:['2026-10-03','2026-10-04','2026-10-05'],weather_code:[0,61,3]},hourly:{time:['2026-10-03T03:00','2026-10-03T12:00','2026-10-04T08:00','2026-10-05T10:00'],us_aqi:[0,41.8,null,37.1]}};
+const original=JSON.stringify({base,extra});const rows=core.outlook(base,extra,'2026-10-03T01:00:00Z');
+assert.deepEqual(rows.map(r=>r.date),['2026-10-03','2026-10-04','2026-10-05']);
+assert.deepEqual(rows.map(r=>r.temperature),['0～1°C','温度未取得','10～21°C']);
+assert.deepEqual(rows.map(r=>r.aqi),[42,null,37]);assert.deepEqual(rows.map(r=>r.condition.icon),['sun','rain','overcast']);
+assert.equal(JSON.stringify({base,extra}),original,'原服务数据保持不变');
+const missing=core.outlook(base,{},'2026-10-03T01:00:00Z');assert.equal(missing[0].aqi,null);assert.equal(missing[0].condition.icon,'unknown');
+console.log('PASS: Beijing three-day horizon/leap year, missing-day isolation, integer temperature, WMO icons, AQI peak/zero/missing, raw payload unchanged');

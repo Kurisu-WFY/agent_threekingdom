@@ -688,6 +688,14 @@ window.getContentView = () => currentContentView;
 let contentEntrance = null;
 let nodeSource = null;
 function showContentView(view) {
+    if(view==='travel'){
+      const source=currentContentView;
+      showContentView('planner');
+      window.TravelModules?.onEnterTravel?.(source);
+      document.querySelector('#planner-view').scrollTop=0;
+      document.querySelector('#travel-city')?.focus({preventScroll:true});
+      return;
+    }
     const sections = Array.from(document.querySelectorAll('[data-view-panel]'));
     const target = sections.find(section => section.dataset.viewPanel === view);
     if (!target || view === currentContentView) return;
@@ -706,7 +714,6 @@ function showContentView(view) {
     }
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
-    if(view==='travel')window.TravelModules?.onEnterTravel?.(leaving?.dataset.viewPanel);
     if(view==='outing')window.TravelAssistant?.onEnter?.(leaving?.dataset.viewPanel);
     const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气与空气质量', outing:'出发核验', journal:'探索志', node:'文化节点' };
     const taskParent={story:'welcome',plan:'planner',travel:'planner',outing:'planner'};
