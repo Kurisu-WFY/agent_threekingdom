@@ -1,4 +1,0 @@
-const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
-const files=['index.html','styles.css','app.js','travel-api.js','travel-modules.js','weather-outlook-core.js','weather-icons.svg','n8-n9.browser-test.js'],hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-(async()=>{const results=[];for(const file of files){const local=hash(fs.readFileSync(path.join(__dirname,'..',file))),r=await fetch('http://localhost:8002/'+file+'?verify=map-plan12',{cache:'no-store'}),served=hash(Buffer.from(await r.arrayBuffer()));results.push({file,status:r.status,local,served,match:r.status===200&&local===served});}
-fs.writeFileSync(path.join(__dirname,'resource-sha256.json'),JSON.stringify({time:new Date().toISOString(),results},null,2));assert.ok(results.every(r=>r.match));console.log('PASS: '+results.length+' 个改动资源本地与 8002 SHA256 一致');})().catch(e=>{console.error(e);process.exitCode=1;});

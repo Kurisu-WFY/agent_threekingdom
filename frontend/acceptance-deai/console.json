@@ -1,6 +1,0 @@
-{
-  "normal_before_offline": [],
-  "all_logs": [],
-  "expected_fault_test": "真实浏览器临时离线导致fetch失败，未替换响应。在线恢复后真实重试成功。",
-  "unexpected_product_errors": []
-}
