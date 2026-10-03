@@ -1,0 +1,910 @@
+{
+  "kind": "真实浏览器，无天气夹具",
+  "time": "2026-10-03T01:40:11.084Z",
+  "cities": [
+    {
+      "city": "南充",
+      "view": "planner",
+      "status": "南充 · 已完成查询；出发前请再次核验。",
+      "text": "今天 · 2026-10-03\n\n19～24°C\n\n雨\n\nAQI 69\n\n明天 · 2026-10-04\n\n19～22°C\n\n雨\n\nAQI 81\n\n后天 · 2026-10-05\n\n18～24°C\n\n雨\n\nAQI 93\n\n空气污染指数：US 标准，取当日已返回预报时段的峰值。天气与空气均为模型预报、非现场实测；城市中心不代表景区入口。\n\n来源、查询时间与原始说明",
+      "cards": [
+        {
+          "date": "2026-10-03",
+          "temperature": "19～24°C",
+          "condition": "雨",
+          "aqi": "AQI 69"
+        },
+        {
+          "date": "2026-10-04",
+          "temperature": "19～22°C",
+          "condition": "雨",
+          "aqi": "AQI 81"
+        },
+        {
+          "date": "2026-10-05",
+          "temperature": "18～24°C",
+          "condition": "雨",
+          "aqi": "AQI 93"
+        }
+      ],
+      "retry": 0
+    },
+    {
+      "city": "广元",
+      "view": "planner",
+      "status": "广元 · 已完成查询；出发前请再次核验。",
+      "text": "今天 · 2026-10-03\n\n15～28°C\n\n雨\n\nAQI 62\n\n明天 · 2026-10-04\n\n17～26°C\n\n阴\n\nAQI 82\n\n后天 · 2026-10-05\n\n15～25°C\n\n阴\n\nAQI 95\n\n空气污染指数：US 标准，取当日已返回预报时段的峰值。天气与空气均为模型预报、非现场实测；城市中心不代表景区入口。\n\n来源、查询时间与原始说明",
+      "cards": [
+        {
+          "date": "2026-10-03",
+          "temperature": "15～28°C",
+          "condition": "雨",
+          "aqi": "AQI 62"
+        },
+        {
+          "date": "2026-10-04",
+          "temperature": "17～26°C",
+          "condition": "阴",
+          "aqi": "AQI 82"
+        },
+        {
+          "date": "2026-10-05",
+          "temperature": "15～25°C",
+          "condition": "阴",
+          "aqi": "AQI 95"
+        }
+      ],
+      "retry": 0
+    },
+    {
+      "city": "绵阳",
+      "view": "planner",
+      "status": "天气查询失败，尚未取得数据。请检查网络或服务连接后重试。",
+      "text": "天气查询失败，尚未取得数据。请检查网络或服务连接后重试。\n\n错误详情\n重新查询天气",
+      "cards": [],
+      "retry": 1
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://localhost:8002/api/travel/travel-info",
+      "status": 200,
+      "data": {
+        "status": "ok",
+        "message": "查询成功；公共免费接口仅用于非商业 Demo，结果可能来自30分钟缓存。",
+        "data": {
+          "location": {
+            "city": "南充",
+            "latitude": 30.79508,
+            "longitude": 106.08473,
+            "coordinate_system": "WGS84",
+            "data_status": "external",
+            "updated_at": "2026-10-02T17:05:02.169713+00:00",
+            "fetched_at": "2026-10-02T17:05:02.169713+00:00",
+            "source_level": "C",
+            "sources": [
+              {
+                "title": "Open-Meteo / GeoNames 城市定位",
+                "source_url": "https://open-meteo.com/en/docs/geocoding-api",
+                "source_level": "C"
+              }
+            ]
+          },
+          "forecast": [
+            {
+              "date": "2026-10-03",
+              "temperature_max_c": 23.7,
+              "temperature_min_c": 19.2,
+              "rain_probability_percent": 73,
+              "uv_index_max": 1.9
+            },
+            {
+              "date": "2026-10-04",
+              "temperature_max_c": 22.4,
+              "temperature_min_c": 19.4,
+              "rain_probability_percent": 50,
+              "uv_index_max": 3.45
+            },
+            {
+              "date": "2026-10-05",
+              "temperature_max_c": 24.4,
+              "temperature_min_c": 17.5,
+              "rain_probability_percent": 17,
+              "uv_index_max": 4.05
+            },
+            {
+              "date": "2026-10-06",
+              "temperature_max_c": 25.1,
+              "temperature_min_c": 15.3,
+              "rain_probability_percent": 0,
+              "uv_index_max": 6.5
+            },
+            {
+              "date": "2026-10-07",
+              "temperature_max_c": 26.6,
+              "temperature_min_c": 16.1,
+              "rain_probability_percent": 2,
+              "uv_index_max": 6.5
+            },
+            {
+              "date": "2026-10-08",
+              "temperature_max_c": 27.6,
+              "temperature_min_c": 19.6,
+              "rain_probability_percent": 0,
+              "uv_index_max": 6.5
+            },
+            {
+              "date": "2026-10-09",
+              "temperature_max_c": 27.9,
+              "temperature_min_c": 20.3,
+              "rain_probability_percent": 19,
+              "uv_index_max": 5.95
+            }
+          ],
+          "air_quality": {
+            "time": "2026-10-03T09:00",
+            "interval": 3600,
+            "pm2_5": 14.4,
+            "pm10": 14.8,
+            "units": {
+              "time": "iso8601",
+              "interval": "seconds",
+              "pm2_5": "μg/m³",
+              "pm10": "μg/m³"
+            },
+            "timezone": "Asia/Shanghai"
+          },
+          "warnings": [],
+          "items": [
+            {
+              "title": "南充 · 2026-10-03 天气预报",
+              "summary": "最低 19.2 ℃ / 最高 23.7 ℃；最高降雨概率 73%；最高紫外线指数 1.9。建议带伞，预留室内参观备选。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-04 天气预报",
+              "summary": "最低 19.4 ℃ / 最高 22.4 ℃；最高降雨概率 50%；最高紫外线指数 3.45。建议带伞，预留室内参观备选。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-05 天气预报",
+              "summary": "最低 17.5 ℃ / 最高 24.4 ℃；最高降雨概率 17%；最高紫外线指数 4.05。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-06 天气预报",
+              "summary": "最低 15.3 ℃ / 最高 25.1 ℃；最高降雨概率 0%；最高紫外线指数 6.5。建议注意防晒。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-07 天气预报",
+              "summary": "最低 16.1 ℃ / 最高 26.6 ℃；最高降雨概率 2%；最高紫外线指数 6.5。建议注意防晒。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-08 天气预报",
+              "summary": "最低 19.6 ℃ / 最高 27.6 ℃；最高降雨概率 0%；最高紫外线指数 6.5。建议注意防晒。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 2026-10-09 天气预报",
+              "summary": "最低 20.3 ℃ / 最高 27.9 ℃；最高降雨概率 19%；最高紫外线指数 5.95。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:28.717260+00:00",
+              "fetched_at": "2026-10-03T01:15:28.717260+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "南充 · 当前空气质量模型估计",
+              "summary": "数据时刻 2026-10-03T09:00（北京时间）；PM2.5：14.4 μg/m³；PM10：14.8 μg/m³。不是监测站实测，也不是出行日期的空气预报。",
+              "data_status": "model",
+              "updated_at": "2026-10-03T01:15:28.536276+00:00",
+              "fetched_at": "2026-10-03T01:15:28.536276+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo / CAMS 空气质量",
+                  "source_url": "https://open-meteo.com/en/docs/air-quality-api",
+                  "source_level": "C"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=30.79508&longitude=106.08473&timezone=Asia%2FShanghai&forecast_days=3&hourly=us_aqi",
+      "status": 200,
+      "data": {
+        "latitude": 30.800003,
+        "longitude": 106.100006,
+        "generationtime_ms": 0.24759769439697266,
+        "utc_offset_seconds": 28800,
+        "timezone": "Asia/Shanghai",
+        "timezone_abbreviation": "GMT+8",
+        "elevation": 287,
+        "hourly_units": {
+          "time": "iso8601",
+          "us_aqi": "USAQI"
+        },
+        "hourly": {
+          "time": [
+            "2026-10-03T00:00",
+            "2026-10-03T01:00",
+            "2026-10-03T02:00",
+            "2026-10-03T03:00",
+            "2026-10-03T04:00",
+            "2026-10-03T05:00",
+            "2026-10-03T06:00",
+            "2026-10-03T07:00",
+            "2026-10-03T08:00",
+            "2026-10-03T09:00",
+            "2026-10-03T10:00",
+            "2026-10-03T11:00",
+            "2026-10-03T12:00",
+            "2026-10-03T13:00",
+            "2026-10-03T14:00",
+            "2026-10-03T15:00",
+            "2026-10-03T16:00",
+            "2026-10-03T17:00",
+            "2026-10-03T18:00",
+            "2026-10-03T19:00",
+            "2026-10-03T20:00",
+            "2026-10-03T21:00",
+            "2026-10-03T22:00",
+            "2026-10-03T23:00",
+            "2026-10-04T00:00",
+            "2026-10-04T01:00",
+            "2026-10-04T02:00",
+            "2026-10-04T03:00",
+            "2026-10-04T04:00",
+            "2026-10-04T05:00",
+            "2026-10-04T06:00",
+            "2026-10-04T07:00",
+            "2026-10-04T08:00",
+            "2026-10-04T09:00",
+            "2026-10-04T10:00",
+            "2026-10-04T11:00",
+            "2026-10-04T12:00",
+            "2026-10-04T13:00",
+            "2026-10-04T14:00",
+            "2026-10-04T15:00",
+            "2026-10-04T16:00",
+            "2026-10-04T17:00",
+            "2026-10-04T18:00",
+            "2026-10-04T19:00",
+            "2026-10-04T20:00",
+            "2026-10-04T21:00",
+            "2026-10-04T22:00",
+            "2026-10-04T23:00",
+            "2026-10-05T00:00",
+            "2026-10-05T01:00",
+            "2026-10-05T02:00",
+            "2026-10-05T03:00",
+            "2026-10-05T04:00",
+            "2026-10-05T05:00",
+            "2026-10-05T06:00",
+            "2026-10-05T07:00",
+            "2026-10-05T08:00",
+            "2026-10-05T09:00",
+            "2026-10-05T10:00",
+            "2026-10-05T11:00",
+            "2026-10-05T12:00",
+            "2026-10-05T13:00",
+            "2026-10-05T14:00",
+            "2026-10-05T15:00",
+            "2026-10-05T16:00",
+            "2026-10-05T17:00",
+            "2026-10-05T18:00",
+            "2026-10-05T19:00",
+            "2026-10-05T20:00",
+            "2026-10-05T21:00",
+            "2026-10-05T22:00",
+            "2026-10-05T23:00"
+          ],
+          "us_aqi": [
+            61,
+            62,
+            63,
+            63,
+            64,
+            64,
+            65,
+            65,
+            65,
+            66,
+            67,
+            68,
+            68,
+            68,
+            69,
+            68,
+            68,
+            68,
+            67,
+            66,
+            66,
+            65,
+            65,
+            65,
+            66,
+            68,
+            69,
+            69,
+            70,
+            70,
+            71,
+            71,
+            72,
+            72,
+            72,
+            73,
+            73,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            80,
+            81,
+            81,
+            81,
+            80,
+            80,
+            80,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            87,
+            88,
+            90,
+            91,
+            91,
+            92,
+            92,
+            93,
+            93,
+            92,
+            92,
+            91,
+            90,
+            89
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=30.79508&longitude=106.08473&timezone=Asia%2FShanghai&forecast_days=3&daily=weather_code",
+      "status": 200,
+      "data": {
+        "latitude": 30.82601,
+        "longitude": 106.063835,
+        "generationtime_ms": 0.10609626770019531,
+        "utc_offset_seconds": 28800,
+        "timezone": "Asia/Shanghai",
+        "timezone_abbreviation": "GMT+8",
+        "elevation": 287,
+        "daily_units": {
+          "time": "iso8601",
+          "weather_code": "wmo code"
+        },
+        "daily": {
+          "time": [
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-05"
+          ],
+          "weather_code": [
+            55,
+            51,
+            51
+          ]
+        }
+      }
+    },
+    {
+      "url": "http://localhost:8002/api/travel/travel-info",
+      "status": 200,
+      "data": {
+        "status": "ok",
+        "message": "查询成功；公共免费接口仅用于非商业 Demo，结果可能来自30分钟缓存。",
+        "data": {
+          "location": {
+            "city": "广元",
+            "latitude": 32.44201,
+            "longitude": 105.823,
+            "coordinate_system": "WGS84",
+            "data_status": "external",
+            "updated_at": "2026-10-03T01:15:30.375336+00:00",
+            "fetched_at": "2026-10-03T01:15:30.375336+00:00",
+            "source_level": "C",
+            "sources": [
+              {
+                "title": "Open-Meteo / GeoNames 城市定位",
+                "source_url": "https://open-meteo.com/en/docs/geocoding-api",
+                "source_level": "C"
+              }
+            ]
+          },
+          "forecast": [
+            {
+              "date": "2026-10-03",
+              "temperature_max_c": 27.6,
+              "temperature_min_c": 15.3,
+              "rain_probability_percent": 94,
+              "uv_index_max": 5.65
+            },
+            {
+              "date": "2026-10-04",
+              "temperature_max_c": 25.6,
+              "temperature_min_c": 16.9,
+              "rain_probability_percent": 0,
+              "uv_index_max": 4.05
+            },
+            {
+              "date": "2026-10-05",
+              "temperature_max_c": 24.9,
+              "temperature_min_c": 15.2,
+              "rain_probability_percent": 0,
+              "uv_index_max": 5.8
+            },
+            {
+              "date": "2026-10-06",
+              "temperature_max_c": 25.5,
+              "temperature_min_c": 14.5,
+              "rain_probability_percent": 0,
+              "uv_index_max": 5.35
+            },
+            {
+              "date": "2026-10-07",
+              "temperature_max_c": 26.2,
+              "temperature_min_c": 15,
+              "rain_probability_percent": 0,
+              "uv_index_max": 6.3
+            },
+            {
+              "date": "2026-10-08",
+              "temperature_max_c": 26.6,
+              "temperature_min_c": 18.1,
+              "rain_probability_percent": 6,
+              "uv_index_max": 6.45
+            },
+            {
+              "date": "2026-10-09",
+              "temperature_max_c": 27.5,
+              "temperature_min_c": 19.6,
+              "rain_probability_percent": 9,
+              "uv_index_max": 5.9
+            }
+          ],
+          "air_quality": {
+            "time": "2026-10-03T09:00",
+            "interval": 3600,
+            "pm2_5": 16.4,
+            "pm10": 16.8,
+            "units": {
+              "time": "iso8601",
+              "interval": "seconds",
+              "pm2_5": "μg/m³",
+              "pm10": "μg/m³"
+            },
+            "timezone": "Asia/Shanghai"
+          },
+          "warnings": [],
+          "items": [
+            {
+              "title": "广元 · 2026-10-03 天气预报",
+              "summary": "最低 15.3 ℃ / 最高 27.6 ℃；最高降雨概率 94%；最高紫外线指数 5.65。建议带伞，预留室内参观备选。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-04 天气预报",
+              "summary": "最低 16.9 ℃ / 最高 25.6 ℃；最高降雨概率 0%；最高紫外线指数 4.05。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-05 天气预报",
+              "summary": "最低 15.2 ℃ / 最高 24.9 ℃；最高降雨概率 0%；最高紫外线指数 5.8。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-06 天气预报",
+              "summary": "最低 14.5 ℃ / 最高 25.5 ℃；最高降雨概率 0%；最高紫外线指数 5.35。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-07 天气预报",
+              "summary": "最低 15.0 ℃ / 最高 26.2 ℃；最高降雨概率 0%；最高紫外线指数 6.3。建议注意防晒。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-08 天气预报",
+              "summary": "最低 18.1 ℃ / 最高 26.6 ℃；最高降雨概率 6%；最高紫外线指数 6.45。建议注意防晒。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 2026-10-09 天气预报",
+              "summary": "最低 19.6 ℃ / 最高 27.5 ℃；最高降雨概率 9%；最高紫外线指数 5.9。 城市级模型预报，不是景区实测。",
+              "data_status": "forecast",
+              "updated_at": "2026-10-03T01:15:32.156630+00:00",
+              "fetched_at": "2026-10-03T01:15:32.156630+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo 天气预报（CC BY 4.0）",
+                  "source_url": "https://open-meteo.com/",
+                  "source_level": "C"
+                }
+              ]
+            },
+            {
+              "title": "广元 · 当前空气质量模型估计",
+              "summary": "数据时刻 2026-10-03T09:00（北京时间）；PM2.5：16.4 μg/m³；PM10：16.8 μg/m³。不是监测站实测，也不是出行日期的空气预报。",
+              "data_status": "model",
+              "updated_at": "2026-10-03T01:15:32.036608+00:00",
+              "fetched_at": "2026-10-03T01:15:32.036608+00:00",
+              "source_level": "C",
+              "sources": [
+                {
+                  "title": "Open-Meteo / CAMS 空气质量",
+                  "source_url": "https://open-meteo.com/en/docs/air-quality-api",
+                  "source_level": "C"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=32.44201&longitude=105.823&timezone=Asia%2FShanghai&forecast_days=3&hourly=us_aqi",
+      "status": 200,
+      "data": {
+        "latitude": 32.4,
+        "longitude": 105.80002,
+        "generationtime_ms": 0.2969503402709961,
+        "utc_offset_seconds": 28800,
+        "timezone": "Asia/Shanghai",
+        "timezone_abbreviation": "GMT+8",
+        "elevation": 490,
+        "hourly_units": {
+          "time": "iso8601",
+          "us_aqi": "USAQI"
+        },
+        "hourly": {
+          "time": [
+            "2026-10-03T00:00",
+            "2026-10-03T01:00",
+            "2026-10-03T02:00",
+            "2026-10-03T03:00",
+            "2026-10-03T04:00",
+            "2026-10-03T05:00",
+            "2026-10-03T06:00",
+            "2026-10-03T07:00",
+            "2026-10-03T08:00",
+            "2026-10-03T09:00",
+            "2026-10-03T10:00",
+            "2026-10-03T11:00",
+            "2026-10-03T12:00",
+            "2026-10-03T13:00",
+            "2026-10-03T14:00",
+            "2026-10-03T15:00",
+            "2026-10-03T16:00",
+            "2026-10-03T17:00",
+            "2026-10-03T18:00",
+            "2026-10-03T19:00",
+            "2026-10-03T20:00",
+            "2026-10-03T21:00",
+            "2026-10-03T22:00",
+            "2026-10-03T23:00",
+            "2026-10-04T00:00",
+            "2026-10-04T01:00",
+            "2026-10-04T02:00",
+            "2026-10-04T03:00",
+            "2026-10-04T04:00",
+            "2026-10-04T05:00",
+            "2026-10-04T06:00",
+            "2026-10-04T07:00",
+            "2026-10-04T08:00",
+            "2026-10-04T09:00",
+            "2026-10-04T10:00",
+            "2026-10-04T11:00",
+            "2026-10-04T12:00",
+            "2026-10-04T13:00",
+            "2026-10-04T14:00",
+            "2026-10-04T15:00",
+            "2026-10-04T16:00",
+            "2026-10-04T17:00",
+            "2026-10-04T18:00",
+            "2026-10-04T19:00",
+            "2026-10-04T20:00",
+            "2026-10-04T21:00",
+            "2026-10-04T22:00",
+            "2026-10-04T23:00",
+            "2026-10-05T00:00",
+            "2026-10-05T01:00",
+            "2026-10-05T02:00",
+            "2026-10-05T03:00",
+            "2026-10-05T04:00",
+            "2026-10-05T05:00",
+            "2026-10-05T06:00",
+            "2026-10-05T07:00",
+            "2026-10-05T08:00",
+            "2026-10-05T09:00",
+            "2026-10-05T10:00",
+            "2026-10-05T11:00",
+            "2026-10-05T12:00",
+            "2026-10-05T13:00",
+            "2026-10-05T14:00",
+            "2026-10-05T15:00",
+            "2026-10-05T16:00",
+            "2026-10-05T17:00",
+            "2026-10-05T18:00",
+            "2026-10-05T19:00",
+            "2026-10-05T20:00",
+            "2026-10-05T21:00",
+            "2026-10-05T22:00",
+            "2026-10-05T23:00"
+          ],
+          "us_aqi": [
+            57,
+            56,
+            56,
+            56,
+            55,
+            55,
+            55,
+            55,
+            55,
+            56,
+            56,
+            57,
+            58,
+            58,
+            58,
+            59,
+            59,
+            59,
+            59,
+            60,
+            60,
+            61,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            66,
+            67,
+            67,
+            68,
+            68,
+            69,
+            69,
+            70,
+            70,
+            71,
+            72,
+            73,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            82,
+            83,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            90,
+            91,
+            92,
+            92,
+            93,
+            94,
+            94,
+            95,
+            95,
+            95,
+            95,
+            95,
+            95,
+            95
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=32.44201&longitude=105.823&timezone=Asia%2FShanghai&forecast_days=3&daily=weather_code",
+      "status": 200,
+      "data": {
+        "latitude": 32.442883,
+        "longitude": 105.85662,
+        "generationtime_ms": 2.376079559326172,
+        "utc_offset_seconds": 28800,
+        "timezone": "Asia/Shanghai",
+        "timezone_abbreviation": "GMT+8",
+        "elevation": 490,
+        "daily_units": {
+          "time": "iso8601",
+          "weather_code": "wmo code"
+        },
+        "daily": {
+          "time": [
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-05"
+          ],
+          "weather_code": [
+            55,
+            3,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "url": "http://localhost:8002/api/travel/travel-info",
+      "status": 200,
+      "data": {
+        "status": "unavailable",
+        "message": "当前支持南充、阆中、广元；城市中心仅用于天气，不代表景区入口。",
+        "data": null
+      }
+    }
+  ],
+  "errors": [],
+  "checks": [
+    {
+      "name": "南充/广元真实三日温度；绵阳真实失败、原原因、重试；均留在活动计划",
+      "passed": true
+    },
+    {
+      "name": "Console 与 pageerror 无错误",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "source": "真实 Chromium，天气为标注协议夹具",
+  "results": [
+    {
+      "name": "1 地图说明简短，来源与非导航边界保留，首屏可见大半地图",
+      "passed": true,
+      "detail": {
+        "intro": "地点按现有资料标注；驻地不代表景区入口。",
+        "visibleRatio": 0.8717099771854655
+      }
+    },
+    {
+      "name": "2 带入活动计划同排且颜色区分，地图选点交接保留",
+      "passed": true,
+      "detail": {
+        "plan": "rgb(47, 111, 94)",
+        "reset": "rgb(255, 253, 249)"
+      }
+    },
+    {
+      "name": "5 紧凑两列字段、必填/选填与人数边界保留",
+      "passed": true,
+      "detail": [
+        {
+          "x": 65,
+          "y": 494.03125,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 351,
+          "y": 494.03125,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 65,
+          "y": 575.421875,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 351,
+          "y": 575.421875,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 65,
+          "y": 656.8125,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 351,
+          "y": 656.8125,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 65,
+          "y": 738.203125,
+          "width": 274,
+          "height": 44
+        },
+        {
+          "x": 351,
+          "y": 738.203125,
+          "width": 274,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "name": "3 活动计划内查今天起三日，整数温度/状况/AQI，无跳转",
+      "passed": true,
+      "detail": {
+        "dates": [
+          "2026-10-03",
+          "2026-10-04",
+          "2026-10-05"
+        ]
+      }
+    },
+    {
+      "name": "4 晴/雨/阴 SVG 山景图标可见",
+      "passed": true
+    },
+    {
+      "name": "缺失状况与 AQI 不用 PM 或降雨概率伪造",
+      "passed": true
+    },
+    {
+      "name": "补查独立失败保留成功部分与温度，并提供重试",
+      "passed": true
+    },
+    {
+      "name": "服务失败如实显示并可重试",
+      "passed": true
+    },
+    {
+      "name": "查询中改城市，旧天气不覆盖",
+      "passed": true
+    },
+    {
+      "name": "外部补查中改城市，旧补查不覆盖",
+      "passed": true
+    },
+    {
+      "name": "旧天气入口进入同一活动计划内联区域",
+      "passed": true
+    },
+    {
+      "name": "1920×1080 各视图及聊天打开时无横向溢出/产品报错",
+      "passed": true,
+      "detail": [
+        {
+          "view": "map",
+          "open": false,
+          "width": 1920,
+          "scrollWidth": 1920,
+          "panelWidth": 1838,
+          "panelScrollWidth": 1838
+        },
+        {
+          "view": "map",
+          "open": true,
+          "width": 1920,
+          "scrollWidth": 1920,
+          "panelWidth": 1167,
+          "panelScrollWidth": 1167
+        },
+        {
+          "view": "planner",
+          "open": false,
+          "width": 1920,
+          "scrollWidth": 1920,
+          "panelWidth": 1827,
+          "panelScrollWidth": 1827
+        },
+        {
+          "view": "planner",
+          "open": true,
+          "width": 1920,
+          "scrollWidth": 1920,
+          "panelWidth": 1169,
+          "panelScrollWidth": 1169
+        }
+      ]
+    }
+  ]
+}
