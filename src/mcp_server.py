@@ -30,6 +30,7 @@ from tools.travel_business_tools import (
 
 server = Server("san-guo-travel-agent")
 from tools.amap_tools import AmapSearch, AmapRoute, search_amap_places, get_amap_route
+from tools.rollinggo_tools import HotelSearch, HotelDetail, hotel_status, search_hotels, hotel_detail
 from san_guo_core.models import NanchongPlanRequest
 from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nanchong_itinerary
 
@@ -37,6 +38,9 @@ from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nancho
 @server.list_tools()
 async def list_tools():
     return [
+        Tool(name='get_hotel_service_status', description='检查本机住宿查询授权状态，不返回账号或凭据。', inputSchema={'type':'object','properties':{}}),
+        Tool(name='search_rollinggo_hotels', description='真实酒店搜索与参考房价查询。明确目的地、入住日期、晚数、成人数后调用；不能用住宿预算档位冒充报价。逐家中文展示名称、星级、参考价、设施和真实图片链接，不展示内部ID。不进行预订。', inputSchema=HotelSearch.model_json_schema()),
+        Tool(name='get_rollinggo_hotel_detail', description='使用酒店搜索真实返回的ID查询可售房型、价格与取消政策，日期及人数与用户条件保持一致。只查询，不锁价或下单。对用户展示中文房型、币种、总价/每晚价格与退改规则。', inputSchema=HotelDetail.model_json_schema()),
         Tool(name='search_amap_places', description='高德地点搜索：必须提供城市和地点名，返回候选地点ID及地址。同名、校区或入口有歧义时先让用户确认；不要编造坐标。', inputSchema=AmapSearch.model_json_schema()),
         Tool(name='get_amap_route', description='高德公交、驾车或步行路线。先调用search_amap_places取得并确认起终点ID，再查询；不可编造ID。结果含距离、预计时间和步骤，不代表实时到站或购票成功。', inputSchema=AmapRoute.model_json_schema()),
         Tool(name="get_nanchong_travel_catalog", description="南充公开页面地点及住宿候选目录；不是实时票价、空房或已核验入口。", inputSchema={"type": "object", "properties": {}}),
@@ -171,6 +175,12 @@ def as_text(data) -> list[TextContent]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
+    if name == 'get_hotel_service_status':
+        return as_text(await asyncio.to_thread(hotel_status))
+    if name == 'search_rollinggo_hotels':
+        return as_text(await asyncio.to_thread(search_hotels, HotelSearch(**arguments)))
+    if name == 'get_rollinggo_hotel_detail':
+        return as_text(await asyncio.to_thread(hotel_detail, HotelDetail(**arguments)))
     if name == 'search_amap_places':
         p = AmapSearch(**arguments)
         return as_text(await asyncio.to_thread(search_amap_places, **p.model_dump()))

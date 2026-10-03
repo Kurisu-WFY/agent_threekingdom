@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     amap_web_service_key: str | None = None
     amap_js_api_key: str | None = None
     amap_js_security_code: str | None = None
+    rollinggo_node_path: str = 'D:/nodejs/node.exe'
+    rollinggo_skill_dir: Path = Path.home() / '.codex/skills/rollinggo-hotel-booking'
     data_dir: Path = Path("data")
     raw_dir: Path = Path("data/raw")
     processed_dir: Path = Path("data/processed")

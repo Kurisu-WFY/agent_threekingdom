@@ -2,6 +2,7 @@
 (function(root) {
   const labels={retrieve_culture_knowledge:'文化知识检索',answer_travel_question:'旅游问题解答',plan_cultural_route:'文化路线规划',list_scenic_spots:'景点查询',get_spot_ticket:'门票信息查询',estimate_hotel_budget:'住宿预算估算',search_hotel_poi_request:'住宿地点查询',plan_budget:'行程预算估算',get_travel_weather:'天气查询',lookup_travel_city:'城市位置查询',get_road_route:'道路路线查询',get_nanchong_travel_catalog:'南充出行资料查询',plan_nanchong_itinerary:'南充行程规划',WaitForMcpServers:'连接旅游工具'};
   labels.search_amap_places='高德地点搜索'; labels.get_amap_route='高德路线规划';
+  labels.get_hotel_service_status='住宿服务状态'; labels.search_rollinggo_hotels='酒店查询'; labels.get_rollinggo_hotel_detail='房型与房价查询';
   const names=new RegExp('(?<![\\w-])(?:[\\w-]+__)?('+Object.keys(labels).join('|')+')(?![\\w])','g');
   const metric=/^(?:chunk(?:\s*(?:数|id))?|召回率|召回覆盖率?|命中数|候选数|重排分数|rerank(?:\s*最高分|_score)?|total_candidates|final_hits|coverage|passed|missing_entities)$/i;
   function present(text){
