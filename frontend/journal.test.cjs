@@ -11,7 +11,7 @@ function setup({saved={},blocked=false,broken=false,additionalStories=[]}={}){
  return {get,window,story,chats,store,views,map};
 }
 const t=setup(),journal=t.window.ExplorationJournal,progress=t.window.StoryProgress;
-assert.ok(text(t.get('#journal-empty')).includes('去读一条故事线、问陈寿一个问题，这里就会记下来'));assert.match(text(t.get('#journal-overview')),/已寻迹 0 幕 · 读完 0 条 · 还有 2 条待探索/);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('兴趣记录还不够'));
+assert.ok(text(t.get('#journal-empty')).includes('去读一条故事、问陈寿一个问题，这里就会记下来'));assert.match(text(t.get('#journal-overview')),/已寻迹 0 幕 · 读完 0 条 · 还有 2 条待探索/);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.ok(text(t.get('#journal-recommendation')).includes('兴趣记录还不够'));
 t.get('#journal-empty').children.at(-1).handlers.click();assert.deepEqual(t.views,['story']);
 const s=progress.get(t.story);s.started=true;s.current=1;s.completed.add(0);progress.save(t.story);
 assert.equal(journal.model().explored.length,1);assert.equal(journal.model().people[0],'诸葛亮');assert.equal(journal.model().events[0],'示例事件');assert.ok(text(t.get('#journal-book')).includes('第 2 / 2 幕'));assert.ok(text(t.get('#journal-book')).includes('驻地示意'));assert.equal(flatten(t.get('#journal-book')).filter(n=>n.tag==='circle').length,1);
@@ -64,7 +64,7 @@ assert.ok(details().find(d=>d.id==='journal-questions').open,'sync preserves ope
 assert.equal(details().find(d=>d.id==='journal-questions').children[0].textContent,'我问过的问题 (1)');
 ms.completed.add(1);mixed.window.StoryProgress.save(mixed.story);
 assert.match(text(mixed.get('#journal-overview')),/已寻迹 2 幕 · 读完 1 条 · 还有 2 条待探索/);
-const complete=details().find(d=>d.id==='journal-completed');assert.ok(complete&&!complete.open);assert.equal(complete.children[0].textContent,'已完成的故事线 (1)');
+const complete=details().find(d=>d.id==='journal-completed');assert.ok(complete&&!complete.open);assert.equal(complete.children[0].textContent,'已完成的故事 (1)');
 assert.deepEqual(cards().map(n=>text(n.children.find(c=>c.tag==='h3'))),['镇守阆中·寻迹张飞','未开始的两幕故事','蜀道寻踪']);
 flatten(complete).find(n=>n.tag==='button'&&n.textContent==='继续阅读').handlers.click();assert.equal(mixed.views.at(-1),'shudao-xunzong');
 flatten(mixed.get('#journal-recommendation')).find(n=>n.tag==='button').handlers.click();assert.equal(mixed.views.at(-1),mixed.window.ExplorationJournal.model().next.story.id);

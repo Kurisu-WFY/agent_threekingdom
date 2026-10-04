@@ -3,7 +3,7 @@
   'use strict';
   const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';
   const modes=['大众体验版','亲子故事版','学术探索版'], readings=new Map();
-  let context=null, mode=modes[0], readingKey='', modeButtons=[];
+  let context=null, mode=modes[0], readingKey='';
   const text=v=>typeof v==='string'&&v.trim()?v.trim():'待核验';
   const list=v=>Array.isArray(v)&&v.length?v.map(text).join('、'):'待核验';
   const status=r=>r?.data_status || r?.dataStatus;
@@ -40,9 +40,7 @@
   }
   function renderReading(){
     const chapter=context.chapter || {}, box=$('#node-reading-content');
-    const headings={ '大众体验版':'先读懂这里', '亲子故事版':'带着一个问题看这里', '学术探索版':'查看这一章的证据和编纂背景' };
-    box.replaceChildren(node('h3','',headings[mode]));
-    box.append(node('p','',mode==='大众体验版'?'这里是什么，为什么值得看，和当前故事有什么关系？':mode==='亲子故事版'?'这一幕讲到谁？这座建筑和故事有什么关系？可以和孩子一起看看下方资料；没有记载就保留问题。':'下方资料可核对史料出处、编纂背景、人物关系和不同观点。记载、文学和推断要分开看。'));
+    box.replaceChildren(node('h3','','建筑与历史资料'));
     const narrative={...chapter,text:['record','inference','literature'].includes(chapter.narrative_type)?chapter.story:''};
     box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
     if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));
@@ -53,8 +51,6 @@
     if(inferences.length)box.append(node('h3','','合理推断'));
     else box.append(emptyBlock('合理推断 · 资料待补充','暂无有依据的推断内容，不用推测填空。'));
     inferences.forEach(r=>box.append(recordBlock('合理推断',r,'node-inference')));
-    $('#node-mode-status').textContent='当前为'+mode+'；故事、章节和地点没变，阅读位置也保留。';
-    modeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.textContent===mode)));
   }
   function changeMode(next){
     if(!context||!modes.includes(next)||mode===next)return;
@@ -101,7 +97,7 @@
     mode=(story?window.StoryProgress.get(story).mode:readings.get(readingKey)?.mode) || modes[0];
     $('#node-visual').replaceChildren(window.SGTStoryUI.icon(place.building));
     $('#node-title').textContent=place.name;
-    $('#node-context').textContent='城市：'+text(place.city)+' · 故事线：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
+    $('#node-context').textContent='城市：'+text(place.city)+' · 故事：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
     $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';
     const locationNote=(context.note || '地点待定位，不猜景区位置。').replace(/^坐标待核验(?:\s*\/\s*景区待定位)?\s*·\s*/, '');
     $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
@@ -110,7 +106,7 @@
     $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，缺资料的部分已收起，展开后可以查看核验说明。':'资料概况：已有来源的正文在下方，可以逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
     if(sources(chapter).length)$('#node-metadata').append(provenance(chapter));
     $('#node-reading-content').style.minHeight=readings.get(readingKey)?.height?readings.get(readingKey).height+'px':'';renderReading();comparison();tourism();
-    $('#node-enter-story').disabled=!story;$('#node-add-route').disabled=!context.point;
+    $('#node-add-route').disabled=!context.point;
     $('#node-add-route').textContent=context.point?(context.exact?'加入路线':'加入路线（驻地示意）'):'加入路线（待定位）';
     $('#node-feedback').textContent='史料不足时保留问题；AI讲解不作为已核验史实。';
     showContentView('node');window.CharacterChat?.refresh();$('#node-reading').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
@@ -122,12 +118,10 @@
     const located=window.StoryMap.describePlace(place,chapter || {placeId:id});
     return open({...located,story,chapter,index,returnTo});
   }
-  modes.forEach(name=>{const b=node('button','module-button',name);b.type='button';b.addEventListener('click',()=>changeMode(name));modeButtons.push(b);$('#node-modes').append(b);});
   $('#node-back').addEventListener('click',()=>showContentView(context?.returnTo || 'welcome'));
-  $('#node-enter-story').addEventListener('click',()=>{if(context?.story)window.SGTStoryUI.openStory(context.story.id,context.story);});
   $('#node-ask').addEventListener('click',()=>{
     if(!context)return;
-    window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事线：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+mode+"）"});
+    window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+window.SGTStoryUI.modeLabel(mode)+"）"});
     $('#node-feedback').textContent='已发给陈寿。回答或草稿在当前对话里，资料仍需核验。';
   });
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});

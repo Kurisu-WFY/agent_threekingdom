@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=culture14">
+  <link rel="stylesheet" href="styles.css?v=reposition-20261005">
 </head>
 <body>
   <header class="topbar">
@@ -28,74 +28,11 @@
         </nav>
       </div>
 
-      <section id="outing-view" class="module-view outing" data-view-panel="outing" hidden aria-labelledby="outing-title">
-        <header><h1 id="outing-title" tabindex="-1">出发核验</h1><p>需要查道路路线时，可以在这里查询。活动需求和结果都在“活动计划”里。</p></header>
-        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button type="button" class="module-button" data-content-view="planner">活动需求与结果</button><button type="button" class="module-button" data-content-view="travel">天气与空气质量</button><button id="outing-back" type="button" hidden>返回原对话</button></div>
-        <details class="itinerary-utilities" open><summary>道路查询工具</summary>
-        <div class="outing-columns">
-          <section aria-labelledby="outing-route-title" class="outing-route">
-            <h2 id="outing-route-title">路线规划</h2>
-            <div id="amap-planner">
-              <section id="amap-place-view" hidden aria-label="回答提及地点">
-                <h3>在高德查看地点</h3>
-                <form id="amap-place-form">
-                  <label>所在城市<input id="amap-place-city" value="南充" maxlength="60" required></label>
-                  <label>地点名称<input id="amap-place-query" maxlength="100" required></label>
-                  <div id="amap-mentioned-places" class="character-actions"></div>
-                  <button type="submit">搜索地点并显示地图</button>
-                </form>
-                <p id="amap-place-status" role="status" aria-live="polite"></p>
-                <div id="amap-place-results"></div>
-              </section>
-              <p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p>
-              <form id="amap-search-form">
-                <label>搜索城市<input id="amap-city" value="南充" list="itinerary-cities" required maxlength="60"></label>
-                <div class="outing-endpoints">
-                  <label>出发地点<input id="amap-origin-query" placeholder="例如：西华师范大学北湖校区" required maxlength="100"></label>
-                  <label>目的地点<input id="amap-destination-query" placeholder="例如：万卷楼" required maxlength="100"></label>
-                </div>
-                <button type="submit">搜索起终点</button>
-              </form>
-              <form id="amap-route-form" hidden>
-                <label>确认出发地点<select id="amap-origin-id" required></select></label>
-                <label>确认目的地点<select id="amap-destination-id" required></select></label>
-                <label>出行方式<select id="amap-mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
-                <button type="submit" class="outing-primary">查询高德路线</button>
-              </form>
-              <p id="amap-status" role="status" aria-live="polite">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>
-              <div id="amap-results"></div>
-              <section id="amap-map-region" aria-label="高德路线地图" hidden>
-                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
-                <p id="amap-map-note" role="status"></p>
-              </section>
-            </div>
-            <details><summary>其他道路参考：城市中心或手动坐标</summary>
-            <form id="outing-route-form">
-              <fieldset class="outing-modes"><legend>出行方式</legend><label><input type="radio" name="outing-mode" value="walking" checked>步行</label><label><input type="radio" name="outing-mode" value="driving">驾车</label></fieldset>
-              <div class="outing-endpoints">
-                <label>起点<select id="outing-start" required></select></label>
-                <label>终点<select id="outing-end" required></select></label>
-              </div>
-              <div id="outing-start-coords" class="outing-coords" hidden><label>起点经度<input id="outing-start-lon" type="number" min="-180" max="180" step="any"></label><label>起点纬度<input id="outing-start-lat" type="number" min="-90" max="90" step="any"></label></div>
-              <div id="outing-end-coords" class="outing-coords" hidden><label>终点经度<input id="outing-end-lon" type="number" min="-180" max="180" step="any"></label><label>终点纬度<input id="outing-end-lat" type="number" min="-90" max="90" step="any"></label></div>
-              <label id="outing-confirm-row" class="outing-check" hidden><input id="outing-confirm" type="checkbox">我已核实手动坐标为 WGS84，不是高德或百度坐标。</label>
-              <p class="outing-note">城市中心不是景区入口。查询会将起终点坐标发送到公共路线服务，请勿填写敏感地址。</p>
-              <button type="submit" class="outing-primary">查询道路路线</button>
-            </form>
-            <p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
-            <div id="outing-route-preview" class="outing-route-preview"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>
-            <div id="outing-route-metrics" class="outing-metrics"></div><div id="outing-route-source" class="outing-source"></div>
-            </details>
-            <section class="outing-draft"><h3>原回答摘要</h3><p id="outing-draft-note">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id="outing-stops"></ol><details id="outing-original" hidden><summary>查看带入的回答原文</summary><pre id="outing-original-text"></pre></details></section>
-          </section>
-        </div>
-        </details>
-      </section>
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
         <header class="journal-heading"><p class="welcome-kicker">我的三国探索志 · 探索进度</p><h1 tabindex="-1">陈寿为你记下的三国探索志</h1><p id="journal-overview" class="journal-overview" aria-live="polite"></p><p id="journal-local-notice" role="status"></p></header>
         <div id="journal-empty"></div>
         <article id="journal-book" class="journal-book" aria-label="探索志正文"></article>
-        <section id="journal-recommendation" class="journal-recommendation" aria-label="下一条故事线推荐"></section>
+        <section id="journal-recommendation" class="journal-recommendation" aria-label="下一条故事推荐"></section>
       </div>
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
         <header class="agent-hero culture-hero">
@@ -111,18 +48,18 @@
           </svg>
           <div class="hero-copy">
             <h1>我是陈寿，带你游川东北的三国</h1>
-            <p class="welcome-sub">读史、看地点，再规划行程</p>
+            <p class="welcome-sub">从编撰《三国志》的过程，走进南充、广元与阆中</p>
             <p class="hero-footnote">AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料。</p>
           </div>
         </header>
 
         <div class="culture-entry-grid">
           <section id="story-discovery" class="story-discovery culture-entry" aria-labelledby="discovery-title">
-            <div class="culture-entry-heading"><h2 id="discovery-title">跟着故事线走</h2><div class="story-scroll-controls" aria-label="滚动故事线"><button type="button" id="story-scroll-prev" aria-label="查看前面的故事线">‹</button><button type="button" id="story-scroll-next" aria-label="查看后面的故事线">›</button></div></div>
+            <div class="culture-entry-heading"><h2 id="discovery-title">跟着故事走</h2><div class="story-scroll-controls" aria-label="滚动故事"><button type="button" id="story-scroll-prev" aria-label="查看前面的故事">‹</button><button type="button" id="story-scroll-next" aria-label="查看后面的故事">›</button></div></div>
             <p class="story-disclosure">五条主题，史料与地点待核验；部分章节待补充。</p>
             <div id="story-phase-filters" class="story-controls" role="group" aria-label="按故事框架筛选" hidden></div>
             <p id="story-filter-status" role="status" hidden></p>
-            <div id="story-cards" class="story-cards" tabindex="0" aria-label="五条故事线，可横向滚动"></div>
+            <div id="story-cards" class="story-cards" tabindex="0" aria-label="五条故事，可横向滚动"></div>
             <section class="story-preview" id="culture-preview" aria-labelledby="preview-title">
               <div class="preview-chapters">
                 <h3 id="preview-title">预览章节与地图</h3>
@@ -157,7 +94,7 @@
               <label id="journey-question-label" for="hero-message">还有什么想法？（选填）</label>
               <p id="journey-mode-hint" class="composer-hint">填一项也可以，陈寿会与你继续讨论。</p>
               <textarea id="hero-message" rows="2" maxlength="1600" placeholder="例如：想去阆中，少走路，多听三国故事。" aria-describedby="journey-mode-hint"></textarea>
-              <div class="journey-preferences" hidden><label>同行方式<select id="journey-profile"><option value="">暂不限定</option><option>普通初访</option><option>亲子同行</option><option>研学寻史</option><option>人物追踪</option></select></label><label>讲解偏好<select id="journey-style"><option value="">自然讲解</option><option>大众讲解</option><option>亲子故事版</option><option>学术探索版</option></select></label></div>
+              <div class="journey-preferences" hidden><label>同行方式<select id="journey-profile"><option value="">暂不限定</option><option>普通初访</option><option>亲子同行</option><option>研学寻史</option><option>人物追踪</option></select></label><label>讲解偏好<select id="journey-style"><option value="">自然讲解</option><option>大众讲解</option><option value="亲子故事版">亲子线</option><option value="学术探索版">学术线</option></select></label></div>
               <div class="hero-composer-bottom"><button id="hero-send" type="submit" disabled>请陈寿推荐</button></div>
             </form>
             <p id="journey-feedback" class="journey-feedback" role="status">推荐将进入陈寿对话，可继续补充和调整。</p>
@@ -189,7 +126,7 @@
 
       <div class="module-view story-detail" id="story-view" data-view-panel="story" hidden>
         <button type="button" class="module-button" data-content-view="welcome" aria-controls="welcome-view">← 返回故事目录</button>
-        <p class="welcome-kicker">故事线 · 主题模板</p><h2 id="story-title" tabindex="-1">选择一条故事线</h2>
+        <p class="welcome-kicker">故事 · 主题模板</p><h2 id="story-title" tabindex="-1">选择一条故事</h2>
         <div class="story-detail-layout">
           <aside id="story-detail-sidebar" class="story-detail-sidebar" aria-label="故事章节轴"></aside>
           <div class="story-detail-reading">
@@ -269,11 +206,10 @@
       <section class="module-view cultural-node" id="node-view" data-view-panel="node" hidden>
         <button type="button" class="module-button" id="node-back">返回上一视图</button>
         <p id="node-origin" class="welcome-kicker"></p>
-        <div class="module-actions reading-actions"><button type="button" id="node-enter-story" class="module-button">进入故事</button><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>问向导怎么到达</button></div>
+        <div class="module-actions reading-actions"><button type="button" id="node-ask" class="module-button">问陈寿</button><button type="button" id="node-compare" class="module-button">阅读对照材料</button><button type="button" id="node-add-route" class="module-button">加入路线</button><button type="button" class="module-button" disabled>问向导怎么到达</button></div>
         <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">地点资料 · 与当前故事的关系</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
         <p class="story-art-note">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>
         <div id="node-metadata"></div>
-        <div id="node-modes" class="story-controls" role="group" aria-label="节点讲解深度"></div><p id="node-mode-status" role="status"></p>
         <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
         <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
         <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
@@ -294,8 +230,8 @@
         <button id="view-current-plan" type="button" class="module-button" data-content-view="plan" hidden>查看本次方案</button>
         <div class="planner-layout">
         <section class="planner-inputs" aria-label="活动条件">
-        <p id="planner-story" class="data-banner">尚未选择故事线，可填写普通行程需求。</p>
-        <button id="planner-back-story" type="button" class="module-button">返回故事线调整章节</button>
+        <p id="planner-story" class="data-banner">尚未选择故事，可填写普通行程需求。</p>
+        <button id="planner-back-story" type="button" class="module-button">返回故事调整章节</button>
         <form id="trip-form" class="module-form">
           <label>目的地（必填）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
           <datalist id="itinerary-cities"></datalist>
@@ -305,33 +241,101 @@
           <label>人数（必填，1–50人）<input name="people" type="number" value="2" min="1" max="50" required></label>
           <label>同行人群<select name="group"><option>独行</option><option selected>家庭</option><option>亲子</option><option>研学</option></select></label>
           <label>交通方式<select name="transport"><option>公共交通</option><option>自驾</option></select></label>
-          <label>讲解偏好<select name="explanation"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select></label>
+          <label>故事线<select name="explanation"><option value="大众体验版">大众线</option><option value="亲子故事版">亲子线</option><option value="学术探索版">学术线</option></select></label>
+          <label>住宿档位（选填）<select name="hotel_tier"><option value="">不需要住宿</option><option>经济型</option><option>舒适型</option><option>高档型</option><option>豪华型</option></select></label>
           <label class="form-wide">补充需求（选填）<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
           <button class="module-button primary" type="submit">生成活动方案</button>
         </form>
         <p class="map-note">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>
-        <div class="module-actions"><button type="button" class="module-button" data-content-view="outing">核验道路路线</button></div>
+
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
         </section>
+        <div class="planner-checks">
+        <section class="inline-hotels" aria-labelledby="hotel-title"><h3 id="hotel-title">住宿查询</h3><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
         <section class="inline-weather" aria-labelledby="weather-title">
-          <h3 id="weather-title">看看这三天的天气</h3>
-          <p class="map-note">从今天起 3 天 · 北京时间；与活动出发日期分开查询。</p>
+          <h3 id="weather-title">查看近期天气</h3>
+          <p class="map-note">北京时间；按服务实际返回的日期和天数展示，与活动出发日期分开查询。</p>
           <form id="travel-weather-form" class="module-form weather-search">
             <label>查询城市（必填）<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充、广元"></label>
-            <button id="load-travel" type="submit" class="module-button primary">查询天气与空气质量</button>
+            <button id="load-travel" type="submit" class="module-button primary">查询天气</button>
           </form>
           <p id="travel-status" role="status">输入城市后查询；进入活动计划不会自动请求天气。</p>
           <div id="travel-results" class="module-results" aria-live="polite"></div>
         </section>
         </div>
+        </div>
+      <section id="outing-view" class="outing inline-roads" aria-labelledby="outing-title">
+        <header><h3 id="outing-title" tabindex="-1">核验道路路线</h3><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
+        <button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button>
+        <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
+        <details class="itinerary-utilities" open><summary>道路查询工具</summary>
+        <div class="outing-columns">
+          <section aria-labelledby="outing-route-title" class="outing-route">
+            <h2 id="outing-route-title">路线规划</h2>
+            <div id="amap-planner">
+              <section id="amap-place-view" hidden aria-label="回答提及地点">
+                <h3>在高德查看地点</h3>
+                <form id="amap-place-form">
+                  <label>所在城市<input id="amap-place-city" value="南充" maxlength="60" required></label>
+                  <label>地点名称<input id="amap-place-query" maxlength="100" required></label>
+                  <div id="amap-mentioned-places" class="character-actions"></div>
+                  <button type="submit">搜索地点并显示地图</button>
+                </form>
+                <p id="amap-place-status" role="status" aria-live="polite"></p>
+                <div id="amap-place-results"></div>
+              </section>
+              <p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p>
+              <form id="amap-search-form">
+                <label>搜索城市<input id="amap-city" value="南充" list="itinerary-cities" required maxlength="60"></label>
+                <div class="outing-endpoints">
+                  <label>出发地点<input id="amap-origin-query" placeholder="例如：西华师范大学北湖校区" required maxlength="100"></label>
+                  <label>目的地点<input id="amap-destination-query" placeholder="例如：万卷楼" required maxlength="100"></label>
+                </div>
+                <button type="submit">搜索起终点</button>
+              </form>
+              <form id="amap-route-form" hidden>
+                <label>确认出发地点<select id="amap-origin-id" required></select></label>
+                <label>确认目的地点<select id="amap-destination-id" required></select></label>
+                <label>出行方式<select id="amap-mode"><option value="transit">公共交通</option><option value="driving">驾车</option><option value="walking">步行</option></select></label>
+                <button type="submit" class="outing-primary">查询高德路线</button>
+              </form>
+              <p id="amap-status" role="status" aria-live="polite">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>
+              <div id="amap-results"></div>
+              <section id="amap-map-region" aria-label="高德路线地图" hidden>
+                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
+                <p id="amap-map-note" role="status"></p>
+              </section>
+            </div>
+            <details><summary>其他道路参考：城市中心或手动坐标</summary>
+            <form id="outing-route-form">
+              <fieldset class="outing-modes"><legend>出行方式</legend><label><input type="radio" name="outing-mode" value="walking" checked>步行</label><label><input type="radio" name="outing-mode" value="driving">驾车</label></fieldset>
+              <div class="outing-endpoints">
+                <label>起点<select id="outing-start" required></select></label>
+                <label>终点<select id="outing-end" required></select></label>
+              </div>
+              <div id="outing-start-coords" class="outing-coords" hidden><label>起点经度<input id="outing-start-lon" type="number" min="-180" max="180" step="any"></label><label>起点纬度<input id="outing-start-lat" type="number" min="-90" max="90" step="any"></label></div>
+              <div id="outing-end-coords" class="outing-coords" hidden><label>终点经度<input id="outing-end-lon" type="number" min="-180" max="180" step="any"></label><label>终点纬度<input id="outing-end-lat" type="number" min="-90" max="90" step="any"></label></div>
+              <label id="outing-confirm-row" class="outing-check" hidden><input id="outing-confirm" type="checkbox">我已核实手动坐标为 WGS84，不是高德或百度坐标。</label>
+              <p class="outing-note">城市中心不是景区入口。查询会将起终点坐标发送到公共路线服务，请勿填写敏感地址。</p>
+              <button type="submit" class="outing-primary">查询道路路线</button>
+            </form>
+            <p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
+            <div id="outing-route-preview" class="outing-route-preview"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>
+            <div id="outing-route-metrics" class="outing-metrics"></div><div id="outing-route-source" class="outing-source"></div>
+            </details>
+            <section class="outing-draft"><h3>原回答摘要</h3><p id="outing-draft-note">从陈寿回答点击“查看出行方案”，可将原文带到这里。</p><ol id="outing-stops"></ol><details id="outing-original" hidden><summary>查看带入的回答原文</summary><pre id="outing-original-text"></pre></details></section>
+          </section>
+        </div>
+        </details>
+      </section>
       </section>
 
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">活动方案</h2>
         <div class="module-actions reading-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气与空气质量</button><button class="module-button" data-content-view="outing">核验道路路线</button><button id="plan-back-story" class="module-button">返回故事线</button></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气</button><button class="module-button" data-content-view="outing">核验道路路线</button><button id="plan-back-story" class="module-button">返回故事</button></div>
         <p id="plan-status" role="status"></p>
         <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
         <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
@@ -374,11 +378,11 @@
           <button class="composer-send" type="submit" aria-label="发送消息">↑</button>
         </div>
       </form>
-      <details class="chat-options"><summary>讲解设置与当前背景</summary><div class="chat-options-body">
+      <details class="chat-options"><summary>故事线设置与当前背景</summary><div class="chat-options-body">
       <details class="historian-context"><summary>当前故事或地点 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
       <details class="historian-note" id="guide-note" hidden open><summary>本章阅读提示</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
       <section id="character-panel" class="character-panel" aria-label="陈寿讲解设置">
-        <label for="character-mode">讲解模式</label><select id="character-mode"><option>大众体验版</option><option>亲子故事版</option><option>学术探索版</option></select>
+        <label for="character-mode">故事线</label><select id="character-mode"><option value="大众体验版">大众线</option><option value="亲子故事版">亲子线</option><option value="学术探索版">学术线</option></select>
         <p>AI 人物解读 · 非人物原话 · 对话仅本页；问题存入本地探索志</p><p id="character-notice" role="status"></p>
       </section>
       </div></details>
@@ -389,22 +393,22 @@
   <script src="chat-transport.js?v=deai10-final-20261003"></script>
   <script src="answer-format.js?v=amap-chat-20261003"></script>
   <script src="outing-core.js?v=deai10-final-20261003"></script>
-  <script src="app.js?v=map-plan12"></script>
+  <script src="app.js?v=reposition-20261005"></script>
   <script src="landing.js?v=culture14"></script>
-  <script src="travel-api.js?v=map-plan12"></script>
+  <script src="travel-api.js?v=reposition-20261005"></script>
   <script src="cities.js?v=deai10-final-20261003"></script>
-  <script src="weather-outlook-core.js?v=map-plan12-20261003"></script>
-  <script src="travel-modules.js?v=map-plan12-20261003"></script>
+  <script src="weather-outlook-core.js?v=reposition-20261005"></script>
+  <script src="travel-modules.js?v=reposition-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
   <script src="travel-map.js?v=deai10-final-20261003"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>
-  <script src="stories.js?v=culture14"></script>
-  <script src="story-map.js?v=deai10-final-20261003"></script>
-  <script src="cultural-node.js?v=chat-polish11-20261003"></script>
-  <script src="character-chat.js?v=amap-chat-20261003"></script>
-  <script src="journal.js?v=journal13"></script>
-  <script src="chenshou-guide.js?v=chat-polish11-20261003"></script>
-  <script src="outing.js?v=deai10-final-20261003"></script>
+  <script src="stories.js?v=reposition-20261005"></script>
+  <script src="story-map.js?v=reposition-20261005"></script>
+  <script src="cultural-node.js?v=reposition-20261005"></script>
+  <script src="character-chat.js?v=reposition-20261005"></script>
+  <script src="journal.js?v=reposition-20261005"></script>
+  <script src="chenshou-guide.js?v=reposition-20261005"></script>
+  <script src="outing.js?v=reposition-20261005"></script>
   <script src="amap-map.js?v=amap-chat-20261003"></script>
   <script src="amap-planner.js?v=amap-chat-20261003"></script>
   <script src="amap-chat.js?v=20261003"></script>

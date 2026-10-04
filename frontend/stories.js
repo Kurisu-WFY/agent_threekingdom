@@ -21,6 +21,7 @@
     { id: 'zhaohua', name: '昭化古城', building: 'wall', fallbackName: '昭化区', fallbackParent: '广元市' },
     { id: 'micangdao', name: '米仓道', building: 'road' }
   ].map(place => Object.assign({ coordinates: null, dataStatus: 'pending', sources: [] }, place));
+  const modeLabel=mode=>({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[mode]||'大众线');
   const progress = window.StoryProgress;
   const phases = ['寻源', '读史', '探秘', '传承'];
   const matchesPhase = (story, phase) => phase === '全部' || phases.includes(story.phase) && story.phase === phase;
@@ -89,12 +90,12 @@
     const s=progress.get(story), chapters=story.chapters || [];
     const places=window.StoryMap?.getPlaces ? window.StoryMap.getPlaces(story.id) : window.SGT_PLACES;
     detail.append(node('p','story-local-notice',progress.notice()),node('p','story-progress-seal',chapters.length?progress.status(story)+' · 已寻迹 '+s.completed.size+' / '+chapters.length:'尚未开始 · 可先向陈寿了解主题'));
-    detail.append(node('h3','','讲解模式'));
+    detail.append(node('h3','','故事线'));
     const modes=node('div','story-controls');
     ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
-      const b=action(mode,()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
+      const b=action(modeLabel(mode),()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
     }); detail.append(action('带入活动计划',()=>window.TravelModules.openStory(story)));
-    detail.append(modes,node('p','map-note','切换模式只改变这一章的讲解方式，不会切换故事或地点。讲解来自现有的陈寿对话服务，资料不足时会说明待确认。'));
+    detail.append(modes,node('p','map-note','切换故事线只改变这一章的讲解方式，不会切换故事或地点。讲解来自现有的陈寿对话服务，资料不足时会说明待确认。'));
     if(story.people?.length || story.events?.length)detail.append(node('h3','','相关人物与关键事件'),node('p','',[story.people?.length?'人物：'+list(story.people):'',story.events?.length?'事件：'+list(story.events):''].filter(Boolean).join('；')));
     const constraints=[['交通',story.constraints?.transport],['开放时间',story.constraints?.openTime],['游览时长',story.constraints?.duration],['预算',story.constraints?.budget]].filter(([,v])=>v);
     if(constraints.length)detail.append(node('h3','','出行条件'),node('p','',constraints.map(([k,v])=>k+'：'+v).join('；')+' · 待核验'));
@@ -123,7 +124,7 @@
     }
     if(progress.status(story)==='已寻迹') {
       const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');
-      detail.append(node('h3','','这条故事线已读完'),node('p','','你已手动完成本故事全部章节，回顾了：'+visitedPlaces.join('、')+'。相关人物：'+list(story.people)+'。史料仍需核验，探索记录不代表实际到访。'));
+      detail.append(node('h3','','这条故事已读完'),node('p','','你已手动完成本故事全部章节，回顾了：'+visitedPlaces.join('、')+'。相关人物：'+list(story.people)+'。史料仍需核验，探索记录不代表实际到访。'));
       const next=window.SGT_STORIES.find(item=>item.id!==story.id&&progress.status(item)!=='已寻迹');
       if(next)detail.append(action('接着读：'+next.title,()=>select(next,true)));
     } else if(s.skipped.size && chapters.every((_,i)=>s.skipped.has(i)||s.completed.has(i))) detail.append(node('p','','本次所选章节已完成；仍有跳过章节，整条故事保持探索中。'));
@@ -140,7 +141,7 @@
   window.SGT_STORIES.forEach((story, index) => {
     const card = node('button', 'story-card'); card.type = 'button';
     card.setAttribute('aria-controls', 'culture-preview'); card.setAttribute('aria-pressed', 'false');
-    card.setAttribute('aria-label', '预览故事线：' + story.title);
+    card.setAttribute('aria-label', '预览故事：' + story.title);
     if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));
     card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', story.chapters.length ? '预览章节与地点' : '章节与地点待补充'));
     if(story.summary)card.append(node('span','story-summary',story.summary));
@@ -173,7 +174,7 @@
     moveMap();
   }
   $('#story-ask').addEventListener('click', () => {
-    window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事线，适合怎么游览？');
+    window.SGTJourney.ask('请介绍“' + selected.title + '”这条故事，适合怎么游览？');
     $('#story-action-status').textContent = '已发给向导。如果正在回答，问题会留在对话草稿里。';
   });
   const silhouettes = {
@@ -196,7 +197,7 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = { matchesPhase, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
+  window.SGTStoryUI = {modeLabel, matchesPhase, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));

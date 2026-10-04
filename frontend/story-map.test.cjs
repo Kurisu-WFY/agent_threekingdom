@@ -13,7 +13,7 @@ function setup(ready=Promise.resolve(true)){
  const places=[{id:'a',name:'昭化古城',building:'wall',fallbackName:'昭化区',fallbackParent:'广元市'},{id:'b',name:'剑门关',building:'pass',fallbackName:'剑阁县',fallbackParent:'广元市'},{id:'c',name:'米仓道',building:'road'}];
  const counties=JSON.parse(fs.readFileSync(__dirname+'/sichuan-counties.json','utf8')).map(p=>({...p,level:'county'}));
  const window={MapRouteCore:core,SGT_STORIES:[story,{id:'empty',title:'空模板',chapters:[]}],SGT_PLACES:places,
-  SGTStoryUI:{icon:kind=>{const icon=new Element('svg');icon.dataset.kind=kind;return icon;},openStory:id=>opened.push(id)},
+  SGTStoryUI:{modeLabel:m=>({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[m]),icon:kind=>{const icon=new Element('svg');icon.dataset.kind=kind;return icon;},openStory:id=>opened.push(id)},
   SGTJourney:{ask:(q,o)=>{questions.push(q);questionOptions.push(o);}},TravelMap:{ready,getPlaces:()=>counties,textSize:()=>14,refreshLabels(){window.StoryMap.onViewport([0,0,900,680],{width:900,height:680});},beginStory:p=>fits.push(p),fitStory:p=>fits.push(p),endStory(){fits.push('restored');},addStoryPlace:p=>{added.push(p);return true;}}};
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),{window});
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-map.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v)});

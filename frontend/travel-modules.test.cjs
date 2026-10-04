@@ -7,7 +7,7 @@ class Element {
 const removed=new Set(['#budget-results','#load-budget','#replan-remaining','#remaining-time']);
 const copyCity=new Element('button');copyCity.dataset.city='巴中';
 const nodes=new Map(),get=k=>{if(removed.has(k))return null;if(!nodes.has(k))nodes.set(k,new Element());return nodes.get(k);};
-const values={city:'广元',origin:'南充',date:'',days:'0.5',people:'2',group:'家庭',transport:'自驾',explanation:'亲子故事版',notes:'少走路'};
+const values={city:'广元',origin:'南充',date:'',days:'0.5',people:'2',group:'家庭',transport:'自驾',explanation:'亲子故事版',hotel_tier:'舒适型',notes:'少走路'};
 const fields=Object.fromEntries(Object.entries(values).map(([k,v])=>[k,Object.assign(new Element(),{value:v})]));
 const form=get('#trip-form'),button=new Element('button');form.elements={...fields,namedItem:k=>fields[k]};form.querySelector=()=>button;form.reportValidity=()=>true;form.requestSubmit=()=>form.onsubmit({preventDefault(){},currentTarget:form});
 const requests=[],views=[],mapCalls=[],saved={},states=new Map();
@@ -44,7 +44,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:20,units},items:[{title:'天气',data_status:'forecast',updated_at:'2026-10-03T01:00:00+08:00',sources:[{title:'Open-Meteo',source_level:'C',source_url:'https://open-meteo.com'}]}]}});
  await weatherForm.onsubmit({preventDefault(){}});
  ninthCheck('C12 实时',()=>{const out=text(get('#travel-results'));assert.match(out,/模型预报、非现场实测/);assert.doesNotMatch(out,/来源等级|文学\/传说|史实结论/);assert.match(out,/Open-Meteo/);});
- ninthCheck('C15 '+JSON.stringify(units),()=>{const out=text(get('#travel-results'));if(units?.pm2_5){assert.match(out,/PM2.5 浓度：13 μg\/m³/);assert.match(out,/PM10 浓度：20 μg\/m³/);}else {assert.doesNotMatch(out,/μg\/m³/);assert.match(out,/单位待确认/);}assert.match(out,/模型估计，非现场实测/);});
+ ninthCheck('移除 AQI',()=>assert.doesNotMatch(text(get('#travel-results')),/PM2.5|PM10|AQI|当前空气质量/));
  }
  window.TravelApi.listSpots=ninthSpots;window.TravelApi.getTravelInfo=ninthWeather;
  assert.equal(ninthFailures.join('\n'),'','C12/C15');
@@ -59,12 +59,12 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  copyCheck('C02 景区',()=>{assert.match(get('#destination-results').children[0].textContent,/景区查询失败.*检查网络.*重试/);const d=get('#destination-results').children.find(n=>n.tag==='details');assert.ok(d&&!d.open);assert.match(text(d),/Failed to fetch/);assert.ok(get('#destination-results').children.some(n=>n.tag==='button'));});
  get('#travel-city').value='南充';window.TravelApi.getTravelInfo=async()=>{throw TypeError('Failed to fetch');};await weatherForm.onsubmit({preventDefault(){}});
  copyCheck('C02 天气',()=>{assert.match(get('#travel-status').textContent,/天气查询失败.*检查网络.*重试/);assert.doesNotMatch(get('#travel-status').textContent,/Failed to fetch/);assert.match(text(get('#travel-results').children.find(n=>n.tag==='details')),/Failed to fetch/);assert.equal(get('#load-travel').disabled,false);});
- window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:13},items:[{title:'模型',summary:'数据时刻 2026-10-03T01:00（北京时间）；原说明。',fetched_at:'2026-10-02T17:05:03.852032+00:00',data_status:'model'}]}});await weatherForm.onsubmit({preventDefault(){}});
- copyCheck('C05',()=>{const out=text(get('#travel-results'));assert.match(out,/数据时刻：2026年10月03日 01:00（北京时间）/);assert.match(out,/查询时间（可能为缓存）：2026年10月03日 01:05（北京时间）/);const findOriginal=n=>n.tag==='details'&&n.children[0]?.textContent==='原始服务说明（保留原文）'?n:n.children.map(findOriginal).find(Boolean);const original=findOriginal(get('#travel-results'));assert.match(text(original),/数据时刻 2026-10-03T01:00/);});
+ window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{fetched_at:'2026-10-02T17:05:03.852032+00:00',air_quality:{time:'2026-10-03T01:00',pm2_5:13,pm10:13},items:[{title:'模型',summary:'数据时刻 2026-10-03T01:00（北京时间）；原说明。',fetched_at:'2026-10-02T17:05:03.852032+00:00',data_status:'model'}]}});await weatherForm.onsubmit({preventDefault(){}});
+ copyCheck('C05',()=>{const out=text(get('#travel-results'));assert.doesNotMatch(out,/当前空气质量|PM2.5|AQI/);assert.match(out,/查询时间（可能为缓存）：2026年10月03日 01:05（北京时间）/);const findOriginal=n=>n.tag==='details'&&n.children[0]?.textContent==='原始服务说明（保留原文）'?n:n.children.map(findOriginal).find(Boolean);const original=findOriginal(get('#travel-results'));assert.match(text(original),/数据时刻 2026-10-03T01:00/);});
  window.TravelApi.listSpots=originalSpots;window.TravelApi.getTravelInfo=copyWeather;
  for(const time of ['2026-99-99','2026-02-30T01:00:00Z','2026-04-31T01:00']){
   window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{air_quality:{time},items:[{title:'非法时间',fetched_at:time,data_status:'model'}]}});
-  await weatherForm.onsubmit({preventDefault(){}});assert.match(text(get('#travel-results')),/数据时刻：待确认/,'C05 非法日历日期不冒充有效时刻');
+  await weatherForm.onsubmit({preventDefault(){}});assert.match(text(get('#travel-results')),/查询时间（可能为缓存）：待确认/,'C05 非法日历日期不冒充有效时刻');
  }
  window.TravelApi.getTravelInfo=copyWeather;
  assert.equal(copyFailures.join('\n'),'','C02/C05/C06');
@@ -93,7 +93,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  get('#travel-city').value='南充';
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.equal(apiCalls.at(-1).city,'南充');assert.match(get('#travel-status').textContent,/待接入|重试/);
  const originalWeather=window.TravelApi.getTravelInfo;
- window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{forecast:[{date:'2026-10-03',temperature_min_c:10,temperature_max_c:20,rain_probability_percent:30}],air_quality:{time:'2026-10-01T08:00:00+08:00',pm2_5:12,pm10:28},items:[{title:'模型天气',summary:'仅供参考',data_status:'forecast',fetched_at:'2026-10-01T08:05:00+08:00',sources:[{title:'公开天气来源',source_url:'https://example.org/weather',source_level:'A'}]}]}});
+ window.TravelApi.getTravelInfo=async()=>({status:'ok',data:{forecast:[{date:window.WeatherOutlook.datesFromToday()[0],temperature_min_c:10,temperature_max_c:20,rain_probability_percent:30}],air_quality:{time:'2026-10-01T08:00:00+08:00',pm2_5:12,pm10:28},items:[{title:'模型天气',summary:'仅供参考',data_status:'forecast',fetched_at:'2026-10-01T08:05:00+08:00',sources:[{title:'公开天气来源',source_url:'https://example.org/weather',source_level:'A'}]}]}});
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.ok(text(get('#travel-results')).includes(window.WeatherOutlook.datesFromToday()[0]));assert.match(text(get('#travel-results')),/公开天气来源/);assert.match(text(get('#travel-results')),/查询时间.*2026年10月01日 08:05（北京时间）/);
  window.TravelApi.getTravelInfo=originalWeather;
  let finishOldWeather;
@@ -112,9 +112,9 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  fields.origin.value='南充';fields.people.value='0';await form.requestSubmit();assert.equal(requests.length,0);fields.people.value='2';
  const pending=form.requestSubmit();assert.equal(button.disabled,true);form.requestSubmit();assert.equal(requests.length,1);
  assert.equal(requests[0].preferences,undefined,'活动生成不附带强制路线模板参数');
- assert.match(requests[0].q,/活动顺序/);assert.doesNotMatch(requests[0].q,/住宿|房间数|预算|交通方式|交通可行性|规划旅游路线/);assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
+ assert.match(requests[0].q,/活动顺序/);assert.match(requests[0].q,/住宿.*舒适型.*3.0,3.5/);assert.doesNotMatch(requests[0].q,/房间数|预算|交通方式|交通可行性|规划旅游路线/);assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
  requests[0].resolve({...response,intent:{intent:'culture_qa'},route:null});await pending;assert.equal(views.at(-1),'plan');
- const output=text(get('#plan-results'));assert.match(output,/示例活动.*文化讲解/);assert.doesNotMatch(output,/舒适型|间房|总预算/);
+ const output=text(get('#plan-results'));assert.match(output,/示例活动.*文化讲解/);assert.doesNotMatch(output,/间房|总预算/);
  assert.equal(state.completed.size,1);assert.ok(state.completed.has(0));assert.equal(button.disabled,false);
  assert.equal(get('#plan-map').disabled,true,'无结构化地点时不猜测导航');
  get('#save-plan').onclick();assert.ok(saved['sanguo.travel-plans.v1']);
@@ -138,7 +138,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.match(html,/<label>出发日期（选填）/);
  const road=window.TravelModules.getRoadDraft('plan');assert.equal(road.origin,'南充');assert.equal(road.city,'广元');
  for(const name of ['destinations','planner','plan'])assert.ok(html.includes('data-view-panel="'+name+'"'));
- assert.doesNotMatch(html,/住宿档位|房间数|预算明细|重绘剩余路线|预算与住宿设置|name="(?:rooms|hotel_tier|budget_min|budget_max|budget_limit|hotel_per_room|meals_per_person_day|transport_total)"/);
+ assert.match(html,/name="hotel_tier"/);
+ assert.doesNotMatch(html,/房间数|预算明细|重绘剩余路线|预算与住宿设置|name="(?:rooms|budget_min|budget_max|budget_limit|hotel_per_room|meals_per_person_day|transport_total)"/);
  assert.ok(html.includes('带入活动计划')&&html.includes('生成活动方案'));
  assert.ok(html.includes('id="amap-map"')&&html.includes('id="travel-weather-form"')&&!html.includes('id="outing-weather-form"'));
  const journeyCalls=[];window.SGTJourney={ask:(q,o)=>journeyCalls.push({q,o})};
@@ -147,7 +148,9 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.doesNotMatch(activity.o.displayText,/只输出|只调整|不要编造|必须|合计上限/);
  assert.match(activity.q,/无依据标待核验.*不要编造实时/,'U01 constraints remain in request');
  assert.equal(views.at(-1),'planner','U03 generation does not jump away from editable form');
- assert.doesNotMatch(activity.q,/住宿|房间数|预算|交通方式|规划旅游路线/);
+ assert.match(activity.q,/住宿.*舒适型.*3.0,3.5.*未接入/);
+ assert.match(activity.o.displayText,/舒适型/);
+ assert.doesNotMatch(activity.q,/房间数|预算|交通方式|规划旅游路线/);
  assert.ok(activity.o.activityPlan);
  window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',activityPlan:activity.o.activityPlan});
  assert.equal(get('#view-current-plan').hidden,false,'U03 result provides direct current-plan entry');
@@ -179,5 +182,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.equal(copyCalls.at(-1).sources[0].source_url,'https://example.org/source','C01 继承真实结构化来源，不猜PDF链接');
  assert.match(text(get('#plan-results')),/原出处.*原活动正文，PDF第3页/);
  get('#save-plan').onclick();const copySaved=JSON.parse(saved['sanguo.travel-plans.v1'])[0];assert.equal(copySaved.activityAnswer,'原活动正文，PDF第3页。');assert.equal(copySaved.activityEvidence.sources[0].title,'原出处');
+ const beforeHotels=apiCalls.length;get('#load-hotels').onclick();assert.equal(apiCalls.length,beforeHotels,'未接入住宿不发假查询');assert.match(text(get('#hotel-results')),/舒适型.*3.0,3.5.*未接入/);
+ const legacyPlans=JSON.parse(saved['sanguo.travel-plans.v1']);delete legacyPlans[0].preferences.hotel_tier;saved['sanguo.travel-plans.v1']=JSON.stringify(legacyPlans);fields.hotel_tier.value='豪华型';
+ vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);get('#saved-plans').children[0].children[1].onclick();assert.equal(fields.hotel_tier.value,'','旧方案没有住宿需求，不能继承表单残留档位');
  console.log('PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels');
 })().catch(e=>{console.error(e);process.exitCode=1;});

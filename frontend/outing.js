@@ -63,5 +63,6 @@
     toggleChat(false);chatHandoff=true;showContentView('outing');chatHandoff=false;$('outing-title').focus({preventScroll:true});
   }};
   $('outing-back').onclick=()=>{if(!back?.())$('outing-origin').textContent='原对话已被删除，可从聊天入口新建对话。';};
+  $('outing-use-activity').onclick=()=>prefillPlan(window.TravelModules.getRoadDraft('planner'));
   if(window.location.hash==='#outing')showContentView('outing');
 })();

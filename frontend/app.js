@@ -8,7 +8,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 const viewLabel = document.querySelector('#view-label');
 
 const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
-const WELCOME = '我是万卷史官·陈寿，这里的 AI 文化向导。你可以选一条故事线慢慢读，也可以先问人物，或告诉我有多少时间。讲到史实时，有依据才说；没依据的地方会留白。';
+const WELCOME = '我是陈寿，这里的 AI 文化向导。我们可以从编撰《三国志》的过程出发，了解南充、广元与阆中的三国文化，也可以聊四川三国建筑背后的历史。史料有依据才说，缺资料就留待核验。';
 const INTENT_LABELS = {
   culture_qa: '文化问答',
   history_vs_romance: '正史 / 演义',
@@ -688,11 +688,19 @@ window.getContentView = () => currentContentView;
 let contentEntrance = null;
 let nodeSource = null;
 function showContentView(view) {
+    if(view==='outing'){
+      const source=currentContentView;
+      showContentView('planner');
+      window.TravelAssistant?.onEnter?.(source);
+      document.querySelector('#outing-title')?.focus({preventScroll:true});
+      document.querySelector('#outing-view')?.scrollIntoView?.({block:'start',behavior:'instant'});
+      return;
+    }
     if(view==='travel'){
       const source=currentContentView;
       showContentView('planner');
       window.TravelModules?.onEnterTravel?.(source);
-      document.querySelector('#planner-view').scrollTop=0;
+      document.querySelector('#travel-weather-form')?.scrollIntoView?.({block:'center',behavior:'instant'});
       document.querySelector('#travel-city')?.focus({preventScroll:true});
       return;
     }
@@ -715,7 +723,7 @@ function showContentView(view) {
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
     if(view==='outing')window.TravelAssistant?.onEnter?.(leaving?.dataset.viewPanel);
-    const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气与空气质量', outing:'出发核验', journal:'探索志', node:'文化节点' };
+    const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气', outing:'出发核验', journal:'探索志', node:'文化节点' };
     const taskParent={story:'welcome',plan:'planner',travel:'planner',outing:'planner'};
     const origin=view==='node'?(window.CulturalNode?.getContext?.()?.returnTo||'welcome'):null;
     const parent=view==='node'?(taskParent[origin]||origin):taskParent[view]||null;

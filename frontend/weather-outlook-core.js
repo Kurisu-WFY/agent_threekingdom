@@ -1,15 +1,20 @@
 /* 显示模型返回值，不用降雨概率/PM 浓度推测天气或 AQI。 */
 (function(root){
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
-  function datesFromToday(now=Date.now()){
+  function datesFromToday(now=Date.now(),count=1){
     const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(now));
     const part=key=>parts.find(p=>p.type===key).value;
     const start=Date.parse(part('year')+'-'+part('month')+'-'+part('day')+'T00:00:00Z');
-    return [0,1,2].map(i=>new Date(start+i*86400000).toISOString().slice(0,10));
+    return Array.from({length:Number.isInteger(count)&&count>0?count:0},(_,i)=>new Date(start+i*86400000).toISOString().slice(0,10));
   }
   function temperatureRange(day){
+    if(day && (Object.hasOwn(day,'daytemp')||Object.hasOwn(day,'nighttemp'))){
+      const value=v=>finite(v)?v:typeof v==='string'&&/^-?\d+(?:\.\d+)?$/.test(v.trim())?Number(v):null;
+      const label=(v,name)=>finite(value(v))?name+' '+Math.round(value(v))+'°C':name+'未取得';
+      return label(day.daytemp,'白天')+' / '+label(day.nighttemp,'夜间');
+    }
     const min=day?.temperature_min_c,max=day?.temperature_max_c;
-    return finite(min)&&finite(max)&&min<=max?Math.round(min)+'～'+Math.round(max)+'°C':'温度未取得';
+    return finite(min)&&finite(max)&&min<=max?'最低 '+Math.round(min)+'°C / 最高 '+Math.round(max)+'°C':'温度未取得';
   }
   // WMO 分类依据 https://open-meteo.com/en/docs#weathervariables
   function condition(code){
@@ -24,13 +29,20 @@
     }
     return {icon:'unknown',label:'状况未取得'};
   }
-  function outlook(data={},extra={},now=Date.now()){
-    const days=Array.isArray(data.forecast)?data.forecast:[],daily=extra.daily||{},hourly=extra.hourly||{};
-    return datesFromToday(now).map(date=>{
-      const day=days.find(d=>d?.date===date),index=Array.isArray(daily.time)?daily.time.indexOf(date):-1;
-      const code=index>=0?daily.weather_code?.[index]:day?.weather_code;
-      const readings=Array.isArray(hourly.time)?hourly.time.flatMap((time,i)=>typeof time==='string'&&time.startsWith(date+'T')&&finite(hourly.us_aqi?.[i])&&hourly.us_aqi[i]>=0?[hourly.us_aqi[i]]:[]):[];
-      return {date,temperature:temperatureRange(day),condition:condition(code),aqi:readings.length?Math.round(Math.max(...readings)):null};
+  function textCondition(day){
+    const label=v=>typeof v==='string'&&v.trim()?v.trim():'状况未取得';
+    const weather=label(day.dayweather),night=label(day.nightweather);
+    const icon=/雷/.test(weather)?'storm':/雪/.test(weather)?'snow':/雨/.test(weather)?'rain':/雾|霾/.test(weather)?'fog':weather==='晴'?'sun':/多云/.test(weather)?'cloud':weather==='阴'?'overcast':'unknown';
+    return {icon,label:'白天 '+weather+' / 夜间 '+night};
+  }
+  function outlook(data={},now=Date.now()){
+    const days=Array.isArray(data.forecast)?data.forecast:[],today=datesFromToday(now)[0],seen=new Set();
+    return days.filter(day=>{
+      const date=day?.date;
+      if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date||date<today||seen.has(date))return false;
+      seen.add(date);return true;
+    }).sort((a,b)=>a.date.localeCompare(b.date)).map(day=>{
+      return {date:day.date,temperature:temperatureRange(day),condition:Object.hasOwn(day,'dayweather')||Object.hasOwn(day,'nightweather')?textCondition(day):condition(day.weather_code)};
     });
   }
   root.WeatherOutlook={datesFromToday,temperatureRange,condition,outlook};

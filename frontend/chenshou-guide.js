@@ -32,8 +32,8 @@
     const key=[c.story?.id,c.chapter?.name,c.place?.id,mode].join('|');
     if(narratedKey&&narratedKey!==[c.story?.id,c.chapter?.name,c.place?.id].join('|'))$('#guide-note').hidden=true;
     $('#guide-location').textContent=c.place?.name||c.story?.title||'尚未选择';
-    $('#guide-context').textContent=[c.story?.title||'未选择故事线',chapter,c.place?.name||'地点待关联',mode,'已寻迹（本地手动记录，非实际到访证明）：'+(done.join('、')||'暂无')].join(' / ');
-    if(lastKey&&lastKey!==key)$('#guide-transition').textContent='已切换到：'+chapter+' · '+mode;
+    $('#guide-context').textContent=[c.story?.title||'未选择故事',chapter,c.place?.name||'地点待关联',window.SGTStoryUI.modeLabel(mode),'已寻迹（本地手动记录，非实际到访证明）：'+(done.join('、')||'暂无')].join(' / ');
+    if(lastKey&&lastKey!==key)$('#guide-transition').textContent='已切换到：'+chapter+' · '+window.SGTStoryUI.modeLabel(mode);
     lastKey=key;
     const chat=chats[active], pending=chat.messages.find(m=>m.pending), planning=pending&&/路线|半天|规划|时间/.test(pending.originalQuestion||pending.question||'');
     const state=pending?(planning?'planning':'research'):Date.now()<celebration?'complete':'idle';
@@ -60,7 +60,7 @@
     refresh();
   }
   function enter(c){if(!c)return;narrate(c);toggleChat(true);}
-  function requestContext(text){const c=context();return ' 已寻迹节点（本地手动记录）：'+(completed(c).join('、')||'暂无')+'。'+(/半天|时间不够|只有.*小时/.test(text)?'围绕当前故事线“'+(c.story?.title||'未选择，先询问')+'”解释压缩取舍，保留已完成章节状态。核心章节由游客选择；使用 selection_reason 和各站 reason，缺少时长/推荐理由明确待核验，不能保证可行或擅自删章。':'');}
+  function requestContext(text){const c=context();return ' 已寻迹节点（本地手动记录）：'+(completed(c).join('、')||'暂无')+'。'+(/半天|时间不够|只有.*小时/.test(text)?'围绕当前故事“'+(c.story?.title||'未选择，先询问')+'”解释压缩取舍，保留已完成章节状态。核心章节由游客选择；使用 selection_reason 和各站 reason，缺少时长/推荐理由明确待核验，不能保证可行或擅自删章。':'');}
   (window.SGT_STORIES||[]).forEach(s=>seen.set(s.id,new Set(window.StoryProgress.get(s).completed)));
   window.StoryProgress?.subscribe(story=>{
     const s=window.StoryProgress.get(story),before=seen.get(story.id)||new Set(),added=[...s.completed].filter(i=>!before.has(i));seen.set(story.id,new Set(s.completed));

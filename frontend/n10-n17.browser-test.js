@@ -15,6 +15,8 @@
     try {
       toggleChat(false);showContentView('welcome');
       q('#story-buildings button').click();toggleChat(true);await wait(500);
+      assert(!q('#node-enter-story')&&!q('#node-modes')&&!q('#node-mode-status'),'node removed entry points');
+      assert(!q('#node-reading-content').innerText.includes('先读懂这里'),'node simplified reading introduction');
       const source=q('[data-node-source]'),detail=q('#node-view');
       assert(source&&style(source).display==='none','shared node source must not stack above detail when chat is open');
       assert(q('#node-reading').clientHeight>=300&&style(q('#node-reading')).overflowY==='auto'&&style(detail).overflowY==='auto','shared node retains independent reading and reachable outer scroll');
@@ -28,7 +30,7 @@
       assert(answer.querySelector('h2')&&answer.querySelector('ul')&&answer.querySelector('table')&&answer.querySelector('.character-place-link'),'N14 Markdown and inline place links');
       report.N12_N14={wrappers:0,markdown:'heading/list/table/place links'};
       const names=[...document.querySelectorAll('.message-name')].map(n=>n.innerText);
-      assert(names.join(',')==='陈寿,诸葛亮,张飞,你','N17 immutable persona names');
+      assert(names.join(',')==='陈寿,陈寿,陈寿,你','N17 fixed Chen identity and user name');
       for(const row of document.querySelectorAll('.message')) {
         const identity=row.querySelector('.message-identity').getBoundingClientRect(),body=row.querySelector('.body').getBoundingClientRect(),bounds=row.getBoundingClientRect();
         assert(body.left>=bounds.left-1&&body.right<=bounds.right+1,'N17 bubble within message');

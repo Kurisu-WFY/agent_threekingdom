@@ -1,0 +1,17 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const html=fs.readFileSync(__dirname+'/index.html','utf8');
+const planner=html.slice(html.indexOf('id="planner-view"'),html.indexOf('id="plan-view"'));
+assert.ok(planner.includes('id="outing-view"'),'道路表单直接放进活动计划');
+assert.ok(planner.includes('id="amap-search-form"')&&planner.includes('id="outing-route-form"'),'两种道路核验完整迁移');
+assert.doesNotMatch(html,/data-view-panel="outing"/,'outing 兼容入口映射到活动计划');
+assert.match(planner,/name="hotel_tier"/,'活动条件包含酒店档位');
+for(const label of ['经济型','舒适型','高档型','豪华型'])assert.ok(planner.includes(label));
+assert.match(planner,/id="hotel-results"/);assert.match(planner,/未接入/);assert.match(planner,/参考价.*非锁价.*不代订/);
+assert.doesNotMatch(html,/空气质量|AQI|这三天|起 3 天/);
+assert.doesNotMatch(html,/id="node-enter-story"|id="node-modes"|id="node-mode-status"/);
+const nodeJs=fs.readFileSync(__dirname+'/cultural-node.js','utf8');
+assert.doesNotMatch(nodeJs,/先读懂这里/);assert.match(nodeJs,/出行信息 · 与历史史料分开核验/);
+assert.ok(html.includes('<option value="大众体验版">大众线</option>'),'可见名称变更保留内部 mode');
+assert.ok(html.includes('<option value="亲子故事版">亲子线</option>'));
+assert.ok(html.includes('<option value="学术探索版">学术线</option>'));
+console.log('PASS: reposition UI scope, inline roads, hotel pending state, AQI removal, node entry removal and mode contract');

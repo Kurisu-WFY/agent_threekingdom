@@ -45,10 +45,10 @@ function contents(n){return n.textContent+n.children.map(contents).join(' ');}
   test.get('#preview-clear').handlers.click();test.get('#preview-story-open').handlers.click();assert.equal(test.mapCalls.at(-1),'exit');assert.equal(test.views.at(-1),'map');
   test.get('#story-ask').handlers.click();assert.match(test.questions.at(-1),/从南充少年到三国史家/);
   cards[2].handlers.click();
-  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,2);assert.equal(test.questions[1],'请介绍“蜀汉北境·蜀道寻踪”这条故事线，适合怎么游览？');assert.ok(!test.questions[1].includes('模板'));
+  test.get('#story-ask').handlers.click();assert.equal(test.questions.length,2);assert.equal(test.questions[1],'请介绍“蜀汉北境·蜀道寻踪”这条故事，适合怎么游览？');assert.ok(!test.questions[1].includes('模板'));
   const story=test.window.SGT_STORIES[2],progress=test.window.StoryProgress;
   const state=progress.get(story);state.started=true;state.completed=new Set([0,1,2]);progress.save(story);
-  assert.ok(contents(test.get('#story-detail-content')).includes('这条故事线已读完'));
+  assert.ok(contents(test.get('#story-detail-content')).includes('这条故事已读完'));
   assert.ok(contents(test.get('#story-detail-content')).includes('接着读'));
   assert.equal(test.get('#story-cards').children[2].dataset.progress,'已寻迹');
   test.get('#story-phase-filters').children[2].handlers.click();

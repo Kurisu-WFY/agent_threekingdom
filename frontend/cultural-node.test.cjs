@@ -8,7 +8,7 @@ const state={current:1,mode:'大众体验版',completed:new Set([0]),skipped:new
 const views=[],asks=[],adds=[],scrolls=[],listeners=[];
 const place={id:'pass',name:'测试关楼',building:'pass'},chapter={name:'第二幕',placeId:'pass',people:[],events:[],story:'未经核验的文字',sources:[{title:'不可靠资料',source_level:'C',source_url:'javascript:alert(1)'}]},story={id:'test',title:'测试故事',chapters:[{},chapter]};
 const window={scrollY:270,scrollTo:o=>scrolls.push(o.top),SGT_STORIES:[story],SGT_PLACES:[place],
- SGTStoryUI:{icon:kind=>Object.assign(new Element('svg'),{textContent:kind}),openStory:id=>views.push(id)},
+ SGTStoryUI:{modeLabel:m=>({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[m]),icon:kind=>Object.assign(new Element('svg'),{textContent:kind}),openStory:id=>views.push(id)},
  StoryProgress:{get:()=>state,save(){listeners.forEach(fn=>fn(story));},subscribe:fn=>listeners.push(fn)},SGTJourney:{ask:(q,o)=>asks.push({q,o})},TravelMap:{addStoryPlace:p=>{adds.push(p);return true;}},
  StoryMap:{describePlace:(p,c)=>({place:p,chapter:c,exact:false,point:null})}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/cultural-node.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t)},showContentView:v=>views.push(v)});
@@ -17,7 +17,7 @@ api.open({place,chapter,story,index:1,back:'map',exact:false,point:null});
 assert.equal(views.at(-1),'node');assert.match(get('#node-context').textContent,/第二幕/);assert.match(get('#node-coordinate').textContent,/坐标待核验/);
 assert.match(text(get('#node-reading-content')),/当前资料中未找到可靠记载/);assert.ok(!text(get('#node-reading-content')).includes('未经核验的文字'));
 assert.match(text(get('#node-metadata')),/C 级可信度不足/);assert.equal(get('#node-add-route').disabled,true);
-get('#node-reading').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-reading').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/可以和孩子一起看看下方资料/);
+get('#node-reading').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-reading').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/可以和孩子聊聊/);
 api.changeMode('学术探索版');assert.match(text(get('#node-reading-content')),/编纂背景/);assert.equal(get('#node-reading').scrollTop,260);assert.equal(get('#node-reading-content').style.minHeight,'1500px');
 state.mode='亲子故事版';window.StoryProgress.save(story);assert.equal(api.getMode(),'亲子故事版');assert.equal(get('#node-reading').scrollTop,260);api.changeMode('学术探索版');
 click('#node-ask');assert.match(asks.at(-1).q,/测试关楼/);assert.match(asks.at(-1).q,/合理推断/);assert.match(asks.at(-1).q,/学术探索版/);assert.equal(state.current,1);assert.match(asks.at(-1).o.displayText,/测试关楼/);assert.ok(!asks.at(-1).o.displayText.includes('必须分段'));
@@ -39,9 +39,9 @@ assert.ok(get('#node-comparison').children.every(n=>n.tag==='section'),'U24 reli
 assert.equal(descendants(get('#node-reading-content')).find(n=>n.className?.split(' ').includes('node-evidence')).tag,'section','U24 supported story stays visible');
 api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});
 assert.ok(!text(get('#node-metadata')).includes('pending'),'U08 raw status not rendered');assert.ok(!text(get('#node-comparison')).includes('pending'));
-click('#node-add-route');assert.equal(adds[0].name,'县级驻地');click('#node-enter-story');assert.equal(views.at(-1),'test');
+click('#node-add-route');assert.equal(adds[0].name,'县级驻地');assert.equal(get('#node-enter-story').handlers.click,undefined,'已删除节点进入故事入口');assert.equal(get('#node-modes').children.length,0,'已删除节点三档入口');assert.doesNotMatch(text(get('#node-reading-content')),/先读懂这里/);
 const links=[];function walk(n){if(n.tag==='a')links.push(n);n.children.forEach(walk);}nodes.forEach(walk);assert.ok(links.every(a=>/^https?:/.test(a.href)));
-api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').disabled,true);assert.match(get('#node-context').textContent,/待关联/);
+api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').handlers.click,undefined);assert.match(get('#node-context').textContent,/待关联/);
 click('#node-back');assert.equal(views.at(-1),'welcome');
 for(const source of ['journal','map','story','welcome']){
   assert.equal(api.openPlace('pass',{returnTo:source}),true);

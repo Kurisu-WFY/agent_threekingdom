@@ -29,4 +29,8 @@ assert.equal(get('amap-origin-query').value,'南充站');assert.equal(get('amap-
 assert.equal(get('amap-origin-id').value,'');assert.equal(get('amap-destination-id').value,'');assert.equal(get('amap-route-form').hidden,true);
 assert.ok(!calls.includes('search')&&!calls.includes('route'),'U11 no automatic search, candidate selection or coordinates');
 assert.equal(get('outing-start-lon').value,'');
+assert.equal(typeof get('outing-use-activity').onclick,'function','内联道路支持显式带入当前活动条件');
+outingContext.window.TravelModules.getRoadDraft=()=>({origin:'南充站',destination:'剑门关',city:'广元'});get('outing-use-activity').onclick();
+assert.equal(get('amap-origin-query').value,'南充站');assert.equal(get('amap-destination-query').value,'剑门关');assert.equal(get('amap-city').value,'广元');
+assert.ok(!calls.includes('search')&&!calls.includes('route'),'带入仅复制文字，不自动搜索或选候选');
 console.log('PASS: U11 plan endpoint text, stale candidate invalidation, no automatic lookup or invented coordinates');

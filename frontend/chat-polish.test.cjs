@@ -36,7 +36,7 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
  await check('4 设置保留讲解模式与上下文',async()=>{
    await page.locator('.chat-options > summary').click();assert.equal(await page.locator('.chat-options select').count(),1);
    assert.equal(await page.locator('#character-mode option').count(),3);
-   await page.locator('#character-mode').selectOption({label:'亲子故事版'});
+   await page.locator('#character-mode').selectOption({label:'亲子线'});
    assert.equal(await page.evaluate(()=>CharacterChat.backendMode()),'亲子');
    await page.locator('.chat-options > summary').click();
  });

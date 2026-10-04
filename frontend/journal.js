@@ -29,7 +29,7 @@
       const value=label=>text.match(new RegExp(label+'：([^；。\\n]+)'))?.[1] || '待确认';
       return '请安排'+value('目的地')+'的'+(value('可用时间')==='待确认'?value('游玩时间'):value('可用时间'))+'文化活动：'+value('出发地')+'出发。';
     }
-    if(text.startsWith('【故事章节讲解】'))return '请陈寿讲解'+(text.match(/(?:文化节点|地点)：([^；。]+)/)?.[1] || text.match(/故事线：([^；。]+)/)?.[1] || '当前章节')+'。';
+    if(text.startsWith('【故事章节讲解】'))return '请陈寿讲解'+(text.match(/(?:文化节点|地点)：([^；。]+)/)?.[1] || text.match(/故事：([^；。]+)/)?.[1] || '当前章节')+'。';
     return text;
   }
   function persist(){try{window.localStorage.setItem(key,JSON.stringify(questions));available=true;damaged=false;}catch(_){available=false;}}
@@ -60,7 +60,7 @@
     const candidates=pending.map(x=>({...x,matches:(associations[x.story.id]||[]).filter(k=>interests.has(k))}));
     candidates.sort((a,b)=>b.matches.reduce((s,k)=>s+interests.get(k),0)-a.matches.reduce((s,k)=>s+interests.get(k),0)||Number(a.state.started)-Number(b.state.started)||Number(b.total>0)-Number(a.total>0));
     const next=candidates[0];let reason='';
-    if(next){reason=next.matches.length?'你在本地问过的问题或已完成的章节提到了“'+next.matches.join('、')+'”，可以接着看看这个主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；还可以看看这条尚未完成的故事线。':(next.total?'目前的兴趣记录还不够，先推荐一个已有章节框架的主题。':'目前的兴趣记录还不够，可以先看一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}
+    if(next){reason=next.matches.length?'你在本地问过的问题或已完成的章节提到了“'+next.matches.join('、')+'”，可以接着看看这个主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；还可以看看这条尚未完成的故事。':(next.total?'目前的兴趣记录还不够，先推荐一个已有章节框架的主题。':'目前的兴趣记录还不够，可以先看一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}
     return {stories,completed,pending,explored:[...explored.values()],people:[...people],events:[...events],ranked,next,reason,started:stories.some(x=>x.state.started||x.state.completed.size)};
   }
   function heading(box,title){box.append(node('h2','',title));}
@@ -93,14 +93,14 @@
     book.replaceChildren();
     $('#journal-overview').textContent='已寻迹 '+m.stories.reduce((n,x)=>n+x.state.completed.size,0)+' 幕 · 读完 '+m.completed.length+' 条 · 还有 '+m.pending.length+' 条待探索';
     $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 换设备不会同步；不是账号档案。'+(available?'问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'问题读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'问题存储不可用，当前问题仅本页保留。')+(!window.StoryProgress.notice().includes('不代表实际到访')?' 手动记录不代表实际到访。':'');
-    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started&&!questions.length){empty.append(node('p','','去读一条故事线、问陈寿一个问题，这里就会记下来'),button('开始探索故事线',()=>showContentView('story')));}
-    const reading=node('section','journal-section journal-reading');heading(reading,'接着读一条故事线');
+    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started&&!questions.length){empty.append(node('p','','去读一条故事、问陈寿一个问题，这里就会记下来'),button('开始探索故事',()=>showContentView('story')));}
+    const reading=node('section','journal-section journal-reading');heading(reading,'接着读一条故事');
     reading.append(node('p','journal-section-note',m.pending.some(x=>x.state.started||x.state.completed.size)?'正在读的故事排在前面，点击继续阅读，接上你的进度。':'从感兴趣的故事开始，读完一幕后可以标为“已寻迹”。'));
     const cards=node('div','journal-story-grid');
     const begun=m.pending.filter(x=>x.state.started||x.state.completed.size),waiting=m.pending.filter(x=>!x.state.started&&!x.state.completed.size);
     [...begun,...waiting].forEach(x=>storyRow(cards,x));reading.append(cards);
-    if(!m.pending.length)reading.append(node('p','','当前故事线都已读完，可以展开已完成的故事线，重读旧章。'));
-    if(m.completed.length){const completed=disclosure('journal-completed','已完成的故事线 ('+m.completed.length+')'),doneCards=node('div','journal-story-grid');m.completed.forEach(x=>storyRow(doneCards,x));completed.append(doneCards);reading.append(completed);}
+    if(!m.pending.length)reading.append(node('p','','当前故事都已读完，可以展开已完成的故事，重读旧章。'));
+    if(m.completed.length){const completed=disclosure('journal-completed','已完成的故事 ('+m.completed.length+')'),doneCards=node('div','journal-story-grid');m.completed.forEach(x=>storyRow(doneCards,x));completed.append(doneCards);reading.append(completed);}
     book.append(reading);
     const map=node('section','journal-section journal-map');footprints(map,m);book.append(map);
     const records=node('section','journal-section journal-records');heading(records,'留下的记录');
@@ -114,7 +114,7 @@
     const unlocked=disclosure('journal-unlocked','解锁的人物与事件 ('+(m.people.length+m.events.length)+')');
     unlocked.append(node('p','journal-section-note','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));
     records.append(asked,interests,unlocked);book.append(records);
-    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事线推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('看看下一条故事线',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
+    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('看看下一条故事',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
     next.append(node('p','journal-section-note','下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。'));
   }
   window.ExplorationJournal={sync,model,render};window.StoryProgress.subscribe(render);sync(chats);

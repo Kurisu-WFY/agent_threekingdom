@@ -1209,14 +1209,14 @@ body.chat-open #welcome-view .building-grid { grid-template-columns:repeat(3,min
 .weather-search { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:8px; margin:12px 0; }
 .weather-search input { height:44px; padding:6px 10px; font-size:14px; }
 .weather-search label { font-size:13px; gap:4px; }
-.weather-days { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.weather-days { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; }
 .weather-day { padding:12px 8px; border:1px solid var(--line); text-align:center; }
 .weather-day h4 { margin:0; font-size:12px; font-weight:500; line-height:1.7; }
 .weather-icon { display:block; width:80px; height:72px; margin:8px auto 0; }
 .weather-day p { margin:4px 0; }
 .weather-temperature { font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; }
 .weather-condition { font-size:14px; }
-.weather-aqi,.weather-boundary,.weather-provenance,#travel-status { font-size:12px; line-height:1.7; }
+.weather-boundary,.weather-provenance,#travel-status { font-size:12px; line-height:1.7; }
 .weather-boundary { margin:10px 0; color:var(--muted); }
 .weather-provenance { margin-top:8px; }
 .weather-provenance summary { cursor:pointer; }
@@ -1311,3 +1311,14 @@ body.chat-open #welcome-view #culture-places .building-grid { grid-template-colu
 #welcome-view #culture-places .culture-card { padding:16px 20px; }
 #welcome-view #culture-places .culture-card h3 { margin:8px 0; }
 .journey-secondary-actions { display:flex; flex-wrap:wrap; gap:8px; }
+
+/* 活动条件、住宿与天气同区；完整道路工具放在下方。 */
+.planner-checks { min-width:0; display:grid; gap:20px; align-content:start; }
+.inline-hotels { min-width:0; padding:16px 20px; background:var(--surface); border:1px solid var(--line); border-radius:8px; }
+.inline-hotels h3 { margin:0 0 8px; font-size:18px; }
+.inline-hotels p { margin:8px 0; font-size:13px; line-height:1.7; }
+.inline-roads { margin-top:24px; min-width:0; }
+.inline-roads > header h3 { margin:0; font-size:22px; }
+.inline-roads .outing-handoff { flex-wrap:wrap; }
+.weather-temperature { font-size:16px; }
+.weather-overview { font-size:13px; line-height:1.7; overflow-wrap:anywhere; }

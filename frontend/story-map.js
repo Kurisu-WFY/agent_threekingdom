@@ -57,7 +57,7 @@
     const notice = $('.story-map-memory'); if(notice && window.StoryProgress)notice.textContent=window.StoryProgress.notice();
     $('#story-map-progress').textContent = resolved.length ? '第 ' + (current + 1) + ' / ' + resolved.length + ' 幕 · 已寻迹 ' + state().completed.size + ' / ' + resolved.length : '章节待确认 · 暂无探索进度';
     $('#story-map-badge').textContent = $('#story-map-progress').textContent;
-    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。怎么到达，可以请向导规划。' : '可先向陈寿了解这条故事线，或退出故事模式继续浏览地图。';
+    $('#story-map-status').textContent = resolved.length ? (overrides.has(active.id) ? '已接收故事数据 / 核验状态见章节 · ' : '章节主题模板 / 资料待确认 · ') + resolved.filter(item => item.point).length + ' 个有位置资料的章节（含本次跳过） · ' + resolved.filter(item => !item.point).length + ' 个待定位。怎么到达，可以请向导规划。' : '可先向陈寿了解这条故事，或退出故事模式继续浏览地图。';
     resolved.forEach((item, index) => {
       const status = currentStatus(index);
       const li = node('li', 'chapter-list-item');
@@ -118,7 +118,7 @@
     const verified = ['maintained','live'].includes(chapter.dataStatus) && chapter.updatedAt && /(?:Z|[+-]\d{2}:\d{2})$/.test(chapter.updatedAt) && Number.isFinite(Date.parse(chapter.updatedAt)) && Array.isArray(chapter.sources) && chapter.sources.some(s=>s && ['A','B'].includes(s.source_level)&&safeUrl(s.source_url));
     content.replaceChildren(node('p', 'chapter-trust', '资料状态：' + (statuses[chapter.dataStatus] || '待确认') + (verified ? '' : ' · 史料待核验')),
       node('p', '', '为什么推荐：' + value(chapter.reason)), node('p', '', '在故事中的作用：' + value(chapter.role)),
-      node('p', '', '讲解模式：' + (state().mode || '大众体验版')),
+      node('p', '', '故事线：' + window.SGTStoryUI.modeLabel(state().mode)),
       node('p', '', '相关人物：' + list(chapter.people)), node('p', '', '相关事件：' + list(chapter.events)),
       node('p', 'chapter-narrative', typeof chapter.story === 'string' && chapter.story.trim() ? chapter.story : '故事内容待确认。接入可核验史料后，再讲述这一章。'),
       node('p', 'map-note', '更新时间：' + (verified ? chapter.updatedAt : '待确认')), sources(chapter));
@@ -133,13 +133,13 @@
     if (!active || !resolved.length) return;
     const index = state().current, item = resolved[index];
     const previous = index ? resolved[index-1].chapter : null;
-    const question = '【故事章节讲解】讲解模式：' + (state().mode || '大众体验版') + '。大众用清晰易懂的表达，亲子用问题引导，学术侧重史料依据与不确定性；保持当前故事与地点。故事线：' + active.title + '。' +
+    const question = '【故事章节讲解】讲解模式：' + (state().mode || '大众体验版') + '。大众用清晰易懂的表达，亲子用问题引导，学术侧重史料依据与不确定性；保持当前故事与地点。故事：' + active.title + '。' +
       (previous ? '上一章（章节顺序，不代表已到访）：' + previous.name + '；已有文本：' + value(previous.story) + '。' : '这是开篇。') +
       '当前第 ' + (index+1) + '/' + resolved.length + ' 幕：' + item.chapter.name + '；地点：' + item.place.name + '；定位情况：' + item.note + '。' +
       '当前章节资料：' + value(item.chapter.story) + '；人物：' + list(item.chapter.people) + '；事件：' + list(item.chapter.events) + '。' +
       (compare ? '请对照正史、演义和地方传说，分别说明依据。' : '请承接上一章的主题介绍本章，只使用可靠资料并说明来源。') +
       '缺资料请明确说待确认，不编造上一章讲解、史实或道路导航，不把驻地当景区入口。';
-    window.SGTJourney.ask(question,{displayText:'请陈寿'+(compare?'对照正史与演义，讲解':'讲解')+item.chapter.name+'（'+item.place.name+'，'+(state().mode||'大众体验版')+'）',preserveMap:true});
+    window.SGTJourney.ask(question,{displayText:'请陈寿'+(compare?'对照正史与演义，讲解':'讲解')+item.chapter.name+'（'+item.place.name+'，'+window.SGTStoryUI.modeLabel(state().mode)+'）',preserveMap:true});
     $('#story-node-feedback').textContent = '已发给陈寿。正在回答时，本章问题会存入对话草稿。';
   }
   function revealCard() {

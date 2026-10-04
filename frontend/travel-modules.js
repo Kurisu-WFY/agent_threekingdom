@@ -62,7 +62,7 @@
       } catch { /* 无有效链接时保留来源文本 */ }
       details.append(row);
     });
-    details.append(node('p', realtime ? '模型预报、非现场实测；天气与空气信息需在出发前再核验。' : 'C=文学/传说，不能支撑史实结论；其他资料也需核对出处与时效。', 'map-note'));
+    details.append(node('p', realtime ? '模型预报、非现场实测；天气信息需在出发前再核验。' : 'C=文学/传说，不能支撑史实结论；其他资料也需核对出处与时效。', 'map-note'));
     target.append(details);
   }
   function dataStatus(record) {
@@ -158,11 +158,12 @@
       status:state.completed.has(i)?'已完成':state.skipped.has(i)?'本次跳过':'本次保留'}));
   }
   function storyLabel() {
-    $('#planner-story').textContent=planningStory ? '故事线：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事线，可填写普通行程需求。';
+    $('#planner-story').textContent=planningStory ? '故事：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事，可填写普通行程需求。';
     $('#planner-back-story').textContent=planningStory?'返回故事详情调整章节':'返回目的地';
     $('#plan-back-story').textContent=planningStory?'返回故事详情':'返回目的地';
   }
   function restoreForm(preferences) {
+    field('hotel_tier').value=preferences.hotel_tier||'';
     Object.entries(preferences).forEach(([key,value])=>{if(field(key))field(key).value=value;});
   }
   function openStory(story) {
@@ -173,16 +174,18 @@
     storyLabel(); $('#planner-status').textContent='请填写出行条件。核心章节会沿用你在故事详情中的选择。';
     showContentView('planner');
   }
+  const hotelStars={'经济型':'2.0,2.5','舒适型':'3.0,3.5','高档型':'4.0,4.5','豪华型':'4.5,5.0'};
+  function hotelRequirement(p){return p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位：'+p.hotel_tier+'（参考星级范围 '+hotelStars[p.hotel_tier]+'）；网页真实酒店与房价未接入，只记录需求，不编造酒店名或房价。':'住宿：本次未选择。';}
   function makeQuestion(p,story,choices) {
     const duration={'0.5':'半天','1':'一天','2':'两天'}[p.days];
-    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事线：'+story.title+'。':'')+
+    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事：'+story.title+'。':'')+
       '出发地：'+p.origin+'；目的地：'+p.city+'；可用时间：'+duration+'；出发日期：'+(p.date||'待确认')+
       '（活动时长合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+'。'+
       '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认')+'。'+
       '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
-      '先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
+      hotelRequirement(p)+'先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
-  function visitorSummary(p,story){return '请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+p.explanation+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'')+'。';}
+  function visitorSummary(p,story){return '请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[p.explanation]||'大众线')+(p.hotel_tier?'；住宿：'+p.hotel_tier:'')+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'')+'。';}
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;
     target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),
@@ -230,7 +233,7 @@
     current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
       activityAnswer:reply.text,activityEvidence:{sources:reply.data?.sources || [],data_status:reply.data?.data_status,updated_at:reply.data?.updated_at},plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
     activityState('valid');
-    renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报和当前空气质量。');
+    renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报。');
     $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';
     $('#planner-status').textContent='本次方案已生成，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
     $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';
@@ -260,7 +263,7 @@
       $('#planner-status').textContent='请填写有效出发地、可用时间与人数。';return;
     }
     const story=planningStory?JSON.parse(JSON.stringify(planningStory)):null,choices=chapterChoices(planningStory);
-    if(choices.length&&!choices.some(c=>c.status==='本次保留')) {$('#planner-status').textContent='没有待规划的保留章节；可返回故事线调整选取或撤销完成记录。';return;}
+    if(choices.length&&!choices.some(c=>c.status==='本次保留')) {$('#planner-status').textContent='没有待规划的保留章节；可返回故事调整选取或撤销完成记录。';return;}
     if(planningStory){window.StoryProgress.get(planningStory).mode=preferences.explanation;window.StoryProgress.save(planningStory);}
     storyLabel();return requestPlan({preferences,story,choices,question:makeQuestion(preferences,story,choices)});
   };
@@ -292,7 +295,7 @@
       row.append(node('span', `${item.plan.title || item.preferences.city} · ${item.preferences.date}`), action('打开', () => {
         ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false;
         current = item; planningStory=item.story || null; storyLabel();
-        Object.entries(item.preferences).forEach(([key, value]) => { if ($('#trip-form').elements.namedItem(key)) $('#trip-form').elements.namedItem(key).value = value; });
+        restoreForm(item.preferences);
         renderPlan();
         empty($('#travel-results'), '已切换行程，请重新查询出行信息。');
         $('#plan-status').textContent = '已打开本机保存的方案。';
@@ -315,7 +318,7 @@
   function prefillTravel(cityName){
     ++weatherVersion;
     $('#load-travel').disabled=false;
-    empty($('#travel-results'),'目的地已带入，点击查询今天起三天的天气。');
+    empty($('#travel-results'),'目的地已带入，点击查询服务返回的近期天气。');
     $('#travel-city').value=cityName||'';
     prefilledPlanId=current?.id||null;
     $('#travel-status').textContent=cityName?'目的地已带入，点击查询才会请求天气。':'原回答没有确认一个目的地，请先手动选城再查询。';
@@ -331,33 +334,43 @@
   weatherForm.onsubmit=async event=>{
     event.preventDefault();if(!weatherForm.reportValidity())return;
     const version=++weatherVersion,city=$('#travel-city').value.trim();
-    weatherButton.disabled=true;$('#travel-status').textContent='正在查询天气与空气质量…';empty(weatherTarget,'正在查询…');
+    weatherButton.disabled=true;$('#travel-status').textContent='正在查询天气…';empty(weatherTarget,'正在查询…');
     try{
-      const result=await api.getTravelInfo({city});if(version!==weatherVersion)return;
+      const adcode={'南充':'511300','阆中':'511381','广元':'510800'}[city.replace(/[市县]$/,'')];
+      const result=await api.getTravelInfo({city,...(adcode?{adcode}:{})});if(version!==weatherVersion)return;
       if(result.status!=='ok')throw Error(result.message||'天气服务暂不可用，请重试。');
-      const data=result.data,items=Array.isArray(data.items)?data.items:[];
-      const extra=await api.getWeatherDetails?.(data.location)||{};if(version!==weatherVersion)return;
-      const days=window.WeatherOutlook.outlook(data,extra);
+      const data=result.data;
+      const airOnly=item=>/空气质量|AQI|PM2[._]5|PM10|CAMS|air-quality/i.test([item?.title,item?.summary,...(Array.isArray(item?.sources)?item.sources:[]).map(s=>s?.title+' '+s?.source_url)].join(' '));
+      const items=(Array.isArray(data.items)?data.items:[]).filter(item=>item&&typeof item==='object'&&!airOnly(item));
+      const days=window.WeatherOutlook.outlook(data);
       weatherTarget.replaceChildren();
       const forecast=node('div',null,'weather-days');
-      days.forEach((day,i)=>{
+      const today=window.WeatherOutlook.datesFromToday()[0];
+      days.forEach(day=>{
         const card=node('article',null,'weather-day');card.dataset.date=day.date;
         const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),use=document.createElementNS('http://www.w3.org/2000/svg','use');
         svg.setAttribute('class','weather-icon');svg.setAttribute('viewBox','0 0 80 72');svg.setAttribute('aria-hidden','true');
         use.setAttribute('href','weather-icons.svg#'+day.condition.icon);svg.append(use);
-        card.append(node('h4',`${['今天','明天','后天'][i]} · ${day.date}`),svg,node('p',day.temperature,'weather-temperature'),node('p',day.condition.label,'weather-condition'),node('p',day.aqi===null?'AQI 未取得':`AQI ${day.aqi}`,'weather-aqi'));forecast.append(card);
-      });weatherTarget.append(forecast,node('p','空气污染指数：US 标准，取当日已返回预报时段的峰值。天气与空气均为模型预报、非现场实测；城市中心不代表景区入口。','weather-boundary'));
+        const offset=(Date.parse(day.date)-Date.parse(today))/86400000;
+        card.append(node('h4',([ '今天','明天','后天' ][offset]||'预报')+' · '+day.date),svg,node('p',day.temperature,'weather-temperature'),node('p',day.condition.label,'weather-condition'));forecast.append(card);
+      });
+      const providedSources=[...(Array.isArray(data.sources)?data.sources:[]),...items.flatMap(item=>Array.isArray(item.sources)?item.sources:[])].filter(s=>s&&typeof s==='object'&&!airOnly({sources:[s]}));
+      const sourceNames=[...new Set(providedSources.map(s=>typeof s.title==='string'?s.title.trim():'').filter(Boolean))];
+      weatherTarget.append(node('p','服务返回 '+days.length+' 天预报 · 北京时间；天气来源：'+(sourceNames.join('、')||'来源待确认'),'weather-overview'));
+      if(days.length)weatherTarget.append(forecast);else weatherTarget.append(node('p','未取得有效日期的天气预报，请稍后重新查询。','data-banner'));
+      weatherTarget.append(node('p','天气为模型预报、非现场实测；城市预报不代表景区入口。','weather-boundary'));
       const details=node('details',null,'weather-provenance');details.append(node('summary','来源、查询时间与原始说明'));
-      if(data.air_quality){const air=data.air_quality,card=node('section',null,'result-card');const concentration=(key,label)=>{const unit=typeof air.units?.[key]==='string'?air.units[key].trim():'';return label+(unit?' 浓度：':'：')+(air[key]??'—')+(unit?' '+unit:'（单位待确认）');};card.append(node('h3','当前空气质量（模型估计，非现场实测）'),node('p',`数据时刻：${beijingTime(air.time,true)}；${concentration('pm2_5','PM2.5')}；${concentration('pm10','PM10')}`));details.append(card);}
-      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气与空气资料'),(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources,true);details.append(card);});
-      sources(details,extra.sources,true);details.append(node('p',`补查时间：${beijingTime(extra.fetched_at)}`));weatherTarget.append(details);
-      const warnings=[...(Array.isArray(data.warnings)?data.warnings:[]),...(extra.warnings||[])];
-      const missing=days.some(day=>day.aqi===null||day.condition.icon==='unknown'||day.temperature==='温度未取得');
-      $('#travel-status').textContent=[`${city} · 已完成查询；出发前请再次核验。`,missing?'部分数据未取得，可重新查询。':'',...warnings].filter(Boolean).join(' ');
+      sources(details,providedSources,true);
+      details.append(node('p','查询时间（可能为缓存）：'+beijingTime(data.fetched_at||data.updated_at)));
+      items.forEach(item=>{const card=node('article',null,'result-card');card.append(node('h3',item.title||'天气资料'),(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(item.summary||'') ? (()=>{const original=node('details');original.append(node('summary','原始服务说明（保留原文）'),node('p',item.summary));return original;})() : node('p',item.summary||'摘要待补充')),node('p',dataStatus(item),'map-note'));sources(card,item.sources,true);details.append(card);});weatherTarget.append(details);
+      const warnings=(Array.isArray(data.warnings)?data.warnings:[]).filter(w=>typeof w==='string'&&!airOnly({summary:w}));
+      const missing=!days.length||!sourceNames.length||days.some(day=>day.condition.icon==='unknown'||/未取得/.test(day.temperature));
+      $('#travel-status').textContent=[city+' · 已取得 '+days.length+' 天预报；出发前请再次核验。',missing?'部分数据未取得，可重新查询。':'',...warnings].filter(Boolean).join(' ');
       if(missing||warnings.length)weatherTarget.append(action('重新查询天气',()=>weatherForm.requestSubmit()));
     }catch(error){if(version===weatherVersion){$('#travel-status').textContent=failure(weatherTarget,'天气',error,()=>weatherForm.requestSubmit());}}
     finally{if(version===weatherVersion)weatherButton.disabled=false;}
   };
+  $('#load-hotels').onclick=()=>{const p=Object.fromEntries(new FormData($('#trip-form')));$('#hotel-results').replaceChildren(node('p',p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位：'+p.hotel_tier+' · 参考星级范围 '+hotelStars[p.hotel_tier]:'本次尚未选择住宿档位。'),node('p',(p.city||'目的地待填')+' · '+(p.date||'日期待填')+'：住宿查询未接入，尚未取得真实酒店与房价。现在可以记录住宿需求；查询开放后再核验酒店和参考房价。','data-banner'));};
   activityState('idle');renderPlan(); renderSaved(); loadCity(city);
-    empty($('#travel-results'), '填写目的地后可独立查询天气预报与当前空气质量。');
+    empty($('#travel-results'), '填写目的地后可独立查询天气预报。');
 })();
