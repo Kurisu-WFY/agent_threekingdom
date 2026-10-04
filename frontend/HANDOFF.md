@@ -113,3 +113,5 @@
 - 验证：递归25 JS语法、24/24 *.test.cjs通过；真实8002/Edge/1920×1080 八视图×聊天开关无横向溢出，Console/Page errors=0，health=ok；15个改动JS/CSS/HTML与HTTP SHA256一致；n8-n9/n10-n17实际执行通过。天气4/2/0天为明确标注协议夹具，真实Open-Meteo7天分开取证；原对话返回为受控消息回调，不冒充真实后端回答。真实道路查询成功与酒店真实数据未取得本轮新证据。
 - 独立只读review无Critical/Important；延期minor：缺 nightweather 时卡片如实显示未取得，状态缺项提示及专门重试按钮可补强，普通查询按钮仍可用。旧方案无 hotel_tier 时清空残留档位已RED→GREEN修复。
 - 只提交本轮frontend；不push/merge。既有AGENTS/docs/audit与旧批次验收材料保留；本轮截图/JSON验收后清理，README/复验脚本留存。
+
+- 第一阶段功能本地提交 `e12c929`（dev，未push）；使用 Codex <codex@local.invalid> 命令级作者配置，不修改全局设置。资源复验脚本固定开工基点 7d1a340，提交后仍覆盖15个改动资源。

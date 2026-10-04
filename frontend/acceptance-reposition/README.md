@@ -66,3 +66,6 @@ verify-all会恢复原有两个会生成证据的测试目录运行前字节。�
 ## 下一对话交接提示词
 
 继续 D:\DSH Workspace\agent_threekingdom 的重定位工作单。先读 AGENTS.md、frontend/HANDOFF.md最后一节和本README。第一阶段已实现并验收，勿重做。协调者确认标题“陈寿编书史”、去掉AQI；新id建议chenshou-book-history，以及本批未约定接口/空chapters中间态仍待确认。确认后删除原五故事新增唯一空章节故事；删除阶段筛选/单卡横滑冗余；探索志去掉下一条推荐并收敛单故事；人物兴趣仅陈寿关联新故事，张飞/诸葛亮保留文化与地点动作，不再引用已删除故事。同步维护stories/journal/character/guide/browser测试，用显式fixtures覆盖多章节map/progress机制。遵守mode原值不变、只frontend提交、不push、章节不得编造。后台真实天气仍Open-Meteo7天，高德4日与酒店/OAuth属后端缺口。完成后重新全套验收及故事范围补审。
+
+
+本轮功能提交：`e12c929`（dev，本地，未push）。提交使用 `Codex <codex@local.invalid>` 明确本地助手身份，仅命令级配置；未改全局Git身份。资源复验以开工基点`7d1a340`比较，因此本轮提交后再次运行仍覆盖改动资源。
