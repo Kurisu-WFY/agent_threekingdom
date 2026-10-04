@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=single-story-20261005">
+  <link rel="stylesheet" href="styles.css?v=layout-20261005">
 </head>
 <body>
   <header class="topbar">
@@ -98,24 +98,25 @@
             <p class="map-note">主题建议以现有资料为限。交通、开放时间与票价，出发前仍需核验。</p>
             <div class="journey-secondary-actions"><button type="button" class="preview-clear" data-prepare-review>回顾与调整</button><button type="button" class="preview-clear" id="journey-return-plan" hidden>返回行程推荐</button></div>
           </section>
-        </div>
 
-        <section id="culture-places" aria-labelledby="culture-places-title">
+        <section id="culture-places" class="culture-entry" aria-labelledby="culture-places-title">
           <header class="culture-places-heading"><h2 id="culture-places-title">从地点了解三国</h2><p>建筑资料和三条文化线索</p></header>
           <div class="culture-path-body">
         <section class="story-buildings" aria-labelledby="buildings-title"><div class="desk-intro"><div><span class="story-eyebrow">建筑与地点</span><h2 id="buildings-title">这些建筑和故事有什么关系？</h2></div><p>节点与章节的对应关系待确认。</p></div><div id="story-buildings" class="building-grid"></div><p class="map-note">建筑图形为类型剪影，非实测复原；景区坐标、开放时间与票价待核验。</p></section>
 
-        <section class="culture-shelf" aria-labelledby="culture-title">
-          <div class="desk-intro"><div><span class="story-eyebrow">人物、著作与遗迹</span><h2 id="culture-title">到一个地方，也想知道它的故事</h2></div><p>想了解人物、著作还是遗迹？这里有三条线索。</p></div>
+        <details class="culture-shelf" aria-labelledby="culture-title">
+          <summary><div class="desk-intro"><div><span class="story-eyebrow">人物、著作与遗迹</span><h2 id="culture-title">到一个地方，也想知道它的故事</h2></div><p>想了解人物、著作还是遗迹？这里有三条线索。</p></div></summary>
           <div class="culture-grid">
             <article class="culture-card"><span class="culture-tag">壹 / 陈寿与《三国志》</span><h3>从南充了解陈寿和《三国志》</h3><p>从陈寿的故乡出发，聊聊史家的观察与《三国志》的书写。</p><button type="button" data-agent-question="陈寿与南充有什么关系？请介绍《三国志》的编写背景，并说明资料出处。">了解陈寿与《三国志》 <span aria-hidden="true">↗</span></button></article>
             <article class="culture-card"><span class="culture-tag">贰 / 正史与演义</span><h3>熟悉的故事，哪段是史实？</h3><p>把史书记载、文学加工与地方传说分开来看，保留疑问与依据。</p><button type="button" data-agent-question="张飞的形象在《三国志》和《三国演义》中有什么区别？请区分史实与文学加工并说明依据。">听听两种讲述 <span aria-hidden="true">↗</span></button></article>
             <article class="culture-card character-card"><span class="culture-tag">叁 / 人物与地点</span><h3>关于三国人物，你想问什么？</h3><p>可以聊诸葛亮、张飞或陈寿，看看他们和蜀地有什么关系。</p><button type="button" data-prepare-character>写下想问的话 <span aria-hidden="true">↗</span></button><small>AI 基于资料解读；不视为历史人物原话。</small></article>
           </div>
-        </section>
+        </details>
 
           </div>
         </section>
+
+        </div>
 
         <p class="journey-trust">读史请核对依据：关注回答中的来源与可信度，区分正史、演义和传说。票价、天气与班次等动态信息，出发前请再核验。</p>
         <button type="button" id="open-culture" hidden>与向导对话</button>
@@ -248,20 +249,6 @@
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
         </section>
-        <div class="planner-checks">
-        <section class="inline-hotels" aria-labelledby="hotel-title"><h3 id="hotel-title">住宿查询</h3><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
-        <section class="inline-weather" aria-labelledby="weather-title">
-          <h3 id="weather-title">查看近期天气</h3>
-          <p class="map-note">北京时间；按服务实际返回的日期和天数展示，与活动出发日期分开查询。</p>
-          <form id="travel-weather-form" class="module-form weather-search">
-            <label>查询城市（必填）<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充、广元"></label>
-            <button id="load-travel" type="submit" class="module-button primary">查询天气</button>
-          </form>
-          <p id="travel-status" role="status">输入城市后查询；进入活动计划不会自动请求天气。</p>
-          <div id="travel-results" class="module-results" aria-live="polite"></div>
-        </section>
-        </div>
-        </div>
       <section id="outing-view" class="outing inline-roads" aria-labelledby="outing-title">
         <header><h3 id="outing-title" tabindex="-1">核验道路路线</h3><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
         <button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button>
@@ -299,10 +286,7 @@
               </form>
               <p id="amap-status" role="status" aria-live="polite">地点查询会将输入的地名发送给高德，请勿填写敏感地址。</p>
               <div id="amap-results"></div>
-              <section id="amap-map-region" aria-label="高德路线地图" hidden>
-                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
-                <p id="amap-map-note" role="status"></p>
-              </section>
+
             </div>
             <details><summary>其他道路参考：城市中心或手动坐标</summary>
             <form id="outing-route-form">
@@ -325,7 +309,23 @@
           </section>
         </div>
         </details>
+              <section id="amap-map-region" aria-label="高德路线地图">
+                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
+                <p id="amap-map-note" role="status"></p>
+              </section>
       </section>
+        <section class="inline-weather" aria-labelledby="weather-title">
+          <h3 id="weather-title">查看近期天气</h3>
+          <p class="map-note">北京时间；按服务实际返回的日期和天数展示，与活动出发日期分开查询。</p>
+          <form id="travel-weather-form" class="module-form weather-search">
+            <label>查询城市（必填）<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充、广元"></label>
+            <button id="load-travel" type="submit" class="module-button primary">查询天气</button>
+          </form>
+          <p id="travel-status" role="status">输入城市后查询；进入活动计划不会自动请求天气。</p>
+          <div id="travel-results" class="module-results" aria-live="polite"></div>
+        </section>
+        <section class="inline-hotels" aria-labelledby="hotel-title"><h3 id="hotel-title">住宿查询</h3><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
+        </div>
       </section>
 
       <section class="module-view" id="plan-view" data-view-panel="plan" hidden>
@@ -388,26 +388,26 @@
   </aside>
 
   <script src="chat-transport.js?v=deai10-final-20261003"></script>
-  <script src="answer-format.js?v=amap-chat-20261003"></script>
+  <script src="answer-format.js?v=layout-20261005"></script>
   <script src="outing-core.js?v=deai10-final-20261003"></script>
-  <script src="app.js?v=reposition-20261005"></script>
+  <script src="app.js?v=layout-20261005"></script>
   <script src="landing.js?v=culture14"></script>
-  <script src="travel-api.js?v=reposition-20261005"></script>
+  <script src="travel-api.js?v=layout-20261005"></script>
   <script src="cities.js?v=deai10-final-20261003"></script>
-  <script src="weather-outlook-core.js?v=reposition-20261005"></script>
-  <script src="travel-modules.js?v=single-story-20261005"></script>
+  <script src="weather-outlook-core.js?v=layout-20261005"></script>
+  <script src="travel-modules.js?v=layout-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
   <script src="travel-map.js?v=deai10-final-20261003"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>
-  <script src="stories.js?v=single-story-20261005"></script>
-  <script src="story-map.js?v=single-story-20261005"></script>
-  <script src="cultural-node.js?v=reposition-20261005"></script>
-  <script src="character-chat.js?v=single-story-20261005"></script>
-  <script src="journal.js?v=single-story-20261005"></script>
-  <script src="chenshou-guide.js?v=reposition-20261005"></script>
-  <script src="outing.js?v=reposition-20261005"></script>
-  <script src="amap-map.js?v=amap-chat-20261003"></script>
-  <script src="amap-planner.js?v=amap-chat-20261003"></script>
+  <script src="stories.js?v=layout-20261005"></script>
+  <script src="story-map.js?v=layout-20261005"></script>
+  <script src="cultural-node.js?v=layout-20261005"></script>
+  <script src="character-chat.js?v=layout-20261005"></script>
+  <script src="journal.js?v=layout-20261005"></script>
+  <script src="chenshou-guide.js?v=layout-20261005"></script>
+  <script src="outing.js?v=layout-20261005"></script>
+  <script src="amap-map.js?v=layout-20261005"></script>
+  <script src="amap-planner.js?v=layout-20261005"></script>
   <script src="amap-chat.js?v=20261003"></script>
 </body>
 </html>

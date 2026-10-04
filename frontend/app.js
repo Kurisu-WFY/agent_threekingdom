@@ -722,6 +722,7 @@ function showContentView(view) {
     }
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
+    if(view==='planner')window.AmapRouteMap?.enter?.();
     if(view==='outing')window.TravelAssistant?.onEnter?.(leaving?.dataset.viewPanel);
     const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气', outing:'出发核验', journal:'探索志', node:'文化节点' };
     const taskParent={story:'welcome',plan:'planner',travel:'planner',outing:'planner'};

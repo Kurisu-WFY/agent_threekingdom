@@ -97,8 +97,7 @@
     [...begun,...waiting].forEach(x=>storyRow(cards,x));reading.append(cards);
     if(!m.pending.length)reading.append(node('p','','故事已读完，可以展开记录，重读章节。'));
     if(m.completed.length){const completed=disclosure('journal-completed','已读完'),doneCards=node('div','journal-story-grid');m.completed.forEach(x=>storyRow(doneCards,x));completed.append(doneCards);reading.append(completed);}
-    book.append(reading);
-    const map=node('section','journal-section journal-map');footprints(map,m);book.append(map);
+    const map=node('section','journal-section journal-map');footprints(map,m);
     const records=node('section','journal-section journal-records');heading(records,'留下的记录');
     const asked=disclosure('journal-questions','我问过的问题 ('+questions.length+')');
     if(!questions.length)asked.append(node('p','','还没有提问记录。向陈寿提过的问题，会记在这里。'));
@@ -109,7 +108,7 @@
     m.ranked.forEach(([n,count])=>interests.append(node('p','journal-interest',n+' · '+count+' 条相关记录')));
     const unlocked=disclosure('journal-unlocked','解锁的人物与事件 ('+(m.people.length+m.events.length)+')');
     unlocked.append(node('p','journal-section-note','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));
-    records.append(asked,interests,unlocked);book.append(records);
+    records.append(asked,interests,unlocked);book.append(reading,map,records);
   }
   window.ExplorationJournal={sync,model,render};window.StoryProgress.subscribe(render);sync(chats);
   window.TravelMap?.ready?.then(()=>render());
