@@ -134,7 +134,9 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  for(const id of ['save-plan','copy-plan'])assert.ok(planHtml.indexOf('id="'+id+'"')<planHtml.indexOf('id="plan-results"'),'U04 '+id+' comes before long plan prose');
  const nodeHtml=html.match(/<section[^>]*id="node-view"[\s\S]*?<\/section>/)[0];
  assert.ok(nodeHtml.indexOf('id="node-ask"')>=0 && nodeHtml.indexOf('id="node-ask"')<nodeHtml.indexOf('id="node-reading"'),'U04 ask exists before node prose');
- for(const name of ['city','origin','people'])assert.match(html,new RegExp('<label>[^<]*必填[^<]*<input name="'+name+'"[^>]*required'),'U09 required field '+name+' is labelled before submit');
+ for(const name of ['city','people'])assert.match(html,new RegExp('<label>[^<]*必填[^<]*<input name="'+name+'"[^>]*required'),'U09 required field '+name+' is labelled before submit');
+ assert.match(html,/<label for="trip-origin">出发地（必填）<\/label>/,'U09 origin has an explicit required label beside the location control');
+ assert.match(html,/<input id="trip-origin" name="origin"[^>]*required/,'U09 origin label remains associated with its required input');
  assert.match(html,/<label>出发日期（选填）/);
  const road=window.TravelModules.getRoadDraft('plan');assert.equal(road.origin,'南充');assert.equal(road.city,'广元');
  for(const name of ['destinations','planner','plan'])assert.ok(html.includes('data-view-panel="'+name+'"'));

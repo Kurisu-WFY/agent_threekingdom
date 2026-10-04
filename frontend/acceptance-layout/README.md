@@ -1,6 +1,6 @@
 # 布局改造阶段验收 · 2026-10-05
 
-基点 `dev / 41ffaa3`。本阶段交付 L1/L2、L3 布局与常驻地图、L5；**整单尚未完成：两处用户定位及定位测试待契约确认**。只改/提交本批 frontend，不 push/merge；既有 AGENTS/docs 与旧 audit 材料不变。
+基点 `dev / 41ffaa3`。布局阶段交付 L1/L2、L3 布局与常驻地图、L5；定位已按协调者补充裁决完成，详见 [定位验收](../acceptance-location/README.md)。本批前端整单完成。只改/提交本批 frontend，不 push/merge；既有 AGENTS/docs 与旧 audit 材料不变。下列25项及5资源表为布局阶段历史证据，最终复验见定位验收。
 
 ## 逐块证据
 
@@ -25,11 +25,11 @@
 - 独立只读审查未发现Critical/Important/Minor；独立25JS语法及23项不生成材料的test全绿，另2项浏览器测试由主执行者实跑。未取得独立浏览器重跑证据。
 - 未测试真实用户位置、定位拒绝/授权、定位坐标路线；未宣称定位已交付。未重新取得真实天气/酒店数据，天气4天仅用于横排协议夹具。
 
-## 定位待确认：具体证据与下一步
+## 定位契约历史与补充裁决
 
 当前key可加载AMap.Geolocation并创建实例，getCurrentPosition存在；本阶段**未申请用户实际位置**，不把“插件可加载”写作“真实定位成功”。参考[高德定位官方教程](https://developer.amap.com/api/javascript-api-v2/guide/services/geolocation)。
 
-核对后端 `src/tools/amap_tools.py`：当前 `/api/travel/amap/route` 只收 `origin_id`/`destination_id`/`mode`，不能直接发GCJ-02坐标。禁止把坐标字符串伪装成POI id，禁止自行更改后端。格式化地址定位需要高德定位服务，工作单指定“坐标仅在你主动查询道路路线时发送”的隐私句与此冲突。已异步询问协调者允许如实说明并先按POI搜索确认流程交付，还是采用仅浏览器定位/坐标路线等待后端适配；截至本阶段交接未收到回答。此项须确认后继续，不凭超时视作同意。
+核对后端 `src/tools/amap_tools.py`：当前 `/api/travel/amap/route` 只收 `origin_id`/`destination_id`/`mode`，不能直接发GCJ-02坐标。原定位方案因此在布局阶段暂停。协调者随后补充裁决：不用高德定位插件，仅表单一处navigator.geolocation按钮，不读取/发送坐标，只填“我的位置（近似）”并显示精度。该项已实现，授权/拒绝/失败/超时与零自动查询测试已通过；道路维持原POI流程。上述插件探测仅为历史证据，产品没有采用该插件。
 
 ## 复验
 

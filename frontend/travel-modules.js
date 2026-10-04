@@ -165,6 +165,7 @@
   function restoreForm(preferences) {
     field('hotel_tier').value=preferences.hotel_tier||'';
     Object.entries(preferences).forEach(([key,value])=>{if(field(key))field(key).value=value;});
+    field('origin').dispatchEvent?.(new Event('sgt-origin-restored'));
   }
   function openStory(story) {
     ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true;

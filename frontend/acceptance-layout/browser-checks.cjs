@@ -71,8 +71,10 @@ const root=path.resolve(__dirname,'..'),report={checks:[],errors:[],resources:[]
   await page.addScriptTag({path:path.join(root,'n8-n9.browser-test.js')});await page.addScriptTag({path:path.join(root,'n10-n17.browser-test.js')});
   const first=await page.evaluate(()=>N8N9BrowserTest.dom());await page.evaluate(()=>N8N9BrowserTest.open());await page.waitForTimeout(500);await page.evaluate(()=>N8N9BrowserTest.close('close'));await page.waitForTimeout(650);await page.evaluate(()=>N8N9BrowserTest.settled());const second=await page.evaluate(()=>runRound4Acceptance());return {first,second};
  });
- await check('真实 key 的 Geolocation 插件可加载（不申请用户位置）',async()=>{
-  return await page.evaluate(()=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('插件加载超时')),15000);AMap.plugin('AMap.Geolocation',()=>{clearTimeout(timer);const geo=new AMap.Geolocation({enableHighAccuracy:true,timeout:10000,convert:true,needAddress:true,zoomToAccuracy:false,showButton:false,showMarker:false,showCircle:false});resolve({available:typeof geo.getCurrentPosition==='function',position:'未申请定位，不冒充成功取得实际位置'});});}));
+ await check('定位补充裁决：仅表单一处，固定说明，未调用高德定位插件',async()=>{
+  assert.equal(await page.locator('#trip-form #use-my-location').count(),1);assert.equal(await page.locator('#outing-view #use-my-location').count(),0);
+  assert.equal(await page.locator('#origin-location-notice').textContent(),'定位由浏览器在本机完成，不会向服务器发送你的位置；生成方案时仅将“我的位置（近似）”作为出发地文字随需求发送。');
+  assert.ok(!report.network.some(u=>/geolocation|location\/ip/i.test(u)));return {button:1,provider:'navigator.geolocation，授权/拒绝行为见acceptance-location'};
  });
  await check('本地/HTTP SHA256一致',async()=>{
   const files=cp.execFileSync('C:/Program Files/Git/cmd/git.exe',['diff','--name-only','41ffaa3','--','frontend'],{cwd:path.dirname(root),encoding:'utf8'}).trim().split(/\r?\n/).filter(p=>/\.(js|css|html)$/.test(p));

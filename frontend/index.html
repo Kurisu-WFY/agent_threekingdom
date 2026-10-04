@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=layout-20261005">
+  <link rel="stylesheet" href="styles.css?v=browser-location-20261005">
 </head>
 <body>
   <header class="topbar">
@@ -233,7 +233,12 @@
         <form id="trip-form" class="module-form">
           <label>目的地（必填）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
           <datalist id="itinerary-cities"></datalist>
-          <label>出发地（必填）<input name="origin" maxlength="100" required placeholder="例如：南充市"></label>
+          <div class="planner-origin">
+            <label for="trip-origin">出发地（必填）</label>
+            <div class="origin-control"><input id="trip-origin" name="origin" maxlength="100" required placeholder="例如：南充市" aria-describedby="origin-location-status origin-location-notice"><button id="use-my-location" type="button" class="module-button">使用我的位置</button></div>
+            <span id="origin-location-status" role="status" aria-live="polite"></span>
+          </div>
+          <p id="origin-location-notice" class="form-wide location-notice">定位由浏览器在本机完成，不会向服务器发送你的位置；生成方案时仅将“我的位置（近似）”作为出发地文字随需求发送。</p>
           <label>出发日期（选填）<input name="date" type="date"></label>
           <label>可用时间<select name="days"><option value="0.5">半天</option><option value="1" selected>一天</option><option value="2">两天</option></select></label>
           <label>人数（必填，1–50人）<input name="people" type="number" value="2" min="1" max="50" required></label>
@@ -395,7 +400,8 @@
   <script src="travel-api.js?v=layout-20261005"></script>
   <script src="cities.js?v=deai10-final-20261003"></script>
   <script src="weather-outlook-core.js?v=layout-20261005"></script>
-  <script src="travel-modules.js?v=layout-20261005"></script>
+  <script src="travel-modules.js?v=browser-location-20261005"></script>
+  <script src="browser-location.js?v=browser-location-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
   <script src="travel-map.js?v=deai10-final-20261003"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>

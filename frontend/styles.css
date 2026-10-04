@@ -1353,3 +1353,11 @@ body.chat-open #welcome-view .culture-entry-grid #culture-places .building-grid 
 .journal-book > .journal-section { min-width:0; margin-top:0; }
 .journal-book > .journal-records { grid-column:1 / -1; }
 .journal-book .journal-story-grid,body.chat-open .journal-book .journal-story-grid { grid-template-columns:minmax(0,1fr); }
+
+.planner-origin { min-width:0; }
+.planner-origin > label { margin-bottom:4px; }
+.origin-control { display:flex; align-items:center; gap:6px; min-width:0; }
+.origin-control input { flex:1; min-width:0; width:0; }
+#use-my-location { flex:none; padding:6px; margin:0; font-size:12px; white-space:nowrap; }
+#origin-location-status { display:block; min-height:20px; margin-top:4px; font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+#trip-form .location-notice { margin:0; color:var(--muted); font-size:12px; line-height:1.6; }
