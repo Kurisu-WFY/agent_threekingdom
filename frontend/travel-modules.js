@@ -294,7 +294,8 @@
       const row = node('div', null, 'saved-plan');
       row.append(node('span', `${item.plan.title || item.preferences.city} · ${item.preferences.date}`), action('打开', () => {
         ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false;
-        current = item; planningStory=item.story || null; storyLabel();
+        planningStory=(window.SGT_STORIES||[]).find(s=>s.id===item.story?.id)||null;
+        current = {...item,story:planningStory,choices:planningStory?chapterChoices(planningStory):[]}; storyLabel();
         restoreForm(item.preferences);
         renderPlan();
         empty($('#travel-results'), '已切换行程，请重新查询出行信息。');

@@ -191,8 +191,15 @@
     const story=payload?.story,places=payload?.places;
     const fallback=()=>{
       const id=nonempty(story?.id)?story.id:active?.id;
-      if(window.SGT_STORIES.some(s=>s.id===id)) {
+      const catalog=window.SGT_STORIES.find(s=>s.id===id);
+      if(catalog) {
         overrides.delete(id);
+        if(active?.id===id&&!catalog.chapters?.length) {
+          exit();
+          window.SGTStoryUI?.openStory(id);
+          $('#map-route-status').textContent='故事资料不完整，章节待补充 / 待核验；已退出故事模式，可向陈寿继续了解。';
+          return Promise.resolve(false);
+        }
         if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；可向陈寿继续了解。';return false; });
       }
       $('#map-route-status').textContent='故事资料不完整，保留当前内容；可向陈寿继续了解。';
@@ -219,7 +226,7 @@
   $('#chapter-ask').addEventListener('click',()=>askCurrent(false));
   $('#chapter-compare').addEventListener('click',()=>askCurrent(true));
   $('#chapter-add').addEventListener('click',()=>{if(!active)return;const item=resolved[state().current];if(!item?.point)return;const added=window.TravelMap.addStoryPlace(item.point);$('#story-node-feedback').textContent=added?'已加入现有路线：'+item.point.name+(item.exact?'。':'驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
-  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全部章节已标为“已寻迹”。打开故事可以回顾，也能看下一条推荐。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
+  $('#chapter-complete').addEventListener('click',()=>{if(!active||!resolved.length)return;const s=state();if(s.completed.has(s.current))s.completed.delete(s.current);else s.completed.add(s.current);persist();draw();renderCard();$('#story-node-feedback').textContent=s.completed.size===resolved.length?'全部章节已标为“已寻迹”。打开故事可以回顾已完成的章节。':(window.StoryProgress?window.StoryProgress.notice():'已更新本页探索记录，可撤销；不代表实际到访。');});
   $('#chapter-next').addEventListener('click',()=>{if(active)selectChapter(resolved.findIndex((_,i)=>i>state().current&&!state().skipped?.has(i)));});
   if(window.StoryProgress)window.StoryProgress.subscribe(story=>{if(active?.id===story.id&&resolved.length){draw();renderCard();}});
   window.StoryMap = {getContext:()=>active?{story:active,chapter:resolved[state().current]?.chapter,place:resolved[state().current]?.place,index:state().current}:null,describePlace:(place,chapter)=>locate(chapter,[place]),getPlaces:id=>overrides.get(id)?.places || window.SGT_PLACES,open,exit,selectChapter,setData,revealCard,onViewport,getLabels:()=>labels,isActive:()=>Boolean(active)};

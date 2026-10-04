@@ -86,13 +86,13 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
  await check('旧失败消息重试统一陈寿，保留原讲解模式与章节快照',async()=>{
    const pending=page.waitForRequest(r=>r.url().endsWith('/chat/stream'));
    await page.evaluate(()=>{
-     const old={role:'assistant',persona:'诸葛亮',error:true,text:'失败',question:'旧消息重试',mode:'学术',storyId:'shudao-xunzong',history:[{role:'user',content:'【人物视角：诸葛亮】我想了解剑门关'},{role:'user',content:'【人物视角：诸葛亮】筹划者视角：讨论选择。 讲解模式：学术探索版；当前章节：剑门天险。这是AI人物解读，不是本人原话。'}]};
+     const old={role:'assistant',persona:'诸葛亮',error:true,text:'失败',question:'旧消息重试',mode:'学术',storyId:'fixture-legacy-request',history:[{role:'user',content:'【人物视角：诸葛亮】我想了解剑门关'},{role:'user',content:'【人物视角：诸葛亮】筹划者视角：讨论选择。 讲解模式：学术探索版；当前章节：剑门天险。这是AI人物解读，不是本人原话。'}]};
      chats[active].messages.push(old);requestReply(chats[active],old);
    });
    const body=(await pending).postDataJSON();await page.waitForFunction(()=>!chats[active].pending);
    assert.ok(body.history.every(e=>!e.content.startsWith('【人物视角：诸葛亮】')));
    assert.match(body.history.at(-1).content,/【人物视角：陈寿】史官视角/);assert.match(body.history.at(-1).content,/当前章节：剑门天险/);
-   assert.equal(body.mode,'学术');assert.equal(body.story_id,'shudao-xunzong');return body;
+   assert.equal(body.mode,'学术');assert.equal(body.story_id,'fixture-legacy-request');return body;
  });
  await check('探索志不再提示切换向导',async()=>{
    await page.evaluate(()=>showContentView('journal'));

@@ -185,5 +185,12 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  const beforeHotels=apiCalls.length;get('#load-hotels').onclick();assert.equal(apiCalls.length,beforeHotels,'未接入住宿不发假查询');assert.match(text(get('#hotel-results')),/舒适型.*3.0,3.5.*未接入/);
  const legacyPlans=JSON.parse(saved['sanguo.travel-plans.v1']);delete legacyPlans[0].preferences.hotel_tier;saved['sanguo.travel-plans.v1']=JSON.stringify(legacyPlans);fields.hotel_tier.value='豪华型';
  vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);get('#saved-plans').children[0].children[1].onclick();assert.equal(fields.hotel_tier.value,'','旧方案没有住宿需求，不能继承表单残留档位');
+ // Explicit retired saved-plan fixture: no catalog revival or orphan chapter controls.
+ const orphan={...copySaved,id:'orphan-plan',story:{id:'shudao-xunzong',title:'旧故事快照夹具',chapters:[{name:'旧夹具章'}]},choices:[{name:'旧夹具章'}]};
+ saved['sanguo.travel-plans.v1']=JSON.stringify([orphan]);window.SGT_STORIES=[{id:'chenshou-book-history',title:'陈寿编书史',chapters:[]}];
+ vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);get('#saved-plans').children[0].children[1].onclick();
+ assert.doesNotMatch(text(get('#planner-story')),/旧故事|旧夹具章/);assert.equal(get('#planner-back-story').textContent,'返回目的地');
+ assert.match(text(get('#plan-results')),/原活动正文/,'existing saved activity answer stays readable');
+ get('#save-plan').onclick();assert.equal(JSON.parse(saved['sanguo.travel-plans.v1'])[0].story,null);assert.deepEqual(JSON.parse(saved['sanguo.travel-plans.v1'])[0].choices,[]);
  console.log('PASS: existing trip form/chat bridge, validation, polymorphic results, missing fields, retry, stale request isolation, retired DOM null safety, activity replies, save/copy/weather, stale reply isolation and preserved maps/panels');
 })().catch(e=>{console.error(e);process.exitCode=1;});

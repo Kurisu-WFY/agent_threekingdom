@@ -9,6 +9,9 @@
   let before,openWidth,samples=[],sampling=null;
   const state=()=>({scrollY:window.scrollY,open:document.body.classList.contains('chat-open'),left:$('#launcher').style.left,focus:document.activeElement.id,width:$('.content').getBoundingClientRect().width});
   function dom(){
+    assert(window.SGT_STORIES.length===1&&window.SGT_STORIES[0].id==='chenshou-book-history'&&window.SGT_STORIES[0].chapters.length===0,'唯一故事与真实空章节');
+    assert(document.querySelectorAll('#story-cards .story-card').length===1,'首页只出现一张故事卡');
+    assert(!document.querySelector('#story-phase-filters,#story-scroll-prev,#story-scroll-next,#journal-recommendation'),'单故事冗余控件与推荐已删除');
     assert(!document.querySelectorAll('[name="rooms"],[name="hotel_per_room"],[name="meals_per_person_day"],[name="transport_total"],[name="budget_limit"],[name="budget_min"],[name="budget_max"],#budget-view,[data-content-view="budget"],.route-replan').length,'N8 退休入口残留');
     assert(document.querySelector('#trip-form [name=hotel_tier]')&&document.querySelector('#hotel-results'),'N8 酒店档位与未接入展示位');
     assert(!/房间数|预算明细|重绘剩余路线|预算与住宿设置/.test(document.body.innerText),'N8 页面旧文案残留');

@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=reposition-20261005">
+  <link rel="stylesheet" href="styles.css?v=single-story-20261005">
 </head>
 <body>
   <header class="topbar">
@@ -32,7 +32,6 @@
         <header class="journal-heading"><p class="welcome-kicker">我的三国探索志 · 探索进度</p><h1 tabindex="-1">陈寿为你记下的三国探索志</h1><p id="journal-overview" class="journal-overview" aria-live="polite"></p><p id="journal-local-notice" role="status"></p></header>
         <div id="journal-empty"></div>
         <article id="journal-book" class="journal-book" aria-label="探索志正文"></article>
-        <section id="journal-recommendation" class="journal-recommendation" aria-label="下一条故事推荐"></section>
       </div>
       <div class="welcome" id="welcome-view" data-view-panel="welcome">
         <header class="agent-hero culture-hero">
@@ -55,11 +54,9 @@
 
         <div class="culture-entry-grid">
           <section id="story-discovery" class="story-discovery culture-entry" aria-labelledby="discovery-title">
-            <div class="culture-entry-heading"><h2 id="discovery-title">跟着故事走</h2><div class="story-scroll-controls" aria-label="滚动故事"><button type="button" id="story-scroll-prev" aria-label="查看前面的故事">‹</button><button type="button" id="story-scroll-next" aria-label="查看后面的故事">›</button></div></div>
-            <p class="story-disclosure">五条主题，史料与地点待核验；部分章节待补充。</p>
-            <div id="story-phase-filters" class="story-controls" role="group" aria-label="按故事框架筛选" hidden></div>
-            <p id="story-filter-status" role="status" hidden></p>
-            <div id="story-cards" class="story-cards" tabindex="0" aria-label="五条故事，可横向滚动"></div>
+            <div class="culture-entry-heading"><h2 id="discovery-title">跟着故事走</h2></div>
+            <p class="story-disclosure">陈寿编书史：章节待补充，史料与地点待核验。</p>
+            <div id="story-cards" class="story-cards" aria-label="陈寿编书史"></div>
             <section class="story-preview" id="culture-preview" aria-labelledby="preview-title">
               <div class="preview-chapters">
                 <h3 id="preview-title">预览章节与地图</h3>
@@ -126,7 +123,7 @@
 
       <div class="module-view story-detail" id="story-view" data-view-panel="story" hidden>
         <button type="button" class="module-button" data-content-view="welcome" aria-controls="welcome-view">← 返回故事目录</button>
-        <p class="welcome-kicker">故事 · 主题模板</p><h2 id="story-title" tabindex="-1">选择一条故事</h2>
+        <p class="welcome-kicker">故事 · 主题模板</p><h2 id="story-title" tabindex="-1">陈寿编书史</h2>
         <div class="story-detail-layout">
           <aside id="story-detail-sidebar" class="story-detail-sidebar" aria-label="故事章节轴"></aside>
           <div class="story-detail-reading">
@@ -398,15 +395,15 @@
   <script src="travel-api.js?v=reposition-20261005"></script>
   <script src="cities.js?v=deai10-final-20261003"></script>
   <script src="weather-outlook-core.js?v=reposition-20261005"></script>
-  <script src="travel-modules.js?v=reposition-20261005"></script>
+  <script src="travel-modules.js?v=single-story-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
   <script src="travel-map.js?v=deai10-final-20261003"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>
-  <script src="stories.js?v=reposition-20261005"></script>
-  <script src="story-map.js?v=reposition-20261005"></script>
+  <script src="stories.js?v=single-story-20261005"></script>
+  <script src="story-map.js?v=single-story-20261005"></script>
   <script src="cultural-node.js?v=reposition-20261005"></script>
-  <script src="character-chat.js?v=reposition-20261005"></script>
-  <script src="journal.js?v=reposition-20261005"></script>
+  <script src="character-chat.js?v=single-story-20261005"></script>
+  <script src="journal.js?v=single-story-20261005"></script>
   <script src="chenshou-guide.js?v=reposition-20261005"></script>
   <script src="outing.js?v=reposition-20261005"></script>
   <script src="amap-map.js?v=amap-chat-20261003"></script>

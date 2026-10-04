@@ -14,6 +14,8 @@
     const oldY=scrollY;
     try {
       toggleChat(false);showContentView('welcome');
+      assert(window.SGT_STORIES.length===1&&q('#story-cards').children.length===1,'single-story catalog and homepage');
+      assert(!q('#story-phase-filters,#story-scroll-prev,#story-scroll-next,#journal-recommendation'),'single-story controls removed');
       q('#story-buildings button').click();toggleChat(true);await wait(500);
       assert(!q('#node-enter-story')&&!q('#node-modes')&&!q('#node-mode-status'),'node removed entry points');
       assert(!q('#node-reading-content').innerText.includes('先读懂这里'),'node simplified reading introduction');

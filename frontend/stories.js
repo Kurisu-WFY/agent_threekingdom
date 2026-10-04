@@ -2,18 +2,10 @@
 (() => {
   'use strict';
   window.SGT_STORIES = [
-    { id: 'chenshou', title: '从南充少年到三国史家', phase: '寻源' },
-    { id: 'zhangfei', title: '镇守阆中·寻迹张飞', phase: '探秘' },
-    { id: 'shudao-xunzong', title: '蜀汉北境·蜀道寻踪', phase: '探秘', chapters: [
-      { order: 1, name: '第一幕｜昭化古城', placeId: 'zhaohua' },
-      { order: 2, name: '第二幕｜剑门天险', placeId: 'jianmenguan' },
-      { order: 3, name: '第三幕｜米仓道', placeId: 'micangdao' }
-    ].map(chapter => Object.assign({ people: [], events: [], story: '', dataStatus: 'pending', sources: [], updatedAt: null }, chapter)) },
-    { id: 'history-to-place', title: '从史书到现场', phase: '探秘' },
-    { id: 'official-history', title: '正史里的三国', phase: '读史' }
+    { id: 'chenshou-book-history', title: '陈寿编书史', chapters: [] }
   ].map(story => Object.assign({ coreQuestion: '', summary: '', people: [], events: [], durationHours: null, areas: [], chapters: [], dataStatus: 'pending', updatedAt: null, sources: [] }, story));
   // 兜底区县名称取自仓库 scenic_spots_northeast_sichuan.sample.json 中的地址。
-  // 不复制其中未经核验的经纬度；上方章节顺序是用户指定的编辑顺序。
+  // 不复制未经核验的经纬度；故事章节仅接收后端提供的内容。
   window.SGT_PLACES = [
     { id: 'wanjuanlou', name: '万卷楼', building: 'tower' },
     { id: 'hanhuanhouci', name: '汉桓侯祠', building: 'shrine' },
@@ -23,8 +15,6 @@
   ].map(place => Object.assign({ coordinates: null, dataStatus: 'pending', sources: [] }, place));
   const modeLabel=mode=>({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[mode]||'大众线');
   const progress = window.StoryProgress;
-  const phases = ['寻源', '读史', '探秘', '传承'];
-  const matchesPhase = (story, phase) => phase === '全部' || phases.includes(story.phase) && story.phase === phase;
   const $ = selector => document.querySelector(selector);
   const text = value => typeof value === 'string' && value.trim() ? value.trim() : '待补充';
   const list = value => Array.isArray(value) && value.length ? value.map(text).join(' · ') : '待补充';
@@ -50,9 +40,9 @@
     chapters.replaceChildren();
     $('#preview-selection').textContent = story ? text(story.title) : '点选上方主题，预览章节。';
     (story?.chapters || []).forEach(chapter => chapters.append(node('li', '', chapter.name)));
-    $('#preview-map-note').textContent = story ? (story.chapters.length ? '章节顺序已设定；地点与史料待核验。' : '本主题章节与地点待补充；地图入口先打开普通四川地图，也可与陈寿讨论。') : '也可以直接打开四川地图，按市州与县区找地点。';
-    $('#preview-story-open').disabled = false;
-    $('#preview-story-open').textContent = story ? '进入故事地图' : '打开四川地图';
+    $('#preview-map-note').textContent = story ? (story.chapters.length ? '章节顺序已设定；地点与史料待核验。' : '章节与地点待补充 / 待核验；尚不能开始探索，可先向陈寿提问。') : '也可以直接打开四川地图，按市州与县区找地点。';
+    $('#preview-story-open').disabled = Boolean(story && !story.chapters.length);
+    $('#preview-story-open').textContent = story ? (story.chapters.length ? '进入故事地图' : '故事地图（章节待补充）') : '打开四川地图';
     $('#preview-detail-open').disabled = !story;
     $('#preview-clear').hidden = !story;
     Array.from($('#story-cards').children).forEach(shell => shell.children[0].setAttribute('aria-pressed', String(shell.dataset.storyId === story?.id)));
@@ -125,17 +115,10 @@
     if(progress.status(story)==='已寻迹') {
       const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');
       detail.append(node('h3','','这条故事已读完'),node('p','','你已手动完成本故事全部章节，回顾了：'+visitedPlaces.join('、')+'。相关人物：'+list(story.people)+'。史料仍需核验，探索记录不代表实际到访。'));
-      const next=window.SGT_STORIES.find(item=>item.id!==story.id&&progress.status(item)!=='已寻迹');
-      if(next)detail.append(action('接着读：'+next.title,()=>select(next,true)));
     } else if(s.skipped.size && chapters.every((_,i)=>s.skipped.has(i)||s.completed.has(i))) detail.append(node('p','','本次所选章节已完成；仍有跳过章节，整条故事保持探索中。'));
     $('#story-map-open').disabled=!chapters.length;
     $('#story-map-open').textContent=chapters.length?'开始探索 →':'开始探索（章节待补充）';
   }
-  const filters=$('#story-phase-filters');
-  ['全部','寻源','读史','探秘','传承'].forEach(phase=>{
-    const b=action(phase,()=>{Array.from($('#story-cards').children).forEach(shell=>{const story=window.SGT_STORIES.find(item=>item.id===shell.dataset.storyId);shell.hidden=!story||!matchesPhase(story,phase);});Array.from(filters.children).forEach(button=>button.setAttribute('aria-pressed',String(button===b)));$('#story-filter-status').textContent=Array.from($('#story-cards').children).some(shell=>!shell.hidden)?'':'可以看看其他阶段，也可以问陈寿这个主题。';});
-    b.setAttribute('aria-pressed',String(phase==='全部'));filters.append(b);
-  });
   progress.subscribe(()=>{if(selected)select(selected,false);});
   const cards = $('#story-cards');
   window.SGT_STORIES.forEach((story, index) => {
@@ -146,8 +129,7 @@
     card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', story.chapters.length ? '预览章节与地点' : '章节与地点待补充'));
     if(story.summary)card.append(node('span','story-summary',story.summary));
     card.addEventListener('click', () => { select(story, false); preview(story); });
-    const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id; shell.dataset.phase = story.phase || "";
-    shell.dataset.phase = story.phase;
+    const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id;
     const badge = node('span', 'story-progress-seal', progress.status(story));
     card.append(badge);
     shell.dataset.progress = progress.status(story);
@@ -158,11 +140,10 @@
   $('#story-map-open').addEventListener('click', () => {if(selected.chapters.length)window.StoryMap.open(selected.id);});
   $('#preview-story-open').addEventListener('click', () => {
     if (previewStory?.chapters.length) window.StoryMap.open(previewStory.id);
-    else { window.StoryMap.exit(); showContentView('map'); if (previewStory) $('#map-route-status').textContent = '本主题章节与地点待补充，当前打开普通四川地图；尚未开启故事模式。'; }
+    else if (!previewStory) { window.StoryMap.exit(); showContentView('map'); }
   });
   $('#preview-detail-open').addEventListener('click', () => { if (previewStory) select(previewStory, true); });
   $('#preview-clear').addEventListener('click', () => preview(null));
-  ['prev', 'next'].forEach(direction => $('#story-scroll-' + direction)?.addEventListener('click', () => cards.scrollBy({ left: (direction === 'prev' ? -1 : 1) * cards.clientWidth * .75, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })));
   // 一个轮廓组件在目录与详情之间移动，不复制 SVG 或改变几何计算。
   const sharedMap = $('#culture-shared-map');
   if (window.MutationObserver) {
@@ -197,7 +178,15 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = {modeLabel, matchesPhase, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) { const story = suppliedStory || window.SGT_STORIES.find(item => item.id === id); if (story) select(story, true); } };
+  window.SGTStoryUI = {modeLabel, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) {
+    // 保存的行程快照不能复活已移除的故事；显式地图适配数据沿用现有入口。
+    const catalog = window.SGT_STORIES.find(item => item.id === id);
+    const adapted = window.StoryMap?.getContext?.()?.story;
+    const story = adapted?.id === id && suppliedStory?.id === id ? adapted :
+      catalog && suppliedStory?.id === id ? suppliedStory : catalog;
+    if (!story) return false;
+    select(story, true); return true;
+  } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
     article.append(icon(place.building), node('h3', '', place.name), node('p', '', '故事章节待核验 · 坐标待核验'));

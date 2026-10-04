@@ -682,7 +682,7 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 .story-discovery { margin-top:var(--space-5); scroll-margin-top:90px; }
 .story-discovery .desk-intro { margin-bottom:var(--space-2); }
 .story-disclosure { color:var(--muted); font-size:var(--text-xs); line-height:var(--leading-body); }
-.story-cards { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--space-3); margin-top:var(--space-4); }
+.story-cards { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--space-3); margin-top:var(--space-4); }
 .story-card { display:flex; flex-direction:column; align-items:flex-start; position:relative; text-align:left; min-width:0; padding:var(--space-4) var(--space-3) var(--space-3); color:var(--ink); background:linear-gradient(90deg,var(--surface-2),var(--surface) 12%,var(--surface) 88%,var(--surface-2)); border:1px solid var(--line); border-top:3px solid var(--brass); border-radius:3px 3px var(--radius) var(--radius); box-shadow:var(--shadow-sm); cursor:pointer; }
 .story-card:hover { border-color:var(--brass); }
 .story-card:focus-visible,.story-detail h2:focus-visible { outline:3px solid var(--jade); outline-offset:4px; }
@@ -814,9 +814,9 @@ body { font-family:'Microsoft YaHei','PingFang SC',sans-serif; background:var(--
 
 /* 本地探索志：使用编号纸页和章节印章。 */
 .journal-view { padding:var(--space-6); }
-.journal-heading,.journal-book,#journal-empty,.journal-recommendation { max-width:1400px; margin-inline:auto; }
+.journal-heading,.journal-book,#journal-empty { max-width:1400px; margin-inline:auto; }
 .journal-heading { padding:var(--space-5) var(--space-6); border:1px solid var(--line); border-left:4px solid var(--shu); border-radius:var(--radius); background:var(--surface-2); }
-.journal-heading h1,.journal-book h2,.journal-recommendation h2 { font-family:var(--font-display,serif); }
+.journal-heading h1,.journal-book h2 { font-family:var(--font-display,serif); }
 .journal-heading h1 { margin:var(--space-2) 0 var(--space-3); font-size:var(--text-2xl); }
 .journal-heading .welcome-kicker { margin:0; font-size:var(--text-xs); color:var(--brass-ink); }
 .journal-heading .journal-overview { margin:0; font-size:var(--text-xl); font-variant-numeric:tabular-nums; color:var(--shu-deep); line-height:var(--leading-title); }
@@ -857,11 +857,6 @@ body.chat-open .journal-story-grid { grid-template-columns:repeat(2,minmax(0,1fr
 .journal-question p { white-space:pre-wrap; overflow-wrap:anywhere; margin-block:var(--space-3); }
 .journal-question small { color:var(--muted); }
 .journal-interest { border-left:3px solid var(--brass); padding-left:var(--space-3); }
-.journal-recommendation { margin-block:var(--space-6); padding:var(--space-5); border:1px solid var(--line); border-top:3px solid var(--brass); border-radius:var(--radius); background:var(--surface-2); }
-.journal-recommendation h2 { margin:0 0 var(--space-4); font-size:var(--text-xl); }
-.journal-recommendation h3 { margin:0 0 var(--space-2); font-size:var(--text-lg); }
-.journal-recommendation p { max-width:var(--measure-reading); line-height:var(--leading-body); }
-.journal-recommendation .journal-section-note { margin:var(--space-4) 0 0; }
 .journal-footprints .journal-region { fill:var(--line); stroke:var(--portrait-robe); stroke-width:.5; }
 /* 万卷史官：书册、墨绿官袍与朱印；动效只改变装饰。 */
 .historian-svg { width:56px; height:60px; overflow:visible; filter:drop-shadow(0 3px 2px color-mix(in srgb, var(--ink) 11%, transparent)); }
@@ -957,10 +952,6 @@ input::placeholder,textarea::placeholder,.composer textarea::placeholder,.hero-c
 .story-card,.building-card,.story-node-card,.result-card,.node-evidence { border-radius:var(--radius); border-color:var(--line); background:var(--surface); }
 .story-card:hover,.building-card:hover { border-color:var(--jade); box-shadow:var(--shadow-sm); }
 .story-card-shell { --phase-accent:var(--jade); }
-[data-phase=寻源] { --phase-accent:var(--phase-source); }
-[data-phase=读史] { --phase-accent:var(--phase-reading); }
-[data-phase=探秘] { --phase-accent:var(--phase-explore); }
-[data-phase=传承] { --phase-accent:var(--phase-legacy); }
 .story-card-shell .story-card { border-top-color:var(--phase-accent); }
 .story-number { color:var(--phase-accent); border-color:var(--phase-accent); }
 .story-card-shell[data-progress=探索中] { outline-color:var(--shu); }
@@ -1185,7 +1176,7 @@ body.chat-open .content > [data-node-source] { display:none; }
 #welcome-view .chenshou-portrait { width:100px; }
 #welcome-view .culture-path-body > .journey-desk { margin-top:24px; }
 #welcome-view .culture-path-body > .story-buildings { margin-top:0; }
-#welcome-view .building-grid { grid-template-columns:repeat(5,minmax(0,1fr)); }
+#welcome-view .building-grid { grid-template-columns:minmax(0,1fr); }
 #welcome-view .culture-path-body > .culture-shelf { margin-top:24px; }
 #welcome-view .culture-path-body > .story-strip { margin:0; }
 #welcome-view .journey-trust { margin:16px 0 0; }
@@ -1240,12 +1231,10 @@ body.chat-open #welcome-view .culture-hero { display:flex; gap:28px; padding:0 0
 .culture-entry-heading { display:flex; gap:16px; justify-content:space-between; align-items:center; }
 .culture-entry-heading h2 { margin:0; font:24px/1.4 var(--font-display); }
 .culture-entry-heading > span { color:var(--muted); font-size:14px; }
-.story-scroll-controls { display:flex; gap:8px; }
-.story-scroll-controls button { width:44px; height:44px; padding:0; border:1px solid var(--line); border-radius:6px; background:var(--surface); font-size:24px; }
 #welcome-view .story-disclosure { font-size:12px; margin:4px 0 12px; }
 #welcome-view .story-cards,
-body.chat-open #welcome-view .story-cards { display:flex; overflow-x:auto; gap:12px; padding:3px 3px 12px; margin:0; scroll-snap-type:x proximity; scrollbar-color:var(--line-strong) var(--paper); }
-#welcome-view .story-card-shell { flex:0 0 210px; min-width:0; scroll-snap-align:start; }
+body.chat-open #welcome-view .story-cards { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; padding:3px; margin:0; }
+#welcome-view .story-card-shell { min-width:0; }
 #welcome-view .story-card { width:100%; height:156px; padding:12px; border:1px solid var(--line); border-radius:6px; grid-template-columns:24px minmax(0,1fr); grid-template-rows:minmax(48px,auto) 20px 26px 18px; gap:4px 8px; }
 #welcome-view .story-card[aria-pressed=true] { border-color:var(--jade); background:var(--jade-soft); box-shadow:inset 0 0 0 1px var(--jade); }
 #welcome-view .story-card-title { font-size:16px; line-height:1.5; }
@@ -1305,7 +1294,7 @@ body.chat-open #welcome-view .story-cards { display:flex; overflow-x:auto; gap:1
 #welcome-view #culture-places .story-buildings .map-note { margin:8px 0; }
 #welcome-view #culture-places .culture-shelf { margin:20px 0 0; }
 #welcome-view #culture-places .building-grid,
-body.chat-open #welcome-view #culture-places .building-grid { grid-template-columns:repeat(5,minmax(0,1fr)); }
+body.chat-open #welcome-view #culture-places .building-grid { grid-template-columns:minmax(0,1fr); }
 #welcome-view #culture-places .building-card { padding:12px; }
 #welcome-view #culture-places .building-card svg { height:110px; }
 #welcome-view #culture-places .culture-card { padding:16px 20px; }
@@ -1322,3 +1311,6 @@ body.chat-open #welcome-view #culture-places .building-grid { grid-template-colu
 .inline-roads .outing-handoff { flex-wrap:wrap; }
 .weather-temperature { font-size:16px; }
 .weather-overview { font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
+
+/* 空章节保持可见的待补充入口，并明确呈现禁用状态。 */
+#culture-shared-map #preview-story-open:disabled { background:var(--surface-2); color:var(--muted); border-color:var(--line); cursor:not-allowed; box-shadow:none; }

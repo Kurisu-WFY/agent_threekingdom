@@ -46,7 +46,6 @@
     render();
   }
   const names=xs=>(Array.isArray(xs)?xs:[]).map(x=>typeof x==='string'?x:typeof x?.name==='string'?x.name:'').filter(x=>x&&x!=='待核验'&&x!=='待补充');
-  const associations={chenshou:['陈寿','史书编纂'],zhangfei:['张飞'], 'shudao-xunzong':['诸葛亮','古道与关隘'], 'history-to-place':['建筑与遗址'], 'official-history':['正史与演义']};
   const themes=[['正史与演义',/正史|演义|史实|历史上/],['史书编纂',/陈寿|三国志|编纂/],['古道与关隘',/蜀道|剑门|米仓|关隘|古道/],['建筑与遗址',/建筑|遗址|古城|祠|万卷楼/]];
   function model(){
     const stories=(window.SGT_STORIES||[]).map(story=>({story,state:window.StoryProgress.get(story),total:story.chapters?.length||0}));
@@ -57,11 +56,7 @@
     questions.forEach(q=>analyze(q.text));
     const completed=stories.filter(x=>x.total>0&&x.state.completed.size===x.total),pending=stories.filter(x=>!completed.includes(x));
     const ranked=[...interests].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
-    const candidates=pending.map(x=>({...x,matches:(associations[x.story.id]||[]).filter(k=>interests.has(k))}));
-    candidates.sort((a,b)=>b.matches.reduce((s,k)=>s+interests.get(k),0)-a.matches.reduce((s,k)=>s+interests.get(k),0)||Number(a.state.started)-Number(b.state.started)||Number(b.total>0)-Number(a.total>0));
-    const next=candidates[0];let reason='';
-    if(next){reason=next.matches.length?'你在本地问过的问题或已完成的章节提到了“'+next.matches.join('、')+'”，可以接着看看这个主题。':completed.length?'你已记录完成“'+completed.map(x=>x.story.title).join('、')+'”；还可以看看这条尚未完成的故事。':(next.total?'目前的兴趣记录还不够，先推荐一个已有章节框架的主题。':'目前的兴趣记录还不够，可以先看一个尚未探索的主题。');if(!next.total)reason+=' 这条线仍是主题模板，章节与史料待补充。';}
-    return {stories,completed,pending,explored:[...explored.values()],people:[...people],events:[...events],ranked,next,reason,started:stories.some(x=>x.state.started||x.state.completed.size)};
+    return {stories,completed,pending,explored:[...explored.values()],people:[...people],events:[...events],ranked,started:stories.some(x=>x.state.started||x.state.completed.size)};
   }
   function heading(box,title){box.append(node('h2','',title));}
   function storyRow(box,x){
@@ -71,7 +66,7 @@
     row.append(node('p','',total?'第 '+(state.started||state.completed.size?state.current+1:0)+' / '+total+' 幕 · 已寻迹 '+state.completed.size+' / '+total+' 幕':'章节待补充 · 尚不能计算完成进度'));
     const scroll=node('div','journal-scroll');scroll.setAttribute('aria-label','已完成 '+state.completed.size+' / '+total+' 幕');
     (story.chapters||[]).forEach((c,i)=>scroll.append(node('span','journal-seal'+(state.completed.has(i)?' complete':''),(i+1)+' · '+(state.completed.has(i)?'已寻迹':state.skipped.has(i)?'本次跳过':'待探索'))));row.append(scroll);
-    row.append(button('继续阅读',()=>window.SGTStoryUI.openStory(story.id)));box.append(row);
+    row.append(button(total?'继续阅读':'查看故事资料',()=>window.SGTStoryUI.openStory(story.id)));box.append(row);
   }
   function footprints(box,m){
     heading(box,'足迹地图');box.append(node('p','journal-section-note','仅来自你标为“已寻迹”的章节；县级驻地是位置示意，非景区入口，缺坐标不绘制精确点。'));
@@ -91,16 +86,17 @@
       const d=node('details','journal-disclosure');d.id=id;d.open=expanded.has(id);d.append(node('summary','',title));return d;
     }
     book.replaceChildren();
-    $('#journal-overview').textContent='已寻迹 '+m.stories.reduce((n,x)=>n+x.state.completed.size,0)+' 幕 · 读完 '+m.completed.length+' 条 · 还有 '+m.pending.length+' 条待探索';
+    const current=m.stories[0];
+    $('#journal-overview').textContent=current ? current.story.title+' · '+(current.total?'已寻迹 '+current.state.completed.size+' / '+current.total+' 幕 · '+(m.completed.length?'已读完':current.state.started?'正在读':'尚未开始'):'章节待补充 / 待核验') : '故事资料待补充';
     $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 换设备不会同步；不是账号档案。'+(available?'问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'问题读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'问题存储不可用，当前问题仅本页保留。')+(!window.StoryProgress.notice().includes('不代表实际到访')?' 手动记录不代表实际到访。':'');
-    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started&&!questions.length){empty.append(node('p','','去读一条故事、问陈寿一个问题，这里就会记下来'),button('开始探索故事',()=>showContentView('story')));}
-    const reading=node('section','journal-section journal-reading');heading(reading,'接着读一条故事');
-    reading.append(node('p','journal-section-note',m.pending.some(x=>x.state.started||x.state.completed.size)?'正在读的故事排在前面，点击继续阅读，接上你的进度。':'从感兴趣的故事开始，读完一幕后可以标为“已寻迹”。'));
+    const empty=$('#journal-empty');empty.replaceChildren();if(!m.started&&!questions.length){empty.append(node('p','','去读一条故事、问陈寿一个问题，这里就会记下来'),button('查看故事资料',()=>{if(current)window.SGTStoryUI.openStory(current.story.id);}));}
+    const reading=node('section','journal-section journal-reading');heading(reading,'我的故事进度');
+    reading.append(node('p','journal-section-note',current?.total?'读完一幕后可以标为“已寻迹”，继续阅读会接上你的进度。':'章节待补充 / 待核验；可以查看故事资料或向陈寿提问，尚不能开始探索。'));
     const cards=node('div','journal-story-grid');
     const begun=m.pending.filter(x=>x.state.started||x.state.completed.size),waiting=m.pending.filter(x=>!x.state.started&&!x.state.completed.size);
     [...begun,...waiting].forEach(x=>storyRow(cards,x));reading.append(cards);
-    if(!m.pending.length)reading.append(node('p','','当前故事都已读完，可以展开已完成的故事，重读旧章。'));
-    if(m.completed.length){const completed=disclosure('journal-completed','已完成的故事 ('+m.completed.length+')'),doneCards=node('div','journal-story-grid');m.completed.forEach(x=>storyRow(doneCards,x));completed.append(doneCards);reading.append(completed);}
+    if(!m.pending.length)reading.append(node('p','','故事已读完，可以展开记录，重读章节。'));
+    if(m.completed.length){const completed=disclosure('journal-completed','已读完'),doneCards=node('div','journal-story-grid');m.completed.forEach(x=>storyRow(doneCards,x));completed.append(doneCards);reading.append(completed);}
     book.append(reading);
     const map=node('section','journal-section journal-map');footprints(map,m);book.append(map);
     const records=node('section','journal-section journal-records');heading(records,'留下的记录');
@@ -114,8 +110,6 @@
     const unlocked=disclosure('journal-unlocked','解锁的人物与事件 ('+(m.people.length+m.events.length)+')');
     unlocked.append(node('p','journal-section-note','这里记录已完成章节的人物与事件，完成相应章节后可在这里回顾；提问不会自动记为完成。'),node('p','','人物（'+m.people.length+'）：'+(m.people.join('、')||'完成章节后记录相关人物')),node('p','','事件（'+m.events.length+'）：'+(m.events.join('、')||'完成章节后记录相关事件')));
     records.append(asked,interests,unlocked);book.append(records);
-    const next=$('#journal-recommendation');next.replaceChildren(node('h2','','下一条故事推荐'));if(m.next)next.append(node('h3','',m.next.story.title),node('p','',m.reason),button('看看下一条故事',()=>window.SGTStoryUI.openStory(m.next.story.id)));else next.append(node('p','','暂无未完成主题。你可以重读旧章，继续留下新的问题。'));
-    next.append(node('p','journal-section-note','下一次旅行仍需核验出发地、可用时间、交通和景区信息；探索志不会把主题模板当成可执行路线。'));
   }
   window.ExplorationJournal={sync,model,render};window.StoryProgress.subscribe(render);sync(chats);
   window.TravelMap?.ready?.then(()=>render());

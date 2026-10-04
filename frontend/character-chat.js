@@ -4,9 +4,9 @@
   const $=s=>document.querySelector(s);
   const guideStyle='史官视角：审慎、简洁，先核对材料再解释，不虚构见闻。';
   const themes={
-    '陈寿':{story:'chenshou',city:'南充市'},
-    '诸葛亮':{story:'shudao-xunzong',city:'剑阁县'},
-    '张飞':{story:'zhangfei',city:'阆中市'}
+    '陈寿':{story:'chenshou-book-history',city:'南充市'},
+    '诸葛亮':{city:'剑阁县'},
+    '张飞':{city:'阆中市'}
   };
   function node(tag,cls,text){const n=document.createElement(tag);n.className=cls||'';if(text!==undefined)n.textContent=text;if(typeof text==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(text))n.setAttribute('data-trust-state','unverified');return n;}
   function button(text,fn){const n=node('button','module-button',text);n.type='button';n.addEventListener('click',fn);return n;}
@@ -39,7 +39,7 @@
     const compare=isComparison(userQuestion);
     const discovered=!compare&&Object.keys(themes).find(name=>new RegExp('(?:想|要|希望).{0,4}了解'+name).test(userQuestion));
     const discover=Boolean(discovered), theme=discover?window.SGT_STORIES?.find(s=>s.id===themes[discovered].story):null, city=themes[discovered]?.city;
-    if(discover){chat.characterNotice='已匹配“'+(theme?.title||'人物故事主题')+'”，地图预选'+city+'；阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}
+    if(discover){chat.characterNotice='已匹配“'+(theme?.title||discovered+'相关历史文化')+'”，地图预选'+city+'；阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}
     const persona='陈寿',c=context();
     const snapshot='【人物视角：'+persona+'】'+guideStyle+' 讲解模式：'+getMode()+'；当前故事：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';
     if(compare&&window.CulturalNode?.getContext())window.CulturalNode.compare();
@@ -72,15 +72,15 @@
   function actions(message){
     const box=node('div','character-actions');
     if(window.AmapChat?.hasMentions(message.text||'')||window.TravelMap?.hasMentions?.(message.text||''))box.append(button('在地图查看提及地点',()=>window.AmapChat?window.AmapChat.showMentions(message.text):window.TravelMap.showMentions(message.text,window.getContentView?.()||'welcome')));
-    if(message.characterAction==='discover'&&themes[message.discovered]){const {story:id,city}=themes[message.discovered],title=window.SGT_STORIES?.find(s=>s.id===id)?.title||'人物故事主题';
+    if(message.characterAction==='discover'&&themes[message.discovered]){const {story:id,city}=themes[message.discovered],story=window.SGT_STORIES?.find(s=>s.id===id),title=story?.title||message.discovered+'相关历史文化';
       const question=String(message.originalQuestion||'');
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));
       const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
-      box.append(node('p','',title+'：主题模板已匹配，章节与史料待补充。'+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)),button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
-    if(message.characterAction==='discover')box.append(node('p','','故事推荐 · 你可以打开相关主题，路线不会自动修改。'));
+      box.append(node('p','',title+'：'+(story?'章节与史料待补充。':'人物文化讲解，史料与地点关联待核验。')+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));if(story)box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)));box.append(button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
+    if(message.characterAction==='discover')box.append(node('p','',themes[message.discovered]?.story?'故事资料 · 章节待补充，可先了解主题。':'人物文化 · 可在地图中查看关联地点，路线不会自动修改。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
-    if(message.storyId&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
+    if(message.storyId&&(window.SGT_STORIES?.some(s=>s.id===message.storyId&&s.chapters?.length)||context().story?.id===message.storyId&&context().story?.chapters?.length)&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     return box;
   }
   $('#character-mode').addEventListener('change',()=>setMode($('#character-mode').value));
