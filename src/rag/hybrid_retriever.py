@@ -65,10 +65,12 @@ class HybridRetriever:
                     merged[chunk.id] = RetrievalHit(chunk=chunk, matched_query=query)
         candidates = list(merged.values())
         # 明确要求某书原文时优先呈现该书的原文，不让大量论文转述挤掉指定出处。
+        explicit_books = set(re.findall(r'《([^》]+)》', query))
         requested_originals = {
             chunk.id for chunk in self.vector_store.all_chunks()
             if '原文' in query and chunk.category == 'primary_source'
-            and any(book in query for book in re.findall(r'《([^》]+)》', chunk.title))
+            and any(book in explicit_books if explicit_books else book in query
+                    for book in re.findall(r'《([^》]+)》', chunk.title))
         }
         if requested_originals:
             present = {hit.chunk.id for hit in candidates}

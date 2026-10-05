@@ -1,5 +1,14 @@
 # 交接记录 · HANDOFF
 
+### 2026-10-05 · 景点人物正史补库
+- 用户授权从前一份PDF补充选编本未收人物。当前业务库六处景点：万卷楼、王平墓、汉桓侯祠、剑门关、昭化古城、成都武侯祠；中华书局扫描本23篇选编并不覆盖谯周、王平，且本轮未OCR。
+- src/ingest/sanguozhi_people.py从E:/Download/三国志.pdf抽取10篇／传段、181条，保留真实PDF页码；补入刘备、诸葛亮、关张马黄赵、庞统法正、霍峻、谯周、王平、姜维、邓艾、黄权。陈寿自身生平沿用已入库《晋书》。不是两份书均已全部入库。
+- 新索引E:/codex_workplace/sanguo-rag/teacher-bge-v1-sanguozhi-v1/index.json共533条，旧352条与旧索引逐项／字节检查未变，模型身份不变。.env只更换VECTOR_STORE_PATH；不提交密钥或向量索引。
+- tests/test_sanguozhi_people.py两项断言通过；scripts/probe_sanguozhi_rag.py五项真实stdio MCP检索通过，报告在新索引旁。NuwaClaw旧MCP须停用再启用、新建会话；未代操作客户端发布或推送。
+- 电子底本未核定，含转录字形且未逐字校勘；A级不等于每条史实已证。注释、传闻必须归属，现代墓址、祠庙及演义另需对应资料。覆盖范围详见docs/SANGUOZHI-PEOPLE-RAG.md。
+- 增量库回归发现指定《晋书》原文查询提及三国志时，原有书名子串规则同时保留两书；修正为显式书名号书名优先。两项出处排序、三项晋书和两项新书断言通过；晋书三项真实stdio MCP复验通过。
+- 本轮仅重启此前本轮持有的8010服务；修正出处规则后当前进程35112／工具会话49787，健康ok，新《三国志》PDF出处接口200。未改前端布局、平台提示词或其他服务。
+
 ### 2026-10-05 · 用户提供《晋书》陈寿传入库
 - 原文和译文保存在data/raw/primary_sources/晋书_陈寿传_用户提供.txt；原文字句保留用户转录，底本未注明，按原文段落不造PDF页码。译文人名有不一致，暂不向量化。A级是正史类型，不把“或云”索米说当事实；不从本传证明万卷楼为全书成书地点。
 - 专用src/ingest/jinshu_text.py新增6段BGE向量，352段新库E:/codex_workplace/sanguo-rag/teacher-bge-v1-jinshu-v2/index.json；旧teacher-bge-v1索引及346段向量逐项不变。初次验证库teacher-bge-v1-jinshu保留未启用，后续加主题标题改善检索。没有处理剩余19篇全文入库。

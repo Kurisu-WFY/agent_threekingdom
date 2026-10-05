@@ -19,3 +19,18 @@ def test_requested_original_not_crowded_out():
         assert hits[0].chunk.id == 'primary'
         hits, _ = retriever.retrieve('陈寿著述研究有什么观点？')
         assert hits[0].chunk.category != 'primary_source'
+
+
+def test_explicit_book_not_confused_with_topic():
+    jinshu = KnowledgeChunk(id='jinshu', title='《晋书》陈寿传', content='凡六十五篇',
+                            source='晋书', source_level='A', category='primary_source', knowledge_type='text')
+    sanguozhi = KnowledgeChunk(id='sanguozhi', title='《三国志》诸葛亮传', content='三国志中的诸葛亮',
+                               source='三国志', source_level='A', category='primary_source', knowledge_type='text')
+    retriever = object.__new__(HybridRetriever)
+    retriever.settings = SimpleNamespace(rerank_top_k=8, final_top_k=5, min_rerank_score=.2)
+    retriever.vector_store = SimpleNamespace(all_chunks=lambda: [jinshu, sanguozhi])
+    retriever._vector_search = lambda query: [RetrievalHit(chunk=jinshu, vector_score=.4), RetrievalHit(chunk=sanguozhi, vector_score=.9)]
+    retriever._lexical_search = lambda query: []
+    with patch('rag.hybrid_retriever.expand_queries', side_effect=lambda q, i: [q]):
+        hits, _ = retriever.retrieve('《晋书》陈寿传原文如何记录撰诸葛亮集和三国志六十五篇？')
+        assert hits[0].chunk.id == 'jinshu'
