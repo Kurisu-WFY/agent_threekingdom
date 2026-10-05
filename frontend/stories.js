@@ -55,8 +55,8 @@
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
       if (value) detail.append(node('h3', '', heading), node('p', '', text(value)));
     }
-    detail.append(node('p', 'story-empty', '史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
-    $('#story-action-status').textContent = '当前为主题模板，尚未形成可执行行程。';
+    detail.append(node('p', 'story-empty', story.chapters.length?'下方为有文献出处的阅读章节；章节顺序不是历史行走路线，实际交通需另行规划。':'史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
+    $('#story-action-status').textContent = story.chapters.length?'章节资料已加载，可以阅读或带入活动计划。':'当前为主题模板，尚未形成可执行行程。';
     renderSystem(story, detail);
     if (open) { preview(story); showContentView('story'); }
     window.CharacterChat?.refresh();
@@ -178,7 +178,18 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = {modeLabel, getContext:()=>({story:selected}), icon, openStory(id, suppliedStory) {
+  window.SGTStoryUI = {modeLabel, getContext:()=>({story:selected}), icon, installContent(payload) {
+    const story=payload?.story;
+    if(story?.id!=='chenshou-book-history'||!Array.isArray(story.chapters)||!story.chapters.length||!Array.isArray(payload.places))return false;
+    if(story.chapters.some(c=>!c.name||!payload.places.some(p=>p.id===c.placeId)))return false;
+    Object.assign(window.SGT_STORIES[0],story);
+    payload.places.forEach(place=>{const target=window.SGT_PLACES.find(p=>p.id===place.id);if(target)Object.assign(target,place);});
+    const card=$('#story-cards').children[0]?.children[0];
+    if(card){card.querySelector('.story-card-end').textContent='预览章节与地点';card.append(facts(story,true),node('span','story-summary',story.summary));}
+    const disclosure=$('#story-cards').parentElement.querySelector('.story-disclosure');
+    if(disclosure)disclosure.textContent='陈寿编书史：以论文为依据的三章阅读，附文献与PDF页码。';
+    select(selected,false);if(previewStory)preview(selected);return true;
+  }, openStory(id, suppliedStory) {
     // 保存的行程快照不能复活已移除的故事；显式地图适配数据沿用现有入口。
     const catalog = window.SGT_STORIES.find(item => item.id === id);
     const adapted = window.StoryMap?.getContext?.()?.story;

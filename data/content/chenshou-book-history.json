@@ -1,0 +1,40 @@
+{
+  "story": {
+    "id": "chenshou-book-history",
+    "title": "陈寿编书史",
+    "coreQuestion": "陈寿如何书写三国，我们又如何阅读他的历史？",
+    "summary": "以教师提供的论文为依据，阅读陈寿的师承、著述与史学争议。章节是阅读顺序，不是陈寿生平行走路线。",
+    "people": ["陈寿", "谯周"],
+    "events": ["编纂《三国志》", "后世史学评价"],
+    "areas": ["南充"],
+    "dataStatus": "maintained",
+    "updatedAt": "2026-10-05T00:00:00+08:00",
+    "chapters": [
+      {
+        "id": "learning-and-writing", "name": "从师承走向著述", "placeId": "wanjuanlou",
+        "reason": "从人物与学术背景认识史书作者。", "role": "阅读入口，不复原古代现场。",
+        "narrative_type": "research",
+        "story": "张旭辉的研究介绍陈寿字承祚、出自巴西安汉，少年师从谯周；文章引用《华阳国志》与《晋书》讨论他的著述，并提及整理诸葛亮相关材料。本章从这篇论文进入陈寿的学术背景。这些是现代论文对史料的转述，不等于本项目已逐条核对正史原文。万卷楼作为今天的文化阅读地点，不据此断言《三国志》全书就在这里完成。",
+        "references": [{"document_id":"9af0734c082c8e6458fe68504aac47935d9dd3f03e1a71bcc6af512f7c8c5360","title":"陈寿《三国志》的史识与史德_张旭辉","pdf_page":1,"source_level":"B"}]
+      },
+      {
+        "id": "historical-judgment", "name": "史识与史德：怎样评价一位史家", "placeId": "wanjuanlou",
+        "reason": "理解历史写作的处境和后世评价。", "role": "区分作者观点与史实结论。",
+        "narrative_type": "research",
+        "story": "《三国志》的史学价值与部分记载的曲笔争议，是张旭辉这篇论文的讨论中心。作者主张结合陈寿所处的时代环境和全书的记载来评价其史识、史德，不应仅凭部分非议否定其治史贡献。这是张旭辉的解释立场，而不是所有学者一致接受的定论。阅读时可以继续追问：批评者举了哪些记载，解释者使用了哪些证据？不要把对史家的道德评价直接当作事件本身的证明。",
+        "references": [{"document_id":"9af0734c082c8e6458fe68504aac47935d9dd3f03e1a71bcc6af512f7c8c5360","title":"陈寿《三国志》的史识与史德_张旭辉","pdf_page":1,"source_level":"B"}]
+      },
+      {
+        "id": "hometown-evidence", "name": "故里碑：证据与争议", "placeId": "wanjuanlou",
+        "reason": "通过不同论文练习辨析证据。", "role": "争议并列，不替读者裁定故里。",
+        "narrative_type": "research",
+        "story": "陈寿故里碑的争议提醒我们：后世碑刻不自动等于当时的历史证据。蔡东洲认为清代刻立的碑缺乏足以动摇传统南充说的学术证据；刘敏则借碑的出土对南充说提出疑问，同时认为广安说也尚待考证，不能仅靠后世碑刻和族谱坐实。这里并列呈现两位作者的判断，不将其中一方包装成无争议结论。今天到南充阅读陈寿文化，也不意味着已经解决古代安汉与现代地理归属的全部问题。",
+        "references": [
+          {"document_id":"32b956d5d35960c5","title":"“陈寿故里碑”引发的两个问题_蔡东洲","pdf_page":1,"source_level":"B"},
+          {"document_id":"7bd203bfc8b73b20","title":"《陈寿故里碑》与陈寿故里_刘敏","pdf_page":3,"source_level":"B"}
+        ]
+      }
+    ]
+  },
+  "places": [{"id":"wanjuanlou","name":"万卷楼","building":"tower","fallbackName":"顺庆区","fallbackParent":"南充市","coordinates":null,"dataStatus":"pending","sources":[]}]
+}

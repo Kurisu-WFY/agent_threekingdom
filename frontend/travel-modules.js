@@ -176,7 +176,7 @@
     showContentView('planner');
   }
   const hotelStars={'经济型':'2.0,2.5','舒适型':'3.0,3.5','高档型':'4.0,4.5','豪华型':'4.5,5.0'};
-  function hotelRequirement(p){return p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位：'+p.hotel_tier+'（参考星级范围 '+hotelStars[p.hotel_tier]+'）；网页真实酒店与房价未接入，只记录需求，不编造酒店名或房价。':'住宿：本次未选择。';}
+  function hotelRequirement(p){return p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位偏好：'+p.hotel_tier+'（参考星级范围 '+hotelStars[p.hotel_tier]+'）；需要住宿时调用已授权的酒店查询工具，先确认入住日期、晚数和每房人数。只展示工具返回的酒店与参考价，不编造房价。':'住宿：本次未选择。';}
   function makeQuestion(p,story,choices) {
     const duration={'0.5':'半天','1':'一天','2':'两天'}[p.days];
     return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事：'+story.title+'。':'')+

@@ -15,6 +15,43 @@ from tools.travel_business_tools import list_scenic_spots, estimate_hotel_budget
 
 router = APIRouter(prefix="/api/travel")
 
+from fastapi import HTTPException
+from fastapi.responses import FileResponse
+from pathlib import Path
+from tools.story_content import get_story_content, document_catalog
+from tools.rollinggo_tools import HotelSearch, search_hotels
+
+
+@router.post('/hotels/search')
+def web_hotels(p: HotelSearch):
+    result = search_hotels(p)
+    if result.get('status') != 'ok':
+        return {'status': 'unavailable', 'message': result.get('message', '住宿查询暂不可用'), 'data': None}
+    raw = result.get('data', {})
+    hotels = []
+    for item in raw.get('hotelInformationList', [])[:p.size]:
+        price = item.get('price') or {}
+        hotels.append({'name': item.get('name'), 'address': item.get('address'),
+                       'star_rating': item.get('starRating'), 'tags': item.get('tags') or [],
+                       'price': price.get('lowestPrice') if price.get('hasPrice') else None,
+                       'currency': price.get('currency'), 'price_note': price.get('message'),
+                       'booking_url': item.get('bookingUrl')})
+    return {'status': 'ok' if hotels else 'empty', 'message': result['message'],
+            'data': {'items': hotels, 'queried_at': result['queried_at'], 'source': result['source']}}
+
+
+@router.get('/stories/chenshou-book-history')
+def chenshou_story():
+    return get_story_content()
+
+
+@router.get('/sources/{document_id}/pdf')
+def source_pdf(document_id: str):
+    document = document_catalog().get(document_id)
+    if not document or not Path(document['path']).is_file():
+        raise HTTPException(status_code=404, detail='文献在当前电脑不可用')
+    return FileResponse(document['path'], media_type='application/pdf')
+
 from tools.amap_tools import AmapSearch, AmapRoute, search_amap_places, get_amap_route
 
 
@@ -49,8 +86,9 @@ class Preferences(BaseModel):
     rooms: int = Field(default=1, ge=1, le=50)
     group: str = "大众"
     transport: str = "待确认"
-    hotel_tier: Literal["经济型", "舒适型", "品质型"] = "舒适型"
+    hotel_tier: Literal["", "经济型", "舒适型", "品质型", "豪华型"] = "舒适型"
     notes: str = Field(default="", max_length=4000)
+    adcode: str | None = Field(default=None, pattern=r'^\d{6}$')
 
     @field_validator("date", mode="before")
     @classmethod

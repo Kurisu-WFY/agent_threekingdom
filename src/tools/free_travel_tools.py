@@ -89,61 +89,30 @@ def lookup_travel_city(city: str) -> dict:
 
 
 def get_travel_weather(city: str, travel_date: str | None = None) -> dict:
+    """前端与智能体共用高德天气，只返回供应商提供的日期。"""
+    from tools.amap_tools import request, AmapError
+    codes = {'南充': '511300', '阆中': '511381', '广元': '510800', '成都': '510100'}
+    code = codes.get(city.removesuffix('市').strip())
+    if not code:
+        return unavailable('当前支持南充、阆中、广元和成都的天气查询。')
     try:
         requested = date.fromisoformat(travel_date) if travel_date else None
-    except (ValueError, TypeError):
-        return unavailable("日期请使用 YYYY-MM-DD。")
-    location = lookup_travel_city(city)
-    if location["status"] != "ok":
-        return location
-    point = location["data"]
-    params = {"latitude": point["latitude"], "longitude": point["longitude"], "timezone": "Asia/Shanghai"}
-    weather_params = {**params, "forecast_days": 7, "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max"}
-    air_params = {**params, "current": "pm2_5,pm10"}
-    def safe_query(kind, values):
-        try:
-            return fetch(HOSTS[kind], values, 1800, kind)
-        except (httpx.HTTPError, ValueError, KeyError, TypeError, sqlite3.Error):
-            return None
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        weather_future = pool.submit(safe_query, "weather", weather_params)
-        air_future = pool.submit(safe_query, "air", air_params)
-        weather, air = weather_future.result(), air_future.result()
-    items, forecast, warnings = [], [], []
-    if weather:
-        daily = weather["payload"].get("daily", {})
-        for i, day in enumerate(daily.get("time", [])):
-            if requested and day != requested.isoformat():
-                continue
-            def value(key):
-                values = daily.get(key) or []
-                v = values[i] if i < len(values) else None
-                return v if isinstance(v, (float, int)) and math.isfinite(v) else None
-            row = {"date": day, "temperature_max_c": value("temperature_2m_max"), "temperature_min_c": value("temperature_2m_min"), "rain_probability_percent": value("precipitation_probability_max"), "uv_index_max": value("uv_index_max")}
-            if all(v is None for k, v in row.items() if k != "date"):
-                continue
-            forecast.append(row)
-            show = lambda v: "暂无数据" if v is None else str(v)
-            advice = ""
-            if row["rain_probability_percent"] is not None and row["rain_probability_percent"] >= 40:
-                advice += "建议带伞，预留室内参观备选。"
-            if row["uv_index_max"] is not None and row["uv_index_max"] >= 6:
-                advice += "建议注意防晒。"
-            items.append({"title": f"{city} · {day} 天气预报", "summary": f"最低 {show(row['temperature_min_c'])} ℃ / 最高 {show(row['temperature_max_c'])} ℃；最高降雨概率 {show(row['rain_probability_percent'])}%；最高紫外线指数 {show(row['uv_index_max'])}。{advice} 城市级模型预报，不是景区实测。", **metadata("forecast", weather["fetched_at"], "https://open-meteo.com/", "Open-Meteo 天气预报（CC BY 4.0）")})
-    if not forecast:
-        warnings.append("所选日期不在返回预报范围内，或天气服务暂不可用；未用其他日期替代。")
-    air_data = None
-    if air:
-        current = air["payload"].get("current", {})
-        units = air["payload"].get("current_units", {})
-        if current.get("time") and any(isinstance(current.get(k), (int, float)) for k in ("pm2_5", "pm10")):
-            air_data = {**current, "units": units, "timezone": "Asia/Shanghai"}
-            items.append({"title": f"{city} · 当前空气质量模型估计", "summary": f"数据时刻 {current['time']}（北京时间）；PM2.5：{current.get('pm2_5', '暂无')} {units.get('pm2_5', '')}；PM10：{current.get('pm10', '暂无')} {units.get('pm10', '')}。不是监测站实测，也不是出行日期的空气预报。", **metadata("model", air["fetched_at"], "https://open-meteo.com/en/docs/air-quality-api", "Open-Meteo / CAMS 空气质量")})
-    if air_data is None:
-        warnings.append("空气质量服务暂无有效结果。")
-    for message in warnings:
-        items.append({"title": "查询提示", "summary": message, "data_status": "pending", "updated_at": None, "sources": []})
-    return {"status": "ok" if forecast or air_data else "unavailable", "message": "；".join(warnings) or "查询成功；公共免费接口仅用于非商业 Demo，结果可能来自30分钟缓存。", "data": {"location": point, "forecast": forecast, "air_quality": air_data, "warnings": warnings, "items": items}}
+        with httpx.Client(timeout=12, follow_redirects=False) as client:
+            result = request(client, '/v3/weather/weatherInfo', {'city': code, 'extensions': 'all'})
+        forecasts = result.get('forecasts') or []
+        raw = forecasts[0] if forecasts else {}
+        rows = [item for item in raw.get('casts', []) if isinstance(item, dict) and item.get('date')]
+        now = datetime.now(timezone.utc).isoformat()
+        warnings = []
+        if requested and requested.isoformat() not in [row['date'] for row in rows]:
+            warnings.append('所选日期超出当前预报范围；下方显示供应商实际返回的日期。')
+        sources = [{'title': '高德天气预报', 'source_level': 'C', 'source_url': 'https://lbs.amap.com/api/webservice/guide/api/weatherinfo'}]
+        return {'status': 'ok' if rows else 'empty', 'message': '；'.join(warnings) or '已取得高德天气预报。',
+                'data': {'forecast': rows, 'fetched_at': now, 'reporttime': raw.get('reporttime'),
+                         'location': {'city': city, 'adcode': code}, 'sources': sources, 'warnings': warnings,
+                         'items': []}}
+    except (ValueError, TypeError, AmapError):
+        return unavailable('高德天气查询未完成，请核对日期、服务权限或稍后重试。')
 
 
 class RoadRequest(BaseModel):

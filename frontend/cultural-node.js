@@ -11,7 +11,7 @@
   const updated=r=>r?.updated_at || r?.updatedAt;
   const sources=r=>Array.isArray(r?.sources)?r.sources.filter(s=>s&&typeof s==='object'):[];
   function node(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;if(typeof content==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(content))n.setAttribute('data-trust-state','unverified');return n;}
-  function safeUrl(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}
+  function safeUrl(raw){try{const u=new URL(raw,window.location?.href);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}
   function dated(r){return typeof updated(r)==='string'&&/(Z|[+-]\d{2}:\d{2})$/.test(updated(r))&&Number.isFinite(Date.parse(updated(r)));}
   function evidence(r){return ['maintained','live'].includes(status(r))&&dated(r)&&sources(r).some(s=>['A','B'].includes(s.source_level)&&['maintained','live'].includes(status(s))&&safeUrl(s.source_url));}
   const usableRecord=r=>evidence(r)&&typeof r?.text==='string'&&!!r.text.trim();
@@ -34,15 +34,15 @@
     const usable=usableRecord(record);
     const block=node(usable?'section':'details','node-evidence '+kind+(usable?'':' node-empty'));
     block.append(node(usable?'h4':'summary','',title+(usable?'':' · 资料待补充')));
-    block.append(node('p','node-evidence-label',kind==='node-inference'?'合理推断 · 非史料原文':kind==='node-literature'?'文学表达 · 不等于历史事实':'史料记载'));
+    block.append(node('p','node-evidence-label',kind==='node-research'?'现代研究解读 · 观点归属论文作者':kind==='node-inference'?'合理推断 · 非史料原文':kind==='node-literature'?'文学表达 · 不等于历史事实':'史料记载'));
     block.append(node('p','',usable?record.text:kind==='node-literature'?'尚未补充可核对的文学文本/版本出处':missing));
     block.append(provenance(record,kind==='node-literature'?'文学文本来源':'史料来源'));return block;
   }
   function renderReading(){
     const chapter=context.chapter || {}, box=$('#node-reading-content');
     box.replaceChildren(node('h3','','建筑与历史资料'));
-    const narrative={...chapter,text:['record','inference','literature'].includes(chapter.narrative_type)?chapter.story:''};
-    box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
+    const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter.narrative_type)?chapter.story:''};
+    box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='research'?'node-research':chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
     if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));
     else box.append(emptyBlock('章节说明 · 资料待补充','章节与地点的关联、参观理由仍需资料支持。'));
     if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,'node-history'),recordBlock('人物关系',chapter.relationships,'node-history'));
@@ -101,7 +101,7 @@
     $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';
     const locationNote=(context.note || '地点待定位，不猜景区位置。').replace(/^坐标待核验(?:\s*\/\s*景区待定位)?\s*·\s*/, '');
     $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
-    const narrative={...chapter,text:['record','inference','literature'].includes(chapter?.narrative_type)?chapter.story:''};
+    const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter?.narrative_type)?chapter.story:''};
     const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);
     $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，缺资料的部分已收起，展开后可以查看核验说明。':'资料概况：已有来源的正文在下方，可以逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
     if(sources(chapter).length)$('#node-metadata').append(provenance(chapter));
