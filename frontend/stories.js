@@ -186,7 +186,12 @@
     payload.places.forEach(place=>{const target=window.SGT_PLACES.find(p=>p.id===place.id);if(target)Object.assign(target,place);});
     window.SGT_PLACES.forEach((place,index)=>{const summary=$('#story-buildings').children[index]?.querySelector('p');if(summary&&place.overview?.data_status==='maintained')summary.textContent='已有论文文化介绍 · 详细史实与景区入口另行核验';});
     const card=$('#story-cards').children[0]?.children[0];
-    if(card){card.querySelector('.story-card-end').textContent='预览章节与地点';card.append(facts(story,true),node('span','story-summary',story.summary));}
+    if(card){
+      const end=card.querySelector('.story-card-end');end.textContent='预览章节与地点';
+      card.querySelector('.story-facts').replaceChildren(...facts(story,true).children);
+      const summary=card.querySelector('.story-summary')||node('span','story-summary');
+      summary.textContent=story.summary||'';card.insertBefore(summary,end);
+    }
     const disclosure=$('#story-cards').parentElement.querySelector('.story-disclosure');
     if(disclosure)disclosure.textContent='陈寿编书史：以论文为依据的三章阅读，附文献与PDF页码。';
     select(selected,false);if(previewStory)preview(selected);return true;

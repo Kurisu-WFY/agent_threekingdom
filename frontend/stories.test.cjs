@@ -2,10 +2,12 @@ const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/st
 class Element {
   constructor(tag='div'){this.tag=tag;this.children=[];this.dataset={};this.attrs={};this.handlers={};this.textContent='';}
   append(...nodes){this.children.push(...nodes);} replaceChildren(...nodes){this.children=nodes;}
+  querySelector(selector){return this.children.find(n=>n.className===selector.slice(1))||null;}
+  insertBefore(element,before){this.children=this.children.filter(n=>n!==element);this.children.splice(this.children.indexOf(before),0,element);}
   setAttribute(k,v){this.attrs[k]=v;} addEventListener(k,fn){this.handlers[k]=fn;}
 }
 function setup(fail=false,mutation=''){
-  const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
+ const nodes=new Map(),get=s=>{if(!nodes.has(s)){const element=new Element();element.parentElement=new Element();element.parentElement.append(Object.assign(new Element(),{className:'story-disclosure'}));nodes.set(s,element);}return nodes.get(s);};
   const requests=[],views=[],questions=[],nodeCalls=[];
   const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{describePlace:(place,chapter)=>({place,chapter}),open:id=>mapCalls.push(id),exit:()=>mapCalls.push('exit')},CulturalNode:{open:payload=>nodeCalls.push([payload.place.id,payload.returnTo,payload.chapter.name,payload.index]),openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
   const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v),fetch:url=>{requests.push(url);return fail?Promise.reject(Error('offline')):Promise.resolve({ok:true,json:()=>Promise.resolve({cities:[{d:'M0 0L1 1Z'}]})});}};
@@ -35,6 +37,12 @@ const walk=n=>[n,...n.children.flatMap(walk)];
  t.get('#story-ask').handlers.click();assert.match(t.questions.at(-1),/陈寿编书史/);
  t.window.SGTStoryUI.openStory('retired', {id:'retired',title:'旧故事',chapters:[]});assert.equal(t.get('#story-title').textContent,'陈寿编书史','saved unknown story cannot resurrect catalog entry');
  const html=fs.readFileSync(__dirname+'/index.html','utf8');assert.doesNotMatch(html,/story-phase-filters|story-filter-status|story-scroll-prev|story-scroll-next|journal-recommendation|五条主题/);
+ // 内容重复加载只能更新原有信息块，简介在操作提示之前，进度节点保持订阅。
+ const live=setup(),liveStory=live.window.SGT_STORIES[0],liveCard=live.get('#story-cards').children[0].children[0],seal=liveCard.querySelector('.story-progress-seal');
+ const payload={story:{...liveStory,people:['陈寿','谯周'],areas:['南充'],summary:'以教师论文阅读陈寿的师承、著述与争议。',chapters:[{name:'测试章节',placeId:'wanjuanlou'}]},places:live.window.SGT_PLACES};
+ assert.equal(live.window.SGTStoryUI.installContent(payload),true);assert.equal(live.window.SGTStoryUI.installContent(payload),true);
+ assert.equal(liveCard.children.filter(n=>n.className==='story-facts').length,1);assert.equal(liveCard.children.filter(n=>n.className==='story-summary').length,1);
+ assert.ok(liveCard.children.indexOf(liveCard.querySelector('.story-summary'))<liveCard.children.indexOf(liveCard.querySelector('.story-card-end')));assert.equal(liveCard.querySelector('.story-progress-seal'),seal);
  assert.equal(t.window.SGTStoryUI.matchesPhase,undefined);
  // Same-id adapter content is explicit, independently supplied test data.
  const adapted={...story,chapters:[{name:'适配口测试夹具章',placeId:'zhaohua'}]};
