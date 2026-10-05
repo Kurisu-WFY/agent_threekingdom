@@ -25,7 +25,7 @@ def _catalog(path, modified, content_modified):
     for record in payload.get('records', []):
         chunk = record.get('chunk', {})
         key = chunk.get('document_id')
-        if key and chunk.get('source_file'):
+        if key and chunk.get('source_file') and Path(chunk['source_file']).suffix.lower() == '.pdf':
             documents.setdefault(key, {'title': chunk.get('title'), 'path': chunk['source_file'], 'pages': set()})['pages'].add(chunk.get('pdf_page'))
     # 精选正文可引用尚未向量化的PDF，但只从已有可信目录读取清单中的文件并核对摘要。
     roots = {Path(document['path']).parent for document in documents.values()}

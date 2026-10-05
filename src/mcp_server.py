@@ -202,7 +202,8 @@ async def call_tool(name: str, arguments: dict):
     if name == "get_road_route":
         return as_text(await asyncio.to_thread(get_road_route, **arguments))
     if name == "retrieve_culture_knowledge":
-        hits, report = HybridRetriever().retrieve(arguments["query"], arguments.get("intent"))
+        # 本地模型初始化与推理在工作线程执行，避免阻塞MCP协议的事件循环。
+        hits, report = await asyncio.to_thread(lambda: HybridRetriever().retrieve(arguments["query"], arguments.get("intent")))
         return as_text({"context": format_context(hits), "recall_report": report.model_dump()})
     if name == "answer_travel_question":
         history = arguments.get("history")

@@ -1,4 +1,5 @@
 from san_guo_core.settings import get_settings
+import re
 from san_guo_core.models import KnowledgeChunk, RetrievalHit
 try:
     from .embeddings import cosine
@@ -63,7 +64,20 @@ class HybridRetriever:
                 if chunk.category == 'dispute' and chunk.id not in merged:
                     merged[chunk.id] = RetrievalHit(chunk=chunk, matched_query=query)
         candidates = list(merged.values())
-        if hometown_dispute:
+        # 明确要求某书原文时优先呈现该书的原文，不让大量论文转述挤掉指定出处。
+        requested_originals = {
+            chunk.id for chunk in self.vector_store.all_chunks()
+            if '原文' in query and chunk.category == 'primary_source'
+            and any(book in query for book in re.findall(r'《([^》]+)》', chunk.title))
+        }
+        if requested_originals:
+            present = {hit.chunk.id for hit in candidates}
+            candidates.extend(RetrievalHit(chunk=chunk, matched_query=query)
+                              for chunk in self.vector_store.all_chunks()
+                              if chunk.id in requested_originals and chunk.id not in present)
+            ranked = rerank(query, candidates, top_n=len(candidates))
+            reranked = [hit for hit in ranked if hit.chunk.id in requested_originals] + [hit for hit in ranked if hit.chunk.id not in requested_originals]
+        elif hometown_dispute:
             ranked = rerank(query, candidates, top_n=len(candidates))
             selected, documents = [], set()
             for hit in ranked:

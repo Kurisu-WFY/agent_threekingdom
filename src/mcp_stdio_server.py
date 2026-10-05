@@ -23,4 +23,10 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    # Windows数值库在协议读写线程启动前初始化，避免首次检索时才加载原生依赖。
+    from san_guo_core.settings import get_settings
+    settings = get_settings()
+    if settings.embedding_backend.lower() == 'bge':
+        from rag.bge_store import BGEVectorStore
+        BGEVectorStore(settings.vector_store_path).model
     asyncio.run(main())

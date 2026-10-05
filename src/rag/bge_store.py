@@ -14,6 +14,11 @@ QUERY_PREFIX = "为这个句子生成表示以用于检索相关文章："
 
 @lru_cache(maxsize=1)
 def load_model(path: str, device: str):
+    import os
+    # 控制本地数值库线程数，避免Windows客户端启动时争用过多线程。
+    os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
+    os.environ.setdefault('OMP_NUM_THREADS', '4')
+    os.environ.setdefault('MKL_NUM_THREADS', '4')
     import torch
     from sentence_transformers import SentenceTransformer
     torch.set_num_threads(4)
