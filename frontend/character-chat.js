@@ -41,10 +41,11 @@
     const discover=Boolean(discovered), theme=discover?window.SGT_STORIES?.find(s=>s.id===themes[discovered].story):null, city=themes[discovered]?.city;
     if(discover){chat.characterNotice='已匹配“'+(theme?.title||discovered+'相关历史文化')+'”，地图预选'+city+'；阅读视图保持，可在回答中选择进入。';window.TravelMap?.focusMention(city,{reveal:false});}
     const persona='陈寿',c=context();
-    const snapshot='【人物视角：'+persona+'】'+guideStyle+' 讲解模式：'+getMode()+'；当前故事：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。';
+    const reading=c.chapter?.narrative_type==='research'&&reliable(c.chapter)?' 当前章节论文解读：'+c.chapter.story+'；对应文献：'+sources(c.chapter).map(s=>s.title).join('；')+'。现代研究观点须归属作者，不能声称为正史原文。':'';
+    const snapshot='【人物视角：'+persona+'】'+guideStyle+' 讲解模式：'+getMode()+'；当前故事：'+(c.story?.title||'未选择')+'；当前章节：'+(c.chapter?.name||'未选择')+'；当前地点：'+(c.place?.name||'未选择')+'。'+reading;
     if(compare&&window.CulturalNode?.getContext())window.CulturalNode.compare();
     const rules='这是AI人物解读，不是本人原话。按问题需要区分史料、推断与演义，不机械输出空栏目；史料有出处时提供实际来源，C级不能独立支撑史实。不编造引文或把演义当亲历。背景只作辅助，当前用户问题优先，不要复述内部背景。';
-    return {persona,discovered,storyId:c.story?.id,mode:backendMode(),context:snapshot+rules+(window.ChenshouGuide?.requestContext(text)||'')+(discover?' 请介绍“'+(theme?.title||'人物故事主题')+'”主题，说明章节和史料仍待补充，并询问游客可用时间（半天/一天/两天）。':''),question:text,preserveMap:compare||discover,action:discover?'discover':compare?'compare':null};
+    return {persona,discovered,storyId:c.story?.id,mode:backendMode(),context:snapshot+rules+(window.ChenshouGuide?.requestContext(text)||'')+(discover?' 请介绍“'+(theme?.title||'人物故事主题')+'”主题，'+(theme?.chapters?.length?'目前已有论文阅读章节，不要说章节尚未补充。':'章节尚未加载，可先检索文化资料。')+'询问游客可用时间（半天/一天/两天）。':''),question:text,preserveMap:compare||discover,action:discover?'discover':compare?'compare':null};
   }
   function url(raw){try{const u=new URL(raw);return ['http:','https:'].includes(u.protocol)?u.href:null;}catch(_){return null;}}
   function sources(record){return Array.isArray(record?.sources)?record.sources.filter(s=>s&&typeof s==='object'):[];}
@@ -77,8 +78,8 @@
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));
       const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
-      box.append(node('p','',title+'：'+(story?'章节与史料待补充。':'人物文化讲解，史料与地点关联待核验。')+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));if(story)box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)));box.append(button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
-    if(message.characterAction==='discover')box.append(node('p','',themes[message.discovered]?.story?'故事资料 · 章节待补充，可先了解主题。':'人物文化 · 可在地图中查看关联地点，路线不会自动修改。'));
+      box.append(node('p','',title+'：'+(story?.chapters?.length?'已提供论文阅读章节，可查看文献出处。':story?'章节与史料待补充。':'人物文化讲解，史料与地点关联待核验。')+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));if(story)box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)));box.append(button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
+    if(message.characterAction==='discover')box.append(node('p','',themes[message.discovered]?.story?(window.SGT_STORIES?.find(s=>s.id===themes[message.discovered].story)?.chapters?.length?'故事资料 · 已有论文阅读章节，实际行程需另行规划。':'故事资料 · 章节待补充，可先了解主题。'):'人物文化 · 可在地图中查看关联地点，路线不会自动修改。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
     if(message.storyId&&(window.SGT_STORIES?.some(s=>s.id===message.storyId&&s.chapters?.length)||context().story?.id===message.storyId&&context().story?.chapters?.length)&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     return box;

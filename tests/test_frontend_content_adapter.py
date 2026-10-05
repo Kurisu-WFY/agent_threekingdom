@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from travel_api import router, Preferences
+from unittest.mock import patch
+from tools.story_content import get_story_content
 
 
 def test_new_frontend_preferences():
@@ -20,3 +22,29 @@ def test_story_links_and_unknown_document():
         assert 'references' not in chapter
         assert 'source_file' not in str(chapter)
     assert client.get('/api/travel/sources/unknown/pdf').status_code == 404
+
+
+def test_nested_content_references():
+    payload = get_story_content()['data']
+    for chapter in payload['story']['chapters']:
+        assert chapter['people'] and chapter['events']
+        for record in [chapter['compilation'], chapter['relationships'], *chapter.get('disputes', [])]:
+            assert record['narrative_type'] == 'research'
+            assert record['data_status'] == 'maintained'
+            assert record['sources']
+            assert 'references' not in record
+            assert all(s['pdf_page'] > 0 and '/pdf#page=' in s['source_url'] for s in record['sources'])
+        assert 'history' not in chapter and 'romance' not in chapter
+    assert len(payload['story']['chapters'][2]['disputes']) == 2
+    assert all(place['coordinates'] is None for place in payload['places'])
+    assert all(s['source_level'] == 'C' for place in payload['places'] if place['id'] != 'micangdao' for s in place['overview']['sources'])
+    assert next(p for p in payload['places'] if p['id'] == 'micangdao')['overview']['sources'][0]['pdf_page'] == 16
+
+
+def test_missing_index_does_not_promote_nested_content():
+    with patch('tools.story_content.document_catalog', return_value={}):
+        payload = get_story_content()['data']
+    for chapter in payload['story']['chapters']:
+        assert chapter['data_status'] == 'pending'
+        for record in [chapter['compilation'], chapter['relationships'], *chapter.get('disputes', [])]:
+            assert record['data_status'] == 'pending' and record['sources'] == []

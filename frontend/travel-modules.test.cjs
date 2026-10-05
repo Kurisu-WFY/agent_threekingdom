@@ -150,7 +150,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.doesNotMatch(activity.o.displayText,/只输出|只调整|不要编造|必须|合计上限/);
  assert.match(activity.q,/无依据标待核验.*不要编造实时/,'U01 constraints remain in request');
  assert.equal(views.at(-1),'planner','U03 generation does not jump away from editable form');
- assert.match(activity.q,/住宿.*舒适型.*3.0,3.5.*未接入/);
+ assert.match(activity.q,/住宿.*舒适型.*3.0,3.5.*酒店查询工具/);
  assert.match(activity.o.displayText,/舒适型/);
  assert.doesNotMatch(activity.q,/房间数|预算|交通方式|规划旅游路线/);
  assert.ok(activity.o.activityPlan);

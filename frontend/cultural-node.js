@@ -41,11 +41,16 @@
   function renderReading(){
     const chapter=context.chapter || {}, box=$('#node-reading-content');
     box.replaceChildren(node('h3','','建筑与历史资料'));
+    const overview=context.place?.overview;
+    if(overview?.text&&['maintained','live'].includes(status(overview))&&dated(overview)&&sources(overview).some(s=>safeUrl(s.source_url))){
+      const clue=node('section','node-evidence node-clue');
+      clue.append(node('h4','','地点文化线索'),node('p','node-evidence-label','旅游研究线索 · 不独立证明史实'),node('p','',overview.text),provenance(overview,'旅游研究来源'));box.append(clue);
+    }
     const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter.narrative_type)?chapter.story:''};
     box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='research'?'node-research':chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
     if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));
     else box.append(emptyBlock('章节说明 · 资料待补充','章节与地点的关联、参观理由仍需资料支持。'));
-    if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,'node-history'),recordBlock('人物关系',chapter.relationships,'node-history'));
+    if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,chapter.compilation?.narrative_type==='research'?'node-research':'node-history'),recordBlock('人物关系',chapter.relationships,chapter.relationships?.narrative_type==='research'?'node-research':'node-history'));
     if(mode==='亲子故事版')box.append(node('p','node-question','哪句话有史料依据，哪句话只是文学表达？可以和孩子聊聊。无法核实时，不替古人编台词。'));
     const inferences=Array.isArray(chapter.inferences)?chapter.inferences:[];
     if(inferences.length)box.append(node('h3','','合理推断'));
@@ -70,7 +75,7 @@
     if(!hasDifference&&sources(chapter.differences).length)difference.children[0].append(provenance(chapter.differences));
     const disputes=$('#node-disputes'),opinions=Array.isArray(chapter.disputes)?chapter.disputes:[];
     disputes.replaceChildren(...(opinions.length?[node('h3','',opinions.length>1?'存在不同说法':'学术争议资料')]:[emptyBlock('学术争议 · 资料待补充','当前资料中未找到可靠记载；不能据此断言不存在争议。')]));
-    opinions.forEach((r,i)=>disputes.append(recordBlock('说法 '+(i+1),r,'node-history')));
+    opinions.forEach((r,i)=>disputes.append(recordBlock('说法 '+(i+1),r,r.narrative_type==='research'?'node-research':'node-history')));
   }
   function tourism(){
     const area=$('#node-tourism');area.replaceChildren(node('h3','','出行信息 · 与历史史料分开核验'));

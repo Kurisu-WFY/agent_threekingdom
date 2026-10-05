@@ -7,7 +7,7 @@ class Element {
 function setup(fail=false,mutation=''){
   const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
   const requests=[],views=[],questions=[],nodeCalls=[];
-  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{open:id=>mapCalls.push(id),exit:()=>mapCalls.push('exit')},CulturalNode:{openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
+  const mapCalls=[];const window={SGTJourney:{ask:q=>questions.push(q)},StoryMap:{describePlace:(place,chapter)=>({place,chapter}),open:id=>mapCalls.push(id),exit:()=>mapCalls.push('exit')},CulturalNode:{open:payload=>nodeCalls.push([payload.place.id,payload.returnTo,payload.chapter.name,payload.index]),openPlace:(id,options)=>nodeCalls.push([id,options.returnTo])}};
   const ctx={window,document:{querySelector:get,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t)},showContentView:v=>views.push(v),fetch:url=>{requests.push(url);return fail?Promise.reject(Error('offline')):Promise.resolve({ok:true,json:()=>Promise.resolve({cities:[{d:'M0 0L1 1Z'}]})});}};
   vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);
   vm.runInNewContext(fs.readFileSync(__dirname+'/stories.js','utf8').replace('  const progress =',mutation+'\n  const progress ='),ctx);
@@ -46,6 +46,7 @@ const walk=n=>[n,...n.children.flatMap(walk)];
  const multi=setup(false,'window.SGT_STORIES = ['+JSON.stringify(fixture)+'];');const mc=multi.get('#story-cards').children[0].children[0];mc.handlers.click();
  assert.equal(multi.get('#preview-story-open').disabled,false);multi.get('#preview-story-open').handlers.click();assert.deepEqual(multi.mapCalls,['fixture-chapters']);
  multi.get('#preview-detail-open').handlers.click();const chapterButtons=walk(multi.get('#story-detail-sidebar')).filter(n=>n.tag==='button'&&n.textContent==='阅读地点资料');assert.equal(chapterButtons.length,3);chapterButtons[0].handlers.click();assert.equal(multi.nodeCalls[0][1],'story');
+ chapterButtons[2].handlers.click();assert.equal(multi.nodeCalls.at(-1)[2],'夹具第3幕');assert.equal(multi.nodeCalls.at(-1)[3],2,'阅读按钮保留所选章节，不按地点跳回首章');
  multi.get('#story-map-open').handlers.click();assert.equal(multi.mapCalls.at(-1),'fixture-chapters');
  const ps=multi.window.StoryProgress,state=ps.get(multi.window.SGT_STORIES[0]);state.started=true;state.completed=new Set([0,1,2]);ps.save(multi.window.SGT_STORIES[0]);assert.match(contents(multi.get('#story-detail-content')),/这条故事已读完/);assert.doesNotMatch(contents(multi.get('#story-detail-content')),/接着读：/);assert.equal(multi.get('#story-cards').children[0].dataset.progress,'已寻迹');
  const shapes=['tower','shrine','pass','wall','road'].map(k=>t.window.SGTStoryUI.icon(k));assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);assert.ok(shapes.every(svg=>svg.children.length===3));assert.equal(t.get('#story-buildings').children.length,5);

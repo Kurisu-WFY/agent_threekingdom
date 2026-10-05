@@ -23,6 +23,13 @@ state.mode='亲子故事版';window.StoryProgress.save(story);assert.equal(api.g
 click('#node-ask');assert.match(asks.at(-1).q,/测试关楼/);assert.match(asks.at(-1).q,/合理推断/);assert.match(asks.at(-1).q,/学术探索版/);assert.equal(state.current,1);assert.match(asks.at(-1).o.displayText,/测试关楼/);assert.ok(!asks.at(-1).o.displayText.includes('必须分段'));
 click('#node-compare');assert.ok(get('#node-comparison-title').focused);assert.ok(get('#node-comparison-title').scrolled);
 const record=t=>({text:t,data_status:'maintained',updated_at:'2026-09-18T09:00:00+08:00',sources:[{title:'测试用来源',source_level:'A',source_url:'https://example.org/reference',data_status:'maintained'}]});
+const research={...chapter,...record(''),narrative_type:'research',story:'作者对写作方法的研究',compilation:{...record('编纂研究正文'),narrative_type:'research'},relationships:{...record('师承关系研究'),narrative_type:'research'},disputes:[{...record('作者甲的判断'),narrative_type:'research'},{...record('作者乙的判断'),narrative_type:'research'}]};
+api.open({place,chapter:research,story,index:1});
+api.changeMode('学术探索版');
+assert.match(text(get('#node-reading-content')),/现代研究解读.*编纂研究正文/);
+assert.match(text(get('#node-reading-content')),/师承关系研究/);
+assert.match(text(get('#node-disputes')),/现代研究解读.*作者甲的判断/);
+assert.ok(!text(get('#node-comparison')).includes('作者对写作方法的研究'),'论文正文不自动填入正史栏目');
 const enriched={...chapter,narrative_type:'record',story:'受支持正文',...record(''),history:record('史料侧测试文本'),romance:record('文学侧测试文本'),differences:record('差异测试文本'),disputes:[record('观点甲'),record('观点乙')],inferences:[record('推断测试文本')]};
 api.open({place:{...place,travel:{ticket:{...record(''),data_status:'live',tool_source:'测试工具',amount:0}}},chapter:enriched,story,index:1,exact:false,point:{name:'县级驻地'}});
 assert.match(text(get('#node-comparison')),/史料侧测试文本/);assert.match(text(get('#node-comparison')),/文学侧测试文本/);assert.match(text(get('#node-differences')),/差异测试文本/);assert.match(text(get('#node-disputes')),/存在不同说法/);

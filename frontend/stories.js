@@ -98,7 +98,7 @@
         node('p','story-disclosure','向陈寿了解本章故事与出处'));
       [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));
       if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
-      if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.openPlace(place.id,{returnTo:'story'})));
+      if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.open({...window.StoryMap.describePlace(place,c),story,chapter:c,index:i,returnTo:'story'})));
       if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
       axis.append(li);
     });
@@ -184,6 +184,7 @@
     if(story.chapters.some(c=>!c.name||!payload.places.some(p=>p.id===c.placeId)))return false;
     Object.assign(window.SGT_STORIES[0],story);
     payload.places.forEach(place=>{const target=window.SGT_PLACES.find(p=>p.id===place.id);if(target)Object.assign(target,place);});
+    window.SGT_PLACES.forEach((place,index)=>{const summary=$('#story-buildings').children[index]?.querySelector('p');if(summary&&place.overview?.data_status==='maintained')summary.textContent='已有论文文化介绍 · 详细史实与景区入口另行核验';});
     const card=$('#story-cards').children[0]?.children[0];
     if(card){card.querySelector('.story-card-end').textContent='预览章节与地点';card.append(facts(story,true),node('span','story-summary',story.summary));}
     const disclosure=$('#story-cards').parentElement.querySelector('.story-disclosure');

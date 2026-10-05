@@ -50,6 +50,14 @@
     // 只有来源明确可靠的记录才能进入史实层。
     const record=c.chapter?.history;
     if(record?.text&&window.CharacterChat.reliable(record))box.append(window.CharacterChat.answer({persona:'陈寿',text:record.text,data:{evidence_segments:[{...record,type:'history'}]}}));
+    else if(c.chapter?.narrative_type==='research'&&c.chapter.story&&window.CharacterChat.reliable(c.chapter)){
+      box.append(node('p','本章论文解读 · 非正史原文'),node('p',c.chapter.story));
+      (c.chapter.sources||[]).forEach(source=>{
+        const row=node('p',source.title);
+        try{const url=new URL(source.source_url);if(['http:','https:'].includes(url.protocol)){const a=node('a','查看文献');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';row.append(a);}}catch(_){}
+        box.append(row);
+      });
+    }
     else box.append(node('p','本章史料摘要：当前资料中未找到可靠记载。章节模板仅作行旅引导，不能代替史实。'));
     $('#guide-actions').replaceChildren();
     action('这一章有什么可靠史料？',()=>window.SGTJourney.ask('请讲解当前章节“'+(c.chapter?.name||c.place?.name||'待关联')+'”，列出可靠史料；缺资料请明确说明。'));
