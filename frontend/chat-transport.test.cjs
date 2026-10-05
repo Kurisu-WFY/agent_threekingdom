@@ -15,8 +15,10 @@ function response(events, crlf=false) {
     const result=await request({message:'陈寿'}, e=>seen.push(e), async()=>response([
       {type:'session',session_id:'opaque'}, {type:'delta',text:'南充'},
       {type:'tool',name:'list_scenic_spots',status:'FINISHED'},
+      {type:'review',stage:'checking',message:'正在核对史料出处…'},
       {type:'result',data:{answer:'南充景点',session_id:'opaque'}}],crlf));
     assert.equal(result.answer,'南充景点');assert.equal(seen[1].text,'南充');
+    assert.equal(seen.find(event=>event.type==='review').stage,'checking');
   }
   await assert.rejects(request({},()=>{},async()=>response([{type:'delta',text:'未完成'}])),/完整回答/);
   await assert.rejects(request({},()=>{},async()=>response([{type:'error',message:'测试失败'}])),/测试失败/);

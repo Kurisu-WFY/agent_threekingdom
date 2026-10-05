@@ -160,7 +160,7 @@ function bubbleNode(message) {
   if (message.pending) {
     bubble.className = 'bubble typing';
     bubble.setAttribute('aria-label', '陈寿正在整理回答，请稍候');
-    bubble.textContent = '陈寿正在整理回答，请稍候';
+    bubble.textContent = message.progress || '陈寿正在整理回答，请稍候';
   } else {
     bubble.className = 'bubble';
     if (message.role === 'assistant' && message.persona && !message.error && window.CharacterChat) bubble.append(window.CharacterChat.answer(message));
@@ -208,6 +208,19 @@ function messageNode(message) {
     body.append(retry);
   }
   if (message.data) {
+    if (message.data.reflection) {
+      const check = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = '核查与修订说明';
+      check.append(summary);
+      const note = document.createElement('p');
+      note.textContent = message.data.reflection.summary;
+      check.append(note);
+      for (const text of [...(message.data.reflection.actions || []), ...(message.data.reflection.remaining || [])]) {
+        const line = document.createElement('p'); line.textContent = text; check.append(line);
+      }
+      body.append(check);
+    }
     body.append(metaNode(message.data));
     const route = message.data.intent?.intent === 'route_planning' && message.data.route?.found === true && message.data.route.route;
     if (route) body.append(routeCard(route, message.data.route.stops));
@@ -561,11 +574,12 @@ function requestReply(chat, reply) {
     if (event.type === 'session') chat.sessionId = event.session_id;
     if (event.type === 'delta') reply.streamText += event.text;
     if (event.type === 'tool') reply.progress = '正在整理回答，请稍候…';
-    if (chats[active] === chat && ['session','delta','tool'].includes(event.type)) {
+    if (event.type === 'review') reply.progress = event.message;
+    if (chats[active] === chat && ['session','delta','tool','review'].includes(event.type)) {
       // 只更新等待中的消息气泡，保留输入框焦点和地图状态。
       const index = chat.messages.indexOf(reply);
       const bubble = messages.children[index]?.querySelector('.bubble');
-      if (bubble) bubble.textContent = '正在整理回答，请稍候…';
+      if (bubble) { bubble.textContent = reply.progress || '正在整理回答，请稍候…'; bubble.setAttribute('aria-live', 'polite'); }
       messages.scrollTop = messages.scrollHeight;
     }
   }, reply.storyId)

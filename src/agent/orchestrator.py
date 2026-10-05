@@ -10,6 +10,7 @@ from planning.route_planner import plan_route
 from rag.hybrid_retriever import HybridRetriever
 from rag.document_evidence import retrieve_document_evidence
 from tools.travel_business_tools import get_spot_ticket, plan_budget
+from agent.reflection import reflection_events
 
 
 class TravelAgentService:
@@ -18,6 +19,26 @@ class TravelAgentService:
         self.answer_chain = AnswerChain()
 
     def answer(self, message: str, mode: str = "大众", history: list[dict] | None = None) -> dict:
+        for event in self.answer_events(message, mode, history):
+            if event['type'] == 'result':
+                return event['data']
+        raise RuntimeError('未生成最终回答')
+
+    def lookup_evidence(self, query: str):
+        return retrieve_document_evidence(self.hybrid_retriever, query)
+
+    def answer_events(self, message: str, mode: str = '大众', history: list[dict] | None = None):
+        result = self._answer(message, mode, history)
+        if result['intent']['intent'] not in ('culture_qa', 'history_vs_romance'):
+            yield {'type': 'result', 'data': result}
+            return
+        def revise(prompt, hits):
+            from rag.recall_checker import inspect_recall
+            return self.answer_chain.run_result(prompt, route_intent(message), hits,
+                inspect_recall(message, hits, hits), mode=mode, history=history or [])
+        yield from reflection_events(message, result, self.lookup_evidence, revise)
+
+    def _answer(self, message: str, mode: str = "大众", history: list[dict] | None = None) -> dict:
         intent = route_intent(message)
         if intent.intent == "route_planning":
             route_result = plan_route(message, mode=mode)

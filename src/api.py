@@ -28,6 +28,14 @@ app.add_middleware(
 
 service = TravelAgentService()
 nuwax = NuwaxClient()
+nuwax.reflection_lookup = service.lookup_evidence
+
+
+@app.on_event('startup')
+async def preload_evidence_model():
+    # Windows原生数值库必须在主线程、协议工作线程启动前加载，防止首次核查卡住。
+    if get_settings().embedding_backend == 'bge':
+        service.hybrid_retriever.vector_store.model
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.include_router(travel_router)
 from amap_map_api import router as amap_map_router
@@ -78,7 +86,8 @@ def chat_stream(request: ChatRequest):
         if nuwax.configured and request.route_preferences is None:
             events = nuwax.events(request.message, request.mode, request.session_id, request.history, request.story_id)
         else:
-            events = [{'type': 'result', 'data': chat(request)}]
+            events = ([{'type': 'result', 'data': chat(request)}] if request.route_preferences is not None
+                      else service.answer_events(request.message, request.mode, request.history))
         for event in events:
             yield 'data: ' + json.dumps(event, ensure_ascii=False) + '\n\n'
     return StreamingResponse(stream(), media_type='text/event-stream',

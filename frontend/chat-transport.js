@@ -3,7 +3,7 @@
   async function request(payload, onEvent = () => {}, fetcher = fetch) {
     const response = await fetcher('/chat/stream', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload), signal: AbortSignal.timeout(310000)
+      body: JSON.stringify(payload), signal: AbortSignal.timeout(550000)
     });
     if (!response.ok) throw new Error('聊天服务请求失败（HTTP ' + response.status + '）。');
     if (!response.body) throw new Error('浏览器无法读取流式回答。');

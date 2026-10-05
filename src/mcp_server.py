@@ -20,6 +20,7 @@ from planning.route_planner import plan_route
 from tools.free_travel_tools import get_travel_weather, lookup_travel_city, get_road_route, RoadRequest
 from rag.hybrid_retriever import HybridRetriever, format_context
 from rag.document_evidence import retrieve_document_evidence, reference_catalog, document_key
+from agent.reflection import audit_answer, review_plan
 from tools.travel_business_tools import (
     estimate_hotel_budget,
     get_spot_ticket,
@@ -39,6 +40,8 @@ from planning.nanchong_itinerary import get_nanchong_travel_catalog, plan_nancho
 @server.list_tools()
 async def list_tools():
     return [
+        Tool(name='review_culture_answer', description='对文化回答初稿实际核对出处、引文和不同观点覆盖。返回issues及补查query；有问题先补检索再修订，最多两轮。不代表全部史实已验证。', inputSchema={'type':'object','properties':{'query':{'type':'string'},'draft':{'type':'string','maxLength':20000}},'required':['query','draft']}),
+        Tool(name='review_travel_plan', description='核对结构化行程的时长、未知交通、费用及预算；有问题调整后再查，最多两轮。不验证实时路况或空房。', inputSchema={'type':'object','properties':{'plan':{'type':'object','properties':{'segments':{'type':'array','items':{'type':'object','properties':{'minutes':{'type':['number','null'],'minimum':0}}}},'costs':{'type':'array','items':{'type':['number','null'],'minimum':0}}}},'available_minutes':{'type':['number','null'],'minimum':0},'budget_limit':{'type':['number','null'],'minimum':0}},'required':['plan']}),
         Tool(name='get_hotel_service_status', description='检查本机住宿查询授权状态，不返回账号或凭据。', inputSchema={'type':'object','properties':{}}),
         Tool(name='search_rollinggo_hotels', description='真实酒店搜索与参考房价查询。明确目的地、入住日期、晚数、成人数后调用；不能用住宿预算档位冒充报价。逐家中文展示名称、星级、参考价、设施和真实图片链接，不展示内部ID。不进行预订。', inputSchema=HotelSearch.model_json_schema()),
         Tool(name='get_rollinggo_hotel_detail', description='使用酒店搜索真实返回的ID查询可售房型、价格与取消政策，日期及人数与用户条件保持一致。只查询，不锁价或下单。对用户展示中文房型、币种、总价/每晚价格与退改规则。', inputSchema=HotelDetail.model_json_schema()),
@@ -178,6 +181,13 @@ def as_text(data) -> list[TextContent]:
 
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
+    if name == 'review_culture_answer':
+        hits, report = await asyncio.to_thread(lambda: retrieve_document_evidence(HybridRetriever(), arguments['query']))
+        issues = audit_answer(arguments['query'], arguments['draft'], hits)
+        return as_text({'status': 'needs_revision' if issues else 'checked', 'issues': issues,
+                        'references': reference_catalog(hits), 'summary': '仅核对规则性风险与已返回出处，不验证全部历史语义。'})
+    if name == 'review_travel_plan':
+        return as_text(review_plan(arguments['plan'], arguments.get('available_minutes'), arguments.get('budget_limit')))
     if name == 'get_hotel_service_status':
         return as_text(await asyncio.to_thread(hotel_status))
     if name == 'search_rollinggo_hotels':

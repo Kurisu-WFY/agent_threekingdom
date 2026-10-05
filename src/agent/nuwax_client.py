@@ -48,6 +48,7 @@ class NuwaxClient:
         self.settings = settings or get_settings()
         self.sessions = {}
         self.lock = threading.Lock()
+        self.reflection_lookup = None
 
     @property
     def configured(self):
@@ -88,6 +89,35 @@ class NuwaxClient:
             return token, session
 
     def events(self, message, mode='大众', session_id=None, history=None, story_id=None):
+        """网页由后端核查最终初稿；修订请求仍由原女娲智能体生成，不冒充模型回答。"""
+        from agent.intent_router import route_intent
+        from agent.reflection import reflection_events
+        draft = None
+        for event in self._events(message, mode, session_id, history, story_id):
+            if event['type'] == 'result':
+                draft = event['data']
+            else:
+                yield event
+        if draft is None:
+            return
+        if self.reflection_lookup is None or route_intent(message).intent not in ('culture_qa', 'history_vs_romance'):
+            yield {'type': 'result', 'data': draft}
+            return
+        started = time.monotonic()
+        def revise(prompt, hits):
+            if time.monotonic() - started > 120:
+                return None
+            for event in self._events(prompt, mode, draft['session_id'], [], story_id):
+                if event['type'] == 'result':
+                    candidate = event['data']
+                    candidate['tool_calls'] = draft.get('tool_calls', []) + candidate.get('tool_calls', [])
+                    return candidate
+                if event['type'] == 'error':
+                    return None
+            return None
+        yield from reflection_events(message, draft, self.reflection_lookup, revise)
+
+    def _events(self, message, mode='大众', session_id=None, history=None, story_id=None):
         """输出经过清理的前端事件，不透传平台原始错误或配置。"""
         session = None
         acquired = False
