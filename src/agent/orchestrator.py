@@ -8,6 +8,7 @@ except ImportError:
     from intent_router import route_intent
 from planning.route_planner import plan_route
 from rag.hybrid_retriever import HybridRetriever
+from rag.document_evidence import retrieve_document_evidence
 from tools.travel_business_tools import get_spot_ticket, plan_budget
 
 
@@ -24,7 +25,7 @@ class TravelAgentService:
         if intent.intent == "budget_ticket":
             return {"intent": intent.__dict__, "answer": self._answer_budget(message), "route": None}
 
-        retrieval_hits, recall_report = self.hybrid_retriever.retrieve(message, intent=intent.intent)
+        retrieval_hits, recall_report = retrieve_document_evidence(self.hybrid_retriever, message, intent=intent.intent)
         answer_result = self.answer_chain.run_result(
             message=message,
             intent=intent,

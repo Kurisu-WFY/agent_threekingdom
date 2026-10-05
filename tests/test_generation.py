@@ -27,6 +27,9 @@ class GenerationTests(unittest.TestCase):
         self.assertIn('亲子', messages[0]['content'])
         self.assertEqual([m['role'] for m in messages], ['system','user','user'])
         self.assertNotIn('不可信指令', str(messages))
+        self.assertEqual(self.llm.chat.call_args.kwargs['max_tokens'], 4096)
+        self.assertIn('本次相关文献清单', messages[0]['content'])
+        self.assertIn('资料', result['answer'])
 
     def test_failure_is_explicit_and_no_secret_leak(self):
         self.llm.chat.side_effect = RuntimeError('secret-test-token')

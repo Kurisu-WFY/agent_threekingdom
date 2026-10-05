@@ -3,6 +3,7 @@ try:
 except ImportError:
     from intent_router import IntentResult
 from san_guo_core.models import RecallReport, RetrievalHit
+from rag.document_evidence import document_key
 
 
 def build_guarded_answer(
@@ -16,12 +17,17 @@ def build_guarded_answer(
             "这部分史实还需要可靠出处。你可以告诉我具体人物、景点或文献名称，我再帮你核对。"
         )
 
-    warning_text = "\n".join(f"- {warning}" for warning in recall_report.warnings)
-    source_lines = "\n".join(
-        f"- {hit.chunk.title}｜{hit.chunk.source}｜可信等级 {hit.chunk.source_level}"
-        for hit in hits
-    )
-    facts = "\n".join(f"- {hit.chunk.content[:180]}" for hit in hits[:3])
+    groups = {}
+    for hit in hits:
+        groups.setdefault(document_key(hit.chunk), []).append(hit)
+    sections = []
+    for rows in groups.values():
+        chunk = rows[0].chunk
+        pages = sorted({row.chunk.pdf_page for row in rows if row.chunk.pdf_page is not None})
+        location = '；PDF第' + '、'.join(map(str, pages)) + '页' if pages else ''
+        kind = '史籍文本' if chunk.category == 'primary_source' else '研究／相关资料'
+        excerpts = '\n'.join(f'> {row.chunk.content}' for row in rows)
+        sections.append(f'### {chunk.title}\n{kind}；出处：{chunk.source}{location}\n\n{excerpts}')
 
     if recall_report.warnings:
         risk = "\n以下资料可供参考，尚不足以对争议作出定论。\n"
@@ -29,7 +35,6 @@ def build_guarded_answer(
         risk = ""
 
     return (
-        f"相关资料摘录（研究观点应结合出处理解）：\n{facts}\n"
-        f"{risk}\n"
-        f"来源：\n{source_lines}"
+        '以下为按出处整理的资料摘录，未作模型综合分析；研究观点须归属于作者，史籍传闻不能直接视为已证事实。\n\n'
+        + '\n\n'.join(sections) + '\n' + risk
     )

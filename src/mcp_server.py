@@ -19,6 +19,7 @@ from agent.orchestrator import TravelAgentService
 from planning.route_planner import plan_route
 from tools.free_travel_tools import get_travel_weather, lookup_travel_city, get_road_route, RoadRequest
 from rag.hybrid_retriever import HybridRetriever, format_context
+from rag.document_evidence import retrieve_document_evidence, reference_catalog, document_key
 from tools.travel_business_tools import (
     estimate_hotel_budget,
     get_spot_ticket,
@@ -53,12 +54,14 @@ async def list_tools():
              inputSchema=RoadRequest.model_json_schema()),
         Tool(
             name="retrieve_culture_knowledge",
-            description="检索三国文化、陈寿、《三国志》、南充/川东北三国景区相关知识，并返回 rerank 和召回检查上下文。",
+            description="检索已入库三国文化原典和研究文献，按文献覆盖相关证据，返回出处、PDF页码及上下文。默认每页8份来源；has_more为真时用next_offset继续同一问题，直到相关文献取完。不能宣称库外文献也已穷尽，检索诊断不展示给游客。",
             inputSchema={
                 "type": "object",
                 "properties": {
                     "query": {"type": "string", "description": "用户问题"},
                     "intent": {"type": "string", "description": "可选意图，如 culture_qa/history_vs_romance/route_planning"},
+                    "offset": {"type": "integer", "minimum": 0, "default": 0, "description": "文献分页起点，继续时使用返回的next_offset"},
+                    "page_size": {"type": "integer", "minimum": 1, "maximum": 12, "default": 8, "description": "每页文献数，不是片段数"},
                 },
                 "required": ["query"],
             },
@@ -203,8 +206,19 @@ async def call_tool(name: str, arguments: dict):
         return as_text(await asyncio.to_thread(get_road_route, **arguments))
     if name == "retrieve_culture_knowledge":
         # 本地模型初始化与推理在工作线程执行，避免阻塞MCP协议的事件循环。
-        hits, report = await asyncio.to_thread(lambda: HybridRetriever().retrieve(arguments["query"], arguments.get("intent")))
-        return as_text({"context": format_context(hits), "recall_report": report.model_dump()})
+        offset, page_size = arguments.get('offset', 0), arguments.get('page_size', 8)
+        if type(offset) is not int or offset < 0 or type(page_size) is not int or not 1 <= page_size <= 12:
+            raise ValueError('文献分页参数不合法')
+        hits, report = await asyncio.to_thread(lambda: retrieve_document_evidence(HybridRetriever(), arguments['query'], arguments.get('intent')))
+        references = reference_catalog(hits)
+        selected = references[offset:offset + page_size]
+        keys = {reference['document_id'] for reference in selected}
+        page_hits = [hit for hit in hits if document_key(hit.chunk) in keys]
+        has_more = offset + page_size < len(references)
+        return as_text({'context': format_context(page_hits), 'references': selected,
+                        'has_more': has_more, 'next_offset': offset + page_size if has_more else None,
+                        'scope_note': '仅覆盖当前已入库且本次检索判定相关的资料；未入库或未召回的文献不在此清单。',
+                        'recall_report': report.model_dump()})
     if name == "answer_travel_question":
         history = arguments.get("history")
         return as_text(
