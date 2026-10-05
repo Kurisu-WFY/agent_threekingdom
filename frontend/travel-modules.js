@@ -69,6 +69,23 @@
     const names = { sample: '示例数据', maintained: '维护数据', live: '实时查询', forecast: '模型天气预报', model: '模型估计（非实测）', external: '外部查询', reference_route: '道路参考（非实时路况）', pending: '暂无有效数据', stale: '已过期' };
     return `${names[record.data_status] || '状态未标注'} · ${record.fetched_at ? '查询时间（可能为缓存）' : '更新'}：${record.fetched_at || record.updated_at ? beijingTime(record.fetched_at || record.updated_at) : '未提供'}`;
   }
+  function spotArtwork(spot) {
+    // 按资料中的名称/主题选择艺术图型，不推断景区坐标或真实形制。
+    const name=String(spot.name || '');
+    const motifs=[
+      [/墓|陵|碑/, 'memorial'], [/万卷楼|楼阁/, 'nanchong'],
+      [/汉桓侯祠|张飞庙/, 'langzhong'], [/武侯祠/, 'chengdu'],
+      [/庞统祠/, 'deyang'], [/剑门关|关楼|关隘/, 'guangyuan'],
+      [/昭化古城|古城|城楼/, 'wall'], [/米仓|古道|栈道/, 'bazhong'],
+      [/富乐山/, 'mianyang'], [/八濛山/, 'dazhou'], [/祠|庙/, 'langzhong']
+    ];
+    const themes=Array.isArray(spot.themes)?spot.themes.join(' '):'';
+    const file=(motifs.find(([pattern])=>pattern.test(name)) || motifs.find(([pattern])=>pattern.test(themes)))?.[1] || 'scenic';
+    const figure=node('figure', null, 'spot-art');
+    const image=node('img');image.src='destination-art/'+file+'.svg';image.alt='';image.width=320;image.height=180;
+    figure.append(image,node('figcaption','艺术示意 · 非实景 / 非实测复原','story-art-note'));
+    return figure;
+  }
   async function loadCity(nextCity) {
     city = nextCity;
     const version = ++cityRequest;
@@ -86,6 +103,7 @@
       if (!result.data.spots.length) return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');
       result.data.spots.forEach(spot => {
         const card = node('article', null, 'result-card');
+        card.append(spotArtwork(spot));
         card.append(node('h3', spot.name), node('p', spot.description || '简介待补充'), node('p', dataStatus(spot), 'map-note'));
         if (Array.isArray(spot.themes) && spot.themes.length) card.append(node('p', '文化主题：' + spot.themes.join('、')));
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));

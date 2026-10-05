@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="汉桓侯祠艺术示意，非实测复原">
+  <ellipse cx="159" cy="157" rx="118" ry="9" fill="#ddd8ca"/>
+  <g fill="#e6ece2" stroke="#8b8e7d" stroke-width="1.2"><path d="M39 137V67M39 47L24 88H32L17 119H61L47 88H54ZM279 141V58M279 34L267 75H273L260 110H299L285 75H291Z"/></g>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M66 143V92H250V143M105 93V72H211V93" fill="#f1eee5"/>
+    <path d="M54 92Q77 90 91 72H226Q238 90 263 92ZM88 72Q110 70 122 54H194Q207 71 227 72Z" fill="#2f6f5e"/>
+    <path d="M77 145V107M100 145V107M217 145V107M241 145V107M125 145V107H192V145" fill="none"/>
+    <path d="M113 98H204V108H113Z" fill="#9c2b25" stroke="none"/>
+    <path d="M119 157H198M127 151H189M135 145H183" fill="none" stroke="#ae8340"/>
+  </g>
+  <path d="M25 162H294" stroke="#8b8e7d" stroke-width="1"/>
+</svg>

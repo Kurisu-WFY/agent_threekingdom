@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="富乐山艺术示意，非实测复原">
+  <path d="M12 145Q61 97 97 114Q144 67 194 100Q248 97 308 145" fill="#e6ece2"/>
+  <path d="M21 145Q57 126 83 132M233 132Q264 117 299 145" fill="none" stroke="#8b8e7d" stroke-width="1.2"/>
+  <ellipse cx="166" cy="157" rx="109" ry="8" fill="#ddd8ca"/>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M127 141V104H202V141M137 95V77H191V95M143 63V48H185V63" fill="#f1eee5"/>
+    <path d="M113 104L132 88H196L215 104ZM125 77L140 62H186L202 77ZM132 48L151 31H177L196 48Z" fill="#2f6f5e"/>
+    <path d="M138 139V111M151 139V111M178 139V111M191 139V111M147 87V81M181 87V81M154 59V52M174 59V52" fill="none"/>
+    <path d="M115 145H215" stroke="#ae8340"/>
+  </g>
+  <path d="M135 151Q110 158 122 166Q131 173 94 179" fill="none" stroke="#ae8340" stroke-width="2"/>
+  <path d="M33 77Q43 71 53 77M247 60Q256 53 266 60" fill="none" stroke="#8b8e7d" stroke-width="1.2"/>
+</svg>

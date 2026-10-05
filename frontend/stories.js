@@ -127,7 +127,7 @@
     card.setAttribute('aria-label', '预览故事：' + story.title);
     if(story.coreQuestion)card.append(node('span', 'story-core-question', '核心问题：' + story.coreQuestion));
     card.append(node('span', 'story-number', ['壹', '贰', '叁', '肆', '伍'][index]), node('strong', 'story-card-title', story.title), facts(story, true), node('span', 'story-card-end', story.chapters.length ? '预览章节与地点' : '章节与地点待补充'));
-    if(story.summary)card.append(node('span','story-summary',story.summary));
+    card.append(node('span','story-summary',story.summary || '陈寿编书史：章节待补充，史料与地点待核验。'));
     card.addEventListener('click', () => { select(story, false); preview(story); });
     const shell = node('article', 'story-card-shell'); shell.dataset.storyId = story.id;
     const badge = node('span', 'story-progress-seal', progress.status(story));
@@ -192,8 +192,6 @@
       const summary=card.querySelector('.story-summary')||node('span','story-summary');
       summary.textContent=story.summary||'';card.insertBefore(summary,end);
     }
-    const disclosure=$('#story-cards').parentElement.querySelector('.story-disclosure');
-    if(disclosure)disclosure.textContent='陈寿编书史：以论文为依据的三章阅读，附文献与PDF页码。';
     select(selected,false);if(previewStory)preview(selected);return true;
   }, openStory(id, suppliedStory) {
     // 保存的行程快照不能复活已移除的故事；显式地图适配数据沿用现有入口。

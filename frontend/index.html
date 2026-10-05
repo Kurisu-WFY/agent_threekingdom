@@ -6,27 +6,24 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=story-card-fix-20261005">
+  <link rel="stylesheet" href="styles.css?v=planner-polish-20261006">
 </head>
 <body>
   <header class="topbar">
-    <span class="brand"><span class="brand-mark">蜀</span>寻迹三国</span>
-    <span class="topbar-center">南充 · 阆中 · 广元<span class="divider">/</span><span id="view-label">文化探索</span></span>
-    <span class="status" data-service-status role="status">正在检查服务…</span>
+    <span class="brand"><span class="brand-mark">蜀</span><span class="brand-copy"><span class="brand-title">寻迹三国</span><span class="brand-subtitle">陈寿笔下的蜀汉记忆</span></span></span>
+    <span class="topbar-center">南充 · 阆中 · 广元</span>
+    <nav class="content-switch" aria-label="主内容视图">
+      <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">文化探索</button>
+      <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
+      <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
+      <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">活动计划</button>
+      <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
+    </nav>
+    <span class="topbar-status"><span class="status" data-service-status role="status">正在检查服务…</span><span class="note">AI 文化向导 · 动态信息请核验</span></span>
   </header>
 
   <main class="workspace">
     <section class="content" aria-label="主内容区">
-      <div class="content-heading">
-        <span>陈寿笔下的蜀汉记忆</span>
-        <nav class="content-switch" aria-label="主内容视图">
-          <button type="button" data-content-view="welcome" aria-pressed="true" aria-controls="welcome-view">文化探索</button>
-          <button type="button" data-content-view="destinations" aria-pressed="false" aria-controls="destinations-view">目的地</button>
-          <button type="button" data-content-view="map" aria-pressed="false" aria-controls="map-view">行旅地图</button>
-          <button type="button" data-content-view="planner" aria-pressed="false" aria-controls="planner-view">活动计划</button>
-          <button type="button" data-content-view="journal" aria-pressed="false" aria-controls="journal-view">探索志</button>
-        </nav>
-      </div>
 
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
         <header class="journal-heading"><p class="welcome-kicker">我的三国探索志 · 探索进度</p><h1 tabindex="-1">陈寿为你记下的三国探索志</h1><p id="journal-overview" class="journal-overview" aria-live="polite"></p><p id="journal-local-notice" role="status"></p></header>
@@ -55,7 +52,6 @@
         <div class="culture-entry-grid">
           <section id="story-discovery" class="story-discovery culture-entry" aria-labelledby="discovery-title">
             <div class="culture-entry-heading"><h2 id="discovery-title">跟着故事走</h2></div>
-            <p class="story-disclosure">陈寿编书史：章节待补充，史料与地点待核验。</p>
             <div id="story-cards" class="story-cards" aria-label="陈寿编书史"></div>
             <section class="story-preview" id="culture-preview" aria-labelledby="preview-title">
               <div class="preview-chapters">
@@ -228,8 +224,9 @@
         <button id="view-current-plan" type="button" class="module-button" data-content-view="plan" hidden>查看本次方案</button>
         <div class="planner-layout">
         <section class="planner-inputs" aria-label="活动条件">
+        <header class="planner-card-heading"><h3>活动条件</h3>
+        <button id="planner-back-story" type="button" class="module-button">返回故事调整章节</button></header>
         <p id="planner-story" class="data-banner">尚未选择故事，可填写普通行程需求。</p>
-        <button id="planner-back-story" type="button" class="module-button">返回故事调整章节</button>
         <form id="trip-form" class="module-form">
           <label>目的地（必填）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
           <datalist id="itinerary-cities"></datalist>
@@ -255,13 +252,11 @@
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
         </section>
       <section id="outing-view" class="outing inline-roads" aria-labelledby="outing-title">
-        <header><h3 id="outing-title" tabindex="-1">核验道路路线</h3><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
-        <button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button>
+        <header><h3 id="outing-title" tabindex="-1">核验道路路线</h3><button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
         <details class="itinerary-utilities" open><summary>道路查询工具</summary>
         <div class="outing-columns">
           <section aria-labelledby="outing-route-title" class="outing-route">
-            <h2 id="outing-route-title">路线规划</h2>
             <div id="amap-planner">
               <section id="amap-place-view" hidden aria-label="回答提及地点">
                 <h3>在高德查看地点</h3>
@@ -274,7 +269,7 @@
                 <p id="amap-place-status" role="status" aria-live="polite"></p>
                 <div id="amap-place-results"></div>
               </section>
-              <p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p>
+              <div class="outing-search-heading"><h2 id="outing-route-title">路线规划</h2><p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p></div>
               <form id="amap-search-form">
                 <label>搜索城市<input id="amap-city" value="南充" list="itinerary-cities" required maxlength="60"></label>
                 <div class="outing-endpoints">
@@ -315,10 +310,11 @@
         </div>
         </details>
               <section id="amap-map-region" aria-label="高德路线地图">
-                <div id="amap-map" style="height:360px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
+                <div id="amap-map" style="height:280px;width:100%;min-width:0" role="region" aria-label="起终点及道路路线，可拖动缩放"></div>
                 <p id="amap-map-note" role="status"></p>
               </section>
       </section>
+        <div class="planner-services">
         <section class="inline-weather" aria-labelledby="weather-title">
           <h3 id="weather-title">查看近期天气</h3>
           <p class="map-note">北京时间；按服务实际返回的日期和天数展示，与活动出发日期分开查询。</p>
@@ -330,6 +326,7 @@
           <div id="travel-results" class="module-results" aria-live="polite"></div>
         </section>
         <section class="inline-hotels" aria-labelledby="hotel-title"><h3 id="hotel-title">住宿查询</h3><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
+        </div>
         </div>
       </section>
 
@@ -344,15 +341,14 @@
       </section>
 
 
-      <footer class="content-footer">
-        <span class="note">AI 文化向导 · 动态信息请核验</span>
-        <details class="image-credits"><summary>影像来源</summary><div>
-          <p>剑门关：<a href="https://commons.wikimedia.org/wiki/File:Jianmen_Pass.jpg" target="_blank" rel="noopener noreferrer">Chensiyu2004 / Wikimedia Commons</a></p>
-          <p>阆中古城：<a href="https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg" target="_blank" rel="noopener noreferrer">Panzer VI-II / Wikimedia Commons</a></p>
-          <p>两图均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>。网页以 CSS 裁切展示；裁切展示部分沿用相同许可。</p>
-        </div></details>
-      </footer>
     </section>
+    <footer class="content-footer">
+      <details class="image-credits"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg>影像来源</summary><div>
+        <p>剑门关：<a href="https://commons.wikimedia.org/wiki/File:Jianmen_Pass.jpg" target="_blank" rel="noopener noreferrer">Chensiyu2004 / Wikimedia Commons</a></p>
+        <p>阆中古城：<a href="https://commons.wikimedia.org/wiki/File:Langzhong_Ancient_Town.jpg" target="_blank" rel="noopener noreferrer">Panzer VI-II / Wikimedia Commons</a></p>
+        <p>两图均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>。网页以 CSS 裁切展示；裁切展示部分沿用相同许可。</p>
+      </div></details>
+    </footer>
   </main>
 
   <button class="launcher" id="launcher" aria-label="打开对话，可拖动调整位置" aria-expanded="false" aria-controls="chat-panel">
@@ -380,7 +376,7 @@
           <button class="composer-send" type="submit" aria-label="发送消息">↑</button>
         </div>
       </form>
-      <details class="chat-options"><summary>故事线设置与当前背景</summary><div class="chat-options-body">
+      <details class="chat-options"><summary><svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 3-3 1-2 3 2 2-1 3 3 2 3-1 2 3 3-1 1-3 3-1 1-3-2-2 1-3-3-2-3 1-2-2Z"/><circle cx="12" cy="11" r="3"/></svg>故事线设置与当前背景</summary><div class="chat-options-body">
       <details class="historian-context"><summary>当前故事或地点 · <span id="guide-location">尚未启程</span></summary><p id="guide-context"></p><p id="guide-transition" role="status"></p></details>
       <details class="historian-note" id="guide-note" hidden open><summary>本章阅读提示</summary><div id="guide-narration"></div><div id="guide-actions"></div></details>
       <section id="character-panel" class="character-panel" aria-label="陈寿讲解设置">
@@ -398,14 +394,14 @@
   <script src="app.js?v=reflection-20261005"></script>
   <script src="landing.js?v=culture14"></script>
   <script src="travel-api.js?v=layout-20261005"></script>
-  <script src="cities.js?v=deai10-final-20261003"></script>
+  <script src="cities.js?v=spot-polish-20261006"></script>
   <script src="weather-outlook-core.js?v=layout-20261005"></script>
-  <script src="travel-modules.js?v=browser-location-20261005"></script>
+  <script src="travel-modules.js?v=spot-polish-20261006"></script>
   <script src="browser-location.js?v=browser-location-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
   <script src="travel-map.js?v=deai10-final-20261003"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>
-  <script src="stories.js?v=story-card-fix-20261005"></script>
+  <script src="stories.js?v=culture-polish-20261006"></script>
   <script src="story-map.js?v=layout-20261005"></script>
   <script src="cultural-node.js?v=pdf-mapping-20261005"></script>
   <script src="character-chat.js?v=pdf-mapping-20261005"></script>

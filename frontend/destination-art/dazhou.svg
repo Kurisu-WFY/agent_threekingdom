@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="八濛山艺术示意，非实测复原">
+  <path d="M15 137Q45 115 82 125L129 55L151 74L185 27L221 68L258 80L307 138Z" fill="#e6ece2"/>
+  <g fill="none" stroke="#8b8e7d" stroke-width="1.3"><path d="M74 136L130 69L151 88L185 43L200 79M160 119L182 87L201 105M216 111L238 100L266 124"/></g>
+  <path d="M17 154Q62 143 108 154T203 156T305 149M31 163Q80 153 130 165T227 165" fill="none" stroke="#2f6f5e" stroke-width="1.4" opacity=".6"/>
+  <g stroke="#263f38" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M223 136V102H270V136" fill="#f1eee5"/>
+    <path d="M214 102L229 88H265L280 102Z" fill="#2f6f5e"/>
+    <path d="M233 132V109M260 132V109M226 137H273" fill="none"/>
+    <path d="M128 133V111H141V133" fill="#f3ead5" stroke="#71501e"/>
+  </g>
+  <path d="M90 178Q144 163 131 143Q126 136 134 133" fill="none" stroke="#ae8340" stroke-width="1.8"/>
+</svg>

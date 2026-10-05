@@ -1102,12 +1102,10 @@ a { min-height:var(--target-size); display:inline-flex; align-items:center; over
 @media (min-width:761px) {
   body:not(.chat-open) .content:has(> #node-view:not([hidden])) {
     display:grid; grid-template-columns:minmax(0,1fr) minmax(390px,42%);
-    grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-rows:minmax(0,1fr);
   }
-  body:not(.chat-open) .content:has(> #node-view:not([hidden])) > .content-heading,
-  body:not(.chat-open) .content:has(> #node-view:not([hidden])) > .content-footer { grid-column:1 / -1; }
-  body:not(.chat-open) .content > [data-node-source] { grid-column:1; grid-row:2; min-width:0; }
-  body:not(.chat-open) .content > #node-view:not([hidden]) { grid-column:2; grid-row:2; min-width:0; border-left:1px solid var(--line); }
+  body:not(.chat-open) .content > [data-node-source] { grid-column:1; grid-row:1; min-width:0; }
+  body:not(.chat-open) .content > #node-view:not([hidden]) { grid-column:2; grid-row:1; min-width:0; border-left:1px solid var(--line); }
 }
 @media (max-width:760px) {
   .content > [data-node-source] { display:none; }
@@ -1367,3 +1365,128 @@ body.chat-open #welcome-view .culture-entry-grid #culture-places .building-grid 
 #use-my-location { flex:none; padding:6px; margin:0; font-size:12px; white-space:nowrap; }
 #origin-location-status { display:block; min-height:20px; margin-top:4px; font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
 #trip-form .location-notice { margin:0; color:var(--muted); font-size:12px; line-height:1.6; }
+
+/* 活动计划桌面空间分配：条件与道路在上，天气与住宿并排。 */
+@media(min-width:761px) {
+  #planner-view { --target-size:36px; padding:16px 24px; }
+  #planner-view > .welcome-kicker { margin:0 0 4px; font-size:12px; line-height:1.45; }
+  #planner-view > h2 { margin:0 0 6px; font-size:20px; line-height:1.35; }
+  #planner-view > p:not(.welcome-kicker) { max-inline-size:none; margin:0; font-size:13px; line-height:1.65; }
+  #planner-view .planner-layout { grid-template-columns:minmax(0,540px) minmax(0,1fr); gap:12px; margin-top:12px; }
+  #planner-view :is(.planner-inputs,.inline-roads,.inline-weather,.inline-hotels) { min-width:0; margin:0; padding:12px 16px; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+  #planner-view .planner-services { display:grid; grid-column:1 / -1; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:start; }
+  #planner-view .planner-card-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  #planner-view .planner-card-heading h3,
+  #planner-view .inline-roads > header h3,
+  #planner-view .inline-weather > h3,
+  #planner-view .inline-hotels > h3 { margin:0; font-size:18px; line-height:1.45; }
+  #planner-view .planner-card-heading .module-button { padding:4px 8px; font-size:12px; }
+  #planner-view #planner-story { padding:6px 10px; margin:8px 0; border-radius:6px; font-size:12px; line-height:1.6; }
+  #planner-view #trip-form { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 12px; margin:8px 0 0; }
+  #planner-view #trip-form label { gap:2px; font-size:13px; line-height:1.4; }
+  #planner-view #trip-form input,#planner-view #trip-form select { min-height:32px!important; height:32px; padding:4px 8px; font-size:14px; }
+  #planner-view #trip-form textarea { min-height:44px; height:44px; padding:5px 8px; font-size:14px; line-height:1.5; }
+  #planner-view #trip-form > button[type=submit] { grid-column:1 / -1; min-height:44px!important; font-size:14px; padding:8px 16px; }
+  #planner-view #origin-location-status:empty { display:none; }
+  #planner-view .planner-origin > label { margin-bottom:3px; }
+  #planner-view .planner-inputs > .map-note { margin:8px 0 0; font-size:12px; line-height:1.6; }
+  #planner-view #planner-status:empty { display:none; }
+  #planner-view .inline-roads { font-family:var(--font-body); font-size:13px; line-height:1.6; }
+  #planner-view .inline-roads p { margin:6px 0; font-size:12px; line-height:1.6; }
+  #planner-view .inline-roads > header { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:4px 12px; }
+  #planner-view .inline-roads > header p { grid-column:1 / -1; }
+  #planner-view .inline-roads > header p { margin:0; }
+  #planner-view .inline-roads .outing-handoff { padding:4px 10px; margin:4px 0; font-size:12px; }
+  #planner-view .inline-roads form { gap:6px 10px; }
+  #planner-view .inline-roads label { gap:3px; line-height:1.5; font-size:12px; }
+  #planner-view .inline-roads input:not([type=radio]):not([type=checkbox]),#planner-view .inline-roads select,#planner-view .inline-roads button { min-height:32px!important; padding:4px 8px; font-size:13px; line-height:1.5; }
+  #planner-view .inline-roads .outing-route h2 { margin:0; font-size:14px; line-height:1.5; }
+  #planner-view .outing-search-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 12px; margin:4px 0; }
+  #planner-view .outing-search-heading p { margin:0; }
+  #planner-view #amap-search-form { grid-template-columns:minmax(100px,.35fr) minmax(0,1fr) auto; align-items:end; }
+  #planner-view #amap-search-form .outing-endpoints { gap:10px; }
+  #planner-view #amap-route-form { margin-top:8px; }
+  #planner-view .inline-roads details > summary { display:flex; align-items:center; gap:8px; list-style:none; width:fit-content; max-width:100%; min-height:32px!important; padding:4px 8px; border:1px solid var(--line); border-radius:6px; background:var(--surface-2); font-size:12px; line-height:1.5; cursor:pointer; }
+  #planner-view .inline-roads details > summary::-webkit-details-marker { display:none; }
+  #planner-view .inline-roads details > summary::before { content:'↗'; display:grid; place-items:center; width:20px; height:20px; flex:none; color:var(--jade); border:1px solid var(--line); border-radius:4px; background:var(--surface); font:16px/1 var(--font-chat); }
+  #planner-view .inline-roads details[open] > summary::before { content:'↓'; }
+  #planner-view .inline-roads .itinerary-utilities > summary::before { content:'⚙'; }
+  #planner-view .inline-roads details.itinerary-utilities[open] > summary::before { content:'⚙'; }
+  #planner-view .inline-roads .itinerary-utilities > summary { margin:4px 0; }
+  #planner-view .inline-roads .outing-draft { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin-top:6px; padding-top:6px; }
+  #planner-view .inline-roads .outing-draft h3 { margin:0; font-size:13px; line-height:1.5; }
+  #planner-view .inline-roads .outing-draft ol,#planner-view .inline-roads .outing-draft details { flex-basis:100%; }
+  #planner-view .inline-roads .outing-draft p { margin:0; }
+  #planner-view .inline-roads .outing-draft ol:empty { display:none; }
+  #planner-view .inline-roads #amap-map-region { margin-top:8px; }
+  #planner-view #amap-map { border:1px solid var(--line); border-radius:6px; }
+  #planner-view #amap-map-note:empty { display:none; }
+  #planner-view .inline-weather .weather-search { max-width:none; margin:6px 0; }
+  #planner-view .inline-weather .map-note,#planner-view .inline-hotels p { margin:6px 0; font-size:12px; line-height:1.6; }
+  #planner-view .inline-weather input { height:36px; }
+  #planner-view .inline-weather .weather-search label { flex-direction:row; align-items:center; gap:8px; font-size:12px; line-height:1.5; white-space:nowrap; }
+  #planner-view .inline-weather .weather-search input { flex:1; width:0; }
+  #planner-view .inline-weather .module-button,#planner-view .inline-hotels .module-button { padding:5px 12px; font-size:13px; }
+  #planner-view #travel-status { margin:4px 0 0; }
+  #planner-view #travel-results:empty { display:none; }
+  #planner-view #travel-results,#planner-view .inline-hotels #hotel-results { margin:6px 0 0; }
+  #planner-view .inline-weather .module-empty { margin:0; padding:0; border:0; background:transparent; font-size:12px; line-height:1.6; }
+  #planner-view .inline-hotels > h3 { margin-bottom:6px; }
+  body.chat-open #planner-view #amap-search-form { grid-template-columns:minmax(0,1fr) auto; }
+  body.chat-open #planner-view #amap-search-form .outing-endpoints { grid-column:1 / -1; grid-row:2; }
+  body.chat-open #planner-view #amap-search-form > button { grid-column:2; grid-row:1; }
+}
+
+/* 桌面观感批：导航与声明归顶栏，内容框完整留给阅读。 */
+.topbar .brand-copy { display:grid; gap:2px; white-space:nowrap; }
+.topbar .brand-title { font-size:14px; line-height:18px; }
+.topbar .brand-subtitle { font-size:11px; font-weight:400; line-height:14px; color:var(--ink-soft); letter-spacing:0; }
+.topbar .brand-mark { flex:none; }
+.topbar-status { display:flex; align-items:center; gap:8px; white-space:nowrap; color:var(--muted); }
+.topbar-status .note { font-size:11px; }
+.workspace { position:relative; }
+.workspace > .content-footer { position:absolute; left:40px; bottom:4px; padding:0; border:0; background:transparent; }
+.workspace > .content-footer .image-credits { position:relative; }
+.workspace > .content-footer .image-credits > summary { gap:6px; color:var(--muted); font-size:12px; }
+.image-credits summary svg,.settings-icon { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.workspace > .content-footer .image-credits > div { left:0; right:auto; bottom:calc(100% + 8px); }
+.chat-options > summary { display:flex; align-items:center; gap:8px; list-style:none; }
+.chat-options > summary::-webkit-details-marker { display:none; }
+.chat-options[open] > summary { color:var(--jade-deep); background:var(--surface-2); }
+
+@media(min-width:1051px) {
+  .topbar { gap:16px; transition:padding-right var(--layout-duration) var(--layout-easing); }
+  body.chat-open .topbar { padding-right:calc(var(--panel-width) + var(--space-5)); }
+  .topbar .brand { flex:none; }
+  .topbar .content-switch { flex:none; flex-wrap:nowrap; margin-left:auto; padding:0; background:transparent; gap:4px; }
+  .topbar .content-switch button { min-height:36px!important; padding:6px 12px; white-space:nowrap; }
+  .topbar-status .status { font-size:11px; }
+  .chat-panel .chat-options > summary { min-height:32px!important; padding:4px 12px; font-size:12px; line-height:24px; }
+  .chat-panel .composer textarea { min-height:64px!important; padding:12px 56px 12px 12px; }
+  .chat-panel .composer-send { width:36px; height:36px; min-width:36px!important; min-height:36px!important; right:10px; }
+  /* display 的离散过渡保留 hidden 状态契约，同时让面板离场有动画。 */
+  .chat-panel { animation:none; opacity:0; translate:100% 0; transition:opacity var(--layout-duration) var(--layout-easing),translate var(--layout-duration) var(--layout-easing),display var(--layout-duration) allow-discrete; }
+  .chat-panel:not([hidden]) { animation:none; opacity:1; translate:0 0; }
+  @starting-style { .chat-panel:not([hidden]) { opacity:0; translate:100% 0; } }
+}
+
+/* 文化探索与目的地：收紧迎接区，景点图像随查询资料呈现。 */
+@media(min-width:1051px) {
+  #welcome-view .culture-hero,
+  body.chat-open #welcome-view .culture-hero { gap:20px; padding:0 0 12px; }
+  #welcome-view .culture-hero .chenshou-portrait { width:88px; height:94px; }
+  #welcome-view .culture-hero h1 { font-size:28px; }
+  #welcome-view .culture-hero .welcome-sub { font-size:16px; line-height:1.6; max-width:none; margin:4px 0; }
+  #welcome-view .culture-hero .hero-footnote { margin:6px 0 0; line-height:1.6; }
+  #welcome-view .story-summary { font-size:var(--text-sm); line-height:1.85; }
+  #welcome-view .story-facts { font-size:var(--text-sm); line-height:1.8; }
+  #destination-cities { display:flex; flex-wrap:wrap; gap:8px; }
+  #destination-results { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:stretch; }
+  #destination-results > :not(.result-card) { grid-column:1 / -1; }
+  #destination-results .result-card { min-width:0; margin:0; padding:20px; overflow-wrap:anywhere; }
+  #destination-results .result-card h3 { font-size:20px; line-height:1.5; }
+  #destination-results .result-card > .module-button { margin-right:8px; margin-top:4px; }
+  .spot-art { margin:0 0 16px; padding:12px 16px 8px; background:var(--surface-2); border-radius:6px; }
+  .spot-art img { display:block; width:100%; height:144px; object-fit:contain; }
+  .spot-art .story-art-note { margin-top:4px; font-size:12px; line-height:1.6; }
+}

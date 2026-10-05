@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="米仓古道艺术示意，非实测复原">
+  <path d="M12 143L50 72L82 96L129 32L179 93L218 47L306 142Z" fill="#e6ece2"/>
+  <g fill="none" stroke="#8b8e7d" stroke-width="1.3"><path d="M19 139L51 87L82 111L130 47L148 95M179 133L219 62L242 92L281 133M93 102L124 78M226 101L240 115"/></g>
+  <path d="M97 175Q206 153 171 128Q146 109 194 94Q217 80 185 65" fill="none" stroke="#ae8340" stroke-width="11" opacity=".25"/>
+  <path d="M97 175Q206 153 171 128Q146 109 194 94Q217 80 185 65" fill="none" stroke="#71501e" stroke-width="1.7"/>
+  <g fill="none" stroke="#263f38" stroke-width="1.6" stroke-linejoin="round"><path d="M31 149V126M46 155V128M61 151V124M28 128Q47 119 64 126M271 157V124M258 126H287"/></g>
+  <g fill="#2f6f5e"><path d="M28 126L36 107L43 126ZM266 125L278 98L290 125Z"/></g>
+  <g fill="none" stroke="#ae8340" stroke-width="1"><path d="M129 170L153 168M156 160L180 157M173 147L192 145M166 127L182 123M181 106L196 103"/></g>
+  <path d="M28 163Q58 155 83 162M225 161Q267 151 302 161" fill="none" stroke="#8b8e7d" stroke-width="1.1"/>
+</svg>

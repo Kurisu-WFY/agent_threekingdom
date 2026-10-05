@@ -10,7 +10,8 @@
     directory.replaceChildren(...cities.map((city,index)=>{
       const button=document.createElement('button');
       button.type='button';button.className='module-button';button.dataset.city=city;
-      button.setAttribute('aria-pressed',String(index===0));button.textContent=city;
+      button.setAttribute('aria-pressed',String(index===0));button.setAttribute('aria-label',city);
+      button.textContent=city;
       return button;
     }));
   }

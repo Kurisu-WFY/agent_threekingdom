@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="通用景点艺术示意，非实景、非实测复原">
+  <path d="M25 143L82 81L116 112L171 50L226 105L256 76L300 143Z" fill="#e6ece2"/>
+  <path d="M38 140L83 95L115 126M139 111L173 65L197 92M230 132L254 93L282 130" fill="none" stroke="#8b8e7d" stroke-width="1.2"/>
+  <ellipse cx="162" cy="155" rx="116" ry="9" fill="#ddd8ca"/>
+  <g stroke="#263f38" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M73 146V112H117V146" fill="#f1eee5"/>
+    <path d="M65 112L79 96H112L126 112Z" fill="#2f6f5e"/>
+    <path d="M83 142V119M107 142V119" fill="none"/>
+    <path d="M216 141V113M202 112H241V124H202Z" fill="#f3ead5" stroke="#71501e"/>
+  </g>
+  <path d="M136 175Q185 152 164 134Q152 122 180 111" fill="none" stroke="#ae8340" stroke-width="1.8"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="庞统祠艺术示意，非实测复原">
+  <ellipse cx="168" cy="157" rx="118" ry="9" fill="#ddd8ca"/>
+  <g fill="#e6ece2" stroke="#8b8e7d" stroke-width="1.3"><path d="M57 137V56M57 25L41 70H49L34 106H80L65 70H73ZM274 142V65M274 43L262 80H268L255 117H294L281 80H287Z"/></g>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M93 145V98H242V145" fill="#f1eee5"/>
+    <path d="M80 98Q102 91 118 74H216Q230 92 256 98Z" fill="#2f6f5e"/>
+    <path d="M100 104H235M111 145V104M224 145V104M139 145V108H196V145M152 112V141M183 112V141" fill="none"/>
+    <path d="M133 101H204V111H133Z" fill="#ae8340" stroke="none"/>
+    <path d="M127 151H208M118 157H219" fill="none" stroke="#ae8340"/>
+  </g>
+  <g fill="none" stroke="#71501e" stroke-width="1.3"><path d="M31 151V127H47V151M29 153H49M35 132H43M35 137H43M35 142H43"/></g>
+</svg>

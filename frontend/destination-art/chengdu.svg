@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="武侯祠艺术示意，非实测复原">
+  <ellipse cx="159" cy="158" rx="119" ry="9" fill="#ddd8ca"/>
+  <path d="M17 151V106H78V151M240 151V106H303V151" fill="#9c2b25" opacity=".7"/>
+  <g fill="#e6ece2" stroke="#8b8e7d" stroke-width="1.2"><path d="M47 42L31 76H39L25 105H70L56 76H63ZM275 40L259 75H267L253 106H299L283 75H291Z"/><path d="M47 65V124M275 65V124" fill="none"/></g>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M78 148V98H243V148" fill="#f1eee5"/>
+    <path d="M62 98Q88 91 104 72H217Q232 92 258 98Z" fill="#2f6f5e"/>
+    <path d="M84 103H237M99 145V104M221 145V104M120 145V108H201V145" fill="none"/>
+    <path d="M133 108V144M188 108V144M147 115H173V140H147Z" fill="#ae8340" stroke="#71501e" stroke-width="1"/>
+    <path d="M74 149H247M110 156H211" fill="none" stroke="#ae8340"/>
+  </g>
+  <path d="M32 163H288" stroke="#8b8e7d" stroke-width="1"/>
+</svg>

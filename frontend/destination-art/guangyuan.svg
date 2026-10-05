@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="剑门关艺术示意，非实测复原">
+  <path d="M12 154L34 65L53 80L79 18L105 41L125 151ZM195 152L214 51L237 68L267 17L291 42L312 154Z" fill="#e6ece2"/>
+  <g fill="none" stroke="#8b8e7d" stroke-width="1.2"><path d="M28 150L42 82L51 111L81 35L91 70M205 149L219 68L237 94L269 32L276 77M66 132L85 103M259 126L273 99"/></g>
+  <ellipse cx="161" cy="158" rx="83" ry="8" fill="#ddd8ca"/>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M95 150V102H228V150ZM117 102V77H205V102" fill="#f1eee5"/>
+    <path d="M103 77L123 61H199L219 77Z" fill="#2f6f5e"/>
+    <path d="M137 150V130Q161 103 184 130V150" fill="#faf6ee"/>
+    <path d="M105 116H137M185 116H219M109 130H127M197 130H215M109 141H132M189 141H214M128 99V82M194 99V82" fill="none" stroke="#8b8e7d"/>
+  </g>
+  <path d="M145 177L154 150H169L177 177" fill="#f3ead5"/>
+</svg>

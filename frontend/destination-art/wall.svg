@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="古城与城楼类型艺术示意，非实景、非实测复原">
+  <path d="M18 145Q64 123 97 134M219 134Q263 117 303 145" fill="none" stroke="#8b8e7d" stroke-width="1.1"/>
+  <ellipse cx="161" cy="157" rx="130" ry="9" fill="#ddd8ca"/>
+  <g stroke="#263f38" stroke-width="1.8" stroke-linejoin="round">
+    <path d="M33 147V105H48V95H63V105H79V95H94V105H224V95H241V105H257V95H273V105H289V147Z" fill="#e6ece2"/>
+    <path d="M108 106V77H216V106Z" fill="#f1eee5"/>
+    <path d="M97 77L121 57H202L226 77Z" fill="#2f6f5e"/>
+    <path d="M137 147V127Q161 105 185 127V147" fill="#faf6ee"/>
+    <path d="M40 118H76M83 131H118M53 140H95M204 118H240M249 130H279M214 140H252M119 101V82M204 101V82M140 83V101M183 83V101" fill="none" stroke="#8b8e7d" stroke-width="1.2"/>
+    <path d="M29 150H292" stroke="#ae8340"/>
+  </g>
+  <path d="M136 176L149 149H172L185 176" fill="#f3ead5"/>
+</svg>
