@@ -29,9 +29,17 @@ FOCUS_GROUPS = (
 
 
 def topic_matches(query: str, chunk: KnowledgeChunk) -> bool:
-    text = chunk.title + ' ' + chunk.content
+    # 仅在主题过滤时统一常见人名与主题字形；证据原文保持原样，不能改写引文。
+    text = (chunk.title + ' ' + chunk.content).translate(str.maketrans({
+        '陳': '陈', '壽': '寿', '譙': '谯', '張': '张', '劉': '刘', '備': '备',
+        '關': '关', '馬': '马', '黃': '黄', '龐': '庞', '統': '统', '維': '维',
+        '鄧': '邓', '權': '权', '國': '国', '書': '书', '編': '编', '鄉': '乡',
+        '傳': '传', '紀': '纪', '撰': '撰', '著': '著',
+    }))
     people = [name for name in PEOPLE if name in query]
-    if people and not any(name in text for name in people):
+    # 经审核的人物实体也用于识别字/号（例如“承祚”），具体主题仍须正文或标题匹配。
+    person_text = text + ' ' + ' '.join(chunk.entities)
+    if people and not any(name in person_text for name in people):
         return False
     for triggers, alternatives in FOCUS_GROUPS:
         if any(term in query for term in triggers) and not any(term in text for term in alternatives):

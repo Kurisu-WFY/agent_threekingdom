@@ -75,6 +75,23 @@ def test_same_person_different_topic_is_not_related():
     assert not topic_matches('王平的籍贯是什么？', chunk)
 
 
+def test_reviewed_entity_resolves_style_name_without_bypassing_topic():
+    from rag.document_evidence import topic_matches
+    chunk = KnowledgeChunk(id='style_name', title='姚莹国不置史按语', content='承祚又憑何書之？',
+                           entities=['陈寿'], source='清人按语', knowledge_type='text', source_level='B')
+    assert topic_matches('陈寿国不置史', chunk)
+    assert not topic_matches('陈寿故里碑争议', chunk)
+
+
+def test_traditional_person_not_rejected_by_simplified_query():
+    from rag.document_evidence import topic_matches
+    chunk = KnowledgeChunk(id='traditional', title='唐庚考辨', content='陳壽曰：蜀不置史。',
+                           source='宋人考辨', knowledge_type='text', source_level='B')
+    assert topic_matches('陈寿国不置史如何理解？', chunk)
+    assert chunk.content == '陳壽曰：蜀不置史。'
+    assert not topic_matches('王平的籍贯是什么？', chunk)
+
+
 def test_reference_appendix_only_uses_returned_sources():
     from rag.document_evidence import complete_reference_list
     hits, _ = fixture()
