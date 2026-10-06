@@ -231,7 +231,7 @@ cd "D:\DSH Workspace\sgt-latest-dev"
 ## 6. 协作规则
 
 1. **动手前**：读本文件 → 看 `docs/TASKS.md` 认领任务 → 在任务板把状态改成 `DOING`。
-2. **分支**：各自开分支（Codex: `feat/*`；DSH: `fix/*` 或 `chore/*`），**不要直接推 `master`**。
+2. **分支**：2026-10-06 用户明确要求本机 `D:\agent_threekingdom` 后续直接在本地 `dev` 修改，不另开分支；开工先确认当前分支并保护未提交改动。不得擅自推送、重写历史或直接推 `master`。其他工作区的分工仍按协调者约定。
 3. **小步提交**：频繁 commit，写明改了什么；提交信息用 `<type>(<scope>): <描述>`（如 `fix(frontend): ...`）。
 4. **收工**：更新 `docs/TASKS.md` 状态，并在 `docs/HANDOFF.md` 留下「做了什么 / 下一步 / 卡点」。
 5. **不擅自合并**：由人 review 后合并；涉及共享分支的强制操作（force push 等）必须先经人确认。
