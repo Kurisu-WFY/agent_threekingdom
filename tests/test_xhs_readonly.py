@@ -12,6 +12,27 @@ URL = "https://www.xiaohongshu.com/explore/0123456789abcdef01234567?xsec_token=t
 
 
 class ReadonlyTests(unittest.IsolatedAsyncioTestCase):
+    def test_error_response(self):
+        self.assertEqual(xhs.classify_response({"success": True, "_http_status": 461})["status"], "verification_required")
+        self.assertEqual(xhs.classify_response({"success": "false", "code": -100})["status"], "unavailable")
+        self.assertEqual(xhs.classify_response({"success": True, "code": -100})["status"], "unavailable")
+        self.assertEqual(xhs.classify_response({"success": True, "code": 0, "data": {}})["status"], "ok")
+
+    async def test_blocked_does_not_request(self):
+        client = xhs.ReadonlyClient(cookie="本地测试占位")
+        client.blocked = True
+        result = await client.request("/api/sns/web/v1/search/notes")
+        self.assertEqual(result["_http_status"], 461)
+
+    async def test_http_error_overrides_success(self):
+        client = xhs.ReadonlyClient(cookie="本地测试占位")
+        client._page = AsyncMock()
+        client._page.evaluate.return_value = {"status": 461, "body": {"success": True, "data": {}}}
+        result = await client.request("/api/sns/web/v1/search/notes")
+        self.assertFalse(result["success"])
+        self.assertTrue(client.blocked)
+        self.assertEqual(xhs.classify_response(result)["status"], "verification_required")
+
     def test_url(self):
         self.assertEqual(xhs.note_params(URL)[1], "test")
         for bad in ["https://example.com/a?xsec_token=x", "http://www.xiaohongshu.com/explore/a", URL.split("?")[0]]:

@@ -1039,6 +1039,8 @@
 - 下一步可优化 BGE 冷启动、平台自定义标签清理/Markdown 排版和进度去重；核心联调已完成，不等于这些质量问题已解决。未推送、未合并，服务保持运行供用户体验。
 # 小红书只读攻略接入交接
 
+- 用户填写Cookie后真实stdio登录检测status=ok，搜索收到HTTP461，未取得笔记。上游丢弃HTTP状态曾将此响应呈现为成功空数组，已增加ReadonlyClient保留状态、verification_required提示和阻断后续请求；9项测试通过。后续连接检查unavailable，未继续搜索或绕过验证。凭据未输出、未提交。需用户在官方浏览器检查登录与人工验证，必要时更新Cookie，再重启小红书MCP。正文读取未实测成功，女娲挂载仍需新会话验证。
+
 - 本机dev新增src/xhs_readonly_mcp.py，复用上游310f2aca固定提交客户端，仅提供check_xhs_connection/search_travel_notes/read_travel_note/read_travel_comments；不导入带stdout调试输出和发表评论工具的上游入口。金额交由模型按原文单位整理为预计费用，来源C级，不用于史实。
 - 独立环境E:/codex_workplace/runtimes/xhs-mcp，不修改原RAG Python；原始上游源码E:/codex_workplace/integrations/xhs-mcp。安装requirements.xhs.txt固定提交与MCP 1.x；当前源码实际上使用Playwright浏览器，与README“无需Playwright”描述不同。
 - .env.xhs.local和config/xhs-mcp.local.example.json被Git忽略，前者Cookie为空，后者本机路径可合并到女娲配置；未读取浏览器Cookie、未改女娲内部数据库。平台提示词需手动同步。无凭据6项测试和真实stdio工具发现通过；实际查询等待用户填写凭据，不能声称远端女娲已可用。下一步运行scripts/probe_xhs_mcp.py，然后在女娲新会话验证搜索和正文读取。保留此前未跟踪文献任务文件。
