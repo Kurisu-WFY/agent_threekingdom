@@ -4,6 +4,7 @@ from datetime import date
 from typing import Any
 
 from db import connect, init_db
+from tools.ticket_references import find_ticket_reference
 
 
 def row_to_dict(row: Any) -> dict:
@@ -41,16 +42,20 @@ def list_scenic_spots(city: str | None = None) -> list[dict]:
                 "ticket_source_status": "official_page", "ticket_note": "官网公布全价50元/人、半价25元/人；优惠资格见官方票务规定。",
                 "source_url": "https://www.wuhouci.net.cn/", "updated_at": "2026-09-28",
                 "data_status": "maintained", "notes": "官网资料整理，非实时库存；未提供精确入口坐标。"})
+    for result in results:
+        ticket = find_ticket_reference(result["spot_id"])
+        if ticket:
+            result["ticket_reference"] = ticket
+            result["ticket_note"] = ticket["price_note"]
+            if ticket.get("open_time"):
+                result["open_time"] = ticket["open_time"]
     return results
 
 
 def get_spot_ticket(spot_name_or_id: str) -> dict:
-    if spot_name_or_id in ('chengdu_wuhouci', '成都武侯祠', '成都武侯祠博物馆'):
-        return {"found": True, "spot_id": "chengdu_wuhouci", "name": "成都武侯祠博物馆", "city": "成都",
-                "ticket_name": "全价门票", "price_min": 50, "price_max": 50, "currency": "CNY",
-                "data_status": "maintained", "updated_at": "2026-09-28", "booking_url": "https://www.wuhouci.net.cn/",
-                "sources": [{"title": "成都武侯祠博物馆官网", "source_url": "https://www.wuhouci.net.cn/", "source_level": "A"}],
-                "warning": "官网页面价格，非实时库存；半价票25元，资格及特别活动以官方公告为准。"}
+    reference = find_ticket_reference(spot_name_or_id)
+    if reference:
+        return reference
     ensure_demo_data()
     pattern = f"%{spot_name_or_id}%"
     with connect() as conn:
@@ -70,6 +75,9 @@ def get_spot_ticket(spot_name_or_id: str) -> dict:
     if not row:
         return {"found": False, "message": "未找到该景区，需在 scenic_spots 表维护基础信息。"}
     data = row_to_dict(row)
+    reference = find_ticket_reference(data["spot_id"])
+    if reference:
+        return reference
     data["found"] = True
     data["data_status"] = {"manual_demo": "sample", "manual_pending": "pending"}.get(data.get("data_status"), data.get("data_status") or "pending")
     data["sources"] = []

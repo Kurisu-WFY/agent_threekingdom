@@ -1039,6 +1039,10 @@
 - 下一步可优化 BGE 冷启动、平台自定义标签清理/Markdown 排版和进度去重；核心联调已完成，不等于这些质量问题已解决。未推送、未合并，服务保持运行供用户体验。
 # 小红书只读攻略接入交接
 
+- 策略切换：用户不再依赖小红书，改联网维护门票参考。data/examples/ticket_references.json保存万卷楼5、汉桓侯祠50、剑门关100—105、昭化收费参观点45—52、成都武侯祠50元，均有来源和票种范围。原get_spot_ticket优先读取参考表，景点MCP和REST增加ticket_reference，描述带参考价。王平墓缺来源不作为免费；原样例上限30仍属sample，不是公开票价，模型不能将它写为网页报价。
+- 5项新测试与7项API测试通过，真实stdio六处查询与REST验证通过，业务库文件SHA256未变；没有重跑现有业务种子，没有改RAG索引或前端布局。此次stdio票务探针显式使用hash配置避免预加载BGE，未作为RAG验收。官网武侯祠常规时间已按09:00—18:00、17:00停止入馆纠正。
+- 运行中的后端和三国MCP需重启加载Python改动，平台系统提示词可同步；网页用户提示词已增加预计费用规则。用户src/.idea下已暂存文件不纳入此任务提交，不推送。
+
 - 用户填写Cookie后真实stdio登录检测status=ok，搜索收到HTTP461，未取得笔记。上游丢弃HTTP状态曾将此响应呈现为成功空数组，已增加ReadonlyClient保留状态、verification_required提示和阻断后续请求；9项测试通过。后续连接检查unavailable，未继续搜索或绕过验证。凭据未输出、未提交。需用户在官方浏览器检查登录与人工验证，必要时更新Cookie，再重启小红书MCP。正文读取未实测成功，女娲挂载仍需新会话验证。
 
 - 本机dev新增src/xhs_readonly_mcp.py，复用上游310f2aca固定提交客户端，仅提供check_xhs_connection/search_travel_notes/read_travel_note/read_travel_comments；不导入带stdout调试输出和发表评论工具的上游入口。金额交由模型按原文单位整理为预计费用，来源C级，不用于史实。

@@ -150,6 +150,12 @@ def spots(city: str = "", audience: str = "", theme: str = ""):
             items[-1].update(data_status="maintained", updated_at=r["updated_at"],
                 description=r["address"]+"；"+r["ticket_note"], location_note="到达路线请交给智能体规划，选择官方入口。",
                 sources=[{"title":"成都武侯祠博物馆官网", "source_url":r["source_url"], "source_level":"A"}])
+        if r.get("ticket_reference"):
+            ticket = r["ticket_reference"]
+            items[-1]["ticket_reference"] = ticket
+            items[-1]["description"] = (r.get("address") or "") + "；" + ticket["price_note"]
+            # 票价来源独立传递，不把样例景点坐标和文化资料提升为已核验。
+            items[-1]["ticket_sources"] = ticket["sources"]
     return envelope("ok" if items else "empty", "景区演示资料；开放时间及票价须核验。", {"spots": items})
 
 
