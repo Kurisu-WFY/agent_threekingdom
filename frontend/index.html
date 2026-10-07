@@ -6,7 +6,7 @@
   <title>寻迹三国 · 陈寿笔下的蜀汉记忆</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="outing.css?v=frontend-batch3-final">
-  <link rel="stylesheet" href="styles.css?v=planner-polish-20261006">
+  <link rel="stylesheet" href="styles.css?v=review-r01-r06-20261007">
 </head>
 <body>
   <header class="topbar">
@@ -23,7 +23,8 @@
   </header>
 
   <main class="workspace">
-    <section class="content" aria-label="主内容区">
+    <p id="navigation-status" class="map-note" role="status"></p>
+      <section class="content" aria-label="主内容区">
 
       <div id="journal-view" class="module-view journal-view" data-view-panel="journal" hidden>
         <header class="journal-heading"><p class="welcome-kicker">我的三国探索志 · 探索进度</p><h1 tabindex="-1">陈寿为你记下的三国探索志</h1><p id="journal-overview" class="journal-overview" aria-live="polite"></p><p id="journal-local-notice" role="status"></p></header>
@@ -63,7 +64,7 @@
               </div>
               <div id="culture-map-home">
                 <div id="culture-shared-map" class="culture-shared-map">
-                  <svg id="story-preview-map" viewBox="0 0 900 680" role="img" aria-label="四川地理轮廓示意图，故事路线待补充"></svg>
+                  <svg id="story-preview-map" viewBox="0 0 900 680" role="img" aria-label="四川地理轮廓示意图，故事路线待补充"><g id="story-preview-points"></g></svg>
                   <button type="button" class="module-button" id="preview-story-open" aria-controls="map-view">打开四川地图</button>
                   <p id="story-preview-status" class="map-note" role="status">正在加载地理轮廓示意图…</p>
                   <p class="map-note">2026-09-12 地理快照 · 轮廓示意<br>不代表景区位置、交通路线或实时数据。</p>
@@ -91,7 +92,7 @@
               <div class="hero-composer-bottom"><button id="hero-send" type="submit" disabled>请陈寿推荐</button></div>
             </form>
             <p id="journey-feedback" class="journey-feedback" role="status">推荐将进入陈寿对话，可继续补充和调整。</p>
-            <p class="map-note">主题建议以现有资料为限。交通、开放时间与票价，出发前仍需核验。</p>
+            <p class="map-note">主题建议以现有资料为限。出发前请核验交通、开放时间与票价。</p>
             <div class="journey-secondary-actions"><button type="button" class="preview-clear" data-prepare-review>回顾与调整</button><button type="button" class="preview-clear" id="journey-return-plan" hidden>返回行程推荐</button></div>
           </section>
 
@@ -125,7 +126,7 @@
           <aside id="story-detail-sidebar" class="story-detail-sidebar" aria-label="故事章节轴"></aside>
           <div class="story-detail-reading">
             <div id="story-detail-content"></div>
-            <section id="story-detail-map" class="story-detail-map" aria-label="章节与四川地图"></section>
+            <section id="story-detail-map" class="story-detail-map" aria-label="章节与四川地图"><div id="story-map-relations"></div></section>
             <div class="module-actions"><button type="button" class="module-button" id="story-map-open" aria-controls="map-view">进入故事地图</button><button type="button" class="module-button" id="story-ask">与陈寿讨论这个主题</button></div>
             <p class="map-note" id="story-action-status" role="status">当前为主题模板，尚未形成可执行行程。</p>
           </div>
@@ -150,10 +151,11 @@
           <button type="button" class="module-button" id="map-add-stop" disabled>加入路线</button>
         </div>
         <p class="map-note" id="map-filter-status" role="status">这里列出全省县区，选一个就能定位。</p>
+        <p class="map-note" id="map-keyboard-hint">Tab 进入地图；方向键切换章节和县区，Home / End 到首尾，Enter 或空格查看，Tab 离开。也可使用县区下拉与章节列表。</p>
         <div class="module-actions map-tools"><button class="module-button" id="map-reset">全省视图</button><button class="module-button" id="map-fit" disabled>查看整条路线</button><button class="module-button" id="map-clear">清除路线</button><button type="button" class="module-button map-plan-button" id="map-plan" data-plan-map>带入活动计划</button></div>
         <div class="story-map-layout">
         <div class="interactive-map">
-          <svg id="route-map" viewBox="0 0 900 680" role="group" aria-label="四川地理与故事章节地图，可拖动、双指缩放或使用右下角缩放控件">
+          <svg id="route-map" viewBox="0 0 900 680" role="group" tabindex="0" aria-describedby="map-keyboard-hint" aria-label="四川地理与故事章节地图，可拖动、双指缩放或使用右下角缩放控件">
             <g id="city-boundaries"></g><g id="county-boundaries"></g><g id="city-points"></g>
             <g id="county-points"></g><g id="route-lines"></g><g id="route-points"></g>
             <g id="story-order-lines" aria-hidden="true"></g><g id="story-ink-lines" aria-hidden="true"></g><g id="story-map-nodes"></g>
@@ -204,7 +206,7 @@
         <div class="node-heading"><div id="node-visual" class="story-building-visual"></div><div><p class="welcome-kicker">地点资料 · 与当前故事的关系</p><h2 id="node-title" tabindex="-1"></h2><p id="node-context"></p><p id="node-people"></p><p id="node-coordinate" class="map-note"></p></div></div>
         <p class="story-art-note">建筑类型艺术示意 · 非实测复原，不作为历史形制依据</p>
         <div id="node-metadata"></div>
-        <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，可独立滚动阅读"><div id="node-reading-content"></div></div>
+        <div id="node-reading" class="node-reading" tabindex="0" role="region" aria-label="本章讲解，随地点资料主区滚动"><div id="node-reading-content"></div></div>
         <h3 id="node-comparison-title" tabindex="-1">正史 × 演义</h3><div id="node-comparison" class="node-comparison"></div><div id="node-differences"></div><div id="node-disputes" class="node-disputes"></div>
         <section id="node-tourism" class="node-tourism" aria-label="实时旅游信息"></section>
         <p class="map-note">去景点前，可以请向导帮你确认交通方式和参观安排。</p><p id="node-feedback" role="status"></p>
@@ -219,13 +221,14 @@
       </section>
 
       <section class="module-view" id="planner-view" data-view-panel="planner" hidden>
-        <p class="welcome-kicker">这次的活动安排</p><h2 tabindex="-1">安排文化活动</h2>
+        <p class="welcome-kicker">这次的活动安排</p><h1 tabindex="-1">安排文化活动</h1>
         <p>告诉向导你的条件，讨论活动顺序、时长和文化讲解。开放时段等实时信息仍需核验。调整条件不会清空已寻迹记录。</p>
         <button id="view-current-plan" type="button" class="module-button" data-content-view="plan" hidden>查看本次方案</button>
+        <p id="activity-summary" class="data-banner" role="status"></p>
         <div class="planner-layout">
         <section class="planner-inputs" aria-label="活动条件">
-        <header class="planner-card-heading"><h3>活动条件</h3>
-        <button id="planner-back-story" type="button" class="module-button">返回故事调整章节</button></header>
+        <header class="planner-card-heading"><h2>活动条件</h2>
+        <button id="planner-back-story" type="button" class="module-button">返回目的地</button></header>
         <p id="planner-story" class="data-banner">尚未选择故事，可填写普通行程需求。</p>
         <form id="trip-form" class="module-form">
           <label>目的地（必填）<input name="city" required maxlength="120" list="itinerary-cities" placeholder="填写四川城市，可填写多个"></label>
@@ -244,6 +247,17 @@
           <label>故事线<select name="explanation"><option value="大众体验版">大众线</option><option value="亲子故事版">亲子线</option><option value="学术探索版">学术线</option></select></label>
           <label>住宿档位（选填）<select name="hotel_tier"><option value="">不需要住宿</option><option>经济型</option><option>舒适型</option><option>高档型</option><option>豪华型</option></select></label>
           <label class="form-wide">补充需求（选填）<textarea name="notes" rows="2" maxlength="1000" placeholder="例如：少走路、想多了解陈寿"></textarea></label>
+          <section id="activity-conflict" class="form-wide activity-conflict" hidden aria-label="活动条件冲突" tabindex="-1">
+            <h3>请确认本次条件交接</h3><p id="conflict-differences"></p>
+            <label>采用的目的地<select id="conflict-city"></select></label>
+            <p id="conflict-retained"></p><p id="conflict-places"></p>
+            <label>此前备注，需确认（全文）<textarea id="conflict-notes" rows="3"></textarea></label>
+            <label>备注处理<select id="conflict-notes-action"><option value="keep">保留原文</option><option value="edit">使用上方编辑后的文字</option><option value="clear">清空此前备注</option></select></label>
+            <label><input id="conflict-cross-confirm" type="checkbox">我明确确认保留列出的城市、故事章节与景点；交通与时间可行性待核验</label>
+            <div class="module-actions"><button id="conflict-adopt" type="button" class="module-button">采用新故事目的地</button><button id="conflict-cross" type="button" class="module-button">保留为跨城市需求</button><button id="conflict-cancel" type="button" class="module-button">取消带入</button></div>
+            <p id="conflict-feedback" role="status"></p>
+          </section>
+          <p id="planner-auto-places" class="form-wide map-note"></p>
           <button class="module-button primary" type="submit">生成活动方案</button>
         </form>
         <p class="map-note">活动时间按半天4小时、一天8小时、两天16小时计算；开放时段等实时信息仍待核验。</p>
@@ -251,8 +265,13 @@
         <p id="planner-status" role="status"></p>
         <button id="planner-retry" type="button" class="module-button" hidden>重试上次请求</button>
         </section>
+        <section id="activity-recovery" class="activity-recovery" hidden aria-label="本次回答与恢复操作">
+          <h2>尚未收到活动方案</h2><div id="activity-original-answer"></div>
+          <div class="module-actions"><button id="return-conditions" class="module-button" type="button">返回条件</button><button id="copy-demand" class="module-button" type="button">复制本次需求</button><button id="organize-demand" class="module-button" type="button">整理章节与条件清单</button></div>
+          <textarea id="demand-copy-fallback" readonly hidden aria-label="可选中复制的本次需求"></textarea><p id="demand-copy-status" role="status"></p><p id="activity-checklist-status" class="map-note" role="status" hidden></p><pre id="activity-checklist" hidden></pre>
+        </section><section id="activity-result" class="activity-result" aria-label="已有活动结果" hidden></section>
       <section id="outing-view" class="outing inline-roads" aria-labelledby="outing-title">
-        <header><h3 id="outing-title" tabindex="-1">核验道路路线</h3><button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
+        <div class="road-query-snapshot"><p id="road-association" class="query-association" role="status">尚未关联当前活动。</p><details id="road-query-details" hidden><summary>查询详情（原地点编码）</summary><p id="road-query-identifiers" class="map-note"></p></details></div><header><h2 id="outing-title" tabindex="-1">核验道路路线</h2><button type="button" id="outing-use-activity" class="module-button">带入当前活动地点</button><p>搜索并确认起终点，再查询实际道路方案。进入本页不会自动查询。</p></header>
         <div class="outing-handoff"><span id="outing-origin">可独立查询，也可从陈寿的回答带入行程草案。</span><button id="outing-back" type="button" hidden>返回原对话</button></div>
         <details class="itinerary-utilities" open><summary>道路查询工具</summary>
         <div class="outing-columns">
@@ -269,7 +288,7 @@
                 <p id="amap-place-status" role="status" aria-live="polite"></p>
                 <div id="amap-place-results"></div>
               </section>
-              <div class="outing-search-heading"><h2 id="outing-route-title">路线规划</h2><p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p></div>
+              <div class="outing-search-heading"><h3 id="outing-route-title">路线规划</h3><p>输入地名，确认具体地点后查询高德公交、驾车或步行方案。</p></div>
               <form id="amap-search-form">
                 <label>搜索城市<input id="amap-city" value="南充" list="itinerary-cities" required maxlength="60"></label>
                 <div class="outing-endpoints">
@@ -301,7 +320,7 @@
               <p class="outing-note">城市中心不是景区入口。查询会将起终点坐标发送到公共路线服务，请勿填写敏感地址。</p>
               <button type="submit" class="outing-primary">查询道路路线</button>
             </form>
-            <p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
+            <p id="osrm-association" class="query-association" role="status">尚未关联当前活动。</p><p id="outing-route-status" role="status">请先选择起终点；不提供实时路况或公交班次。</p>
             <div id="outing-route-preview" class="outing-route-preview"><p>道路路线将在查询成功后显示<br><small>不使用虚构连线代替导航结果</small></p></div>
             <div id="outing-route-metrics" class="outing-metrics"></div><div id="outing-route-source" class="outing-source"></div>
             </details>
@@ -316,7 +335,7 @@
       </section>
         <div class="planner-services">
         <section class="inline-weather" aria-labelledby="weather-title">
-          <h3 id="weather-title">查看近期天气</h3>
+          <h2 id="weather-title">查看近期天气</h2><p id="weather-association" class="query-association" role="status">尚未关联当前活动。</p><button id="weather-use-activity" class="module-button" type="button">按当前活动条件查询天气</button>
           <p class="map-note">北京时间；按服务实际返回的日期和天数展示，与活动出发日期分开查询。</p>
           <form id="travel-weather-form" class="module-form weather-search">
             <label>查询城市（必填）<input id="travel-city" list="itinerary-cities" required maxlength="120" placeholder="例如：南充、广元"></label>
@@ -325,7 +344,7 @@
           <p id="travel-status" role="status">输入城市后查询；进入活动计划不会自动请求天气。</p>
           <div id="travel-results" class="module-results" aria-live="polite"></div>
         </section>
-        <section class="inline-hotels" aria-labelledby="hotel-title"><h3 id="hotel-title">住宿查询</h3><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
+        <section class="inline-hotels" aria-labelledby="hotel-title"><h2 id="hotel-title">住宿查询</h2><p class="map-note">按所选档位参考对应星级范围；酒店档位不等于平台星级保证。</p><button id="load-hotels" type="button" class="module-button">查询住宿（待接入）</button><div id="hotel-results" class="module-results" aria-live="polite"><p>网页住宿服务未接入，暂不能查询真实酒店与房价。</p></div><p class="map-note">酒店展示价为参考价、非锁价、不代订；不下单、不支付。</p></section>
         </div>
         </div>
       </section>
@@ -334,7 +353,7 @@
         <p class="welcome-kicker">我的行程</p><h2 tabindex="-1">活动方案</h2>
         <div class="module-actions reading-actions"><button id="save-plan" class="module-button" disabled>保存到本机</button><button id="copy-plan" class="module-button" disabled>复制方案</button><button class="module-button" data-content-view="planner">调整需求</button></div>
         <div id="plan-results" class="module-results"></div>
-        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气</button><button class="module-button" data-content-view="outing">核验道路路线</button><button id="plan-back-story" class="module-button">返回故事</button></div>
+        <div class="module-actions"><button id="plan-map" class="module-button" disabled>查看位置示意 / 待定位</button><button class="module-button" data-content-view="travel">天气</button><button class="module-button" data-content-view="outing">核验道路路线</button><button id="plan-back-story" class="module-button">返回目的地</button></div>
         <p id="plan-status" role="status"></p>
         <h3>本机保存的方案</h3><div id="saved-plans" class="module-results"></div>
         <p class="map-note">仅保存在当前浏览器，不会同步到其他设备。</p>
@@ -388,31 +407,31 @@
     </section>
   </aside>
 
-  <script src="presentation-copy.js?v=tourist-copy-20261006"></script>
   <script src="chat-transport.js?v=reflection-20261005"></script>
   <script src="answer-format.js?v=reflection-20261005"></script>
   <script src="outing-core.js?v=deai10-final-20261003"></script>
-  <script src="app.js?v=reflection-20261005"></script>
+  <script src="app.js?v=fix-20261007"></script>
   <script src="landing.js?v=culture14"></script>
   <script src="travel-api.js?v=layout-20261005"></script>
   <script src="cities.js?v=spot-polish-20261006"></script>
   <script src="weather-outlook-core.js?v=layout-20261005"></script>
-  <script src="travel-modules.js?v=spot-polish-20261006"></script>
+  <script src="travel-modules.js?v=review-r01-r06-20261007"></script>
   <script src="browser-location.js?v=browser-location-20261005"></script>
   <script src="map-route-core.js?v=deai10-final-20261003"></script>
-  <script src="travel-map.js?v=deai10-final-20261003"></script>
+  <script src="travel-map.js?v=fix-20261007"></script>
   <script src="story-progress.js?v=deai10-final-20261003"></script>
-  <script src="stories.js?v=culture-polish-20261006"></script>
-  <script src="story-map.js?v=layout-20261005"></script>
-  <script src="cultural-node.js?v=pdf-mapping-20261005"></script>
+  <script src="stories.js?v=fix-20261007"></script>
+  <script src="story-map.js?v=fix-20261007"></script>
+  <script src="cultural-node.js?v=fix-20261007"></script>
   <script src="character-chat.js?v=pdf-mapping-20261005"></script>
-  <script src="journal.js?v=layout-20261005"></script>
+  <script src="journal.js?v=fix-20261007"></script>
   <script src="chenshou-guide.js?v=pdf-mapping-20261005"></script>
-  <script src="outing.js?v=layout-20261005"></script>
+  <script src="outing.js?v=fix-20261007"></script>
   <script src="amap-map.js?v=layout-20261005"></script>
-  <script src="amap-planner.js?v=layout-20261005"></script>
+  <script src="amap-planner.js?v=review-r01-r06-20261007"></script>
   <script src="amap-chat.js?v=20261003"></script>
-  <script src="story-content.js?v=pdf-mapping-20261005"></script>
+  <script src="story-content.js?v=fix-20261007"></script>
+  <script src="navigation-state.js?v=fix-20261007"></script>
   <script src="hotel-search.js?v=20261005"></script>
 </body>
 </html>

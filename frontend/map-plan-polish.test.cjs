@@ -1,7 +1,7 @@
 /* 真实 Chromium。默认天气均为明确标注的协议夹具；实测另存 verify-live.cjs。 */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 let playwright;try{playwright=require('playwright');}catch{playwright=require(path.join(process.env.USERPROFILE||'','.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'));}
-const out=path.join(__dirname,'acceptance-map-plan-polish'),results=[];
+const out=process.env.SGT_ACCEPTANCE_OUT||path.join(__dirname,'acceptance-map-plan-polish'),results=[];
 async function check(name,fn){try{results.push({name,passed:true,detail:await fn()});}catch(e){results.push({name,passed:false,error:e.message});}}
 (async()=>{
 fs.mkdirSync(out,{recursive:true});const browser=await playwright.chromium.launch({channel:'msedge',headless:true});
@@ -29,9 +29,9 @@ await check('2 带入活动计划同排且颜色区分，地图选点交接保�
 });
 await page.locator('.content-switch [data-content-view="planner"]').click();
 await page.evaluate(()=>Promise.all(document.querySelector('#planner-view').getAnimations().map(a=>a.finished.catch(()=>{}))));
-await check('5 紧凑两列字段、必填/选填与人数边界保留',async()=>{
+await check('5 主活动条件字段可见且不越界、必填/选填与人数边界保留',async()=>{
  const fields=page.locator('#trip-form').locator('input,select');const boxes=[];for(let i=0;i<9;i++)boxes.push(await fields.nth(i).boundingBox());
- assert.ok(new Set(boxes.map(b=>Math.round(b.y))).size>=4);assert.ok(boxes.every(b=>b.height<=44&&b.width<=290),JSON.stringify(boxes));
+ assert.ok(new Set(boxes.map(b=>Math.round(b.y))).size>=4);const formBox=await page.locator('#trip-form').boundingBox();assert.ok(boxes.every(b=>b.height<=44&&b.width>=100&&b.x>=formBox.x-1&&b.x+b.width<=formBox.x+formBox.width+1),JSON.stringify(boxes));
  assert.match(await page.locator('#trip-form').innerText(),/目的地（必填）/);assert.match(await page.locator('#trip-form').innerText(),/出发日期（选填）/);
  await page.locator('[name="people"]').fill('0');assert.equal(await page.locator('[name="people"]').evaluate(n=>n.checkValidity()),false);await page.locator('[name="people"]').fill('51');assert.equal(await page.locator('[name="people"]').evaluate(n=>n.checkValidity()),false);await page.locator('[name="people"]').fill('2');return boxes;
 });

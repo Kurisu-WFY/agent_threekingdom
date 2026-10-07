@@ -2,11 +2,12 @@
   const $ = selector => document.querySelector(selector);
   const api = window.TravelApi;
   const storageKey = 'sanguo.travel-plans.v1';
+  let latestDemand=null, latestOtherAnswer=null, checklistDemand=null;
   let current = null, planningStory = null, planRequest = 0, lastAttempt = null;
   let city = '南充';
   let cityRequest = 0;
   let saved = [];
-  const activityState = state => { $('#planner-view').dataset.activityState = state; };
+  const activityState = state => { $('#planner-view').dataset.activityState = state; if(window.TravelModules)updateConditions(); };
   try {
     const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
     if (Array.isArray(stored)) saved = stored.filter(item => item && typeof item.id === 'string' && item.preferences && typeof item.preferences.city === 'string' && Number.isFinite(item.preferences.days) && item.preferences.days >= 0.5 && item.preferences.days <= 14 && item.plan && Array.isArray(item.plan.days) && (!item.chatRoute || (item.chatRoute.found===true && item.chatRoute.route && Array.isArray(item.chatRoute.stops) && item.chatRoute.stops.every(s=>s && typeof s.name==='string')))).slice(0, 20);
@@ -115,33 +116,92 @@
       });
     } catch (error) { if (version === cityRequest) failure(target, '景区', error, () => loadCity(city)); }
   }
-  function chooseCity(nextCity, spot = '') {
-    ++planRequest; planningStory=null; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false; storyLabel();
-    activityState(current?'stale':'idle');
-    field('city').value = nextCity;
-    if(!field('date').value){const today=new Date();field('date').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');}
-    if(spot && !field('notes').value.includes(spot)) field('notes').value=[field('notes').value.trim(),'希望包含：'+spot].filter(Boolean).join('；');
-    const pending=[!nextCity&&'目的地',!field('origin').value.trim()&&'出发地'].filter(Boolean);
-    $('#planner-status').textContent='已带入 '+[nextCity,spot].filter(Boolean).join(' · ')+' · '+(pending.length?'请补'+pending.join('、'):'请核对出发地')+'；日期与活动条件已保留或使用默认值，请核对后生成。';
-    showContentView('planner');
+  let automaticPlaces=[], confirmedCities=[], pendingHandoff=null, committedCity='';
+  const citiesOf=value=>[...new Set(String(value||'').split(/[、,，;；]/).map(c=>c.trim().replace(/市$/,'')).filter(Boolean))];
+  function conditions(){return Object.fromEntries(new FormData($('#trip-form')));}
+  function invalidate(){
+    ++planRequest;lastAttempt=null;$('#planner-retry').hidden=true;
+    $('#trip-form').querySelector('[type="submit"]').disabled=false;
+    activityState(current?'stale':'idle');renderActivityResult();
+    if(current){$('#plan-status').textContent='旧条件结果：活动条件已改变，已保存方案保持。';$('#view-current-plan').textContent='查看旧条件结果';}
+  }
+  function updateChecklistState(){
+    const target=$('#activity-checklist-status');if(!checklistDemand||$('#activity-checklist').hidden){target.hidden=true;return;}
+    target.hidden=false;target.textContent=checklistDemand.version===planRequest&&checklistDemand.conditionKey===activityConditionKey()?'本次请求快照 · 条件未改变':'旧请求快照 · 条件已改变';
+  }
+  function updateConditions(){
+    updateChecklistState();
+    const p=conditions(),days={'0.5':'半天（4 小时）','1':'一天（8 小时）','2':'两天（16 小时）'}[p.days]||'时间待确认';
+    const state={'idle':'尚未生成','requesting':'请求中','valid':'已生成','stale':'旧条件结果','other-answer':'尚未收到活动方案','failed':'请求失败'}[$('#planner-view').dataset.activityState]||'尚未生成';
+    $('#activity-summary').textContent=(planningStory?planningStory.title+' · '+chapterChoices(planningStory).filter(c=>c.status==='本次保留').map(c=>c.name).join('、'):'尚未选择故事')+'；目的地：'+(p.city||'待确认')+'；时间：'+days+'；'+state;
+    $('#planner-auto-places').textContent='自动带入景点：'+(automaticPlaces.length?automaticPlaces.map(x=>x.name+'（'+(x.city||'地区待确认')+'；来源：'+x.source+'）').join('；'):'无')+'。用户备注在补充需求中单独保留。';
+    updateAssociation();window.ActivityQueries?.refresh();
+  }
+  function applyHandoff(next,cross=false){
+    const previous=automaticPlaces.slice(),incoming=next.cities;
+    if(cross){confirmedCities=[...new Set([...citiesOf(committedCity),...(planningStory?.areas||[]).flatMap(citiesOf),...incoming])];}
+    else confirmedCities=incoming;
+    automaticPlaces=(cross?previous:previous.filter(p=>incoming.includes(p.city))).concat((next.places||[]).filter(p=>cross||!p.city||incoming.includes(p.city)));
+    automaticPlaces=automaticPlaces.filter((p,i,a)=>a.findIndex(x=>x.name===p.name&&x.city===p.city)===i);
+    if(next.kind==='story'){if(next.chapterIndices)window.StoryProgress.choose(next.story,next.chapterIndices);planningStory=next.story;field('explanation').value=window.StoryProgress.get(next.story).mode;}
+    else if(!cross)planningStory=null;
+    field('city').value=confirmedCities.join('、');committedCity=field('city').value;
+    if(next.days===0.5)field('days').value='0.5';
+    if(next.notes!==undefined)field('notes').value=next.notes;
+    if(!field('date').value&&next.kind!=='story'){const today=new Date();field('date').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');}
+    invalidate();pendingHandoff=null;$('#activity-conflict').hidden=true;storyLabel();
+    const removed=previous.filter(p=>!automaticPlaces.includes(p));
+    $('#planner-status').textContent=(next.days===0.5?'已将可用时间设为半天（4 小时），已沿用所选章节。':'已带入本次条件。')+(cross?'已明确确认跨城市需求：'+confirmedCities.join('、')+'。':'目的地：'+committedCity+'；移除此前自动带入景点：'+(removed.map(p=>p.name).join('、')||'无')+'。')+'保留：出发地、日期、人数、同行人群、交通方式、住宿偏好。用户备注：'+(next.notesAction==='clear'?'已按确认清空':next.notesAction==='edit'?'已按确认编辑':'保留原文')+'。交通和游览时长待核验'+(next.days===0.5?'，不保证半天可完成。':'。');
+    updateConditions();showContentView('planner');
+  }
+  function handoff(next){
+    const old=citiesOf(committedCity||field('city').value),storyCities=(planningStory?.areas||[]).flatMap(citiesOf);
+    const differences=next.cities.length!==1||old.some(c=>!next.cities.includes(c))||storyCities.some(c=>!next.cities.includes(c))||automaticPlaces.some(p=>!next.cities.includes(p.city));
+    if(!differences&&!pendingHandoff){applyHandoff(next);return;}
+    pendingHandoff=next;
+    $('#activity-conflict').hidden=false;
+    $('#conflict-differences').textContent='当前目的地为'+(old.join('、')||'待确认')+'；'+(next.kind==='story'?'新故事涉及':'新带入目的地为')+(next.cities.join('、')||'地区尚未提供，必须选择目的地')+'；此前自动带入'+(automaticPlaces.map(p=>p.name).join('、')||'无景点')+'。'+(planningStory?'当前故事：'+planningStory.title+'（'+storyCities.join('、')+'）。':'');
+    const select=$('#conflict-city');select.replaceChildren();
+    for(const value of ['',...new Set([...next.cities,...(window.SGTCities||[])])]){const o=node('option',value||'请选择目的地');o.value=value;select.append(o);}select.value=next.cities.length===1?next.cities[0]:'';
+    $('#conflict-retained').textContent='确认后保留：出发地 '+(field('origin').value||'待填')+'；日期 '+(field('date').value||'待填')+'；人数 '+field('people').value+'；同行 '+field('group').value+'；交通 '+field('transport').value+'；住宿 '+(field('hotel_tier').value||'未选择')+'；时间 '+(next.days===0.5?'将设为半天（4 小时）':field('days').value+'天')+'。';
+    $('#conflict-places').textContent='跨城市将保留城市：'+[...new Set([...old,...storyCities,...next.cities])].join('、')+'；景点：'+[...automaticPlaces,...(next.places||[])].map(p=>p.name+'（'+p.city+'，'+p.source+'）').join('、')+'；新故事章节：'+(next.story?chapterChoices(next.story,next.chapterIndices).map(c=>c.name+'（'+c.status+'）').join('；'):'无')+'。';
+    $('#conflict-notes').value=field('notes').value;$('#conflict-notes-action').value='keep';$('#conflict-cross-confirm').checked=false;$('#conflict-feedback').textContent='此前备注的来源无法自动区分，请明确选择保留、编辑或清空。不按关键词删除原文。';
+    $('#conflict-adopt').textContent=next.kind==='story'?'采用新故事目的地':'采用新目的地';
+    $('#planner-status').textContent='条件交接存在差异，请先处理生成入口旁的冲突。';showContentView('planner');updateConditions();
+  }
+  function resolveHandoff(cross){
+    if(!pendingHandoff)return;
+    if(!$('#conflict-city').value){$('#conflict-feedback').textContent='请先选择明确的目的地。';return;}
+    if(cross&&!$('#conflict-cross-confirm').checked){$('#conflict-feedback').textContent='请勾选确认保留列出的跨城市组合。';return;}
+    const n={...pendingHandoff,cities:cross?[...new Set([...pendingHandoff.cities,$('#conflict-city').value])]:[$('#conflict-city').value]};
+    n.notesAction=$('#conflict-notes-action').value;
+    n.notes=$('#conflict-notes-action').value==='clear'?'':$('#conflict-notes-action').value==='edit'?$('#conflict-notes').value:field('notes').value;
+    applyHandoff(n,cross);
+  }
+  $('#conflict-adopt').onclick=()=>resolveHandoff(false);$('#conflict-cross').onclick=()=>resolveHandoff(true);
+  $('#conflict-cancel').onclick=()=>{pendingHandoff=null;$('#activity-conflict').hidden=true;field('city').value=committedCity;$('#planner-status').textContent='已取消带入，原活动条件、备注与请求保持。';updateConditions();};
+  function chooseCity(nextCity,spot=''){
+    const cities=citiesOf(nextCity);
+    handoff({kind:'city',cities,places:spot?[{name:spot,city:cities.join('、'),source:'目的地景区资料'}]:[]});
   }
   document.querySelectorAll('[data-city]').forEach(button => button.onclick = () => loadCity(button.dataset.city));
   document.querySelectorAll('[data-destination]').forEach(button => button.onclick = () => chooseCity(button.dataset.destination));
   $('#plan-destination').onclick = () => chooseCity(city);
   document.querySelectorAll('[data-plan-map]').forEach(button => button.onclick = () => {
-    const selection=window.TravelMap?.getPlanSelection();
+    const selection=window.TravelMap?.getPlanSelection(true);
     if(!selection || (!selection.cities.length&&!selection.places.length)){$('#map-plan-status').textContent='请先在地图选择地点或市州，再带入活动计划。';return;}
-    $('#map-plan-status').textContent='';chooseCity(selection.cities.join('、'),selection.places.join('、'));
+    $('#map-plan-status').textContent='';handoff({kind:'map',cities:selection.cities.flatMap(citiesOf),places:(selection.locations||selection.places.map(name=>({name,city:selection.cities.length===1?selection.cities[0]:''}))).map(p=>({...p,source:'行旅地图用户选点'}))});
   });
   $('#open-culture').onclick = () => toggleChat(true);
 
   function renderPlan() {
+    renderActivityResult();
     const target = $('#plan-results');
     if (!current) return empty(target, '还没有行程草稿。选好目的地和出行条件后，就能生成。');
     if (current.chatRoute) { renderChatPlan(target); return; }
     $('#plan-map').disabled = true;
     const { preferences: p, plan } = current;
-    if(current.activityAnswer) {
+    if(current.activityAnswer && !plan.days.length) {
       target.replaceChildren(node('h3',plan.title),node('p',(p.date||p.travel_date||'日期待确认')+' · '+p.people+'人'));
       target.append(window.SGTAnswerTrust ? window.SGTAnswerTrust.render(current.activityEvidence || {}) : node('p','来源 · 待核验；回答提及的文献出处尚未核验，请勿作为已核验引文。','map-note'));
       target.append(window.AgentAnswer ? window.AgentAnswer.render(current.activityAnswer) : node('p',current.activityAnswer));
@@ -162,49 +222,45 @@
       }
       target.append(card);
     });
-    sources(target, plan.sources);
+    sources(target, plan.sources);appendOriginalAnswer(target);
     $('#save-plan').disabled = $('#copy-plan').disabled = false;
   }
   const field = name => $('#trip-form').elements.namedItem(name);
   const text = v => typeof v === 'string' && v.trim() ? v.trim() : '待核验';
   const minutes = v => Number.isFinite(v) && v > 0 ? v + ' 分钟' : '待核验';
-  function chapterChoices(story) {
+  function chapterChoices(story,indices) {
     if (!story) return [];
     const state=window.StoryProgress.get(story), places=window.StoryMap.getPlaces(story.id);
     return (story.chapters || []).map((chapter,i)=>({name:chapter.name,placeId:chapter.placeId,
       place:places.find(p=>p.id===chapter.placeId)?.name || '', role:chapter.role || '',
-      status:state.completed.has(i)?'已完成':state.skipped.has(i)?'本次跳过':'本次保留'}));
+      status:state.completed.has(i)?'已完成':(indices?!indices.includes(i):state.skipped.has(i))?'本次跳过':'本次保留'}));
   }
   function storyLabel() {
     $('#planner-story').textContent=planningStory ? '故事：'+planningStory.title+' · '+chapterChoices(planningStory).map(c=>c.name+'（'+c.status+'）').join('；')+(planningStory.chapters?.length?'。':'章节待补充。')+'本地已寻迹记录保持。' : '尚未选择故事，可填写普通行程需求。';
-    $('#planner-back-story').textContent=planningStory?'返回故事详情调整章节':'返回目的地';
-    $('#plan-back-story').textContent=planningStory?'返回故事详情':'返回目的地';
+    $('#planner-back-story').textContent=planningStory?'返回故事':'返回目的地';
+    $('#plan-back-story').textContent=planningStory?'返回故事':'返回目的地';
   }
   function restoreForm(preferences) {
     field('hotel_tier').value=preferences.hotel_tier||'';
     Object.entries(preferences).forEach(([key,value])=>{if(field(key))field(key).value=value;});
     field('origin').dispatchEvent?.(new Event('sgt-origin-restored'));
   }
-  function openStory(story) {
-    ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true;
-    activityState(current?'stale':'idle');
-    $('#trip-form').querySelector('[type="submit"]').disabled=false;
-    planningStory=story; field('explanation').value=window.StoryProgress.get(story).mode;
-    storyLabel(); $('#planner-status').textContent='请填写出行条件。核心章节会沿用你在故事详情中的选择。';
-    showContentView('planner');
+  function openStory(story,days,selection={}){
+    handoff({kind:'story',story,days,chapterIndices:selection.chapterIndices,cities:(story.areas||[]).flatMap(citiesOf),places:[]});
   }
   const hotelStars={'经济型':'2.0,2.5','舒适型':'3.0,3.5','高档型':'4.0,4.5','豪华型':'4.5,5.0'};
   function hotelRequirement(p){return p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位偏好：'+p.hotel_tier+'（参考星级范围 '+hotelStars[p.hotel_tier]+'）；需要住宿时调用已授权的酒店查询工具，先确认入住日期、晚数和每房人数。只展示工具返回的酒店与参考价，不编造房价。':'住宿：本次未选择。';}
   function makeQuestion(p,story,choices) {
     const duration={'0.5':'半天','1':'一天','2':'两天'}[p.days];
-    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事：'+story.title+'。':'')+
+    return '请生成三国文化活动方案，只输出活动安排。'+(story?'故事：'+story.title+'；故事涉及地区：'+(story.areas||[]).join('、')+'。活动仅限已确认目的地，章节是阅读主题，不自动添加异地活动。':'')+
       '出发地：'+p.origin+'；目的地：'+p.city+'；可用时间：'+duration+'；出发日期：'+(p.date||'待确认')+
       '（活动时长合计上限 '+({0.5:4,1:8,2:16}[p.days])+' 小时）；同行：'+p.group+'，'+p.people+'人；讲解偏好：'+p.explanation+'。'+
+      '自动带入景点：'+(p.automaticPlaces?.length?p.automaticPlaces.map(x=>x.name+'（'+(x.city||'地区待确认')+'；来源：'+x.source+'）').join('；'):'无')+'。'+
       '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认')+'。'+
       '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
       hotelRequirement(p)+'先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
-  function visitorSummary(p,story){return '请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[p.explanation]||'大众线')+(p.hotel_tier?'；住宿：'+p.hotel_tier:'')+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'')+'。';}
+  function visitorSummary(p,story){const summary='请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[p.explanation]||'大众线')+(p.hotel_tier?'；住宿：'+p.hotel_tier:'')+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'');return /[。！？.!?]$/.test(summary.trimEnd())?summary.trimEnd():summary.trimEnd()+'。';}
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;
     target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),
@@ -236,31 +292,37 @@
       });
     }
     target.append(node('p','交通耗时、开放时段、费用与章节匹配未全部核验前，本方案仅供讨论。','map-note'));
-    sources(target,route.sources); $('#save-plan').disabled=$('#copy-plan').disabled=false; $('#plan-map').disabled=false;
+    sources(target,route.sources);appendOriginalAnswer(target); $('#save-plan').disabled=$('#copy-plan').disabled=false; $('#plan-map').disabled=false;
   }
+  function appendOriginalAnswer(target){if(!current.activityAnswer)return;target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源 · 待核验；回答提及的文献出处尚未核验。','map-note'),node('h3','服务原回答'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));}
   function receiveActivity(reply) {
     const attempt=reply.activityPlan;
     if(!attempt || attempt.version!==planRequest || typeof reply.text!=='string' || !reply.text.trim())return;
-    const intent=reply.data?.intent?.intent;
-    if(reply.data?.route?.found===true || ['route_planning','budget_ticket'].includes(intent) || reply.data?.generation?.kind==='retrieval_fallback'){
-      activityState('other-answer');
-      $('#planner-status').textContent=(intent==='budget_ticket'?'服务返回了费用回答':reply.data?.route?.found===true || intent==='route_planning'?'服务返回了路线模板':'服务返回了资料摘录')+'，尚未收到活动方案；原回答保留在对话中，现有方案保持。';
-      $('#plan-status').textContent='尚未更新活动方案；请等服务支持生成活动方案后再试。';
+    const intent=reply.data?.intent?.intent,route=reply.data?.route;
+    // 只接受现有可渲染的结构化路线协议；非空文字、意图标签或 found 标志本身不是方案证据。
+    const hasRoute=route?.found===true&&route.route&&typeof route.route==='object'&&!Array.isArray(route.route)&&Array.isArray(route.stops)&&route.stops.length>0&&route.stops.every(stop=>stop&&typeof stop.name==='string'&&stop.name.trim());
+    const plan=reply.data?.plan;
+    const hasPlan=plan&&typeof plan==='object'&&Array.isArray(plan.days)&&plan.days.length>0&&plan.days.every(day=>day&&Array.isArray(day.stops)&&day.stops.length>0&&day.stops.every(stop=>stop&&typeof stop.name==='string'&&stop.name.trim()));
+    if((!hasRoute&&!hasPlan) || intent==='budget_ticket' || reply.data?.generation?.kind==='retrieval_fallback'){
+      activityState('other-answer');renderActivityResult();
+      $('#planner-status').textContent=(intent==='budget_ticket'?'服务返回了费用回答，尚未收到活动方案':reply.data?.generation?.kind==='retrieval_fallback'?'服务返回了资料摘录，尚未收到活动方案':'尚未收到活动方案，请查看服务原回答')+'；原回答保留在对话中，现有方案保持。';
+      latestOtherAnswer=reply.text;$('#activity-recovery').hidden=false;$('#activity-original-answer').replaceChildren(window.AgentAnswer?window.AgentAnswer.render(reply.text):node('p',reply.text));$('#activity-checklist').hidden=true;
+      $('#plan-status').textContent='尚未更新活动方案；可返回条件、复制需求或整理章节与条件清单。';
       return;
     }
     planningStory=attempt.story||null;storyLabel();
     current={id:crypto.randomUUID(),preferences:attempt.preferences,story:attempt.story,choices:attempt.choices,
-      activityAnswer:reply.text,activityEvidence:{sources:reply.data?.sources || [],data_status:reply.data?.data_status,updated_at:reply.data?.updated_at},plan:{title:attempt.preferences.city+'文化活动方案',days:[]},draft:false};
-    activityState('valid');
-    renderPlan();empty($('#travel-results'),'可按活动日期查询天气预报。');
+      chatRoute:hasRoute?route:null,activityAnswer:reply.text,activityEvidence:{sources:reply.data?.sources || [],data_status:reply.data?.data_status,updated_at:reply.data?.updated_at},plan:hasRoute?{title:attempt.preferences.city+'文化路线模板',days:[]}:plan,draft:false};
+    activityState('valid');$('#activity-recovery').hidden=true;
+    renderPlan();
     $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';
-    $('#planner-status').textContent='本次方案已生成，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
+    $('#planner-status').textContent=(hasRoute?'本次方案已生成（路线模板；活动时间及现实可行性待核验）':'本次活动方案已生成（活动时间及现实可行性待核验）')+'，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
     $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';
   }
   async function requestPlan(attempt) {
     const version=++planRequest, button=$('#trip-form').querySelector('[type="submit"]');
-    const activityPlan={...attempt,version};
-    activityState('requesting');$('#view-current-plan').hidden=!current&&!saved.length;
+    const activityPlan={...attempt,version,conditionKey:activityConditionKey()};latestDemand=activityPlan;$('#activity-recovery').hidden=true;$('#activity-checklist').hidden=true;
+    activityState('requesting');renderActivityResult();$('#view-current-plan').hidden=!current&&!saved.length;
     $('#view-current-plan').textContent=current?'查看已有方案':'查看本机保存的方案';
     if(window.SGTJourney?.ask){lastAttempt=null;$('#planner-retry').hidden=true;$('#planner-status').textContent='已打开陈寿的活动对话。如果正在回答，本次需求会留在对话草稿里。';window.SGTJourney.ask(attempt.question,{displayText:visitorSummary(attempt.preferences,attempt.story),preserveMap:true,activityPlan});return;}
     lastAttempt=attempt;button.disabled=true;$('#planner-retry').hidden=true;
@@ -269,15 +331,18 @@
       const data=await window.SGTChat.request(attempt.question);
       if(version!==planRequest)return;
       if(typeof data?.answer!=='string'||!data.answer.trim())throw Error('未返回有效活动回答。');
-      receiveActivity({text:data.answer,data,activityPlan});showContentView('plan');
+      receiveActivity({text:data.answer,data,activityPlan});if($('#planner-view').dataset.activityState==='valid')showContentView('plan');
     } catch(error) {if(version===planRequest){activityState('failed');$('#planner-status').textContent=error.name==='TimeoutError'?'等待活动方案超时，可重试；现有方案保持。':'请求失败：'+error.message+' 可重试；现有方案保持。';$('#planner-retry').hidden=false;}}
     finally{if(version===planRequest)button.disabled=false;}
   }
   $('#trip-form').onsubmit = event => {
     event.preventDefault();const form=event.currentTarget;
+    if(pendingHandoff){$('#planner-status').textContent='请先解决活动条件冲突。';$('#activity-conflict').focus();return;}
+    if(field('city').value!==committedCity){manualCityChange();if(pendingHandoff){$('#activity-conflict').focus();return;}}
     if(form.querySelector('[type="submit"]').disabled || !form.reportValidity())return;
     const preferences=Object.fromEntries(new FormData(form));preferences.origin=(preferences.origin||'').trim();
     ['days','people'].forEach(k=>preferences[k]=Number(preferences[k]));
+    preferences.automaticPlaces=automaticPlaces.map(p=>({...p}));preferences.confirmedCities=confirmedCities.slice();
     if(!preferences.origin || ![0.5,1,2].includes(preferences.days) || !Number.isInteger(preferences.people) || preferences.people<1 || preferences.people>50) {
       $('#planner-status').textContent='请填写有效出发地、可用时间与人数。';return;
     }
@@ -286,7 +351,8 @@
     if(planningStory){window.StoryProgress.get(planningStory).mode=preferences.explanation;window.StoryProgress.save(planningStory);}
     storyLabel();return requestPlan({preferences,story,choices,question:makeQuestion(preferences,story,choices)});
   };
-  $('#trip-form').addEventListener('input',()=>{
+  $('#trip-form').addEventListener('input',event=>{
+    if(event?.target===field('city')){updateChecklistState();return;}
     ++planRequest; // 条件改变后，旧活动回答不覆盖方案。
     const stale=current||['requesting','stale','other-answer','failed'].includes($('#planner-view').dataset.activityState);
     activityState(stale?'stale':'idle');
@@ -294,16 +360,18 @@
     const button=$('#trip-form').querySelector('[type="submit"]');
     button.disabled=false;
     if(stale)$('#planner-status').textContent='条件已修改，旧请求不会覆盖；请重新生成活动方案。';
-    lastAttempt=null;$('#planner-retry').hidden=true;
+    lastAttempt=null;$('#planner-retry').hidden=true;updateConditions();renderActivityResult();
   });
+  function manualCityChange(){const value=field('city').value;field('city').value=committedCity;handoff({kind:'manual',cities:citiesOf(value),places:[]});}
+  field('city').addEventListener('change',manualCityChange);
   $('#planner-retry').onclick=()=>{if(lastAttempt&&!$('#trip-form').querySelector('[type="submit"]').disabled)return requestPlan(lastAttempt);};
   const backStory=()=>{if(planningStory)window.SGTStoryUI.openStory(planningStory.id,planningStory);else showContentView('destinations');};
   $('#planner-back-story').onclick=$('#plan-back-story').onclick=backStory;
   $('#plan-map').onclick=async()=>{if(current?.chatRoute){const chosen=current;const ok=await window.TravelMap.showPlan(chosen.chatRoute);if(current===chosen&&!ok)$('#plan-status').textContent='地图暂不可用，路线文字仍可查看；稍后重试。';}};
-  function getRoadDraft(source){const p=source==='plan'&&current?current.preferences:Object.fromEntries(['origin','city','notes'].map(k=>[k,field(k).value]));return {origin:p.origin||'',city:p.city||'',destination:(source==='plan'?current?.chatRoute?.stops?.at(-1)?.name:'') || p.notes?.match(/希望包含：([^；\n]+)/)?.[1] || p.city || ''};}
+  function getRoadDraft(source){const p=source==='plan'&&current?current.preferences:Object.fromEntries(['origin','city','notes'].map(k=>[k,field(k).value]));return {origin:p.origin||'',city:p.city||'',conditionKey:source==='plan'?null:activityConditionKey(),date:p.date||field('date').value||'',destination:(source==='plan'?current?.chatRoute?.stops?.at(-1)?.name:'') || p.automaticPlaces?.at(-1)?.name || automaticPlaces.at(-1)?.name || p.city || ''};}
   function getParentView(){return 'planner';}
   function failActivity(reply){if(reply?.activityPlan?.version===planRequest){activityState('failed');$('#planner-status').textContent='活动请求失败或过期；现有方案保持，可修改条件后重试。';}}
-  window.TravelModules={openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,prefillTravel,getParentView,getRoadDraft};
+  window.TravelModules={storyChanged(story){if(planningStory?.id!==story.id)return;field('explanation').value=window.StoryProgress.get(story).mode;invalidate();storyLabel();updateConditions();},openStory,openCity:chooseCity,receiveActivity,failActivity,onEnterTravel,prefillTravel,getParentView,getRoadDraft};
   function renderSaved() {
     const target = $('#saved-plans');
     target.replaceChildren();
@@ -315,9 +383,9 @@
         ++planRequest; lastAttempt=null; $('#planner-retry').hidden=true; $('#trip-form').querySelector('[type="submit"]').disabled=false;
         planningStory=(window.SGT_STORIES||[]).find(s=>s.id===item.story?.id)||null;
         current = {...item,story:planningStory,choices:planningStory?chapterChoices(planningStory):[]}; storyLabel();
-        restoreForm(item.preferences);
+        pendingHandoff=null;$('#activity-conflict').hidden=true;restoreForm(item.preferences);committedCity=field('city').value;automaticPlaces=item.preferences.automaticPlaces||[];confirmedCities=item.preferences.confirmedCities||citiesOf(committedCity);activityState('valid');updateConditions();
         renderPlan();
-        empty($('#travel-results'), '已切换行程，请重新查询出行信息。');
+        updateAssociation();
         $('#plan-status').textContent = '已打开本机保存的方案。';
       }));
       target.append(row);
@@ -334,11 +402,47 @@
     try { await navigator.clipboard.writeText($('#plan-results').innerText); $('#plan-status').textContent = '方案已复制。'; }
     catch { $('#plan-status').textContent = '复制失败，可选中方案文字手动复制。'; }
   };
+  function renderActivityResult(){
+    const target=$('#activity-result');target.hidden=!current;if(!current)return;
+    target.replaceChildren(node('h3',$('#planner-view').dataset.activityState==='valid'?'已有活动结果':'旧条件结果 / 已有方案'),node('p','结果条件：'+current.preferences.city+' · '+current.preferences.days+'天 · '+(current.preferences.date||'日期待确认'),'map-note'));
+    if(current.activityAnswer)target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源未核验。'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));
+    else target.append(node('p','此处保留已有结果，可进入方案页查看详情。'));
+    target.append(action('查看、保存或复制已有方案',()=>showContentView('plan')));
+  }
+  $('#return-conditions').onclick=()=>{$('#trip-origin').focus();$('#trip-form').scrollIntoView?.({block:'start'});};
+  $('#copy-demand').onclick=async()=>{
+    if(!latestDemand)return;
+    try{await navigator.clipboard.writeText(latestDemand.question);$('#demand-copy-status').textContent='本次需求已复制。';}
+    catch{const box=$('#demand-copy-fallback');box.hidden=false;box.value=latestDemand.question;box.focus();box.select?.();$('#demand-copy-status').textContent='复制失败，可选中下方需求文字手动复制。';}
+  };
+  $('#organize-demand').onclick=()=>{
+    if(!latestDemand)return;checklistDemand=latestDemand;const {preferences:p,story,choices}=checklistDemand;
+    const content=['整理清单（不是活动方案）','本次请求快照（原内容保留，是否已改变请看上方状态）','故事：'+(story?.title||'未选择'),'章节：'+choices.map(c=>c.name+' / '+c.status).join('；'),'目的地：'+p.city,'可用时间：'+({'0.5':'半天（4小时）','1':'一天（8小时）','2':'两天（16小时）'}[p.days]),'出发地：'+p.origin+'；日期：'+(p.date||'待确认')+'；人数：'+p.people+'；同行：'+p.group,'自动带入景点：'+(p.automaticPlaces||[]).map(x=>x.name+'（'+x.city+'；'+x.source+'）').join('；'),'用户原始备注：'+(p.notes||'无'),'待核验：交通、开放时间、票价、天气、活动时间及现实可行性。章节顺序不是历史行走路线；本地阅读和手动已寻迹不代表实际到访。','服务原回答：'+(latestOtherAnswer||'无')].join('\n');
+    $('#activity-checklist').hidden=false;$('#activity-checklist').textContent=content;updateChecklistState();
+  };
+  function activityConditionKey(){return JSON.stringify({preferences:conditions(),story:planningStory?.id||null,choices:chapterChoices(planningStory),automaticPlaces});}
+  const querySnapshots=new Map();
+  window.ActivityQueries={contextKey:activityConditionKey,record(kind,snapshot){querySnapshots.set(kind,JSON.parse(JSON.stringify(snapshot)));this.refresh();},refresh(){
+    const p=conditions();
+    for(const [kind,s] of querySnapshots){const target=$('#'+(kind==='road'?'road':'osrm')+'-association');
+      const same=citiesOf(p.city).length===1&&citiesOf(p.city)[0]===citiesOf(s.city)[0];
+      target.textContent='独立查询：'+(s.city||'城市尚未确认')+'；'+s.origin+(s.origin_address?'（'+s.origin_address+'）':'')+' → '+s.destination+(s.destination_address?'（'+s.destination_address+'）':'')+'；查询时间：'+beijingTime(s.queried_at)+'；查询时活动日期：'+(s.date||'未提供')+'。'+(!same?'与当前'+(p.city||'目的地待确认')+'活动未关联。':s.linked&&s.conditionKey===activityConditionKey()&&s.date===p.date?'与当前活动的城市和日期相符；起终点已由用户确认，现实可行性仍待核验。':'尚未关联当前活动；活动日期 '+(p.date||'待确认')+'，请按活动条件重新确认具体地点。');
+      if(kind==='road'){const detail=$('#road-query-details');detail.hidden=!s.origin_id&&!s.destination_id;$('#road-query-identifiers').textContent='起点原编码：'+(s.origin_id||'未提供')+'；终点原编码：'+(s.destination_id||'未提供')+'。内部查询使用原确认值；编码不是坐标核验或实际到访凭据。';}
+    }
+    window.AmapPlanner?.conditionsChanged?.({city:p.city,date:p.date,conditionKey:activityConditionKey()});
+  }};
+  let weatherSnapshot=null;
+  function updateAssociation(){
+    const target=$('#weather-association');if(!weatherSnapshot){target.textContent='尚未关联当前活动。';return;}
+    const p=conditions(),same=citiesOf(p.city).length===1&&citiesOf(p.city)[0]===citiesOf(weatherSnapshot.city)[0],dateOK=p.date&&weatherSnapshot.dates.includes(p.date);
+    target.textContent='独立查询：'+weatherSnapshot.city+'；预报日期：'+(weatherSnapshot.dates.join('、')||'未取得')+'；查询时活动日期：'+(weatherSnapshot.activityDate||'未提供')+'。'+(!same?'与当前'+(p.city||'目的地待确认')+'活动未关联。':dateOK?'城市和日期与当前活动条件相符；非现场实测。':'当前活动日期 '+(p.date||'待确认')+' 不在已取得预报日期中，尚未关联该日期。');
+  }
+  $('#weather-use-activity').onclick=()=>{const p=conditions();if(citiesOf(p.city).length!==1){$('#travel-status').textContent='请先确认一个活动目的地，跨城市天气需分别查询。';return;}$('#travel-city').value=p.city;weatherForm.requestSubmit();};
   let prefilledPlanId=null, weatherVersion=0;
   function prefillTravel(cityName){
     ++weatherVersion;
     $('#load-travel').disabled=false;
-    empty($('#travel-results'),'目的地已带入，点击查询服务返回的近期天气。');
+    updateAssociation();
     $('#travel-city').value=cityName||'';
     prefilledPlanId=current?.id||null;
     $('#travel-status').textContent=cityName?'目的地已带入，点击查询才会请求天气。':'原回答没有确认一个目的地，请先手动选城再查询。';
@@ -353,7 +457,7 @@
   weatherForm.addEventListener('input',()=>{weatherVersion++;weatherButton.disabled=false;empty(weatherTarget,'条件已改变，点击查询以更新天气。');$('#travel-status').textContent='条件已改变，请重新查询。';});
   weatherForm.onsubmit=async event=>{
     event.preventDefault();if(!weatherForm.reportValidity())return;
-    const version=++weatherVersion,city=$('#travel-city').value.trim();
+    const version=++weatherVersion,city=$('#travel-city').value.trim(),activityDate=field('date').value;
     weatherButton.disabled=true;$('#travel-status').textContent='正在查询天气…';empty(weatherTarget,'正在查询…');
     try{
       const adcode={'南充':'511300','阆中':'511381','广元':'510800'}[city.replace(/[市县]$/,'')];
@@ -362,7 +466,7 @@
       const data=result.data;
       const airOnly=item=>/空气质量|AQI|PM2[._]5|PM10|CAMS|air-quality/i.test([item?.title,item?.summary,...(Array.isArray(item?.sources)?item.sources:[]).map(s=>s?.title+' '+s?.source_url)].join(' '));
       const items=(Array.isArray(data.items)?data.items:[]).filter(item=>item&&typeof item==='object'&&!airOnly(item));
-      const days=window.WeatherOutlook.outlook(data);
+      const days=window.WeatherOutlook.outlook(data);weatherSnapshot={city,activityDate,dates:days.map(d=>d.date)};updateAssociation();
       weatherTarget.replaceChildren();
       const forecast=node('div',null,'weather-days');
       const today=window.WeatherOutlook.datesFromToday()[0];
@@ -391,6 +495,6 @@
     finally{if(version===weatherVersion)weatherButton.disabled=false;}
   };
   $('#load-hotels').onclick=()=>{const p=Object.fromEntries(new FormData($('#trip-form')));$('#hotel-results').replaceChildren(node('p',p.hotel_tier&&hotelStars[p.hotel_tier]?'住宿档位：'+p.hotel_tier+' · 参考星级范围 '+hotelStars[p.hotel_tier]:'本次尚未选择住宿档位。'),node('p',(p.city||'目的地待填')+' · '+(p.date||'日期待填')+'：住宿查询未接入，尚未取得真实酒店与房价。现在可以记录住宿需求；查询开放后再核验酒店和参考房价。','data-banner'));};
-  activityState('idle');renderPlan(); renderSaved(); loadCity(city);
+  committedCity=field('city').value;storyLabel();activityState('idle');updateConditions();renderPlan(); renderSaved(); loadCity(city);
     empty($('#travel-results'), '填写目的地后可独立查询天气预报。');
 })();

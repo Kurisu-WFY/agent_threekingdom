@@ -10,7 +10,10 @@
     return text.replace(/```(?:json)?\s*\n[\s\S]*?```/g,block=>/"recall_report"\s*:|"total_candidates"\s*:/.test(block)?'':block)
       .split('\n').filter(line=>!/^\s*(?:#{1,6}\s*|[-*]\s*)?(?:召回率|召回覆盖率?|检索诊断|召回报告|检索统计|total_candidates|final_hits|coverage|rerank_score|chunk\s*(?:数|id))\s*[:：]/i.test(line.replace(/\*\*/g,'')))
       .filter(line=>!/^\s*(?:[-*]\s*)?(?:本次|此次|共|已)?(?:检索)?(?:命中|召回)\s*\d+\s*(?:个|条)?\s*(?:chunks?|片段)/i.test(line)).join('\n')
-      .split(/(```[\s\S]*?```|https?:\/\/[^\s)<>]+)/g).map((part,i)=>i%2?part:part.replace(names,(_,key)=>labels[key])).join('');
+      .split(/(```[\s\S]*?```|https?:\/\/[^\s)<>]+)/g).map((part,i)=>i%2?part:part
+        .replace(/酒店预算：(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?) CNY\/晚\/间/g,(_,low,high)=>'酒店参考预算：每间每晚约 '+Number(low)+'—'+Number(high)+' 元（尚非报价，需核验）')
+        .replace(/正式服务应接入 OTA、地图和 12306 等实时工具。/g,'相关实时信息需在出发前核验。')
+        .replace(names,(_,key)=>labels[key])).join('');
   }
   function clean(text) {
     return present(String(text || '').replace(/<div>\s*<markdown-custom-process\b[^>]*>[\s\S]*?<\/markdown-custom-process>\s*<\/div>/gi,'')

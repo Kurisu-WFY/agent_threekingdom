@@ -11,7 +11,7 @@ const values={city:'广元',origin:'南充',date:'',days:'0.5',people:'2',group:
 const fields=Object.fromEntries(Object.entries(values).map(([k,v])=>[k,Object.assign(new Element(),{value:v})]));
 const form=get('#trip-form'),button=new Element('button');form.elements={...fields,namedItem:k=>fields[k]};form.querySelector=()=>button;form.reportValidity=()=>true;form.requestSubmit=()=>form.onsubmit({preventDefault(){},currentTarget:form});
 const requests=[],views=[],mapCalls=[],saved={},states=new Map();
-const story={id:'story',title:'测试故事',chapters:[{name:'第一幕',placeId:'a',role:'寻源'},{name:'第二幕',placeId:'b'},{name:'第三幕',placeId:'c'}]};
+const story={id:'story',title:'测试故事',areas:['广元'],chapters:[{name:'第一幕',placeId:'a',role:'寻源'},{name:'第二幕',placeId:'b'},{name:'第三幕',placeId:'c'}]};
 const state={mode:'亲子故事版',completed:new Set([0]),skipped:new Set([2])};states.set('story',state);
 const apiCalls=[];const unavailable=async p=>{apiCalls.push(p);return {status:'unavailable',message:'资料服务待接入'};};
 const window={TravelApi:{listSpots:unavailable,createPlan:()=>{throw Error('must not use preview');},estimateBudget:unavailable,getTravelInfo:unavailable},
@@ -24,6 +24,9 @@ const context={window,URL,crypto:{randomUUID:()=>String(Math.random())},localSto
  FormData:class{constructor(){return Object.entries(fields).map(([k,v])=>[k,v.value]);}},showContentView:v=>views.push(v),toggleChat(){}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/weather-outlook-core.js','utf8'),context);
 vm.runInNewContext(fs.readFileSync(__dirname+'/travel-modules.js','utf8'),context);
+const confirm=()=>{if(!get('#activity-conflict').hidden){if(!get('#conflict-city').value)get('#conflict-city').value='广元';get('#conflict-adopt').onclick();}};
+const openCity=(...args)=>{window.TravelModules.openCity(...args);confirm();};
+const openStory=(...args)=>{window.TravelModules.openStory(...args);confirm();};
 const text=n=>n.textContent+n.children.map(text).join(' '),flush=()=>new Promise(r=>setImmediate(r));
 assert.ok(fs.existsSync(__dirname+'/cities.js'),'one shared city source is loaded before destination and weather modules');
 const cityWindow={};vm.runInNewContext(fs.readFileSync(__dirname+'/cities.js','utf8'),{window:cityWindow,document:{querySelector:get,createElement:t=>new Element(t)}});
@@ -33,6 +36,7 @@ assert.deepEqual(get('#destination-cities').children.map(x=>x.dataset.city),city
 assert.deepEqual(get('#itinerary-cities').children.map(x=>x.value),cityNames);
 for(const id of ['#outing-start','#outing-end'])assert.deepEqual(get(id).children.map(x=>x.value),['',...cityNames,'manual']);
 const weatherForm=get('#travel-weather-form');weatherForm.reportValidity=()=>Boolean(get('#travel-city').value);
+const activityPlanFixture={title:'结构化活动测试夹具',days:[{day:1,stops:[{name:'本章阅读',stay_minutes:90}]}],data_status:'sample'};
 const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需核验路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待核验',address:'广元市剑阁县'}]}};
 (async()=>{
  const ninthFailures=[],ninthCheck=(c,fn)=>{try{fn();}catch(e){ninthFailures.push(c+': '+e.message);}};
@@ -70,23 +74,23 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.equal(copyFailures.join('\n'),'','C02/C05/C06');
 
  const directQuestions=[];window.SGTJourney={ask:q=>directQuestions.push(q)};
- window.TravelModules.openCity('成都','武侯祠');assert.equal(fields.city.value,'成都');assert.match(fields.notes.value,/武侯祠/);assert.equal(views.at(-1),'planner');assert.equal(directQuestions.length,0,'destination action prefills the shared form instead of sending chat');
+ openCity('成都','武侯祠');assert.equal(fields.city.value,'成都');assert.equal(fields.notes.value,'少走路');assert.match(get('#planner-auto-places').textContent,/武侯祠/);assert.equal(views.at(-1),'planner');assert.equal(directQuestions.length,0,'destination action prefills the shared form instead of sending chat');
  const today=new Date(),localToday=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
  assert.equal(fields.date.value,localToday,'empty date receives local today on destination handoff');
  fields.origin.value='';fields.date.value='2026-10-07';
- window.TravelModules.openCity('阆中');
+ openCity('阆中');
  assert.equal(fields.origin.value,'','handoff must not invent an origin');assert.equal(fields.date.value,'2026-10-07','user date stays intact');
- assert.match(get('#planner-status').textContent,/已带入.*阆中.*请补出发地/);
+ assert.match(get('#planner-status').textContent,/目的地：阆中.*保留：出发地/);
  const beforeEmptyMap=views.length;window.TravelMap.getPlanSelection=()=>({cities:[],places:[]});get('#map-plan').onclick();
  assert.equal(views.length,beforeEmptyMap,'empty map selection must not open a fixed-city plan');assert.match(get('#map-plan-status').textContent,/请先在地图选择地点/);
- window.TravelMap.getPlanSelection=()=>({cities:['南充'],places:['仪陇县']});get('#map-plan').onclick();
- assert.equal(fields.city.value,'南充');assert.match(fields.notes.value,/仪陇县/);assert.match(get('#planner-status').textContent,/已带入.*仪陇县.*请补出发地/);
+ window.TravelMap.getPlanSelection=()=>({cities:['南充'],places:['仪陇县']});get('#map-plan').onclick();confirm();
+ assert.equal(fields.city.value,'南充');assert.match(get('#planner-auto-places').textContent,/仪陇县/);assert.match(get('#planner-status').textContent,/目的地：南充/);
  window.TravelMap.getPlanSelection=()=>({cities:['南充','广元'],places:['仪陇县','剑阁县']});get('#map-plan').onclick();
- assert.equal(fields.city.value,'南充、广元');assert.match(fields.notes.value,/仪陇县、剑阁县/);
+ get('#conflict-city').value='南充';get('#conflict-cross-confirm').checked=true;get('#conflict-cross').onclick();assert.equal(fields.city.value,'南充、广元');assert.match(get('#planner-auto-places').textContent,/仪陇县.*剑阁县/);
  window.TravelMap.getPlanSelection=()=>({cities:[],places:['已定位景点']});get('#map-plan').onclick();
- assert.equal(fields.city.value,'','missing city stays empty instead of being guessed');assert.match(fields.notes.value,/已定位景点/);assert.match(get('#planner-status').textContent,/请补目的地、出发地/);
+ assert.equal(fields.city.value,'南充、广元','unknown region stays pending instead of being guessed');assert.equal(get('#conflict-city').value,'');assert.match(get('#conflict-differences').textContent,/地区尚未提供/);get('#conflict-cancel').onclick();
  fields.origin.value='南充';fields.date.value='';
- fields.city.value='广元';fields.notes.value='少走路';
+ fields.city.value='广元';fields.city.onchange();confirm();fields.notes.value='少走路';
  delete window.SGTJourney;
  const initialCalls=apiCalls.length;window.TravelModules.onEnterTravel();assert.equal(apiCalls.length,initialCalls,'entering weather view must not request');
  window.TravelModules.prefillTravel('阆中','2026-10-04');assert.equal(get('#travel-city').value,'阆中');assert.equal(apiCalls.length,initialCalls,'handoff only prefills weather');
@@ -104,7 +108,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  finishOldWeather({status:'ok',data:{items:[{title:'旧南充天气',summary:'迟到结果'}]}});await oldWeather;
  assert.doesNotMatch(text(get('#travel-results')),/旧南充天气/,'previous city weather must not overwrite prefilled destination');
  window.TravelApi.getTravelInfo=originalWeather;
- window.TravelModules.openStory(story);assert.equal(views.at(-1),'planner');
+ openStory(story);assert.equal(views.at(-1),'planner');
  assert.equal(window.TravelModules.getParentView('planner'),'planner');
  window.TravelModules.onEnterTravel('plan');assert.equal(window.TravelModules.getParentView('travel'),'planner','weather now belongs to the inline activity planner');
  window.TravelModules.onEnterTravel('destinations');assert.equal(window.TravelModules.getParentView('travel'),'planner');
@@ -112,8 +116,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  fields.origin.value='南充';fields.people.value='0';await form.requestSubmit();assert.equal(requests.length,0);fields.people.value='2';
  const pending=form.requestSubmit();assert.equal(button.disabled,true);form.requestSubmit();assert.equal(requests.length,1);
  assert.equal(requests[0].preferences,undefined,'活动生成不附带强制路线模板参数');
- assert.match(requests[0].q,/活动顺序/);assert.match(requests[0].q,/住宿.*舒适型.*3.0,3.5/);assert.doesNotMatch(requests[0].q,/房间数|预算|交通方式|交通可行性|规划旅游路线/);assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
- requests[0].resolve({...response,intent:{intent:'culture_qa'},route:null});await pending;assert.equal(views.at(-1),'plan');
+ assert.match(requests[0].q,/活动顺序/);assert.match(requests[0].q,/住宿.*舒适型.*3.0,3.5/);assert.doesNotMatch(requests[0].q,/房间数|预算|交通方式|规划旅游路线/);assert.match(requests[0].q,/半天/);assert.match(requests[0].q,/第一幕.*已完成/);assert.match(requests[0].q,/第三幕.*本次跳过/);assert.match(requests[0].q,/只调整未完成/);
+ requests[0].resolve({...response,intent:{intent:'culture_qa'},route:null,plan:activityPlanFixture});await pending;assert.equal(views.at(-1),'plan');
  const output=text(get('#plan-results'));assert.match(output,/示例活动.*文化讲解/);assert.doesNotMatch(output,/间房|总预算/);
  assert.equal(state.completed.size,1);assert.ok(state.completed.has(0));assert.equal(button.disabled,false);
  assert.equal(get('#plan-map').disabled,true,'无结构化地点时不猜测导航');
@@ -121,11 +125,11 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  for(const data of [{answer:''},{answer:null},{route:{found:true,stops:[null]}}]) {
    const p=form.requestSubmit();requests.at(-1).resolve(data);await p;assert.equal(text(get('#plan-results')),output);assert.equal(get('#planner-retry').hidden,false);
  }
- const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'}});await culture;assert.match(text(get('#plan-results')),/文化活动/);assert.match(text(get('#plan-results')),/来源.*待核验.*文献出处尚未核验/,'C01 方案继承缺出处提示');
+ const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'},plan:activityPlanFixture});await culture;assert.match(text(get('#plan-results')),/文化活动/);assert.match(text(get('#plan-results')),/来源.*待核验.*文献出处尚未核验/,'C01 方案继承缺出处提示');
  const p=form.requestSubmit();requests.at(-1).reject(Object.assign(Error('timeout'),{name:'TimeoutError'}));await p;assert.match(get('#planner-status').textContent,/超时/);
- const question=requests.at(-1).q,retry=get('#planner-retry').onclick();assert.equal(requests.at(-1).q,question);requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null});await retry;
+ const question=requests.at(-1).q,retry=get('#planner-retry').onclick();assert.equal(requests.at(-1).q,question);requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,plan:activityPlanFixture});await retry;
  const changed=form.requestSubmit();form.oninput();requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'旧条件结果'});await changed;assert.ok(!text(get('#plan-results')).includes('旧条件结果'));
- const late=form.requestSubmit();window.TravelModules.openStory({id:'other',title:'另一个故事',chapters:[]});requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'迟到错误覆盖'});await late;assert.ok(!text(get('#plan-results')).includes('迟到错误覆盖'));assert.equal(views.at(-1),'planner');
+ const late=form.requestSubmit();openStory({id:'other',title:'另一个故事',chapters:[]});requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'迟到错误覆盖'});await late;assert.ok(!text(get('#plan-results')).includes('迟到错误覆盖'));assert.equal(views.at(-1),'planner');
  const beforePrefill=apiCalls.length;window.TravelModules.onEnterTravel();assert.equal(get('#travel-city').value,'广元');assert.equal(apiCalls.length,beforePrefill,'prefill must not request');
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
  const html=fs.readFileSync(__dirname+'/index.html','utf8');
@@ -154,7 +158,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.match(activity.o.displayText,/舒适型/);
  assert.doesNotMatch(activity.q,/房间数|预算|交通方式|规划旅游路线/);
  assert.ok(activity.o.activityPlan);
- window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',activityPlan:activity.o.activityPlan});
+ window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',data:{plan:activityPlanFixture},activityPlan:activity.o.activityPlan});
  assert.equal(get('#view-current-plan').hidden,false,'U03 result provides direct current-plan entry');
  assert.match(get('#planner-status').textContent,/本次方案/);
  assert.match(text(get('#plan-results')),/先读史.*90分钟/);assert.equal(get('#save-plan').disabled,false);assert.equal(get('#copy-plan').disabled,false);
@@ -162,8 +166,8 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  let copied;context.navigator={clipboard:{writeText:async t=>copied=t}};get('#plan-results').innerText=text(get('#plan-results'));
  await get('#copy-plan').onclick();assert.match(copied,/先读史/);assert.match(get('#plan-status').textContent,/已复制/);
  await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
- window.TravelModules.openCity('南充');fields.days.value='1';fields.people.value='2';fields.date.value='2026-10-02';await form.requestSubmit();const simple=journeyCalls.at(-1).o.activityPlan;assert.equal(simple.preferences.days,1);assert.equal(simple.preferences.people,2);assert.equal(simple.preferences.date,'2026-10-02');
- window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',activityPlan:simple});
+ openCity('南充');fields.days.value='1';fields.people.value='2';fields.date.value='2026-10-02';await form.requestSubmit();const simple=journeyCalls.at(-1).o.activityPlan;assert.equal(simple.preferences.days,1);assert.equal(simple.preferences.people,2);assert.equal(simple.preferences.date,'2026-10-02');
+ window.TravelModules.receiveActivity({text:'活动方案：先读史，停留90分钟，讲解陈寿。',data:{plan:activityPlanFixture},activityPlan:simple});
  assert.equal(window.TravelModules.getParentView('plan'),'planner','ordinary activity remains in activity domain');
  const beforePlanPrefill=apiCalls.length;window.TravelModules.onEnterTravel('plan');assert.equal(get('#travel-city').value,'南充');assert.equal(fields.date.value,'2026-10-02','weather horizon does not change the activity date');assert.equal(apiCalls.length,beforePlanPrefill,'plan prefill must not call weather API');
  get('#save-plan').onclick();const storedActivity=JSON.parse(saved['sanguo.travel-plans.v1'])[0];assert.equal(storedActivity.preferences.days,1);
@@ -176,11 +180,11 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  assert.equal(get('#view-current-plan').hidden,false,'saved plans remain reachable after reload');
  assert.match(get('#view-current-plan').textContent,/本机保存/);
  get('#saved-plans').children[0].children[1].onclick();assert.match(text(get('#plan-results')),/先读史/);assert.equal(get('#save-plan').disabled,false);await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
- window.TravelModules.openCity('成都');assert.equal(get('#planner-view').dataset.activityState,'stale','changing the destination leaves the saved answer visible but marks it as old conditions');
+ openCity('成都');assert.equal(get('#planner-view').dataset.activityState,'stale','changing the destination leaves the saved answer visible but marks it as old conditions');
  const copyEvidence={sources:[{title:'原出处',source_url:'https://example.org/source',source_level:'B'}],data_status:'maintained',updated_at:'2026-10-03T01:00:00+08:00'};
  const copyCalls=[];window.SGTAnswerTrust={render:r=>{copyCalls.push(r);const el=new Element('p');el.textContent=r.sources?.[0]?.title||'来源待核验；文献出处尚未核验';return el;}};
  await form.requestSubmit();const copyAttempt=journeyCalls.at(-1).o.activityPlan;
- window.TravelModules.receiveActivity({text:'原活动正文，PDF第3页。',data:copyEvidence,activityPlan:copyAttempt});
+ window.TravelModules.receiveActivity({text:'原活动正文，PDF第3页。',data:{...copyEvidence,plan:activityPlanFixture},activityPlan:copyAttempt});
  assert.equal(copyCalls.at(-1).sources[0].source_url,'https://example.org/source','C01 继承真实结构化来源，不猜PDF链接');
  assert.match(text(get('#plan-results')),/原出处.*原活动正文，PDF第3页/);
  get('#save-plan').onclick();const copySaved=JSON.parse(saved['sanguo.travel-plans.v1'])[0];assert.equal(copySaved.activityAnswer,'原活动正文，PDF第3页。');assert.equal(copySaved.activityEvidence.sources[0].title,'原出处');

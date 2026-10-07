@@ -148,7 +148,7 @@ const assert=require('node:assert/strict');
  const countyLabel=registry.get('#county-points').children.find(n=>n.attributes['data-county-code']==='511324').children.find(n=>n.tagName==='text');
  const countyButton=countyLabel.parent;
  assert.ok(countyButton.children.every(n=>n.tagName!=='circle'),'county parcels have no point dots');
- assert.equal(countyButton.attributes.tabindex,'0');assert.equal(countyButton.attributes.role,'button');
+ assert.equal(countyButton.attributes.tabindex,'-1','县区通过地图内方向键访问，不单独进入 Tab 链');assert.equal(countyButton.attributes.role,'button');
  assert.equal(countyLabel.attributes['text-anchor'],'middle');
  registry.get('#map-place-picker').hidden=true;
  svg.listeners.pointerdown({...event,target:countyLabel});svg.listeners.pointerup(event);

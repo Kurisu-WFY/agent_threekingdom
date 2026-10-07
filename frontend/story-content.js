@@ -13,5 +13,5 @@
       result.data.places.forEach(place=>{normalize(place);if(place.overview)normalize(place.overview);});
       window.SGTStoryUI.installContent(result.data);
     })
-    .catch(()=>{document.querySelector('#story-action-status').textContent='章节资料暂未加载，请刷新重试；仍可向向导提问。';});
+    .catch(()=>{document.querySelector('#story-action-status').textContent='章节资料暂未加载，请刷新重试；仍可向向导提问。';}).finally(()=>window.SGTNavigation?.contentReady());
 })();

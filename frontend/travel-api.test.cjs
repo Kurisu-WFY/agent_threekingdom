@@ -11,5 +11,9 @@ vm.runInContext(fs.readFileSync(__dirname+'/travel-api.js','utf8'),context);cons
  response={ok:true,json:async()=>({status:'ok',data:{forecast:[]}})};await api.getTravelInfo({city:'南充',adcode:'511300'});assert.deepEqual(JSON.parse(calls.at(-1).options.body),{city:'南充',adcode:'511300'});
  assert.ok(calls.every(c=>c.url.startsWith('/api/travel')),'天气只用同源后端，前端不直连外部天气或空气服务');
  response={ok:true,json:async()=>{throw new SyntaxError();}};await assert.rejects(api.createPlan(preferences));
+ response={ok:true,json:async()=>({status:'authorization_required',message:'请先在本机完成RollingGo登录授权。',data:null})};
+ assert.equal((await api.searchHotels({place:'南充',check_in:'2026-10-08'})).status,'authorization_required','真实酒店授权状态不可被通用格式检查吞掉');
+ await assert.rejects(api.createPlan(preferences),'授权状态只适用于酒店服务');
+ for(const status of [401,403]){response={ok:false,status};await assert.rejects(api.searchHotels({place:'南充'}),e=>e.status===status&&e.code==='authorization_required');}
  console.log('PASS: disabled no-network, encoding/payload/signal, empty/error/invalid responses, adcode passthrough, no external supplement');
 })().catch(error=>{console.error(error);process.exitCode=1;});

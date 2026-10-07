@@ -13,9 +13,14 @@ window.TravelApi = (() => {
       ...(method === 'POST' ? { body: JSON.stringify(payload) } : {}),
       signal: AbortSignal.timeout(path.startsWith('/hotels/') ? 150000 : path.startsWith('/amap/') ? 45000 : config.timeoutMs)
     });
-    if (!response.ok) throw new Error('服务暂时不可用，请稍后重试。');
+    if (!response.ok) {
+      const error=new Error('服务暂时不可用，请稍后重试。');error.status=response.status;
+      if(path.startsWith('/hotels/') && [401,403].includes(response.status))error.code='authorization_required';
+      throw error;
+    }
     const result = await response.json();
-    if (!result || !['ok', 'empty', 'unavailable'].includes(result.status)) throw new Error('返回格式不符合约定，请联系维护人员。');
+    const statuses=path.startsWith('/hotels/')?['ok','empty','unavailable','authorization_required']:['ok','empty','unavailable'];
+    if (!result || !statuses.includes(result.status)) throw new Error('返回格式不符合约定，请联系维护人员。');
     if (result.status === 'ok' && (!result.data || typeof result.data !== 'object')) throw new Error('服务未返回有效数据。');
     return result;
   }

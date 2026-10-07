@@ -40,8 +40,8 @@ assert.ok(/\.workspace\s*\{[^}]*transition:padding-right var\(--layout-duration\
 assert.ok(/@media\(prefers-reduced-motion:reduce\)[\s\S]*?\*,\*::before,\*::after\s*\{[^}]*transition:none!important/.test(css));
 console.log('PASS: original token semantics, complete scales, no raw component colors, text AA min='+min.toFixed(2)+', controls/focus >=3, reduced motion and touch target contract');
 
-assert.ok(/\.meta\s*\{[^}]*flex-wrap:\s*nowrap/.test(css),'N13 metadata is a single line');
-assert.ok(/\.trust-info\s*\{[^}]*flex-wrap:\s*nowrap/.test(css));
+assert.ok(/\.meta\s*\{[^}]*flex-wrap:\s*wrap/.test(css),'R02 outer metadata allows full trust text to wrap');
+assert.ok(/\.trust-info\s*\{[^}]*flex-wrap:\s*wrap/.test(css));
 assert.ok(/\.tag\[data-trust-state=unverified\]\s*\{[^}]*font-size:var\(--text-xs\)/.test(css));
 
 assert.equal(value('font-chat'),'-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif');

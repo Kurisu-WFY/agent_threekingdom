@@ -25,5 +25,11 @@ assert.equal(clean('estimate_hotel_budget / search_hotel_poi_request'),'住宿�
 assert.equal(clean('召回率：100%\n命中5个chunk\n陈寿是史学家。\n来源：《三国志》，第3页。'),'陈寿是史学家。\n来源：《三国志》，第3页。');
 assert.equal(clean('[来源](https://example.com/retrieve_culture_knowledge)'),'[来源](https://example.com/retrieve_culture_knowledge)');
 const filtered=walk(render('| 论文 | chunk数 | rerank最高分 | PDF页码 |\n| --- | --- | --- | --- |\n| 陈寿研究 | 5 | 0.9 | 3 |'));
+const budget='南充舒适型酒店预算：200.0 - 380.0 CNY/晚/间。\n说明：景区票价为维护数据；酒店和交通价格波动较大，正式服务应接入 OTA、地图和 12306 等实时工具。';
+assert.match(clean(budget),/酒店参考预算：每间每晚约 200—380 元（尚非报价，需核验）/);
+assert.doesNotMatch(clean(budget),/OTA|12306|正式服务应接入/);
+assert.ok(clean(budget).includes('景区票价为维护数据'));
+assert.equal(clean('酒店预算：200 - 380 USD/晚/间。'),'酒店预算：200 - 380 USD/晚/间。','不将外币改成人民币');
+assert.equal(walk(render(budget,{preserve:true})).filter(n=>n.tag==='p').map(n=>walk(n).map(x=>x.textContent).join('')).join('\n'),budget,'用户消息原文保留');
 assert.equal(filtered.filter(n=>n.tag==='th').length,2);
 assert.ok(filtered.some(n=>n.tag==='td'&&n.children.some(c=>c.textContent==='陈寿研究')));

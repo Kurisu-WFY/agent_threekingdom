@@ -5,7 +5,7 @@ const path = require('node:path');
 let playwright;
 try { playwright = require('playwright'); }
 catch { playwright = require(path.join(process.env.USERPROFILE || '', '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')); }
-const out = path.join(__dirname, 'acceptance-chat-polish');
+const out = process.env.SGT_ACCEPTANCE_OUT || path.join(__dirname, 'acceptance-chat-polish');
 const fixture = '## 陈寿与史料\n'+ '这是渲染验收夹具，来源待确认。陈寿与南充的关系仍需核验，C 级文学资料不能支撑史实结论。'.repeat(24) + '\n- **资料待核验**\n- 不代表实际到访\n| 地点 | 状态 |\n| --- | --- |\n| 剑门关 | 待核验 |\n[渲染夹具链接](https://example.com) 🙂𠮷\n```text\n第一行代码\n第二行代码\n```';
 const results=[];
 async function check(name, fn) { try {const detail=await fn(); results.push({name,passed:true,detail});} catch(e){results.push({name,passed:false,error:e.message});} }
@@ -49,16 +49,12 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
  });
  await page.locator('#message').fill('夹具验收：陈寿与南充');await page.locator('.composer-send').click();
  await page.waitForFunction(()=>!chats[active].pending);
- await check('5 屏幕行逐行淡入、正文保真、历史不重播',async()=>{
-   await page.waitForFunction(()=>document.querySelectorAll('.answer-line').length>3,{},{timeout:2000});
-   const initial=await page.evaluate(()=>[...document.querySelectorAll('.answer-line')].map(n=>({text:n.textContent,line:n.dataset.line,delay:parseFloat(getComputedStyle(n).animationDelay),opacity:parseFloat(getComputedStyle(n).opacity)})));
-   const first=await page.locator('.answer-line').first().boundingBox(),viewport=await page.locator('#messages').boundingBox();
-   assert.ok(first.y>=viewport.y&&first.y+first.height<=viewport.y+viewport.height,'长回答淡入时首行必须在消息视口内');
-   assert.ok(new Set(initial.map(n=>n.line)).size>6);assert.ok(Math.max(...initial.map(n=>n.delay))>Math.min(...initial.map(n=>n.delay)));
-   assert.ok(initial.some(n=>n.opacity<0.05),'后续行尚未出现');assert.ok(!await page.locator('.message.user .answer-line').count());
-   await page.waitForFunction(()=>{const nodes=[...document.querySelectorAll('.answer-line')];return nodes.some(n=>parseFloat(getComputedStyle(n).opacity)>.7)&&nodes.some(n=>parseFloat(getComputedStyle(n).opacity)<.05);});
-   await page.screenshot({path:path.join(out,'fixture-lines-progress.png')});
-   await page.waitForFunction(()=>[...document.querySelectorAll('.answer-line')].every(n=>getComputedStyle(n).opacity==='1'),{},{timeout:15000});
+ await check('5 整段160–240ms淡入、正文保真、历史不重播',async()=>{
+   const initial=await page.locator('.message.assistant .answer-reveal').evaluate(e=>{const s=getComputedStyle(e);return {duration:parseFloat(s.animationDuration),delay:s.animationDelay,animation:s.animationName};});
+   assert.ok(initial.duration>=.16&&initial.duration<=.24);assert.equal(initial.delay,'0s');assert.equal(await page.locator('.answer-line').count(),0);
+   const first=await page.locator('.character-answer .agent-prose h2').first().boundingBox(),viewport=await page.locator('#messages').boundingBox();
+   assert.ok(first.y>=viewport.y&&first.y+first.height<=viewport.y+viewport.height,'长回答首段必须在消息视口内');
+   await page.waitForFunction(()=>getComputedStyle(document.querySelector('.answer-reveal')).opacity==='1');
    assert.equal(await page.evaluate(()=>chats[active].messages.at(-1).text),fixture);
    assert.equal(await page.locator('.character-answer .agent-prose p').first().textContent(),fixture.split('\n')[1]);
    assert.ok(await page.locator('.character-answer strong').count());assert.ok(await page.locator('.character-place-link').count());assert.ok(await page.locator('.character-answer table').count());
@@ -66,7 +62,7 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
    assert.ok((await page.locator('.character-answer').textContent()).includes('🙂𠮷'));
    assert.equal(await page.locator('.character-answer a').getAttribute('href'),'https://example.com');
    await page.screenshot({path:path.join(out,'fixture-lines-complete.png')});
-   await page.evaluate(()=>render());assert.equal(await page.locator('.answer-line').count(),0);return {lines:initial,rawUnchanged:true};
+   await page.evaluate(()=>render());assert.equal(await page.locator('.answer-reveal').count(),0);return {animation:initial,rawUnchanged:true};
  });
  await check('3 删除前确认、取消完整保留、轻量撤销',async()=>{
    await page.locator('#new-chat').click();await page.locator('#message').fill('保留草稿');
@@ -81,7 +77,7 @@ async function check(name, fn) { try {const detail=await fn(); results.push({nam
  });
  await check('减少动态偏好直接展示完整回答',async()=>{
    await page.emulateMedia({reducedMotion:'reduce'});await page.locator('#message').fill('减少动态');await page.locator('.composer-send').click();await page.waitForFunction(()=>!chats[active].pending);
-   assert.equal(await page.locator('.answer-line').count(),0);assert.equal(await page.evaluate(()=>chats[active].messages.at(-1).text),fixture);
+   assert.equal(await page.locator('.answer-reveal').count(),0);assert.equal(await page.evaluate(()=>chats[active].messages.at(-1).text),fixture);
  });
  await check('旧失败消息重试统一陈寿，保留原讲解模式与章节快照',async()=>{
    const pending=page.waitForRequest(r=>r.url().endsWith('/chat/stream'));

@@ -2,39 +2,42 @@
 (() => {
   const $ = id => document.getElementById(id), api = window.TravelApi;
   if (!$('amap-search-form') || !api) return;
-  let version = 0;
+  let version = 0, activityLink=null, candidateSnapshot=null;
+  const candidatePlaces=new Map();
   const make = (tag, text) => { const e = document.createElement(tag); e.textContent = text; return e; };
   const status = text => { $('amap-status').textContent = text; };
-  const clear = () => { version++; window.AmapChat?.cancel(); $('amap-results').replaceChildren(); window.AmapRouteMap?.clear(); };
+  const clear = (preserve=false) => { version++; window.AmapChat?.cancel(); if(!preserve){$('amap-results').replaceChildren();window.AmapRouteMap?.clear();} };
   window.AmapPlanner={openRoute(params){
     if(!/^[A-Za-z0-9]{5,40}$/.test(params.origin_id||'')||!/^[A-Za-z0-9]{5,40}$/.test(params.destination_id||'')||!['transit','walking','driving'].includes(params.mode))return false;
     window.toggleChat?.(false);window.showContentView?.('outing');
     document.querySelector('#outing-view > details').open=true;
     queryRoute(params);return true;
-  },prefill({origin='',destination='',city=''}){
+  },conditionsChanged(p){if(candidateSnapshot&&(candidateSnapshot.city!==p.city||candidateSnapshot.date!==p.date||candidateSnapshot.conditionKey!==p.conditionKey)){clear(true);candidateSnapshot=null;activityLink=null;$('amap-route-form').hidden=true;for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}status('活动城市或日期已改变；旧道路结果保持为独立查询，查询新道路前请重新确认具体地点。');}},prefill({origin='',destination='',city='',date='',conditionKey=null}){
     window.AmapChat?.cancel();
-    clear();$('amap-route-form').hidden=true;
+    clear(true);activityLink={city,date,conditionKey};candidateSnapshot=null;$('amap-route-form').hidden=true;
     $('amap-origin-query').value=origin;$('amap-destination-query').value=destination;$('amap-city').value=city;
     for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}
     $('amap-search-form').querySelector('button').disabled=false;
     status('本次计划的地点文字已带入。请搜索并确认具体起终点；候选地点尚未选择，坐标也未核验。');
   }};
-  $('amap-search-form').addEventListener('input', () => {clear(); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});
+  $('amap-search-form').addEventListener('input', () => {activityLink=null;candidateSnapshot=null;clear(true); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});
   $('amap-route-form').addEventListener('change', () => {clear(); status('条件已改变，请重新查询路线。');});
   $('amap-search-form').onsubmit = async e => {
     e.preventDefault(); if (!e.currentTarget.reportValidity()) return;
     clear(); const current = version, button = e.currentTarget.querySelector('button');
     button.disabled = true; $('amap-route-form').hidden = true; status('正在搜索高德地点…');
     try {
-      const city = $('amap-city').value.trim();
+      const city = $('amap-city').value.trim(),date=document.querySelector('#trip-form').elements.namedItem('date').value;
+      candidateSnapshot={city,date,conditionKey:window.ActivityQueries?.contextKey()};
       const results = await Promise.all(['origin', 'destination'].map(side => api.amapPlaces({city, keywords: $('amap-'+side+'-query').value.trim()})));
       if (current !== version) return;
+      candidatePlaces.clear();
       for (let i=0; i<2; i++) {
         const r = results[i], side = ['origin', 'destination'][i];
         if (r.status !== 'ok' || !r.data?.items?.length) throw Error(r.message || '没有匹配地点，请换关键词。');
         const select = $('amap-'+side+'-id'); select.replaceChildren();
         const placeholder = make('option', '请选择并确认具体地点'); placeholder.value=''; select.append(placeholder);
-        for (const p of r.data.items) {const o=make('option', `${p.name} · ${p.address || p.city}`); o.value=p.id; select.append(o);}
+        for (const p of r.data.items) {candidatePlaces.set(p.id,p);const o=make('option', `${p.name} · ${p.address || p.city}`); o.value=p.id; select.append(o);}
       }
       $('amap-route-form').hidden=false; status('请核对校区、景区或入口，分别选择起终点。');
     } catch(error) {if(current===version) status(error.message || '地点搜索失败，请重试。');}
@@ -42,12 +45,14 @@
   };
   async function queryRoute(params) {
     window.AmapChat?.cancel();
+    const querySnapshot={city:$('amap-city').value.trim(),date:activityLink?.date||document.querySelector('#trip-form').elements.namedItem('date').value||'',linked:Boolean(activityLink?.conditionKey),conditionKey:activityLink?.conditionKey||null,...params};
     clear(); const current=version, button=$('amap-route-form').querySelector('button'); button.disabled=true; status('正在查询高德路线…');
     try {
       const r = await api.amapRoute(params);
       if(current!==version) return;
       if(r.status!=='ok' || !r.data?.alternatives?.length) throw Error(r.message || '当前没有可用路线。');
       status(r.message); const d=r.data, target=$('amap-results');
+      window.ActivityQueries?.record('road',{...querySnapshot,queried_at:d.queried_at||new Date().toISOString(),origin:d.origin.name,destination:d.destination.name,origin_address:d.origin.address||candidatePlaces.get(params.origin_id)?.address||'',destination_address:d.destination.address||candidatePlaces.get(params.destination_id)?.address||''});
       $('amap-place-view').hidden=true;
       target.append(make('h3', `${d.origin.name} → ${d.destination.name}`));
       d.alternatives.forEach((p,i) => {

@@ -75,7 +75,7 @@
         const dx = x - px, dy = y - py;
         $('#story-ink-lines').append(svgNode('path', { d: 'M' + px + ',' + py + 'Q' + ((px+x)/2-dy*.16) + ',' + ((py+y)/2+dx*.16) + ' ' + x + ',' + y, class: 'story-ink-segment' }));
       }
-      const group = svgNode('g', { class: 'story-map-node' + (index === current ? ' is-current' : '') + (state().completed.has(index) ? ' is-complete' : index !== current ? ' is-unvisited' : ''), 'data-story-chapter': index, tabindex: '0', role: 'button', 'aria-label': value(item.chapter.name) + '，' + status + '，' + item.note, 'aria-controls': 'story-node-card', 'aria-current': index === current ? 'step' : 'false' });
+      const group = svgNode('g', { class: 'story-map-node' + (index === current ? ' is-current' : '') + (state().completed.has(index) ? ' is-complete' : index !== current ? ' is-unvisited' : ''), 'data-story-chapter': index, tabindex: '-1', role: 'button', 'aria-label': value(item.chapter.name) + '，' + status + '，' + item.note, 'aria-controls': 'story-node-card', 'aria-current': index === current ? 'step' : 'false' });
       const anchor = svgNode('g', { transform: 'translate(' + x + ',' + y + ')' });
       const glyph = svgNode('g', {});
       glyph.append(svgNode('rect', { x:-24,y:-25,width:48,height:50,rx:6,class:'story-node-seal' }));
@@ -122,6 +122,7 @@
       node('p', '', '相关人物：' + list(chapter.people)), node('p', '', '相关事件：' + list(chapter.events)),
       node('p', 'chapter-narrative', typeof chapter.story === 'string' && chapter.story.trim() ? chapter.story : '故事内容待确认。接入可核验史料后，再讲述这一章。'),
       node('p', 'map-note', '更新时间：' + (verified ? chapter.updatedAt : '待确认')), sources(chapter));
+    $('#chapter-ask').textContent='用'+window.SGTStoryUI.modeLabel(state().mode)+'方式讲这一章';
     $('#chapter-add').disabled = !item.point;
     $('#chapter-add').textContent = item.exact ? '加入路线' : item.point ? '加入路线（驻地示意）' : '加入路线（待定位）';
     $('#chapter-navigate').disabled = true; $('#chapter-navigate').textContent = '直接导航暂未提供';
@@ -152,13 +153,14 @@
   function selectChapter(index) {
     if (!active || !Number.isInteger(index) || !resolved[index] || state().skipped?.has(index)) return;
     $('#map-place-picker').hidden = true;
-    state().current = index; state().started = true; persist(); cardOpen = true; draw(); renderCard();
+    window.SGTStoryUI?.selectReading?.(index);
+    state().current = index; state().started = true; persist(); cardOpen = true; draw(); renderCard();window.SGTNavigation?.write();
     $('#story-node-title').focus({preventScroll:true});
     if(window.CulturalNode){openDetail();window.ChenshouGuide?.enter(window.StoryMap.getContext());return;}
     if (!state().asked.has(index)) { state().asked.add(index); askCurrent(false); }
     revealCard();
   }
-  async function open(id) {
+  async function open(id,options={}) {
     const story = overrides.get(id)?.story || window.SGT_STORIES.find(item=>item.id===id);
     if (!story?.chapters?.length) return false;
     const request = ++epoch;
@@ -170,7 +172,8 @@
     if (!progress.has(id)) progress.set(id,{current:0,completed:new Set(),asked:new Set()});
     const places = overrides.get(id)?.places || window.SGT_PLACES;
     resolved = (story.chapters || []).map(chapter=>locate(chapter,places));
-    if(window.StoryProgress && story.chapters?.length) { state().started=true; persist(); }
+    if(options.preview){state().current=Number.isInteger(options.index)&&resolved[options.index]?options.index:0;}
+    else if(window.StoryProgress && story.chapters?.length) { state().started=true; persist(); }
 
     $('#map-view').classList.add('story-mode'); $('#map-view').dataset.storyId = id;
     $('#story-map-badge').hidden = false; $('#story-map-toolbar').hidden = false; $('#story-map-chapters').hidden = false; $('#story-node-card').hidden = true;

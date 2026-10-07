@@ -32,6 +32,7 @@
     });
     return dl;
   }
+  let readingChapter=0;
   let selected = window.SGT_STORIES[0];
   let previewStory = null;
   function preview(story) {
@@ -48,14 +49,15 @@
     Array.from($('#story-cards').children).forEach(shell => shell.children[0].setAttribute('aria-pressed', String(shell.dataset.storyId === story?.id)));
   }
   function select(story, open) {
-    selected = story;
+    if(selected?.id!==story.id)readingChapter=0;
+    selected = story;readingChapter=Math.min(readingChapter,Math.max(0,story.chapters.length-1));
     $('#story-title').textContent = text(story.title);
     const detail = $('#story-detail-content');
     detail.replaceChildren(node('p', 'story-disclosure', '想了解这个主题的故事和出处，可以问陈寿'), facts(story));
     for (const [heading, value] of [['核心问题', story.coreQuestion], ['故事简介', story.summary]]) {
       if (value) detail.append(node('h3', '', heading), node('p', '', text(value)));
     }
-    detail.append(node('p', 'story-empty', story.chapters.length?'下方为有文献出处的阅读章节；章节顺序不是历史行走路线，实际交通需另行规划。':'史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
+    detail.append(node('p', 'story-empty', story.chapters.length?'阅读章节附有资料出处；章节顺序不是历史行走路线，实际交通需另行规划。':'史料、景区落点与出行条件待确认，暂不生成历史讲解或路线。'));
     $('#story-action-status').textContent = story.chapters.length?'章节资料已加载，可以阅读或带入活动计划。':'当前为主题模板，尚未形成可执行行程。';
     renderSystem(story, detail);
     if (open) { preview(story); showContentView('story'); }
@@ -69,12 +71,17 @@
     d.append(node('summary','', '史料依据 · 资料状态：' + ({pending:'待核验',maintained:'维护资料',live:'实时查询',sample:'示例资料',stale:'已过期'}[record.dataStatus] || '待核验')));
     d.append(node('p','', '当前显示：故事主题资料；待确认项：史料出处与具体内容；更新时间：' + (record.updatedAt || '未提供')));
     if (!record.sources?.length) d.append(node('p','', '来源待补充；当前资料中未找到可靠记载。'));
-    (record.sources || []).filter(s=>s && typeof s==='object').forEach(s=>{
-      const row=node('p','',text(s.title)+' · 来源等级：'+(['A','B','C'].includes(s.source_level)?s.source_level:'待核验'));
-      try { const url=new URL(s.source_url); if(['http:','https:'].includes(url.protocol)) { const a=node('a','','查看来源'); a.href=url.href; a.target='_blank'; a.rel='noopener noreferrer'; row.append(a); } } catch (_) {}
-      if(s.source_level==='C') row.append(node('small','','C 级仅作线索，不能支撑史实结论。'));
+    const groups=new Map();
+    const sourceKey=s=>JSON.stringify([s.document_id||'',s.title||'',s.source_url||'',s.pdf_page??s.page??'',s.anchor||'']);
+    (record.sources||[]).filter(s=>s&&typeof s==='object').forEach(source=>{const key=sourceKey(source);if(!groups.has(key))groups.set(key,{source,levels:new Set(),chapters:new Set()});groups.get(key).levels.add(source.source_level||'待核验');});
+    if(record===selected)(selected.chapters||[]).forEach((c,i)=>(c.sources||[]).forEach(source=>{const g=groups.get(sourceKey(source));if(g){g.chapters.add((i+1)+' · '+c.name);g.levels.add(source.source_level||'待核验');}}));
+    for(const {source:s,levels,chapters} of groups.values()){
+      const row=node('p','',text(s.title)+' · 来源等级：'+(levels.size>1?'等级冲突：':'')+[...levels].join(' / ')+(s.pdf_page?' · PDF第'+s.pdf_page+'页':s.page?' · 已提供页码：'+s.page:'')+(s.anchor?' · 已提供锚点：'+s.anchor:''));
+      try { const url=new URL(s.source_url); if(['http:','https:'].includes(url.protocol)) { const a=node('a','','查看来源'); a.href=url.href; a.target='_blank'; a.rel='noopener noreferrer'; row.append(a);if(!s.pdf_page&&!s.page&&(url.search||url.hash))row.append(node('span','',' · 链接定位：'+url.search+url.hash)); } } catch (_) {}
+      if(chapters.size)row.append(node('span','',' · 关联章节：'+[...chapters].join('；')));
+      if(levels.has('C'))row.append(node('small','','C 级仅作线索，不能支撑史实结论。'));
       d.append(row);
-    }); return d;
+    } return d;
   }
   function renderSystem(story, detail) {
     const s=progress.get(story), chapters=story.chapters || [];
@@ -85,21 +92,34 @@
     ['大众体验版','亲子故事版','学术探索版'].forEach(mode=>{
       const b=action(modeLabel(mode),()=>{s.mode=mode;progress.save(story);}); b.setAttribute('aria-pressed',String(s.mode===mode)); modes.append(b);
     }); detail.append(action('带入活动计划',()=>window.TravelModules.openStory(story)));
-    detail.append(modes,node('p','map-note','切换故事线只改变这一章的讲解方式，不会切换故事或地点。讲解来自现有的陈寿对话服务，资料不足时会说明待确认。'));
+    detail.append(modes,node('p','map-note','选择接下来向陈寿提问时的讲解方式；当前资料正文保持原文。讲解来自现有的陈寿对话服务，资料不足时会说明待核验。'));
     if(story.people?.length || story.events?.length)detail.append(node('h3','','相关人物与关键事件'),node('p','',[story.people?.length?'人物：'+list(story.people):'',story.events?.length?'事件：'+list(story.events):''].filter(Boolean).join('；')));
     const constraints=[['交通',story.constraints?.transport],['开放时间',story.constraints?.openTime],['游览时长',story.constraints?.duration],['预算',story.constraints?.budget]].filter(([,v])=>v);
     if(constraints.length)detail.append(node('h3','','出行条件'),node('p','',constraints.map(([k,v])=>k+'：'+v).join('；')+' · 待核验'));
-    detail.append(provenance(story));
+    if(chapters.length){
+      const c=chapters[readingChapter],place=places.find(p=>p.id===c.placeId),section=node('section','story-current-chapter');
+      const heading=node('h3','','第 '+(readingChapter+1)+' 章 · '+c.name);heading.id='story-reading-title';heading.setAttribute('tabindex','-1');
+      section.append(heading,node('p','map-note',(s.started?'当前阅读章节':'预览章节 · 尚未开始')+'；'+(s.completed.has(readingChapter)?'手动已寻迹，不代表实际到访':s.skipped.has(readingChapter)?'本次跳过':'本次保留')));
+      if(c.reason)section.append(node('p','','为什么推荐：'+c.reason));if(c.role)section.append(node('p','','在故事中的作用：'+c.role));
+      section.append(node('p','chapter-fulltext',c.story||'本章正文待补充。'),provenance(c));
+      const chapterActions=node('div','chapter-actions'),ask=action('用'+modeLabel(s.mode)+'方式讲这一章',askReading);ask.id='chapter-explain-current';chapterActions.append(ask);
+      if(place)chapterActions.append(action('阅读本章地点资料',()=>window.CulturalNode?.open({...window.StoryMap.describePlace(place,c),story,chapter:c,index:readingChapter,returnTo:'story'})));
+      section.append(chapterActions);
+      detail.append(section);
+    }
+    const totalSources=provenance(story);totalSources.setAttribute('aria-label','故事总来源');detail.append(totalSources);
+    renderChapterMap(story,places);
     const axis=node('ol','story-chapter-axis');
     chapters.forEach((c,i)=>{
       const place=places.find(p=>p.id===c.placeId), li=node('li','');
       const status=s.skipped.has(i)?'本次跳过':s.completed.has(i)?'已完成 · 已寻迹':s.started&&s.current===i?'当前':'待探索';
       li.dataset.state=status; li.append(node('h4','',c.name+' · '+status),node('p','','地点 / 建筑：'+(place?place.name+' / '+({wall:'城楼',pass:'关楼',road:'古道',tower:'楼阁',shrine:'祠庙'}[place.building]||'形制待补充'):'待补充')),
         node('p','story-disclosure','向陈寿了解本章故事与出处'));
-      [['为什么推荐',c.reason],['在故事中的作用',c.role],['本章故事',c.story]].filter(([,v])=>v).forEach(([k,v])=>li.append(node('p','',k+'：'+v)));li.append(provenance(c));
+      const chapterActions=node('div','chapter-actions');chapterActions.append(action('阅读这一章',()=>selectReading(i)));li.setAttribute('aria-current',i===readingChapter?'step':'false');
       if(s.skipped.size) li.append(node('p','map-note',s.skipped.has(i)?'本次跳过：你选择将有限时间留给其他章节；未从故事中删除。':'本次保留：你选择的核心章节；是否能在半天走完仍待核验。'));
-      if(place)li.append(action('阅读地点资料',()=>window.CulturalNode?.open({...window.StoryMap.describePlace(place,c),story,chapter:c,index:i,returnTo:'story'})));
-      if(!s.skipped.has(i)) li.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
+      if(place)chapterActions.append(action('阅读地点资料',()=>window.CulturalNode?.open({...window.StoryMap.describePlace(place,c),story,chapter:c,index:i,returnTo:'story'})));
+      if(!s.skipped.has(i)) chapterActions.append(action('进入这一章',async()=>{if(await window.StoryMap.open(story.id))window.StoryMap.selectChapter(i);}));
+      li.append(chapterActions);
       axis.append(li);
     });
     const sidebar = $('#story-detail-sidebar');
@@ -110,7 +130,7 @@
       const box=node('fieldset','story-compression');box.append(node('legend','','我只有半天 · 选择本次保留的核心章节'));
       const inputs=chapters.map((c,i)=>{const label=node('label',''),input=node('input');input.type='checkbox';input.checked=!s.skipped.has(i);label.append(input,node('span','',c.name));box.append(label);return input;});
       const feedback=node('p','map-note','核心章节尚待编辑确认，由你选择；交通和游览时长待核验，不保证半天可完成。');feedback.setAttribute('role','status');
-      box.append(action('按选中章节带入活动计划',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';else window.TravelModules.openStory(story);}),action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);
+      box.append(action('按选中章节带入活动计划',()=>{const indices=inputs.map((v,i)=>v.checked?i:-1).filter(i=>i>=0);if(!indices.length)feedback.textContent='请至少保留一章。';else window.TravelModules.openStory(story,0.5,{chapterIndices:indices});}),action('应用本次选取',()=>{if(!progress.choose(story,inputs.map((v,i)=>v.checked?i:-1)))feedback.textContent='请至少保留一章。';}),action('恢复全部章节',()=>{progress.choose(story,chapters.map((_,i)=>i));}),feedback);detail.append(box);
     }
     if(progress.status(story)==='已寻迹') {
       const visitedPlaces=chapters.map(c=>places.find(p=>p.id===c.placeId)?.name || '地点待补充');
@@ -119,7 +139,36 @@
     $('#story-map-open').disabled=!chapters.length;
     $('#story-map-open').textContent=chapters.length?'开始探索 →':'开始探索（章节待补充）';
   }
-  progress.subscribe(()=>{if(selected)select(selected,false);});
+  function selectReading(index){
+    if(!Number.isInteger(index)||!selected.chapters[index])return false;
+    readingChapter=index;select(selected,false);window.SGTNavigation?.write();
+    if(!$('#story-view').hidden){const heading=$('#story-reading-title');heading.focus({preventScroll:true});heading.scrollIntoView({block:'start',behavior:'instant'});}
+    return true;
+  }
+  function askReading(){
+    const c=selected.chapters[readingChapter];if(!c)return;
+    const mode=progress.get(selected).mode;
+    window.SGTJourney.ask('【故事章节讲解】故事：'+selected.title+'；当前章节：'+c.name+'；讲解模式：'+mode+'；资料原文：'+(c.story||'待补充')+'。按所选偏好讲解同一章，区分史料、文学与研究观点；C 级来源不能支撑史实结论；未核验引文明确标注，不编造史实。',{displayText:'请陈寿用'+modeLabel(mode)+'方式讲'+c.name,preserveMap:true});
+    $('#story-action-status').textContent='已请求本章讲解，原始资料正文保持原文；回答未收到前不视为已改写。';
+  }
+  function renderChapterMap(story,places){
+    const target=$('#story-map-relations');if(!target)return;target.replaceChildren(node('p','map-note','章节顺序不是历史行走路线；编号对应阅读章节，实际道路需另行规划。'));
+    const ol=node('ol','chapter-map-relations');
+    (story.chapters||[]).forEach((c,i)=>{const p=places.find(p=>p.id===c.placeId),located=p&&window.StoryMap?.describePlace?.(p,c),li=node('li',i===readingChapter?'is-current':'');
+      li.append(action((i+1)+' · '+c.name+' / '+(p?.name||'地点待确认'),()=>selectReading(i)),node('p','map-note',located?.point?(located.exact?'有来源的景区坐标；入口与导航待核验':'县级驻地示意，不是景区入口；'+located.note):'坐标待确认，不绘制精确地点。'));ol.append(li);
+    });target.append(ol);drawPreviewPoints(story,places);
+  }
+  function drawPreviewPoints(story,places){
+    const layer=$('#story-preview-points');if(!layer||!window.MapRouteCore?.project)return;layer.replaceChildren();
+    const groups=new Map();
+    (story.chapters||[]).forEach((c,i)=>{const p=places.find(p=>p.id===c.placeId),located=p&&window.StoryMap?.describePlace?.(p,c);if(!located?.point)return;const key=located.point.center.join(',');if(!groups.has(key))groups.set(key,{located,chapters:[]});groups.get(key).chapters.push({i,p});});
+    for(const {located,chapters} of groups.values()){
+      const current=chapters.some(c=>c.i===readingChapter),[x,y]=window.MapRouteCore.project(located.point.center),g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','preview-chapter-point'+(current?' is-current':''));
+      const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');circle.setAttribute('cx',x);circle.setAttribute('cy',y);circle.setAttribute('r',current?'9':'7');
+      const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',x+12);label.setAttribute('y',y);label.textContent=chapters.map(c=>c.i+1).join('/')+' · '+[...new Set(chapters.map(c=>c.p.name))].join('、')+(located.exact?'':'（驻地示意）');g.append(circle,label);layer.append(g);
+    }
+  }
+  progress.subscribe(story=>{if(selected)select(selected,false);window.TravelModules?.storyChanged?.(story);});
   const cards = $('#story-cards');
   window.SGT_STORIES.forEach((story, index) => {
     const card = node('button', 'story-card'); card.type = 'button';
@@ -178,7 +227,7 @@
     svg.append(base,depth,path);
     return svg;
   }
-  window.SGTStoryUI = {modeLabel, getContext:()=>({story:selected}), icon, installContent(payload) {
+  window.SGTStoryUI = {modeLabel, selectReading, getContext:()=>({story:selected,index:readingChapter,chapter:selected.chapters[readingChapter],place:(window.StoryMap?.getPlaces?.(selected.id)||window.SGT_PLACES).find(p=>p.id===selected.chapters[readingChapter]?.placeId)}), icon, installContent(payload) {
     const story=payload?.story;
     if(story?.id!=='chenshou-book-history'||!Array.isArray(story.chapters)||!story.chapters.length||!Array.isArray(payload.places))return false;
     if(story.chapters.some(c=>!c.name||!payload.places.some(p=>p.id===c.placeId)))return false;
@@ -192,7 +241,7 @@
       const summary=card.querySelector('.story-summary')||node('span','story-summary');
       summary.textContent=story.summary||'';card.insertBefore(summary,end);
     }
-    select(selected,false);if(previewStory)preview(selected);return true;
+    select(selected,false);if(previewStory)preview(selected);window.SGTNavigation?.contentReady(true);return true;
   }, openStory(id, suppliedStory) {
     // 保存的行程快照不能复活已移除的故事；显式地图适配数据沿用现有入口。
     const catalog = window.SGT_STORIES.find(item => item.id === id);
@@ -200,7 +249,7 @@
     const story = adapted?.id === id && suppliedStory?.id === id ? adapted :
       catalog && suppliedStory?.id === id ? suppliedStory : catalog;
     if (!story) return false;
-    select(story, true); return true;
+    select(story, true);window.SGTNavigation?.write(); return true;
   } };
   window.SGT_PLACES.forEach(place => {
     const article = node('article', 'building-card');
@@ -217,6 +266,8 @@
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', city.d); path.setAttribute('class', 'preview-region'); svg.append(path);
     });
-    $('#story-preview-status').textContent = '四川轮廓示意 · 故事章节地点待确认，未绘制路线。';
+    svg.append($('#story-preview-points'));
+    drawPreviewPoints(selected,window.StoryMap?.getPlaces?.(selected.id)||window.SGT_PLACES);
+    $('#story-preview-status').textContent = '四川轮廓示意 · 编号对应阅读章节；县级驻地示意不是景区入口；未核验坐标不绘精确景区点，未绘制道路路线。';
   }).catch(() => { $('#story-preview-status').textContent = '地理轮廓暂不可用；可切到行旅地图查看。故事路线仍待补充。'; });
 })();

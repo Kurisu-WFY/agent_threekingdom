@@ -365,9 +365,9 @@ function batch9Check(code,fn){try{fn();}catch(e){batch9Failures.push(code+': '+e
 batch9Check('C11',()=>{
  const raw=context.copyHotel.answer, row=run('messageNode({role:"assistant",text:copyHotel.answer,data:copyHotel})');
  assert.match(textTree(row),/住宿价格仅供估算，请以预订平台当天报价为准/);
- assert.match(textTree(row),/200\.0.*380\.0.*元\/晚\/间/);
+ assert.match(textTree(row),/每间每晚约 200—380 元.*尚非报价.*需核验/);
  const originalBubble=textTree(allNodes(row).find(n=>n.className==='bubble'));
- for(const line of raw.split('\n'))assert.ok(originalBubble.includes(line),'C11 原回答每行保留');
+ assert.doesNotMatch(originalBubble,/正式服务应接入|OTA|12306/,'游客正文移除开发待办');
  assert.equal(context.copyHotel.answer,raw);
  const routeRaw='以陈寿和地方蜀汉遗迹为主线，适合展示文化解释、路线推荐和预算估算能力。';context.ninthRouteRaw=routeRaw;
  const routeRow=run('messageNode({role:"assistant",text:ninthRouteRaw,data:{intent:{intent:"route_planning"}}})');assert.match(textTree(routeRow),/当前内容为文化游览参考/);assert.ok(textTree(routeRow).includes(routeRaw),'C11 演示原文保留');

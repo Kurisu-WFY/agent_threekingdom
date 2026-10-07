@@ -59,9 +59,9 @@
   }
   function changeMode(next){
     if(!context||!modes.includes(next)||mode===next)return;
-    const reader=$('#node-reading'),top=reader.scrollTop,pageTop=window.scrollY || 0;
-    // 保持阅读区域足够高，避免较短模式限制原有滚动位置。
-    $('#node-reading-content').style.minHeight=$('#node-reading-content').scrollHeight+'px';
+    const reader=$('#node-view'),top=reader.scrollTop,pageTop=window.scrollY || 0;
+    // 使用主面板保存阅读位置；较短模式允许浏览器按实际内容收敛滚动范围。
+    $('#node-reading-content').style.minHeight='';
     mode=next;renderReading();reader.scrollTop=top;
     if(context.story){const s=window.StoryProgress.get(context.story);s.mode=mode;window.StoryProgress.save(context.story);}
     readings.set(readingKey,{top,mode,height:$('#node-reading-content').scrollHeight});window.scrollTo?.({top:pageTop,behavior:'instant'});window.CharacterChat?.refresh();
@@ -93,7 +93,7 @@
   }
   function open(payload){
     if(!payload?.place)return false;
-    if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});
+    if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-view').scrollTop,mode,height:$('#node-reading-content').scrollHeight});
     context={...payload,returnTo:payload.returnTo || payload.back || null};const {place,chapter,story}=context;
     $('#node-back').textContent=context.returnTo?'返回上一视图':'返回首页（来源未知）';
     const origins={welcome:'文化探索',story:'文化探索',map:'行旅地图',journal:'探索志',destinations:'目的地',planner:'活动计划',plan:'活动计划',travel:'活动计划',outing:'活动计划'};
@@ -102,19 +102,19 @@
     mode=(story?window.StoryProgress.get(story).mode:readings.get(readingKey)?.mode) || modes[0];
     $('#node-visual').replaceChildren(window.SGTStoryUI.icon(place.building));
     $('#node-title').textContent=place.name;
-    $('#node-context').textContent='城市：'+text(place.city)+' · 故事：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
+    $('#node-context').textContent='城市：'+(place.city ? place.city+'（城市信息尚未核验）' : '城市信息待确认')+' · 故事：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
     $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';
-    const locationNote=(context.note || '地点待定位，不猜景区位置。').replace(/^坐标待核验(?:\s*\/\s*景区待定位)?\s*·\s*/, '');
+    const locationNote=context.note || '地点待定位，不猜景区位置。';
     $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
     const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter?.narrative_type)?chapter.story:''};
     const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);
     $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，缺资料的部分已收起，展开后可以查看核验说明。':'资料概况：已有来源的正文在下方，可以逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
     if(sources(chapter).length)$('#node-metadata').append(provenance(chapter));
-    $('#node-reading-content').style.minHeight=readings.get(readingKey)?.height?readings.get(readingKey).height+'px':'';renderReading();comparison();tourism();
+    $('#node-reading-content').style.minHeight='';renderReading();comparison();tourism();
     $('#node-add-route').disabled=!context.point;
     $('#node-add-route').textContent=context.point?(context.exact?'加入路线':'加入路线（驻地示意）'):'加入路线（待定位）';
     $('#node-feedback').textContent='史料不足时保留问题；AI讲解不作为已核验史实。';
-    showContentView('node');window.CharacterChat?.refresh();$('#node-reading').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
+    showContentView('node');window.CharacterChat?.refresh();$('#node-view').scrollTop=readings.get(readingKey)?.top || 0;$('#node-title').focus({preventScroll:true});return true;
   }
   function openPlace(id,{returnTo}={}){
     const place=window.SGT_PLACES.find(p=>p.id===id);if(!place)return false;
@@ -131,7 +131,7 @@
   });
   $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
   $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
-  $('#node-reading').addEventListener('scroll',()=>{if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-reading').scrollTop,mode,height:$('#node-reading-content').scrollHeight});});
+  $('#node-view').addEventListener('scroll',()=>{if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-view').scrollTop,mode,height:$('#node-reading-content').scrollHeight});});
   window.StoryProgress?.subscribe?.(story=>{if(context?.story?.id===story.id)changeMode(window.StoryProgress.get(story).mode);});
   window.CulturalNode={getMode:()=>mode,getContext:()=>!$('#node-view').hidden?context:null,compare:()=>$('#node-compare').click(),open,openPlace,changeMode};
 })();

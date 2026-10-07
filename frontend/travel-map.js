@@ -2,6 +2,30 @@
   const $ = selector => document.querySelector(selector);
   const core = window.MapRouteCore;
   const svg = $('#route-map');
+  // 地图只有一个 Tab 入口；内部按章节、县区顺序移动，下拉与章节列表仍可独立使用。
+  let keyboardPlace = null;
+  const keyboardNodes = () => [...svg.querySelectorAll('.story-map-node'), ...svg.querySelectorAll('.county-point')].filter(point => {
+    const rect=point.getBoundingClientRect(),map=svg.getBoundingClientRect();
+    return rect.width>0 && rect.height>0 && rect.right>map.left && rect.left<map.right && rect.bottom>map.top && rect.top<map.bottom;
+  });
+  function resetMapTabStop() {
+    svg.querySelectorAll('[role="button"]').forEach(point=>point.setAttribute('tabindex','-1'));
+    svg.setAttribute('tabindex','0');
+  }
+  svg.addEventListener('focusin',event=>{
+    const point=event.target.closest('[role="button"]');
+    if(point && svg.contains(point)){resetMapTabStop();point.setAttribute('tabindex','0');svg.setAttribute('tabindex','-1');keyboardPlace=point;}
+  });
+  svg.addEventListener('focusout',event=>{if(!svg.contains(event.relatedTarget))resetMapTabStop();});
+  if(window.MutationObserver)new MutationObserver(()=>{if(!svg.contains(document.activeElement))resetMapTabStop();}).observe(svg,{childList:true,subtree:true});
+  svg.addEventListener('keydown',event=>{
+    if(!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key))return;
+    const points=keyboardNodes();if(!points.length)return;
+    event.preventDefault();
+    const current=points.indexOf(document.activeElement),remembered=points.indexOf(keyboardPlace);
+    const next=event.key==='Home'?0:event.key==='End'?points.length-1:current<0?Math.max(0,remembered):(current+(['ArrowRight','ArrowDown'].includes(event.key)?1:-1)+points.length)%points.length;
+    points[next].focus({preventScroll:true});
+  });
   const textSize = (name, fallback) => Number.parseFloat(window.getComputedStyle?.(svg)?.getPropertyValue('--map-text-' + name)) || fallback;
   const ns = 'http://www.w3.org/2000/svg';
   let places = [], counties = [], activeChat = null, selected = null;
@@ -120,7 +144,7 @@
       if(!labelAreas.has(place.adcode))labelAreas.set(place.adcode,core.polygonLabel(boundary.d,boundary.bounds));
       const area=labelAreas.get(place.adcode);if(!area)continue;
       const {x,y}=area;
-      const point = element('g', { 'data-county-code':place.adcode, class: 'county-point', tabindex: '0', role: 'button', 'aria-label': `${place.name}，${place.parent}` });
+      const point = element('g', { 'data-county-code':place.adcode, class: 'county-point', tabindex: '-1', role: 'button', 'aria-label': `${place.name}，${place.parent}` });
       point.append(element('path', { d:boundary.d, class:'county-hit-area', 'fill-rule':'evenodd' }));
       point.append(element('title', {}, `${place.name} · ${place.parent}`));
       const node=element('text',{x,y,class:'county-label', 'text-anchor':'middle', 'dominant-baseline':'central'},place.name);
@@ -256,12 +280,12 @@
   window.TravelMap = {
     get ready(){return ready;},
     getPlaces() { return places; },
-    getPlanSelection() {
+    getPlanSelection(withLocations=false) {
       const parent=$('#map-prefecture').value;
       const routePoints=(activeChat?.mapRoute?.points||[]).filter(Boolean);
       const points=planSource==='route'&&routePoints.length?routePoints:selected?[selected]:parent?[{name:parent,level:'city'}]:routePoints;
       const cities=[...new Set(points.map(p=>(p.parent||(p.level==='city'?p.name:p.city)||'').replace(/市$/,'')).filter(Boolean))];
-      return {cities,places:[...new Set(points.filter(p=>p.level!=='city').map(p=>p.name).filter(Boolean))]};
+      return {cities,places:[...new Set(points.filter(p=>p.level!=='city').map(p=>p.name).filter(Boolean))],...(withLocations?{locations:points.filter(p=>p.level!=='city').map(p=>({name:p.name,city:(p.parent||p.city||'').replace(/市$/,'')}))}:{})};
     },
     getGeometry() { return geometry; },
     textSize,

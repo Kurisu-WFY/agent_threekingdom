@@ -11,6 +11,7 @@ function setup({saved={},blocked=false,broken=false,pending=false}={}){
  vm.runInNewContext(fs.readFileSync(__dirname+'/story-progress.js','utf8'),ctx);vm.runInNewContext(fs.readFileSync(__dirname+'/journal.js','utf8'),ctx);
  return {get,window,story,chats,store,views,map};
 }
+const unstarted=setup();assert.match(text(unstarted.get('#journal-book')),/尚未开始 · 共 2 幕 · 已寻迹 0 \/ 2 幕/);
 const t=setup(),journal=t.window.ExplorationJournal,progress=t.window.StoryProgress;
 assert.ok(text(t.get('#journal-empty')).includes('去读一条故事、问陈寿一个问题，这里就会记下来'));assert.match(text(t.get('#journal-overview')),/已寻迹 0 \/ 2 幕/);assert.equal(journal.model().completed.length,0);assert.equal(journal.model().people.length,0);assert.equal(t.views.length,0);assert.equal(journal.model().next,undefined);assert.doesNotMatch(fs.readFileSync(__dirname+'/index.html','utf8'),/journal-recommendation/);
 t.get('#journal-empty').children.at(-1).handlers.click();assert.deepEqual(t.views,['fixture-journal']);

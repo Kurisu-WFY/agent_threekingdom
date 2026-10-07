@@ -28,6 +28,7 @@
   }
   $('outing-route-form').onsubmit=async event=>{
     event.preventDefault();const form=event.currentTarget;if(!form.reportValidity())return;
+    const querySnapshot={city:['start','end'].map(s=>$('outing-'+s).value).join(' → '),origin:$('outing-start').value,destination:$('outing-end').value,date:document.querySelector('#trip-form').elements.namedItem('date').value||'',linked:false};
     const version=++routeVersion,button=form.querySelector('button'),mode=form.querySelector('input[name="outing-mode"]:checked').value;
     button.disabled=true;$('outing-route-status').textContent='正在定位并查询公共道路服务…';
     try{
@@ -41,12 +42,12 @@
       $('outing-route-metrics').replaceChildren(node('strong',`距离 ${(d.distance_m/1000).toFixed(2)} km`),node('strong',`预计 ${Math.ceil(d.duration_seconds/60)} 分钟`));
       const snaps=(d.snapped_waypoints||[]).map(w=>w.distance_from_input_m).filter(Number.isFinite);
       $('outing-route-status').textContent=r.message+(snaps.length?' 起终点吸附道路偏移：'+snaps.map(m=>m.toFixed(0)+'米').join(' / ')+'。':'');
-      source($('outing-route-source'),d);const fix=node('a','在 OpenStreetMap 查看／修正地图');fix.href='https://www.openstreetmap.org/';fix.target='_blank';fix.rel='noopener noreferrer';$('outing-route-source').append(node('br'),fix);
+      window.ActivityQueries?.record('osrm',{...querySnapshot,queried_at:d.fetched_at||new Date().toISOString()});source($('outing-route-source'),d);const fix=node('a','在 OpenStreetMap 查看／修正地图');fix.href='https://www.openstreetmap.org/';fix.target='_blank';fix.rel='noopener noreferrer';$('outing-route-source').append(node('br'),fix);
     }catch(e){if(version===routeVersion){$('outing-route-status').textContent=e.message||'查询失败，请重试。';$('outing-route-preview').replaceChildren(node('p','本次没有可确认的道路路线，可调整起终点后重试。'));$('outing-route-metrics').replaceChildren();$('outing-route-source').replaceChildren();}}
     finally{if(version===routeVersion)button.disabled=false;}
   };
   function prefillPlan(draft){
-    window.AmapPlanner?.prefill(draft);clearRoute();
+    window.AmapPlanner?.prefill(draft);routeVersion++;
     for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}
     coordinateFields();$('outing-confirm').checked=false;$('outing-back').hidden=true;
     $('outing-origin').textContent='来自本次活动计划 · 地点文字已带入，请搜索并确认候选';
@@ -56,7 +57,7 @@
     window.TravelModules?.prefillTravel?.(d.city,d.date);back=returnToChat;
     for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}coordinateFields();$('outing-confirm').checked=false;
     $('outing-origin').textContent='来自陈寿对话的行程草案 · 请确认目的地与日期';$('outing-back').hidden=false;
-    $('outing-original').hidden=false;$('outing-original-text').textContent=window.AgentAnswer?.clean(d.answer)||d.answer;
+    $('outing-original').hidden=false;$('outing-original-text').textContent=d.answer;
     $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待核验')));
     $('outing-draft-note').textContent=d.stops.length?'已带入站点名称；坐标和可行性仍未核验。':'回答原文已保留。当前回答没有可直接使用的站点资料，不会把文字猜成可导航路线。';
     window.AmapPlanner?.prefill({origin:message.activityPlan?.preferences?.origin||'',destination:d.stops.at(-1)?.name||d.city,city:d.city});

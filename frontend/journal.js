@@ -63,7 +63,7 @@
     const {story,state,total}=x,row=node('section','journal-story');row.append(node('h3','',story.title));
     const complete=total>0&&state.completed.size===total;
     row.append(node('span','journal-story-status'+(complete?' complete':''),complete?'已完成':state.started||state.completed.size?'正在读':'待探索'));
-    row.append(node('p','',total?'第 '+(state.started||state.completed.size?state.current+1:0)+' / '+total+' 幕 · 已寻迹 '+state.completed.size+' / '+total+' 幕':'章节待补充 · 尚不能计算完成进度'));
+    row.append(node('p','',total?(state.started||state.completed.size?'第 '+(state.current+1)+' / '+total+' 幕':'尚未开始 · 共 '+total+' 幕')+' · 已寻迹 '+state.completed.size+' / '+total+' 幕':'章节待补充 · 尚不能计算完成进度'));
     const scroll=node('div','journal-scroll');scroll.setAttribute('aria-label','已完成 '+state.completed.size+' / '+total+' 幕');
     (story.chapters||[]).forEach((c,i)=>scroll.append(node('span','journal-seal'+(state.completed.has(i)?' complete':''),(i+1)+' · '+(state.completed.has(i)?'已寻迹':state.skipped.has(i)?'本次跳过':'待探索'))));row.append(scroll);
     row.append(button(total?'继续阅读':'查看故事资料',()=>window.SGTStoryUI.openStory(story.id)));box.append(row);

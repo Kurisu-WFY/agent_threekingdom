@@ -8,7 +8,7 @@ const submitButton = form.querySelector('button[type="submit"]');
 const viewLabel = document.querySelector('#view-label');
 
 const API = '/chat'; // 与后端同源（后端把本页挂在 / 根路径）
-const WELCOME = '我是陈寿，这里的 AI 文化向导。我们可以从编撰《三国志》的过程出发，了解南充、广元与阆中的三国文化，也可以聊四川三国建筑背后的历史。史料有依据才说，缺资料就留待核验。';
+const WELCOME = '我是陈寿，这里的 AI 文化向导。我们可以从编撰《三国志》的过程出发，了解南充、广元与阆中的三国文化，也可以聊四川三国建筑背后的历史。史料有依据才说，缺少资料时会说明待核验。';
 const INTENT_LABELS = {
   culture_qa: '文化问答',
   history_vs_romance: '正史 / 演义',
@@ -98,7 +98,7 @@ function trustNode(record, label = '回答') {
   box.className = 'trust-info';
   const realtime = ['forecast','model'].includes(record?.data_status);
   const levels = {A:'权威资料',B:'较可靠资料',C:'文学/传说'};
-  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'请以官方公告确认', stale:'请确认最新公告',forecast:'模型天气预报',model:'空气质量模型估计'};
+  const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'待核验', stale:'已过期，需重新核验',forecast:'模型天气预报',model:'空气质量模型估计'};
   const status = record && Object.hasOwn(statuses, record.data_status) ? statuses[record.data_status] : null;
   box.append(tag(label + ' · ' + (status || '待核验')));
   if (realtime) box.append(tag('模型预报、非现场实测；天气与空气信息需在出发前再核验。'));
@@ -190,8 +190,7 @@ function messageNode(message) {
   if (scope) body.append(tag(scope));
   body.append(bubbleNode(message));
   if (scope) {
-    const price = message.data.answer.match(/酒店预算：(\d+(?:\.\d+)?) - (\d+(?:\.\d+)?) CNY\/晚\/间/);
-    body.append(tag('住宿价格仅供估算，请以预订平台当天报价为准。' + (price ? '上述住宿预算为 ' + price[1] + ' - ' + price[2] + ' 元/晚/间。' : '')));
+    body.append(tag('住宿价格仅供估算，请以预订平台当天报价为准。这是参考预算，尚非报价，需核验。'));
   }
   if (message.role === 'assistant' && !message.pending && !message.error && message.data?.intent?.intent === 'route_planning' && /适合展示文化解释、路线推荐和预算估算能力/.test(message.text || '')) body.append(tag('当前内容为文化游览参考；实际到达路线、开放时间与费用请在出发前逐项核验。'));
   if (message.role === 'assistant' && !message.pending && !message.error && window.CharacterChat?.actions) {
@@ -306,62 +305,18 @@ function renderHistory(focusChat = null, focusEditor = false) {
 }
 const revealedAnswers = new WeakSet();
 function revealAnswer(message, row) {
-  // 完整回答首次显示时播放一次；历史重绘、用户消息、错误与减少动态偏好直接显示。
-  if (message.role !== 'assistant' || !message.data || message.pending || message.error || revealedAnswers.has(message) || panel.hidden || !document.createTreeWalker) return;
+  // 完整回答只淡入一次；历史重绘、用户消息、错误与减少动态偏好直接显示。
+  if (message.role !== 'assistant' || !message.data || message.pending || message.error || revealedAnswers.has(message) || panel.hidden) return;
   revealedAnswers.add(message);
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.requestAnimationFrame || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
   const bubble = row.querySelector('.bubble');
-  bubble.classList.add('answer-measuring');
+  bubble.classList.add('answer-reveal');
   window.requestAnimationFrame(() => {
     if (!bubble.isConnected) return;
-    try {
-      const walker = document.createTreeWalker(bubble, NodeFilter.SHOW_TEXT);
-      const range = document.createRange(), chunks = [];
-      // 先完成布局测量再写 DOM；按 Unicode 字符边界分段，保留格式和原链接节点。
-      for (let textNode = walker.nextNode(); textNode; textNode = walker.nextNode()) {
-        const text = textNode.textContent;
-        if (!text.trim()) continue;
-        const offsets = [0];
-        for (const char of text) offsets.push(offsets.at(-1) + char.length);
-        const rectAt = i => {
-          range.setStart(textNode, offsets[i]); range.setEnd(textNode, offsets[i + 1]);
-          return range.getBoundingClientRect();
-        };
-        const parts = [];
-        for (let start = 0; start < offsets.length - 1;) {
-          const top = rectAt(start).top;
-          let low = start, high = offsets.length - 2;
-          while (low < high) {
-            const mid = Math.ceil((low + high) / 2);
-            if (Math.abs(rectAt(mid).top - top) < 1) low = mid;
-            else high = mid - 1;
-          }
-          parts.push({top, text: text.slice(offsets[start], offsets[low + 1])});
-          start = low + 1;
-        }
-        chunks.push({textNode, parts});
-      }
-      const tops = [];
-      chunks.flatMap(chunk => chunk.parts).sort((a, b) => a.top - b.top).forEach(part => {
-        let line = tops.findIndex(top => Math.abs(top - part.top) < 8);
-        if (line < 0) { line = tops.length; tops.push(part.top); }
-        part.line = line;
-      });
-      chunks.forEach(({textNode, parts}) => {
-        const fragment = document.createDocumentFragment();
-        parts.forEach(part => {
-          const span = document.createElement('span');
-          span.className = 'answer-line'; span.dataset.line = String(part.line);
-          span.style.animationDelay = part.line * 85 + 'ms';
-          span.textContent = part.text; fragment.append(span);
-        });
-        textNode.replaceWith(fragment);
-      });
-      // 超过消息视口的回答从首行开始读，避免只看到尚未淡入的尾部。
-      if (row.offsetHeight > messages.clientHeight - 44) {
-        messages.scrollTop += row.getBoundingClientRect().top - messages.getBoundingClientRect().top - 44;
-      }
-    } finally { bubble.classList.remove('answer-measuring'); }
+    // 长回答从首段开始读，不修改原始文字、链接或格式。
+    if (row.offsetHeight > messages.clientHeight - 44) {
+      messages.scrollTop += row.getBoundingClientRect().top - messages.getBoundingClientRect().top - 44;
+    }
   });
 }
 
@@ -736,6 +691,7 @@ function showContentView(view) {
     }
     sections.forEach(section => { section.hidden = section !== target && section !== nodeSource; });
     currentContentView = view;
+    window.SGTNavigation?.write();
     if(view==='planner')window.AmapRouteMap?.enter?.();
     if(view==='outing')window.TravelAssistant?.onEnter?.(leaving?.dataset.viewPanel);
     const labels = { welcome:'文化探索', story:'故事详情', destinations:'目的地', map:'行旅地图', planner:'活动计划', plan:'活动方案', travel:'天气', outing:'出发核验', journal:'探索志', node:'文化节点' };
