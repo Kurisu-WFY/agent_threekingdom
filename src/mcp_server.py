@@ -48,7 +48,7 @@ async def list_tools():
         Tool(name='search_amap_places', description='高德地点搜索：必须提供城市和地点名，返回候选地点ID及地址。同名、校区或入口有歧义时先让用户确认；不要编造坐标。', inputSchema=AmapSearch.model_json_schema()),
         Tool(name='get_amap_route', description='高德公交、驾车或步行路线。先调用search_amap_places取得并确认起终点ID，再查询；不可编造ID。结果含距离、预计时间和步骤，不代表实时到站或购票成功。', inputSchema=AmapRoute.model_json_schema()),
         Tool(name="get_nanchong_travel_catalog", description="南充公开页面地点及住宿候选目录；不是实时票价、空房或已核验入口。", inputSchema={"type": "object", "properties": {}}),
-        Tool(name="plan_nanchong_itinerary", description="南充半日/一日/两日草案，含逐段免Key地图跳转、住宿候选、自填预算。先问出发地；交通时间与开放条件未知，不得宣称可行或已预订。", inputSchema=NanchongPlanRequest.model_json_schema()),
+        Tool(name="plan_nanchong_itinerary", description="南充半日/一日/两日草案：逐段查询高德预计耗时，汇总交通/游览/休息并判断时间预算，含地图链接、住宿候选和预算。同名起点先搜索确认origin_poi_id；空耗时不得按零计算，时间预算足够不等于开放条件已确认。", inputSchema=NanchongPlanRequest.model_json_schema()),
         Tool(name="get_travel_weather", description="免费查询南充、阆中、广元未来7天天气预报及当前空气质量模型估计。可指定YYYY-MM-DD日期；超出范围不替代。非商业Demo，无实测保证。",
              inputSchema={"type": "object", "properties": {"city": {"type": "string"}, "travel_date": {"type": "string", "description": "可选出行日期YYYY-MM-DD"}}, "required": ["city"]}),
         Tool(name="lookup_travel_city", description="查询南充、阆中、广元城市中心WGS84坐标。只用于城市定位/天气，不代表景点、酒店或入口，不能冒充精准POI。",
@@ -207,7 +207,7 @@ async def call_tool(name: str, arguments: dict):
     if name == "get_nanchong_travel_catalog":
         return as_text(get_nanchong_travel_catalog())
     if name == "plan_nanchong_itinerary":
-        return as_text(plan_nanchong_itinerary(NanchongPlanRequest.model_validate(arguments)))
+        return as_text(await asyncio.to_thread(plan_nanchong_itinerary, NanchongPlanRequest.model_validate(arguments)))
     if name == "get_travel_weather":
         return as_text(await asyncio.to_thread(get_travel_weather, arguments.get("city", ""), arguments.get("travel_date")))
     if name == "lookup_travel_city":

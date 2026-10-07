@@ -1,5 +1,6 @@
 import json
 import unittest
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 from pydantic import ValidationError
 from san_guo_core.models import NanchongPlanRequest
@@ -7,6 +8,12 @@ from planning.nanchong_itinerary import plan_nanchong_itinerary, direction_url
 
 
 class ItineraryTests(unittest.TestCase):
+    def setUp(self):
+        for target in ('search_amap_places', 'get_amap_route'):
+            mock = patch('planning.itinerary_transport.' + target, return_value={'status': 'unavailable', 'message': '测试中的服务缺口'})
+            mock.start()
+            self.addCleanup(mock.stop)
+
     def test_no_fake_metrics(self):
         p = plan_nanchong_itinerary(NanchongPlanRequest(origin="南充站"))
         self.assertIsNone(p['budget']['total'])

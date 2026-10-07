@@ -10,6 +10,7 @@ NarrativeStage = Literal["寻源", "读史", "探迹", "传承", "未分类"]
 class NanchongPlanRequest(BaseModel):
     """预算额度来自用户输入，不代表服务商报价。"""
     origin: str = Field(min_length=1, max_length=120, pattern=r"\S")
+    origin_poi_id: str | None = Field(default=None, pattern=r"^[A-Za-z0-9]{5,40}$", description="用户确认的高德起点ID；同名地点需先搜索确认。")
     days: Literal[0.5, 1, 2] = 1
     travel_date: date | None = None
     mode: Literal["walking", "driving", "transit"] = "transit"

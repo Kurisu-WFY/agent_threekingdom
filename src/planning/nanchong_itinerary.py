@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from urllib.parse import urlencode
 from san_guo_core.models import NanchongPlanRequest
+from planning.itinerary_transport import fill_transport
 
 
 PLACES = [
-    {"id": "wanjuanlou", "name": "西山风景区万卷楼景区", "address": "南充·玉屏路6号（地图页面地址，入口需确认）", "minutes": 90,
+    {"id": "wanjuanlou", "amap_poi_id": "B0331005E8", "name": "西山风景区万卷楼景区", "address": "南充·玉屏路6号（地图页面地址，入口需确认）", "minutes": 90,
      "purpose": "陈寿与《三国志》文化主题；历史讲解另走知识库检索。", "url": "https://www.amap.com/place/B0331005E8"},
-    {"id": "beihu", "name": "南充市北湖公园", "address": "南充市顺庆区文化路369号", "minutes": 60,
+    {"id": "beihu", "amap_poi_id": "B033101SWG", "name": "南充市北湖公园", "address": "南充市顺庆区文化路369号", "minutes": 60,
      "purpose": "城市休闲与缓冲，不作为三国遗迹。", "url": "https://ditu.amap.com/place/B033101SWG"},
 ]
 HOTEL = {"name": "南充北湖宾馆", "address": "南充市顺庆区文化路301号", "area": "北湖·文化路片区",
@@ -50,6 +51,7 @@ def plan_nanchong_itinerary(request: NanchongPlanRequest) -> dict:
                      "remaining_before_transport": (240 if request.days == 0.5 else 480) - visit - rest,
                      "feasibility": "pending_transport_and_opening",
                      "note": "按主题顺序编排，未做最短路径优化；预留餐饮/休息，交通耗时与开放时间确认后才能判断可行。"})
+    points = fill_transport(days, request, PLACES)
     nights = 1 if request.days == 2 else 0
     charged_days = 2 if request.days == 2 else 1
     # 按用户要求明确预留演示预算，并非调研得到的市场价格。
@@ -73,5 +75,6 @@ def plan_nanchong_itinerary(request: NanchongPlanRequest) -> dict:
                        "estimated_total": subtotal, "total": None, "over_limit": request.budget_limit is not None and subtotal > request.budget_limit,
                        "notice": "演示估算，非实际报价：未填住宿按200元/间夜、餐饮60元/人天、市内交通30元/人天；门票统一预留30元/人/地点（不代表地点收费）。半日按1个出行日额度计算。你填写的额度优先；不含城际往返、购物等费用，不保证实际够用。"},
             "catalog": get_nanchong_travel_catalog(), "frontend_path": "/?v=outing#outing",
-            "warnings": ["点击地图才将起终点名称交给百度，请确认同名地点和景区入口；没有抓取返回路线或实时班次。",
+            "point_resolution": points,
+            "warnings": ["交通预计时间来自高德当前返回方案，不保证未来出行日路况或班次；没有耗时的路段不计为零。时间预算判断不等于开放时段与入口已确认。",
                          "当前仅覆盖南充两个目的地；两日为宽松草案，不代表已补齐全城景点。"]}
