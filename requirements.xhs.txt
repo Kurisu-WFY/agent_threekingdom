@@ -1,0 +1,4 @@
+# 独立安装，避免升级现有RAG服务的依赖。
+mcp>=1.6,<2
+python-dotenv>=1
+jobson-xhs-mcp @ git+https://github.com/jobsonlook/xhs-mcp.git@310f2aca9e99cdc26a4d88e8e70eaedacefb7c95

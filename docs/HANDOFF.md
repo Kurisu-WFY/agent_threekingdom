@@ -1037,6 +1037,12 @@
 - 文化检索经 `/chat/stream` 调用：首次 FAILED、平台自行重试后 FINISHED，回答报告 63 候选/5 命中，来源及页码见 NUWAX-WEB-CHAT.md。未直接保存原始 MCP result，论文内容仍需校验。
 - 昨日“需先填数字电脑 ID 才能继续”的限制不适用于当前默认绑定；非数字值仍忽略/告警，但调用成功。本轮不猜测或替换 ID。
 - 下一步可优化 BGE 冷启动、平台自定义标签清理/Markdown 排版和进度去重；核心联调已完成，不等于这些质量问题已解决。未推送、未合并，服务保持运行供用户体验。
+# 小红书只读攻略接入交接
+
+- 本机dev新增src/xhs_readonly_mcp.py，复用上游310f2aca固定提交客户端，仅提供check_xhs_connection/search_travel_notes/read_travel_note/read_travel_comments；不导入带stdout调试输出和发表评论工具的上游入口。金额交由模型按原文单位整理为预计费用，来源C级，不用于史实。
+- 独立环境E:/codex_workplace/runtimes/xhs-mcp，不修改原RAG Python；原始上游源码E:/codex_workplace/integrations/xhs-mcp。安装requirements.xhs.txt固定提交与MCP 1.x；当前源码实际上使用Playwright浏览器，与README“无需Playwright”描述不同。
+- .env.xhs.local和config/xhs-mcp.local.example.json被Git忽略，前者Cookie为空，后者本机路径可合并到女娲配置；未读取浏览器Cookie、未改女娲内部数据库。平台提示词需手动同步。无凭据6项测试和真实stdio工具发现通过；实际查询等待用户填写凭据，不能声称远端女娲已可用。下一步运行scripts/probe_xhs_mcp.py，然后在女娲新会话验证搜索和正文读取。保留此前未跟踪文献任务文件。
+
 # 2026-09-29 注释中文化
 
 - 用户要求将代码英文说明改为中文。修改前后端、测试、入库脚本、Docker及依赖文件的说明注释，不修改算法、接口字段、配置值或密钥。BGE/MCP等技术名称和测试覆盖率指令保留。

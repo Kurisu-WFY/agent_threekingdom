@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "xhs-travel-readonly": {
+      "command": "<独立环境>/Scripts/python.exe",
+      "args": ["<项目绝对路径>/src/xhs_readonly_mcp.py"],
+      "enabled": true
+    }
+  }
+}

@@ -18,6 +18,7 @@ data/processed/*
 .env
 .env.*
 !.env.example
+config/xhs-mcp.local.example.json
 
 # IDE and OS files
 .idea/workspace.xml
