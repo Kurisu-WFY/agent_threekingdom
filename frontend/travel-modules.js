@@ -41,7 +41,7 @@
     if(month<1||month>12||day<1||day>[31,leap?29:28,31,30,31,30,31,31,30,31,30,31][month-1]||Number(calendar[4]||0)>23||Number(calendar[5]||0)>59||Number(calendar[6]||0)>59)return '待确认';
     if(/^\d{4}-\d{2}-\d{2}$/.test(value))return value.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1年$2月$3日')+'（北京时间）';
     const explicit=/(?:Z|[+-]\d{2}:\d{2})$/.test(value);
-    if(!explicit&&!local)return '时区未提供，时间待核验';
+    if(!explicit&&!local)return '时区未提供，时间待确认';
     const date=new Date(explicit?value:value+'+08:00');if(!Number.isFinite(date.getTime()))return '待确认';
     const parts=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(date);
     const part=type=>parts.find(p=>p.type===type).value;
@@ -50,10 +50,10 @@
   function sources(target, items, realtime=false) {
     const details = node('details');
     details.append(node('summary', '参考资料与来源'));
-    if (!Array.isArray(items) || !items.length) details.append(node('p', '暂无参考来源，相关内容待核验。'));
+    if (!Array.isArray(items) || !items.length) details.append(node('p', '可以继续向陈寿询问相关资料来源。'));
     else items.filter(source => source && typeof source === 'object').forEach(source => {
       const levels={A:'权威资料',B:'较可靠资料',C:'文学/传说'};
-      const row = node('p', `${source.title || '未命名来源'} · ${realtime ? '实时信息来源 · 需再核验' : '来源等级 ' + (Object.hasOwn(levels,source.source_level) ? source.source_level+'='+levels[source.source_level] : '待核验')}`);
+      const row = node('p', `${source.title || '未命名来源'} · ${realtime ? '实时信息来源 · 出发前再确认' : '来源等级 ' + (Object.hasOwn(levels,source.source_level) ? source.source_level+'='+levels[source.source_level] : '待确认')}`);
       try {
         const url = new URL(source.source_url);
         if (['https:', 'http:'].includes(url.protocol)) {
@@ -97,11 +97,11 @@
     try {
       const result = await api.listSpots(city);
       if (version !== cityRequest) return;
-      if (result.status === 'empty') return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');
+      if (result.status === 'empty') return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价请在出发前确认。');
       if (result.status !== 'ok') throw Error(result.message || '景区资料服务暂不可用。');
       if (!Array.isArray(result.data.spots)) throw new Error('景区数据格式不完整。');
       target.replaceChildren();
-      if (!result.data.spots.length) return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价仍需核验。');
+      if (!result.data.spots.length) return empty(target, '当前资料库暂无该目的地景区资料，不代表当地没有景点；可向陈寿检索文化主题或换城浏览。开放时间及票价请在出发前确认。');
       result.data.spots.forEach(spot => {
         const card = node('article', null, 'result-card');
         card.append(spotArtwork(spot));
@@ -109,9 +109,11 @@
         if (Array.isArray(spot.themes) && spot.themes.length) card.append(node('p', '文化主题：' + spot.themes.join('、')));
         if (Array.isArray(spot.suitable_users) && spot.suitable_users.length) card.append(node('p', '适合人群：' + spot.suitable_users.join('、')));
         if (Number.isFinite(spot.recommended_duration_min) && spot.recommended_duration_min > 0) card.append(node('p', '建议停留约 ' + spot.recommended_duration_min + ' 分钟（演示参考）'));
-        card.append(node('p', '开放时间：' + (spot.open_time || '待核验')), node('p', spot.location_note || '景点位置待核验', 'map-note'));
+        if(spot.open_time)card.append(node('p', '开放时间：' + spot.open_time));
+        card.append(node('p','查看到达路线时，请在高德地图中确认具体地点与入口。','map-note'));
         card.append(action('向导讲讲这里', () => { toggleChat(true); send('请介绍' + spot.name + '与三国文化的联系，区分史料、演义和地方传说；资料不足请说明。',{displayText:'请介绍'+spot.name+'与三国文化的联系。'}); }), action('带入活动计划', () => chooseCity(spot.city || city, spot.name)));
-        sources(card, spot.sources);
+        if(spot.ticket_reference?.sources?.length)sources(card,spot.ticket_reference.sources);
+        else sources(card, spot.sources);
         target.append(card);
       });
     } catch (error) { if (version === cityRequest) failure(target, '景区', error, () => loadCity(city)); }
@@ -151,7 +153,7 @@
     if(!field('date').value&&next.kind!=='story'){const today=new Date();field('date').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');}
     invalidate();pendingHandoff=null;$('#activity-conflict').hidden=true;storyLabel();
     const removed=previous.filter(p=>!automaticPlaces.includes(p));
-    $('#planner-status').textContent=(next.days===0.5?'已将可用时间设为半天（4 小时），已沿用所选章节。':'已带入本次条件。')+(cross?'已明确确认跨城市需求：'+confirmedCities.join('、')+'。':'目的地：'+committedCity+'；移除此前自动带入景点：'+(removed.map(p=>p.name).join('、')||'无')+'。')+'保留：出发地、日期、人数、同行人群、交通方式、住宿偏好。用户备注：'+(next.notesAction==='clear'?'已按确认清空':next.notesAction==='edit'?'已按确认编辑':'保留原文')+'。交通和游览时长待核验'+(next.days===0.5?'，不保证半天可完成。':'。');
+    $('#planner-status').textContent=(next.days===0.5?'已将可用时间设为半天（4 小时），已沿用所选章节。':'已带入本次条件。')+(cross?'已明确确认跨城市需求：'+confirmedCities.join('、')+'。':'目的地：'+committedCity+'；移除此前自动带入景点：'+(removed.map(p=>p.name).join('、')||'无')+'。')+'保留：出发地、日期、人数、同行人群、交通方式、住宿偏好。用户备注：'+(next.notesAction==='clear'?'已按确认清空':next.notesAction==='edit'?'已按确认编辑':'保留原文')+'。规划时将查询交通并计算游览时间'+(next.days===0.5?'，不保证半天可完成。':'。');
     updateConditions();showContentView('planner');
   }
   function handoff(next){
@@ -203,7 +205,7 @@
     const { preferences: p, plan } = current;
     if(current.activityAnswer && !plan.days.length) {
       target.replaceChildren(node('h3',plan.title),node('p',(p.date||p.travel_date||'日期待确认')+' · '+p.people+'人'));
-      target.append(window.SGTAnswerTrust ? window.SGTAnswerTrust.render(current.activityEvidence || {}) : node('p','来源 · 待核验；回答提及的文献出处尚未核验，请勿作为已核验引文。','map-note'));
+      target.append(window.SGTAnswerTrust ? window.SGTAnswerTrust.render(current.activityEvidence || {}) : node('p','来源链接未提供；文献引用请以回答中附带的实际来源为依据。','map-note'));
       target.append(window.AgentAnswer ? window.AgentAnswer.render(current.activityAnswer) : node('p',current.activityAnswer));
       $('#save-plan').disabled=$('#copy-plan').disabled=false;
       return;
@@ -226,8 +228,8 @@
     $('#save-plan').disabled = $('#copy-plan').disabled = false;
   }
   const field = name => $('#trip-form').elements.namedItem(name);
-  const text = v => typeof v === 'string' && v.trim() ? v.trim() : '待核验';
-  const minutes = v => Number.isFinite(v) && v > 0 ? v + ' 分钟' : '待核验';
+  const text = v => typeof v === 'string' && v.trim() ? v.trim() : '待确认';
+  const minutes = v => Number.isFinite(v) && v > 0 ? v + ' 分钟' : '待确认';
   function chapterChoices(story,indices) {
     if (!story) return [];
     const state=window.StoryProgress.get(story), places=window.StoryMap.getPlaces(story.id);
@@ -258,17 +260,17 @@
       '自动带入景点：'+(p.automaticPlaces?.length?p.automaticPlaces.map(x=>x.name+'（'+(x.city||'地区待确认')+'；来源：'+x.source+'）').join('；'):'无')+'。'+
       '章节选择：'+(choices.length?choices.map(c=>c.name+' / '+(c.place||'地点待确认')+'：'+c.status).join('；'):'章节尚未提供，请说明主题关联待确认')+'。'+
       '请只调整未完成且本次保留的章节，已完成节点不重复安排。保留/舍弃/新增活动必须说明原因；不把未返回章节默认为已完成。'+
-      hotelRequirement(p)+'先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待核验，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
+      hotelRequirement(p)+'先检索文化资料，再说明景点与活动顺序、每项时长、文化讲解要点；无依据标待确认，资料不足请说明。不要编造实时交通、开放时段、空位、价格、天气或坐标。补充需求：'+(p.notes||'无')+'。';
   }
   function visitorSummary(p,story){const summary='请安排'+p.city+'的'+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+'文化活动：'+p.origin+'出发，'+(p.date||'日期待确认')+'，'+p.group+' '+p.people+'人，'+({'大众体验版':'大众线','亲子故事版':'亲子线','学术探索版':'学术线'}[p.explanation]||'大众线')+(p.hotel_tier?'；住宿：'+p.hotel_tier:'')+(story?'；主题：'+story.title:'')+(p.notes?'；'+p.notes:'');return /[。！？.!?]$/.test(summary.trimEnd())?summary.trimEnd():summary.trimEnd()+'。';}
   function renderChatPlan(target) {
     const {chatRoute: result,preferences:p,story,choices}=current, route=result.route;
     target.replaceChildren(node('h3',text(route.name)),node('p','关联故事：'+(story?.title||'普通行程')),
       node('p','你的出行条件：'+p.origin+'出发 · '+({'0.5':'半天','1':'一天','2':'两天'}[p.days]||p.days+'天')+' · '+p.transport+' · '+p.group+' · '+p.people+'人'),
-      node('p','服务返回的路线模板 / 现实可行性待核验；不是道路导航，尚不能保证满足所有条件。','data-banner'),
+      node('p','服务返回的路线模板 / 出行安排以路况与营业时间为准；不是道路导航，尚不能保证满足所有条件。','data-banner'),
       node('p','路线简介：'+text(route.summary)),node('p','总体取舍：'+text(result.selection_reason)),
-      node('p','风险提示：'+text(route.risk_note)),node('p','更新时间：'+text(route.updated_at)+' · 来源与时效待核验'),
-      node('p','返回的时长：'+(Number.isFinite(route.duration_hours)&&route.duration_hours>0?route.duration_hours+' 小时':'待核验')+'；交通：'+text(route.transport_mode)));
+      node('p','风险提示：'+text(route.risk_note)),node('p','更新时间：'+text(route.updated_at)+' · 来源与时效待确认'),
+      node('p','返回的时长：'+(Number.isFinite(route.duration_hours)&&route.duration_hours>0?route.duration_hours+' 小时':'待确认')+'；交通：'+text(route.transport_mode)));
     const hourLimit={0.5:4,1:8,2:16}[p.days];
     if(Number.isFinite(route.duration_hours)&&route.duration_hours>hourLimit)target.append(node('p','时间不符合：返回的路线 '+route.duration_hours+' 小时，超过本次 '+hourLimit+' 小时上限。请压缩或重绘，暂不可按此方案执行。','data-banner'));
     if(route.transport_mode && route.transport_mode!==p.transport)target.append(node('p','出行条件待确认：返回的交通方式与你所选的不一致，请调整需求或核验。','data-banner'));
@@ -277,24 +279,24 @@
       const card=node('li',null,'result-card');
       card.append(node('h3',(stop.stop_order || i+1)+' · '+text(stop.name)),node('p','为什么推荐：'+text(stop.reason)),
         node('p','安排停留：'+minutes(stop.stay_minutes)+'；建议游览：'+minutes(stop.recommended_duration_min)),
-        node('p','开放时间：'+text(stop.open_time)+' · 待核验'),node('p','地址：'+text(stop.address)),
+        node('p','开放时间：'+text(stop.open_time)+' · 待确认'),node('p','地址：'+text(stop.address)),
         node('p','位置示意 / 待定位：无已核验景区入口，地图仅尝试按地址匹配县级驻地。','map-note'));
       const chapter=(choices || []).find(c=>(c.placeId && c.placeId===stop.spot_id)||(c.place&&c.place===stop.name));
-      card.append(node('p','故事中的作用：'+(chapter?text(chapter.role):'章节关联待核验')));list.append(card);
+      card.append(node('p','故事中的作用：'+(chapter?text(chapter.role):'章节关联待确认')));list.append(card);
     });target.append(list);
     if(choices?.length) {
       target.append(node('h3','章节取舍对照'));
       choices.forEach(c=>{
         const match=result.stops.find(stop=>(c.placeId&&stop.spot_id===c.placeId)||(c.place&&stop.name===c.place));
-        let reason=c.status==='已完成'?'本地记录已完成，请求不重复安排。':c.status==='本次跳过'?'你选择将本次时间留给其他章节；故事定义保留。':match?'保留理由：'+text(match.reason):'没有收到可确认的对应站点；舍弃原因待核验，不能推断。';
-        if(match&&c.status!=='本次保留')reason+=' 返回的结果仍包含该站，与你的选取不一致，需核验。';
+        let reason=c.status==='已完成'?'本地记录已完成，请求不重复安排。':c.status==='本次跳过'?'你选择将本次时间留给其他章节；故事定义保留。':match?'保留理由：'+text(match.reason):'没有收到可确认的对应站点；舍弃原因待确认，不能推断。';
+        if(match&&c.status!=='本次保留')reason+=' 返回的结果仍包含该站，与你的选取不一致，需确认。';
         target.append(node('p',c.name+' · '+c.status+'：'+reason));
       });
     }
-    target.append(node('p','交通耗时、开放时段、费用与章节匹配未全部核验前，本方案仅供讨论。','map-note'));
+    target.append(node('p','请结合逐段交通耗时、开放时段与费用安排本次行程。','map-note'));
     sources(target,route.sources);appendOriginalAnswer(target); $('#save-plan').disabled=$('#copy-plan').disabled=false; $('#plan-map').disabled=false;
   }
-  function appendOriginalAnswer(target){if(!current.activityAnswer)return;target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源 · 待核验；回答提及的文献出处尚未核验。','map-note'),node('h3','服务原回答'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));}
+  function appendOriginalAnswer(target){if(!current.activityAnswer)return;target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源链接未提供；文献引用请查看对应来源。','map-note'),node('h3','服务原回答'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));}
   function receiveActivity(reply) {
     const attempt=reply.activityPlan;
     if(!attempt || attempt.version!==planRequest || typeof reply.text!=='string' || !reply.text.trim())return;
@@ -316,7 +318,7 @@
     activityState('valid');$('#activity-recovery').hidden=true;
     renderPlan();
     $('#view-current-plan').hidden=false;$('#view-current-plan').textContent='查看本次方案';
-    $('#planner-status').textContent=(hasRoute?'本次方案已生成（路线模板；活动时间及现实可行性待核验）':'本次活动方案已生成（活动时间及现实可行性待核验）')+'，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
+    $('#planner-status').textContent=(hasRoute?'本次方案已生成（路线模板；活动时间及出行安排以路况与营业时间为准）':'本次活动方案已生成（活动时间及出行安排以路况与营业时间为准）')+'，可点“查看本次方案”保存、复制或调整；对话中也可继续追问。';
     $('#plan-status').textContent='已更新活动方案；已寻迹章节记录保持。';
   }
   async function requestPlan(attempt) {
@@ -405,7 +407,7 @@
   function renderActivityResult(){
     const target=$('#activity-result');target.hidden=!current;if(!current)return;
     target.replaceChildren(node('h3',$('#planner-view').dataset.activityState==='valid'?'已有活动结果':'旧条件结果 / 已有方案'),node('p','结果条件：'+current.preferences.city+' · '+current.preferences.days+'天 · '+(current.preferences.date||'日期待确认'),'map-note'));
-    if(current.activityAnswer)target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源未核验。'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));
+    if(current.activityAnswer)target.append(window.SGTAnswerTrust?window.SGTAnswerTrust.render(current.activityEvidence||{}):node('p','来源未确认。'),window.AgentAnswer?window.AgentAnswer.render(current.activityAnswer):node('p',current.activityAnswer));
     else target.append(node('p','此处保留已有结果，可进入方案页查看详情。'));
     target.append(action('查看、保存或复制已有方案',()=>showContentView('plan')));
   }
@@ -417,7 +419,7 @@
   };
   $('#organize-demand').onclick=()=>{
     if(!latestDemand)return;checklistDemand=latestDemand;const {preferences:p,story,choices}=checklistDemand;
-    const content=['整理清单（不是活动方案）','本次请求快照（原内容保留，是否已改变请看上方状态）','故事：'+(story?.title||'未选择'),'章节：'+choices.map(c=>c.name+' / '+c.status).join('；'),'目的地：'+p.city,'可用时间：'+({'0.5':'半天（4小时）','1':'一天（8小时）','2':'两天（16小时）'}[p.days]),'出发地：'+p.origin+'；日期：'+(p.date||'待确认')+'；人数：'+p.people+'；同行：'+p.group,'自动带入景点：'+(p.automaticPlaces||[]).map(x=>x.name+'（'+x.city+'；'+x.source+'）').join('；'),'用户原始备注：'+(p.notes||'无'),'待核验：交通、开放时间、票价、天气、活动时间及现实可行性。章节顺序不是历史行走路线；本地阅读和手动已寻迹不代表实际到访。','服务原回答：'+(latestOtherAnswer||'无')].join('\n');
+    const content=['整理清单（不是活动方案）','本次请求快照（原内容保留，是否已改变请看上方状态）','故事：'+(story?.title||'未选择'),'章节：'+choices.map(c=>c.name+' / '+c.status).join('；'),'目的地：'+p.city,'可用时间：'+({'0.5':'半天（4小时）','1':'一天（8小时）','2':'两天（16小时）'}[p.days]),'出发地：'+p.origin+'；日期：'+(p.date||'待确认')+'；人数：'+p.people+'；同行：'+p.group,'自动带入景点：'+(p.automaticPlaces||[]).map(x=>x.name+'（'+x.city+'；'+x.source+'）').join('；'),'用户原始备注：'+(p.notes||'无'),'待确认：交通、开放时间、票价、天气、活动时间及现实可行性。章节顺序不是历史行走路线；本地阅读和手动已寻迹不代表实际到访。','服务原回答：'+(latestOtherAnswer||'无')].join('\n');
     $('#activity-checklist').hidden=false;$('#activity-checklist').textContent=content;updateChecklistState();
   };
   function activityConditionKey(){return JSON.stringify({preferences:conditions(),story:planningStory?.id||null,choices:chapterChoices(planningStory),automaticPlaces});}
@@ -426,7 +428,7 @@
     const p=conditions();
     for(const [kind,s] of querySnapshots){const target=$('#'+(kind==='road'?'road':'osrm')+'-association');
       const same=citiesOf(p.city).length===1&&citiesOf(p.city)[0]===citiesOf(s.city)[0];
-      target.textContent='独立查询：'+(s.city||'城市尚未确认')+'；'+s.origin+(s.origin_address?'（'+s.origin_address+'）':'')+' → '+s.destination+(s.destination_address?'（'+s.destination_address+'）':'')+'；查询时间：'+beijingTime(s.queried_at)+'；查询时活动日期：'+(s.date||'未提供')+'。'+(!same?'与当前'+(p.city||'目的地待确认')+'活动未关联。':s.linked&&s.conditionKey===activityConditionKey()&&s.date===p.date?'与当前活动的城市和日期相符；起终点已由用户确认，现实可行性仍待核验。':'尚未关联当前活动；活动日期 '+(p.date||'待确认')+'，请按活动条件重新确认具体地点。');
+      target.textContent='独立查询：'+(s.city||'城市尚未确认')+'；'+s.origin+(s.origin_address?'（'+s.origin_address+'）':'')+' → '+s.destination+(s.destination_address?'（'+s.destination_address+'）':'')+'；查询时间：'+beijingTime(s.queried_at)+'；查询时活动日期：'+(s.date||'未提供')+'。'+(!same?'与当前'+(p.city||'目的地待确认')+'活动未关联。':s.linked&&s.conditionKey===activityConditionKey()&&s.date===p.date?'与当前活动的城市和日期相符；起终点已由用户确认，出发前请结合路况与营业安排。':'尚未关联当前活动；活动日期 '+(p.date||'待确认')+'，请按活动条件重新确认具体地点。');
       if(kind==='road'){const detail=$('#road-query-details');detail.hidden=!s.origin_id&&!s.destination_id;$('#road-query-identifiers').textContent='起点原编码：'+(s.origin_id||'未提供')+'；终点原编码：'+(s.destination_id||'未提供')+'。内部查询使用原确认值；编码不是坐标核验或实际到访凭据。';}
     }
     window.AmapPlanner?.conditionsChanged?.({city:p.city,date:p.date,conditionKey:activityConditionKey()});

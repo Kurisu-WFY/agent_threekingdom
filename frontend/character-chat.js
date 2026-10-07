@@ -8,7 +8,7 @@
     '诸葛亮':{city:'剑阁县'},
     '张飞':{city:'阆中市'}
   };
-  function node(tag,cls,text){const n=document.createElement(tag);n.className=cls||'';if(text!==undefined)n.textContent=text;if(typeof text==='string'&&/待核验|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(text))n.setAttribute('data-trust-state','unverified');return n;}
+  function node(tag,cls,text){const n=document.createElement(tag);n.className=cls||'';if(text!==undefined)n.textContent=text;if(typeof text==='string'&&/待确认|待接入|未找到可靠记载|存在不同说法|无可靠依据/.test(text))n.setAttribute('data-trust-state','unverified');return n;}
   function button(text,fn){const n=node('button','module-button',text);n.type='button';n.addEventListener('click',fn);return n;}
   function portrait(){
     if(window.ChenshouGuide)return window.ChenshouGuide.portrait();
@@ -78,10 +78,10 @@
       const durations=[...question.matchAll(/半天|一天|一日|两天|两日/g)].map(m=>({'一日':'一天','两日':'两天'}[m[0]]||m[0]));
       const explicit=/(?:^|[；;，,。\n])\s*(?:(?:可用时间|游玩时间|时间安排)[：:]\s*|我(?:有|只有|可用|打算用|计划用)\s*|只有\s*)(?:半天|一天|一日|两天|两日)(?:的?时间)?(?=[；;，,。\s]|$)/.test(question);
       const duration=explicit&&new Set(durations).size===1?durations[0]:null;
-      box.append(node('p','',title+'：'+(story?.chapters?.length?'已提供论文阅读章节，可查看文献出处。':story?'章节与史料待补充。':'人物文化讲解，史料与地点关联待核验。')+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));if(story)box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)));box.append(button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
+      box.append(node('p','',title+'：'+(story?.chapters?.length?'已提供论文阅读章节，可查看文献出处。':story?'章节与史料待补充。':'人物文化讲解，史料与地点关联待确认。')+(duration?'已按'+duration+'考虑，可继续调整。':'你有半天、一天还是两天？')));if(story)box.append(button('进入'+title,()=>window.SGTStoryUI.openStory(id)));box.append(button('在地图中查看'+city.replace(/[市县]$/,''),()=>window.TravelMap.focusMention(city,{reveal:true})));}
     if(message.characterAction==='discover')box.append(node('p','',themes[message.discovered]?.story?(window.SGT_STORIES?.find(s=>s.id===themes[message.discovered].story)?.chapters?.length?'故事资料 · 已有论文阅读章节，实际行程需另行规划。':'故事资料 · 章节待补充，可先了解主题。'):'人物文化 · 可在地图中查看关联地点，路线不会自动修改。'));
     if(message.characterAction==='compare')box.append(node('p','', '正史 × 演义对照 · 保留当前章节与地点；缺少逐项出处时不判断真伪。'));
-    if(message.storyId&&(window.SGT_STORIES?.some(s=>s.id===message.storyId&&s.chapters?.length)||context().story?.id===message.storyId&&context().story?.chapters?.length)&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由尚待核验，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
+    if(message.storyId&&(window.SGT_STORIES?.some(s=>s.id===message.storyId&&s.chapters?.length)||context().story?.id===message.storyId&&context().story?.chapters?.length)&&/半天|时间不够|只有.*小时/.test(message.originalQuestion||''))box.append(node('p','','想缩短行程，需要你选择保留哪些章节。现有章节的时长与推荐理由请结合来源确认，不保证半天可行。'),button('选好保留章节，重新画路线',()=>window.SGTStoryUI.openStory(message.storyId)));
     return box;
   }
   $('#character-mode').addEventListener('change',()=>setMode($('#character-mode').value));

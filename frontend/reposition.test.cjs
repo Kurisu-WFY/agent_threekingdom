@@ -10,7 +10,7 @@ assert.match(planner,/id="hotel-results"/);assert.match(planner,/未接入/);ass
 assert.doesNotMatch(html,/空气质量|AQI|这三天|起 3 天/);
 assert.doesNotMatch(html,/id="node-enter-story"|id="node-modes"|id="node-mode-status"/);
 const nodeJs=fs.readFileSync(__dirname+'/cultural-node.js','utf8');
-assert.doesNotMatch(nodeJs,/先读懂这里/);assert.match(nodeJs,/出行信息 · 与历史史料分开核验/);
+assert.doesNotMatch(nodeJs,/先读懂这里/);assert.match(nodeJs,/参观与出行/);
 assert.ok(html.includes('<option value="大众体验版">大众线</option>'),'可见名称变更保留内部 mode');
 assert.ok(html.includes('<option value="亲子故事版">亲子线</option>'));
 assert.ok(html.includes('<option value="学术探索版">学术线</option>'));

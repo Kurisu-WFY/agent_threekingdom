@@ -31,7 +31,7 @@ const walk=n=>[n,...n.children.flatMap(walk)];
  assert.equal(t.get('#story-map-open').disabled,true);assert.equal(t.get('#preview-story-open').disabled,true);
  t.get('#preview-story-open').handlers.click();t.get('#story-map-open').handlers.click();assert.deepEqual(t.mapCalls,[],'empty story cannot start or silently enter a geographic map');
  t.get('#preview-detail-open').handlers.click();assert.deepEqual(t.views,['story']);assert.equal(t.get('#story-title').textContent,'陈寿编书史');
- assert.match(contents(t.get('#story-detail-sidebar')),/章节.*待补充/);assert.match(contents(t.get('#story-detail-content')),/待核验/);assert.doesNotMatch(contents(t.get('#story-detail-content')),/0 \/ 0|pending|接着读：/);
+ assert.match(contents(t.get('#story-detail-sidebar')),/章节.*待补充/);assert.match(contents(t.get('#story-detail-content')),/待确认/);assert.doesNotMatch(contents(t.get('#story-detail-content')),/0 \/ 0|pending|接着读：/);
  const modes=walk(t.get('#story-detail-content')).filter(n=>n.tag==='button'&&/^(大众线|亲子线|学术线)$/.test(n.textContent));
  assert.equal(modes.length,3);modes[1].handlers.click();assert.equal(t.window.StoryProgress.get(story).mode,'亲子故事版');
  t.get('#story-ask').handlers.click();assert.match(t.questions.at(-1),/陈寿编书史/);
@@ -72,7 +72,7 @@ const walk=n=>[n,...n.children.flatMap(walk)];
  const anchoredAggregate=walk(multi.get('#story-detail-content')).find(n=>n.attrs['aria-label']==='故事总来源');assert.match(contents(anchoredAggregate),/链接定位：\?edition=2#page=7/);
  const shapes=['tower','shrine','pass','wall','road'].map(k=>t.window.SGTStoryUI.icon(k));assert.equal(new Set(shapes.map(svg=>svg.children[2].attrs.d)).size,5);assert.ok(shapes.every(svg=>svg.children.length===3));assert.equal(t.get('#story-buildings').children.length,5);
  story.title='<img src=x onerror=alert(1)>';card.handlers.click();assert.equal(t.get('#story-title').textContent,story.title);
- for(const d of walk(t.get('#story-detail-content')).filter(n=>n.tag==='details'&&n.className==='chapter-sources')){assert.match(contents(d),/当前显示：/);assert.match(contents(d),/待确认项：/);assert.match(contents(d),/更新时间：/);assert.equal((contents(d.children[0]).match(/待核验/g)||[]).length,1);}
+ for(const d of walk(t.get('#story-detail-content')).filter(n=>n.tag==='details'&&n.className==='chapter-sources')){assert.match(contents(d),/当前显示：/);assert.match(contents(d),/待确认项：/);assert.match(contents(d),/更新时间：/);assert.equal((contents(d.children[0]).match(/待确认/g)||[]).length,1);}
  await new Promise(r=>setImmediate(r));assert.equal(t.get('#story-preview-map').children.filter(c=>c.attrs.class==='preview-region').length,1);assert.deepEqual(t.requests,['sichuan-map-geometry.json']);
  const offline=setup(true);await new Promise(r=>setImmediate(r));assert.match(offline.get('#story-preview-status').textContent,/暂不可用/);assert.equal(offline.get('#story-cards').children.length,1);
  console.log('PASS: unique pending story, disabled exploration, independent map, mode contract, unknown saved story rejection, explicit multi-chapter fixture, safe text/coordinates and offline geometry');

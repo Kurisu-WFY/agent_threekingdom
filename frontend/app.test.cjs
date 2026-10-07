@@ -236,12 +236,12 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 
 function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
 function allNodes(node) { return [node,...(node.children||[]).flatMap(allNodes)]; }
-assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /回答 · 待确认|更新时间未提供|来源链接未提供/);
 
 assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"unknown"},retrieval:{coverage:2}})')), /意图 ·|召回覆盖/);
 assert.match(textTree(run('metaNode({intent:{intent:"budget_ticket"},route:null})')), /不能认定为免费/);
 assert.match(textTree(run('trustNode({data_status:"live",updated_at:"2026-09-12T10:00:00+08:00",sources:[{title:"来源",source_url:"https://example.com",source_level:"C"}]})')), /不能支撑史实结论/);
-assert.match(textTree(run('trustNode({updated_at:"2026-09-12",sources:[{title:"不安全",source_url:"javascript:alert(1)",source_level:"A"}]})')), /来源链接待核验/);
+assert.match(textTree(run('trustNode({updated_at:"2026-09-12",sources:[{title:"不安全",source_url:"javascript:alert(1)",source_level:"A"}]})')), /未提供可打开的来源链接/);
 assert.doesNotThrow(() => run('routeCard({name:"路线"},[null,{}, {name:"站点"}])'));
 console.log('PASS: polymorphic responses, trust metadata, missing timestamps, unsafe sources, malformed stops');
 
@@ -263,9 +263,9 @@ assert.match(textTree(trusted), /维护数据/);
 assert.match(textTree(trusted), /2026-09-12T10:00:00Z/);
 assert.equal(trusted.children[2].children[0].href, 'https://example.com/info');
 assert.equal(trusted.children[2].children[0].rel, 'noopener noreferrer');
-assert.doesNotMatch(textTree(run('trustNode({data_status:"constructor"})')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+assert.doesNotMatch(textTree(run('trustNode({data_status:"constructor"})')), /回答 · 待确认|更新时间未提供|来源链接未提供/);
 for (const record of ['{}','{data_status:"pending"}','{updated_at:"invalid",sources:[]}']) {
-  assert.doesNotMatch(textTree(run('trustNode('+record+')')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+  assert.doesNotMatch(textTree(run('trustNode('+record+')')), /回答 · 待确认|更新时间未提供|来源链接未提供/);
 }
 
 // N9：故事卡片不能覆盖关面板后的滚动恢复；三个关闭入口必须等价。
@@ -334,12 +334,12 @@ console.log('PASS: N11 passive scroll, 100-event coalescing, stable state, inter
 const copyFailures=[];
 const copyCheck=(name,fn)=>{try{fn();}catch(e){copyFailures.push(name+': '+e.message);}};
 copyCheck('C01',()=>{
- assert.match(textTree(run('trustNode({})')),/文献出处尚未核验/);
- assert.doesNotMatch(textTree(run('metaNode({generation:{kind:"nuwax"}})')),/回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+ assert.match(textTree(run('trustNode({})')),/文献引用/);
+ assert.doesNotMatch(textTree(run('metaNode({generation:{kind:"nuwax"}})')),/回答 · 待确认|更新时间未提供|来源链接未提供/);
  const source={sources:[{title:'真实出处',source_url:'https://example.org/paper',source_level:'B'}]};context.copySource=source;
- assert.doesNotMatch(textTree(run('trustNode(copySource)')),/文献出处尚未核验/);
+ assert.doesNotMatch(textTree(run('trustNode(copySource)')),/文献引用/);
  const unsafe=run('trustNode({sources:[{title:"PDF",source_url:"javascript:alert(1)"}]})');
- assert.match(textTree(unsafe),/文献出处尚未核验/);assert.equal(allNodes(unsafe).filter(n=>n.tag==='a').length,0);
+ assert.match(textTree(unsafe),/文献引用/);assert.equal(allNodes(unsafe).filter(n=>n.tag==='a').length,0);
 });
 copyCheck('C04',()=>{
  assert.match(textTree(run('metaNode({retrieval:{coverage:1}})')),/检索到相关资料，回答仍需核对出处/);
@@ -357,7 +357,7 @@ copyCheck('C10',()=>{
  for(const answer of ['南充门票：50元；'+hotel.answer,hotel.answer.replace('说明：','说明：门票50元；'),hotel.answer.replace('南充舒适型','未知格式')]){
   context.copyAmbiguous={...hotel,answer};assert.equal(run('budgetScope(copyAmbiguous)'),'','已有门票或未知格式不能误标住宿范围');
  }
- context.copyUnknown={intent:{intent:'budget_ticket'},answer:'文化参观费用需核验。'};
+ context.copyUnknown={intent:{intent:'budget_ticket'},answer:'文化参观费用需确认。'};
  assert.equal(run('budgetScope(copyUnknown)'),'');
  assert.equal(hotel.answer,context.copyHotel.answer,'原回答不改写');
 });
@@ -368,7 +368,7 @@ function batch9Check(code,fn){try{fn();}catch(e){batch9Failures.push(code+': '+e
 batch9Check('C11',()=>{
  const raw=context.copyHotel.answer, row=run('messageNode({role:"assistant",text:copyHotel.answer,data:copyHotel})');
  assert.match(textTree(row),/住宿价格仅供估算，请以预订平台当天报价为准/);
- assert.match(textTree(row),/每间每晚约 200—380 元.*尚非报价.*需核验/);
+ assert.match(textTree(row),/每间每晚约 200—380 元.*尚非报价.*需确认/);
  const originalBubble=textTree(allNodes(row).find(n=>n.className==='bubble'));
  assert.doesNotMatch(originalBubble,/正式服务应接入|OTA|12306/,'游客正文移除开发待办');
  assert.equal(context.copyHotel.answer,raw);
@@ -387,7 +387,7 @@ batch9Check('C12',()=>{
 });
 batch9Check('C16',()=>{
  const out=textTree(run('routeCard({name:"参考路线"},[{name:"万卷楼",stay_minutes:120,recommended_duration_min:90}])'));
- assert.match(out,/本次安排：120 分钟/);assert.match(out,/资料中的一般游览参考：90 分钟（仍需核验）/);
+ assert.match(out,/本次安排：120 分钟/);assert.match(out,/资料中的一般游览参考：90 分钟（请在出发前确认）/);
  assert.match(textTree(run('routeCard({name:"参考路线"},[{name:"未知",stay_minutes:null,recommended_duration_min:null}])')),/时长含义待确认/);
 });
 batch9Check('C21',()=>{const out=run('bubbleNode({pending:true})');assert.equal(out.textContent,'陈寿正在整理回答，请稍候');assert.equal(out.attrs['aria-label'],out.textContent);});

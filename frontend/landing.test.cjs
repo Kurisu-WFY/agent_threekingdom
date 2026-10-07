@@ -36,7 +36,7 @@ assert.equal(journeyDisclosure.open,true);assert.equal(field.value,'未发送的
 assert.equal(calls.length,beforePrepare,'preparing a collapsed form must not send a request');
 const html=fs.readFileSync(__dirname+'/index.html','utf8');const nav=html.match(/<nav class="content-switch"[\s\S]*?<\/nav>/)[0];assert.equal((nav.match(/data-content-view=/g)||[]).length,5);assert.ok(nav.includes('data-content-view="destinations"'));assert.ok(nav.includes('data-content-view="planner"'));assert.ok(!nav.includes('data-content-view="outing"'));
 assert.match(html,/AI 文化向导 · 艺术化形象，非历史肖像；当前服务使用演示资料。/);
-assert.match(fs.readFileSync(__dirname+'/stories.js','utf8'),/陈寿编书史：章节待补充，史料与地点待核验/,'pending story disclosure remains inside the card fallback');
+assert.match(fs.readFileSync(__dirname+'/stories.js','utf8'),/陈寿编书史：章节待补充，史料与地点待确认/,'pending story disclosure remains inside the card fallback');
 assert.doesNotMatch(html,/五条主题|story-scroll-prev|story-scroll-next|story-phase-filters/);
 for(const id of ['map-view','route-map','map-prefecture','map-county','map-zoom-range'])assert.ok(html.includes('id="'+id+'"'));
 for(const asset of ['jianmen-pass.jpg','langzhong-town.jpg'])assert.ok(fs.statSync(__dirname+'/assets/'+asset).size>10000);

@@ -14,7 +14,7 @@ const window={scrollY:270,scrollTo:o=>scrolls.push(o.top),SGT_STORIES:[story],SG
 vm.runInNewContext(fs.readFileSync(__dirname+'/cultural-node.js','utf8'),{window,URL,document:{querySelector:get,createElement:t=>new Element(t)},showContentView:v=>views.push(v)});
 const api=window.CulturalNode,text=n=>n.textContent+n.children.map(text).join(' '),click=id=>get(id).handlers.click();
 api.open({place,chapter,story,index:1,back:'map',exact:false,point:null});
-assert.equal(views.at(-1),'node');assert.match(get('#node-context').textContent,/第二幕/);assert.match(get('#node-coordinate').textContent,/坐标待核验/);
+assert.equal(views.at(-1),'node');assert.match(get('#node-context').textContent,/第二幕/);assert.match(get('#node-coordinate').textContent,/高德地图.*具体地点/);
 assert.doesNotMatch(text(get('#node-reading-content')),/资料待补充|未经核验的文字/);assert.equal(get('#node-reading').hidden,true);
 assert.match(text(get('#node-metadata')),/C 级可信度不足/);assert.equal(get('#node-add-route').disabled,true);
 get('#node-view').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-view').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/可以和孩子聊聊/);
@@ -33,7 +33,7 @@ assert.ok(!text(get('#node-comparison')).includes('作者对写作方法的研�
 const enriched={...chapter,narrative_type:'record',story:'受支持正文',...record(''),history:record('史料侧测试文本'),romance:record('文学侧测试文本'),differences:record('差异测试文本'),disputes:[record('观点甲'),record('观点乙')],inferences:[record('推断测试文本')]};
 api.open({place:{...place,travel:{ticket:{...record(''),data_status:'live',tool_source:'测试工具',amount:0}}},chapter:enriched,story,index:1,exact:false,point:{name:'县级驻地'}});
 assert.match(text(get('#node-comparison')),/史料侧测试文本/);assert.match(text(get('#node-comparison')),/文学侧测试文本/);assert.match(text(get('#node-differences')),/差异测试文本/);assert.match(text(get('#node-disputes')),/存在不同说法/);
-assert.match(text(get('#node-reading-content')),/合理推断 · 非史料原文/);assert.match(text(get('#node-reading-content')),/推断测试文本/);assert.match(text(get('#node-tourism')),/工具来源：测试工具/);assert.ok(!text(get('#node-tourism')).includes('0 元'));
+assert.match(text(get('#node-reading-content')),/合理推断 · 非史料原文/);assert.match(text(get('#node-reading-content')),/推断测试文本/);assert.match(text(get('#node-tourism')),/查询开放时间/);assert.ok(!text(get('#node-tourism')).includes('0 元'));
 const pendingRecord=record('不该显示的史料');pendingRecord.sources[0].data_status='pending';api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});assert.ok(!text(get('#node-comparison')).includes('不该显示的史料'));
 const descendants=n=>[n,...n.children.flatMap(descendants)];
 const emptyMaterials=descendants(get('#node-comparison')).filter(n=>n.tag==='details'&&n.className?.includes('node-empty'));
@@ -48,7 +48,7 @@ api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:f
 assert.ok(!text(get('#node-metadata')).includes('pending'),'U08 raw status not rendered');assert.ok(!text(get('#node-comparison')).includes('pending'));
 click('#node-add-route');assert.equal(adds[0].name,'县级驻地');assert.equal(get('#node-enter-story').handlers.click,undefined,'已删除节点进入故事入口');assert.equal(get('#node-modes').children.length,0,'已删除节点三档入口');assert.doesNotMatch(text(get('#node-reading-content')),/先读懂这里/);
 const links=[];function walk(n){if(n.tag==='a')links.push(n);n.children.forEach(walk);}nodes.forEach(walk);assert.ok(links.every(a=>/^https?:/.test(a.href)));
-api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').handlers.click,undefined);assert.match(get('#node-context').textContent,/待关联/);
+api.open({place:{id:'tower',name:'无关联楼阁',building:'tower'},back:'welcome'});assert.equal(get('#node-enter-story').handlers.click,undefined);assert.match(get('#node-context').textContent,/地点文化阅读/);
 click('#node-back');assert.equal(views.at(-1),'welcome');
 for(const source of ['journal','map','story','welcome']){
   assert.equal(api.openPlace('pass',{returnTo:source}),true);
@@ -61,12 +61,12 @@ assert.match(get('#node-back').textContent,/来源未知/);
 click('#node-back');assert.equal(views.at(-1),'welcome');
 console.log('PASS: evidence gating, C-level rejection, safe sources, dual narrative, disputes, inference styling, mode/scroll/context preservation, unknown ticket and unlinked building');
 
-assert.match(text(get('#node-tourism')),/尚未查询所在地天气，可查询预报；景区开放另查公告/,'C08 天气缺数据不套用景区公告');
+assert.match(text(get('#node-tourism')),/查询天气与交通/);assert.doesNotMatch(text(get('#node-tourism')),/待核验|工具来源：待确认|更新时间：待确认/);
 
 
 const ninthNodeFailures=[];
 for(const [code,fn] of [
- ['C17',()=>{api.open({place,chapter,story,index:1,exact:false,note:'坐标待核验 / 景区待定位 · 剑阁县驻地示意（关联待确认）'});const out=get('#node-coordinate').textContent;assert.match(out,/当前显示：.*剑阁县驻地示意/);assert.match(out,/待确认项：/);assert.match(out,/更新时间：/);assert.match(out,/坐标待核验 \/ 景区待定位/,'保留原始位置说明，不为去重而删核验语义');const details=get('#node-metadata').children.find(n=>n.tag==='details');assert.equal((details.children[1].textContent.match(/待核验/g)||[]).length,1,'C17 one record status; distinct source states retained');} ],
+ ['C17',()=>{api.open({place,chapter,story,index:1,exact:false,note:'县级驻地示意'});assert.match(get('#node-coordinate').textContent,/高德地图.*具体地点/);assert.doesNotMatch(text(get('#node-metadata')),/更新时间：未提供|待核验/);} ],
  ['C18',()=>{api.open({place,chapter,story,index:1});assert.equal(get('#node-comparison').children.length,0);assert.equal(get('#node-comparison-title').hidden,true);assert.equal(get('#node-differences').hidden,true);assert.equal(get('#node-disputes').hidden,true);}]
 ]){try{fn();}catch(e){ninthNodeFailures.push(code+': '+e.message);}}
 assert.equal(ninthNodeFailures.join('\n'),'','C17/C18');
@@ -79,3 +79,12 @@ click('#node-compare');assert.ok(get('#node-comparison-title').focused);
 assert.equal(get('#node-differences').children.length,0);
 assert.equal(get('#node-disputes').children.length,0);
 assert.doesNotMatch(text(get('#node-view'))+text(get('#node-reading-content'))+text(get('#node-comparison')),/资料待补充|暂无有依据的推断/);
+
+const ticketReference={data_status:'reference',is_realtime:false,price_min:5,price_max:5,unit:'元/人',updated_at:'2026-10-07',price_note:'参考公开页面，不含讲解',scope:'普通参观',sources:[{title:'票务参考页面',source_url:'https://example.org/ticket'}]};
+api.open({place:{...place,travel:{ticket:ticketReference}}});
+assert.match(text(get('#node-tourism')),/参考票价：5 元\/人/);
+assert.match(text(get('#node-tourism')),/普通参观/);
+assert.match(text(get('#node-tourism')),/票务参考页面/);
+assert.doesNotMatch(text(get('#node-tourism')),/待核验|待确认|0 条|工具来源/);
+api.open({place:{...place,travel:{ticket:{...ticketReference,price_max:4}}}});
+assert.doesNotMatch(text(get('#node-tourism')),/参考票价/);

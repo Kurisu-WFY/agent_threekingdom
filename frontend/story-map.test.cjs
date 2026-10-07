@@ -53,7 +53,7 @@ function allText(node){return node.textContent+node.children.map(allText).join('
  await api.setData(payload);await api.open('fixture-map');assert.equal(t.get('#story-map-nodes').children.length,0);
  payload.places[0].coordinate_system='GCJ-02';payload.places[0].sources[0].source_level='C';await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,0);
  payload.places[0].sources[0].source_level='A';await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,1);api.selectChapter(0);assert.equal(t.get('#chapter-add').disabled,false);
- assert.ok(allText(t.get('#story-node-content')).includes('C 级仅作线索'));assert.ok(allText(t.get('#story-node-content')).includes('史料待核验'));
+ assert.ok(allText(t.get('#story-node-content')).includes('C 级仅作线索'));assert.ok(allText(t.get('#story-node-content')).includes('史料待确认'));
  const links=[];const walk=n=>{if(n.tag==='a')links.push(n);n.children.forEach(walk);};walk(t.get('#story-node-content'));assert.equal(links.length,0);
  payload.places[0].coordinates=[200,10];await api.setData(payload);assert.equal(t.get('#story-map-nodes').children.length,0);
  assert.equal(await api.setData({story:{id:'fixture-map'}}),false);assert.equal(t.get('#story-map-nodes').children.length,2);assert.equal(api.getContext().story.title,'故事地图多章节测试夹具');

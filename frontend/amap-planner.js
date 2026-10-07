@@ -18,7 +18,7 @@
     $('amap-origin-query').value=origin;$('amap-destination-query').value=destination;$('amap-city').value=city;
     for(const side of ['origin','destination']){$('amap-'+side+'-id').replaceChildren();$('amap-'+side+'-id').value='';}
     $('amap-search-form').querySelector('button').disabled=false;
-    status('本次计划的地点文字已带入。请搜索并确认具体起终点；候选地点尚未选择，坐标也未核验。');
+    status('本次计划的地点文字已带入。请搜索并确认具体起终点；候选地点尚未选择，坐标也未确认。');
   }};
   $('amap-search-form').addEventListener('input', () => {activityLink=null;candidateSnapshot=null;clear(true); $('amap-route-form').hidden = true; status('地点已改变，请重新搜索并确认。');});
   $('amap-route-form').addEventListener('change', () => {clear(); status('条件已改变，请重新查询路线。');});

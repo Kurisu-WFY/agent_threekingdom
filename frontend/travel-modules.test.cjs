@@ -37,7 +37,7 @@ assert.deepEqual(get('#itinerary-cities').children.map(x=>x.value),cityNames);
 for(const id of ['#outing-start','#outing-end'])assert.deepEqual(get(id).children.map(x=>x.value),['',...cityNames,'manual']);
 const weatherForm=get('#travel-weather-form');weatherForm.reportValidity=()=>Boolean(get('#travel-city').value);
 const activityPlanFixture={title:'结构化活动测试夹具',days:[{day:1,stops:[{name:'本章阅读',stay_minutes:90}]}],data_status:'sample'};
-const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需核验路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待核验',address:'广元市剑阁县'}]}};
+const response={answer:'示例活动：先参观剑门关，停留90分钟，文化讲解关隘主题。',intent:{intent:'route_planning'},route:{found:true,route:{name:'路线',duration_hours:8,transport_mode:'公共交通',risk_note:'需确认路况',updated_at:'2026-09-17T10:00:00+08:00'},selection_reason:'优先保留第二幕',stops:[{stop_order:1,name:'剑门关',spot_id:'b',reason:'了解关隘主题',stay_minutes:90,recommended_duration_min:120,open_time:'待确认',address:'广元市剑阁县'}]}};
 (async()=>{
  const ninthFailures=[],ninthCheck=(c,fn)=>{try{fn();}catch(e){ninthFailures.push(c+': '+e.message);}};
  const ninthSpots=window.TravelApi.listSpots,ninthWeather=window.TravelApi.getTravelInfo;
@@ -125,7 +125,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  for(const data of [{answer:''},{answer:null},{route:{found:true,stops:[null]}}]) {
    const p=form.requestSubmit();requests.at(-1).resolve(data);await p;assert.equal(text(get('#plan-results')),output);assert.equal(get('#planner-retry').hidden,false);
  }
- const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'},plan:activityPlanFixture});await culture;assert.match(text(get('#plan-results')),/文化活动/);assert.match(text(get('#plan-results')),/来源.*待核验.*文献出处尚未核验/,'C01 方案继承缺出处提示');
+ const culture=form.requestSubmit();requests.at(-1).resolve({answer:'文化活动：读《三国志》，20分钟，讲解史家写作。',intent:{intent:'culture_qa'},plan:activityPlanFixture});await culture;assert.match(text(get('#plan-results')),/文化活动/);assert.match(text(get('#plan-results')),/来源.*文献引用/,'C01 方案继承缺出处提示');
  const p=form.requestSubmit();requests.at(-1).reject(Object.assign(Error('timeout'),{name:'TimeoutError'}));await p;assert.match(get('#planner-status').textContent,/超时/);
  const question=requests.at(-1).q,retry=get('#planner-retry').onclick();assert.equal(requests.at(-1).q,question);requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,plan:activityPlanFixture});await retry;
  const changed=form.requestSubmit();form.oninput();requests.at(-1).resolve({...response,intent:{intent:'culture_qa'},route:null,answer:'旧条件结果'});await changed;assert.ok(!text(get('#plan-results')).includes('旧条件结果'));
@@ -152,7 +152,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  await form.requestSubmit();const activity=journeyCalls.at(-1);
  assert.match(activity.o.displayText,/广元|测试故事/,'U01 activity has visitor summary');
  assert.doesNotMatch(activity.o.displayText,/只输出|只调整|不要编造|必须|合计上限/);
- assert.match(activity.q,/无依据标待核验.*不要编造实时/,'U01 constraints remain in request');
+ assert.match(activity.q,/无依据标待确认.*不要编造实时/,'U01 constraints remain in request');
  assert.equal(views.at(-1),'planner','U03 generation does not jump away from editable form');
  assert.match(activity.q,/住宿.*舒适型.*3.0,3.5.*酒店查询工具/);
  assert.match(activity.o.displayText,/舒适型/);
@@ -182,7 +182,7 @@ const response={answer:'示例活动：先参观剑门关，停留90分钟，文
  get('#saved-plans').children[0].children[1].onclick();assert.match(text(get('#plan-results')),/先读史/);assert.equal(get('#save-plan').disabled,false);await weatherForm.onsubmit({preventDefault(){},currentTarget:weatherForm});assert.match(get('#travel-status').textContent,/待接入|重试/);
  openCity('成都');assert.equal(get('#planner-view').dataset.activityState,'stale','changing the destination leaves the saved answer visible but marks it as old conditions');
  const copyEvidence={sources:[{title:'原出处',source_url:'https://example.org/source',source_level:'B'}],data_status:'maintained',updated_at:'2026-10-03T01:00:00+08:00'};
- const copyCalls=[];window.SGTAnswerTrust={render:r=>{copyCalls.push(r);const el=new Element('p');el.textContent=r.sources?.[0]?.title||'来源待核验；文献出处尚未核验';return el;}};
+ const copyCalls=[];window.SGTAnswerTrust={render:r=>{copyCalls.push(r);const el=new Element('p');el.textContent=r.sources?.[0]?.title||'来源待确认；文献出处尚未确认';return el;}};
  await form.requestSubmit();const copyAttempt=journeyCalls.at(-1).o.activityPlan;
  window.TravelModules.receiveActivity({text:'原活动正文，PDF第3页。',data:{...copyEvidence,plan:activityPlanFixture},activityPlan:copyAttempt});
  assert.equal(copyCalls.at(-1).sources[0].source_url,'https://example.org/source','C01 继承真实结构化来源，不猜PDF链接');

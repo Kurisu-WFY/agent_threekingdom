@@ -6,6 +6,7 @@ import hashlib
 from functools import lru_cache
 from pathlib import Path
 from san_guo_core.settings import get_settings
+from tools.ticket_references import find_ticket_reference
 
 CONTENT = Path(__file__).resolve().parents[2] / 'data/content/chenshou-book-history.json'
 CULTURE = CONTENT.with_name('place-culture.json')
@@ -84,5 +85,11 @@ def get_story_content():
             resolve(place['overview'])
         if isinstance(place.get('history'), dict):
             resolve(place['history'])
+        ticket = find_ticket_reference(place['name'])
+        if ticket:
+            place.setdefault('travel', {})['ticket'] = ticket
+            place['city'] = ticket['city']
+            if ticket.get('open_time'):
+                place['travel']['opening'] = {**ticket, 'text': ticket['open_time']}
     payload['story']['sources'] = all_sources
     return {'status': 'ok', 'data': payload, 'message': '现代研究阅读章节；不是古代行走路线。'}

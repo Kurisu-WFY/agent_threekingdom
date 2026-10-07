@@ -135,7 +135,7 @@
   function drawCounties() {
     const group = $('#county-points'); group.replaceChildren();
     const parent = $('#map-prefecture').value;
-    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置仍需核验。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '这里列出全省县区，选一个就能定位。';
+    $('#map-filter-status').textContent = selected ? '已选择'+selected.name+'；可加入路线，位置请在出发前确认。' : parent ? '已筛选'+parent+'，请再选县区定位；筛选不会改变当前地图视野。' : '这里列出全省县区，选一个就能定位。';
     labels = labels.filter(l=>l.city);
     boundaryNodes.filter(b=>b.county).forEach(b=>b.node.classList.toggle('county-area-selected',String(b.adcode)===String(selected?.adcode)));
     for (const place of counties.filter(p => !parent || p.parent === parent)) {
@@ -293,7 +293,7 @@
     focusStoryPoint(point) {
       if(!loaded || !point) return false;
       selected=counties.find(p=>p.id===point.id)||null;drawCounties();fit([point]);showContentView('map');
-      $('#map-route-status').textContent=point.name+' · 位置示意 / 入口待核验';return true;
+      $('#map-route-status').textContent=point.name+' · 位置示意 / 入口待确认';return true;
     },
     async focusMention(name, {reveal=false} = {}) {
       const owner=activeChat;

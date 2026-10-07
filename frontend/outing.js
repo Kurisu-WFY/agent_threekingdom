@@ -58,8 +58,8 @@
     for(const side of ['start','end']){$('outing-'+side).value='';for(const axis of ['lon','lat'])$('outing-'+side+'-'+axis).value='';}coordinateFields();$('outing-confirm').checked=false;
     $('outing-origin').textContent='来自陈寿对话的行程草案 · 请确认目的地与日期';$('outing-back').hidden=false;
     $('outing-original').hidden=false;$('outing-original-text').textContent=d.answer;
-    $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待核验')));
-    $('outing-draft-note').textContent=d.stops.length?'已带入站点名称；坐标和可行性仍未核验。':'回答原文已保留。当前回答没有可直接使用的站点资料，不会把文字猜成可导航路线。';
+    $('outing-stops').replaceChildren(...d.stops.map(s=>node('li',s.name+' · 位置待确认')));
+    $('outing-draft-note').textContent=d.stops.length?'已带入站点名称；坐标和可行性仍未确认。':'回答原文已保留。当前回答没有可直接使用的站点资料，不会把文字猜成可导航路线。';
     window.AmapPlanner?.prefill({origin:message.activityPlan?.preferences?.origin||'',destination:d.stops.at(-1)?.name||d.city,city:d.city});
     toggleChat(false);chatHandoff=true;showContentView('outing');chatHandoff=false;$('outing-title').focus({preventScroll:true});
   }};

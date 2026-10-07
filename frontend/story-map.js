@@ -37,7 +37,7 @@
     const counties = window.TravelMap.getPlaces().filter(item => item.level === 'county');
     const parsed = place.fallbackName ? core.structured({ map_route: { stops: [{ name: place.fallbackName, parent: place.fallbackParent }] } }, counties) : null;
     const point = parsed?.points[0] || null;
-    return { chapter, place, point, exact: false, note: point ? '坐标待核验 / 景区待定位 · ' + point.name + '驻地示意（关联待确认）' : '待定位 · 具体遗址与县区待确认' };
+    return { chapter, place, point, exact: false, note: point ? '区域位置示意 / 请在高德选择具体地点 · ' + point.name + '驻地示意（关联待确认）' : '待定位 · 具体遗址与县区待确认' };
   }
   function currentStatus(index) {
     if (state().skipped?.has(index)) return '本次跳过';
@@ -66,7 +66,7 @@
       button.type = 'button'; button.setAttribute('aria-current', current === index ? 'step' : 'false');
       button.setAttribute('aria-controls', 'story-node-card'); button.dataset.state = status;
       button.addEventListener('click', () => selectChapter(index));
-      li.append(button, node('small', '', item.note), node('small', '', state().skipped?.has(index) ? '本次跳过：由你选择将有限时间留给其他章节。' : state().skipped?.size ? '本次保留：你选取的核心章节，时长待核验。' : '')); $('#story-chapter-list').append(li);
+      li.append(button, node('small', '', item.note), node('small', '', state().skipped?.has(index) ? '本次跳过：由你选择将有限时间留给其他章节。' : state().skipped?.size ? '本次保留：你选取的核心章节，时长待确认。' : '')); $('#story-chapter-list').append(li);
       if (!item.point || state().skipped?.has(index)) return;
       const [x, y] = core.project(item.point.center);
       if (index && resolved[index - 1].point && !state().skipped?.has(index-1)) {
@@ -114,9 +114,9 @@
     $('#story-node-title').textContent = value(chapter.name);
     $('#story-node-location').textContent = item.place.name + ' · ' + item.note;
     const content = $('#story-node-content');
-    const statuses = {pending:'待确认',sample:'示例资料 / 待核验',maintained:'维护资料',live:'实时资料',stale:'过期资料'};
+    const statuses = {pending:'待确认',sample:'示例资料 / 待确认',maintained:'维护资料',live:'实时资料',stale:'过期资料'};
     const verified = ['maintained','live'].includes(chapter.dataStatus) && chapter.updatedAt && /(?:Z|[+-]\d{2}:\d{2})$/.test(chapter.updatedAt) && Number.isFinite(Date.parse(chapter.updatedAt)) && Array.isArray(chapter.sources) && chapter.sources.some(s=>s && ['A','B'].includes(s.source_level)&&safeUrl(s.source_url));
-    content.replaceChildren(node('p', 'chapter-trust', '资料状态：' + (statuses[chapter.dataStatus] || '待确认') + (verified ? '' : ' · 史料待核验')),
+    content.replaceChildren(node('p', 'chapter-trust', '资料状态：' + (statuses[chapter.dataStatus] || '待确认') + (verified ? '' : ' · 史料待确认')),
       node('p', '', '为什么推荐：' + value(chapter.reason)), node('p', '', '在故事中的作用：' + value(chapter.role)),
       node('p', '', '故事线：' + window.SGTStoryUI.modeLabel(state().mode)),
       node('p', '', '相关人物：' + list(chapter.people)), node('p', '', '相关事件：' + list(chapter.events)),
@@ -200,7 +200,7 @@
         if(active?.id===id&&!catalog.chapters?.length) {
           exit();
           window.SGTStoryUI?.openStory(id);
-          $('#map-route-status').textContent='故事资料不完整，章节待补充 / 待核验；已退出故事模式，可向陈寿继续了解。';
+          $('#map-route-status').textContent='故事资料不完整，章节待补充 / 待确认；已退出故事模式，可向陈寿继续了解。';
           return Promise.resolve(false);
         }
         if(active?.id===id)return open(id).then(()=>{ $('#map-route-status').textContent='故事资料不完整，已保留静态模板；可向陈寿继续了解。';return false; });

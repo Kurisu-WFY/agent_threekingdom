@@ -7,7 +7,7 @@
     const copy={authorization:'酒店查询尚未授权，本次未取得真实酒店与房价。可以先记录住宿需求。',timeout:'酒店查询超时，本次未取得酒店与房价。请稍后重试，或调整城市和日期。',network:'网络连接失败，本次未取得酒店与房价。请检查网络后重试。',service:'酒店服务暂不可用，本次未取得酒店与房价。可重试，持续失败请联系项目维护人员。'};
     const notice=node('p',copy[kind]);notice.className='data-banner';target.replaceChildren(notice);
     if(kind==='authorization'){
-      const guide=node('details','');guide.append(node('summary','查看授权指引'),node('p','请联系项目维护人员，在运行此服务的本机完成 RollingGo 登录授权。本页没有登录授权入口；授权完成后再重新查询。住宿需求可保留，参考价需核验，不代订。'));target.append(guide);
+      const guide=node('details','');guide.append(node('summary','查看授权指引'),node('p','请联系项目维护人员，在运行此服务的本机完成 RollingGo 登录授权。本页没有登录授权入口；授权完成后再重新查询。住宿需求可保留，参考价需确认，不代订。'));target.append(guide);
     }else if(message)target.append(node('p',message));
     const actions=node('div','');actions.className='module-actions';
     const retry=node('button',kind==='authorization'?'授权完成后重新查询':'重试酒店查询');retry.type='button';retry.className='module-button';retry.id='hotel-retry';retry.onclick=()=>button.click();

@@ -64,3 +64,16 @@ def test_place_primary_sources():
     with patch('tools.story_content.document_catalog', return_value={}):
         places = get_story_content()['data']['places']
     assert all(p['history']['data_status'] == 'pending' and not p['history']['sources'] for p in places if 'history' in p)
+
+
+def test_place_ticket_references():
+    places = get_story_content()['data']['places']
+    expected = {'wanjuanlou': (5,5), 'hanhuanhouci': (50,50), 'jianmenguan': (100,105), 'zhaohua': (45,52)}
+    for place in places:
+        if place['id'] in expected:
+            ticket = place['travel']['ticket']
+            assert (ticket['price_min'],ticket['price_max']) == expected[place['id']]
+            assert ticket['data_status'] == 'reference' and ticket['is_realtime'] is False
+            assert ticket['sources'] and ticket['scope']
+        else:
+            assert 'ticket' not in place.get('travel', {})

@@ -68,7 +68,7 @@
     refresh();
   }
   function enter(c){if(!c)return;narrate(c);toggleChat(true);}
-  function requestContext(text){const c=context();return ' 已寻迹节点（本地手动记录）：'+(completed(c).join('、')||'暂无')+'。'+(/半天|时间不够|只有.*小时/.test(text)?'围绕当前故事“'+(c.story?.title||'未选择，先询问')+'”解释压缩取舍，保留已完成章节状态。核心章节由游客选择；使用 selection_reason 和各站 reason，缺少时长/推荐理由明确待核验，不能保证可行或擅自删章。':'');}
+  function requestContext(text){const c=context();return ' 已寻迹节点（本地手动记录）：'+(completed(c).join('、')||'暂无')+'。'+(/半天|时间不够|只有.*小时/.test(text)?'围绕当前故事“'+(c.story?.title||'未选择，先询问')+'”解释压缩取舍，保留已完成章节状态。核心章节由游客选择；使用 selection_reason 和各站 reason，缺少时长/推荐理由明确待确认，不能保证可行或擅自删章。':'');}
   (window.SGT_STORIES||[]).forEach(s=>seen.set(s.id,new Set(window.StoryProgress.get(s).completed)));
   window.StoryProgress?.subscribe(story=>{
     const s=window.StoryProgress.get(story),before=seen.get(story.id)||new Set(),added=[...s.completed].filter(i=>!before.has(i));seen.set(story.id,new Set(s.completed));

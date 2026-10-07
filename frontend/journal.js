@@ -13,7 +13,7 @@
   function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
   function button(text,fn){const b=node('button','module-button',text);b.type='button';b.addEventListener('click',fn);return b;}
   function recordedTime(value){
-    if(typeof value!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(value))return value?'时区未提供，时间待核验':'待确认';
+    if(typeof value!=='string'||!/(?:Z|[+-]\d{2}:\d{2})$/.test(value))return value?'时区未提供，时间待确认':'待确认';
     const calendar=value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/);
     if(!calendar)return '待确认';
     const [year,month,day]=calendar.slice(1,4).map(Number),leap=year%4===0&&(year%100!==0||year%400===0);
@@ -45,7 +45,7 @@
     if(JSON.stringify(next)!==JSON.stringify(questions)){questions=next;persist();}
     render();
   }
-  const names=xs=>(Array.isArray(xs)?xs:[]).map(x=>typeof x==='string'?x:typeof x?.name==='string'?x.name:'').filter(x=>x&&x!=='待核验'&&x!=='待补充');
+  const names=xs=>(Array.isArray(xs)?xs:[]).map(x=>typeof x==='string'?x:typeof x?.name==='string'?x.name:'').filter(x=>x&&x!=='待确认'&&x!=='待补充');
   const themes=[['正史与演义',/正史|演义|史实|历史上/],['史书编纂',/陈寿|三国志|编纂/],['古道与关隘',/蜀道|剑门|米仓|关隘|古道/],['建筑与遗址',/建筑|遗址|古城|祠|万卷楼/]];
   function model(){
     const stories=(window.SGT_STORIES||[]).map(story=>({story,state:window.StoryProgress.get(story),total:story.chapters?.length||0}));
@@ -72,7 +72,7 @@
     heading(box,'足迹地图');box.append(node('p','journal-section-note','仅来自你标为“已寻迹”的章节；县级驻地是位置示意，非景区入口，缺坐标不绘制精确点。'));
     if(!m.explored.length){box.append(node('p','journal-empty-line','尚无已探索的建筑、遗址或古道。完成章节后，足迹会写在这里。'));return;}
     const points=[];
-    m.explored.forEach(({place,chapter})=>{const located=window.StoryMap?.describePlace(place,chapter),row=node('div','journal-place');row.append(window.SGTStoryUI.icon(place.building),node('span','',place.name+' · '+(located?.point?located.exact?'来源已核验，入口待确认':'位置示意 / 待定位':'坐标待核验')));if(located?.point){points.push({...located.point,label:place.name,exact:located.exact});row.append(button('在地图中查看',()=>window.TravelMap.focusStoryPoint(located.point)));}row.append(button('重读这个节点',()=>window.CulturalNode.openPlace(place.id,{returnTo:'journal'})));box.append(row);});
+    m.explored.forEach(({place,chapter})=>{const located=window.StoryMap?.describePlace(place,chapter),row=node('div','journal-place');row.append(window.SGTStoryUI.icon(place.building),node('span','',place.name+' · '+(located?.point?located.exact?'来源已核验，入口待确认':'位置示意 / 待定位':'请在高德地图确认具体地点')));if(located?.point){points.push({...located.point,label:place.name,exact:located.exact});row.append(button('在地图中查看',()=>window.TravelMap.focusStoryPoint(located.point)));}row.append(button('重读这个节点',()=>window.CulturalNode.openPlace(place.id,{returnTo:'journal'})));box.append(row);});
     if(!points.length)return;
     const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('class','journal-footprints');svg.setAttribute('role','img');svg.setAttribute('aria-label','已寻迹章节的地理位置示意，不是到访轨迹或道路导航');
     const xy=points.map(p=>window.MapRouteCore.project(p.center)),xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]);const x=Math.min(...xs)-65,y=Math.min(...ys)-45,w=Math.max(...xs)-x+100,h=Math.max(...ys)-y+65;svg.setAttribute('viewBox',[x,y,w,h].join(' '));
@@ -87,11 +87,11 @@
     }
     book.replaceChildren();
     const current=m.stories[0];
-    $('#journal-overview').textContent=current ? current.story.title+' · '+(current.total?'已寻迹 '+current.state.completed.size+' / '+current.total+' 幕 · '+(m.completed.length?'已读完':current.state.started?'正在读':'尚未开始'):'章节待补充 / 待核验') : '故事资料待补充';
+    $('#journal-overview').textContent=current ? current.story.title+' · '+(current.total?'已寻迹 '+current.state.completed.size+' / '+current.total+' 幕 · '+(m.completed.length?'已读完':current.state.started?'正在读':'尚未开始'):'章节待补充 / 待确认') : '故事资料待补充';
     $('#journal-local-notice').textContent=window.StoryProgress.notice()+' 换设备不会同步；不是账号档案。'+(available?'问题最多保留最近200条；删除本页会话会同步移除对应提问，撤销可恢复。':damaged?'问题读取失败或存储不可用，当前问题仅本页保留；没有补造旧记录。':'问题存储不可用，当前问题仅本页保留。')+(!window.StoryProgress.notice().includes('不代表实际到访')?' 手动记录不代表实际到访。':'');
     const empty=$('#journal-empty');empty.replaceChildren();if(!m.started&&!questions.length){empty.append(node('p','','去读一条故事、问陈寿一个问题，这里就会记下来'),button('查看故事资料',()=>{if(current)window.SGTStoryUI.openStory(current.story.id);}));}
     const reading=node('section','journal-section journal-reading');heading(reading,'我的故事进度');
-    reading.append(node('p','journal-section-note',current?.total?'读完一幕后可以标为“已寻迹”，继续阅读会接上你的进度。':'章节待补充 / 待核验；可以查看故事资料或向陈寿提问，尚不能开始探索。'));
+    reading.append(node('p','journal-section-note',current?.total?'读完一幕后可以标为“已寻迹”，继续阅读会接上你的进度。':'章节待补充 / 待确认；可以查看故事资料或向陈寿提问，尚不能开始探索。'));
     const cards=node('div','journal-story-grid');
     const begun=m.pending.filter(x=>x.state.started||x.state.completed.size),waiting=m.pending.filter(x=>!x.state.started&&!x.state.completed.size);
     [...begun,...waiting].forEach(x=>storyRow(cards,x));reading.append(cards);
