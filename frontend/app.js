@@ -100,13 +100,14 @@ function trustNode(record, label = '回答') {
   const levels = {A:'权威资料',B:'较可靠资料',C:'文学/传说'};
   const statuses = {sample:'演示数据', maintained:'维护数据', live:'实时数据', pending:'待核验', stale:'已过期，需重新核验',forecast:'模型天气预报',model:'空气质量模型估计'};
   const status = record && Object.hasOwn(statuses, record.data_status) ? statuses[record.data_status] : null;
-  box.append(tag(label + ' · ' + (status || '待核验')));
+  // 缺失状态不生成占位标签，原始元数据仍留在回答记录中。
+  if (status && record.data_status !== 'pending') box.append(tag(label + ' · ' + status));
   if (realtime) box.append(tag('模型预报、非现场实测；天气与空气信息需在出发前再核验。'));
   const date = record && record.updated_at;
   const validDate = typeof date === 'string' && /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(date) && Number.isFinite(Date.parse(date));
-  box.append(tag(validDate ? '更新时间 · ' + date : '更新时间 · 待核验'));
+  if (validDate) box.append(tag('更新时间 · ' + date));
   const sources = record && Array.isArray(record.sources) ? record.sources : [];
-  let count = 0, accessible = 0;
+  let accessible = 0;
   sources.forEach(source => {
     if (!source || typeof source.title !== 'string' || !source.title.trim()) return;
     const line = document.createElement('div');
@@ -120,9 +121,8 @@ function trustNode(record, label = '回答') {
     line.append(link, tag(realtime ? '实时信息来源 · 需再核验' : '来源等级 · ' + level + (levels[level] ? '=' + levels[level] : '')));
     if (!safe) line.append(tag('来源链接待核验'));
     if (!realtime && level === 'C') line.append(tag('文学/传说不能支撑史实结论'));
-    box.append(line); count += 1;
+    box.append(line);
   });
-  if (!count) box.append(tag('来源 · 待核验'));
   if (!accessible) box.append(tag(realtime ? '实时信息出处尚未核验，请查询最新预报。' : '回答提及的文献出处尚未核验，请勿作为已核验引文。'));
   return box;
 }

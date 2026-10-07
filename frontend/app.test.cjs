@@ -236,7 +236,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
 
 function textTree(node) { return (node.textContent || '') + (node.children || []).map(textTree).join(' '); }
 function allNodes(node) { return [node,...(node.children||[]).flatMap(allNodes)]; }
-assert.match(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /待核验/);
+assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"culture_qa"}})')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
 
 assert.doesNotMatch(textTree(run('metaNode({intent:{intent:"unknown"},retrieval:{coverage:2}})')), /意图 ·|召回覆盖/);
 assert.match(textTree(run('metaNode({intent:{intent:"budget_ticket"},route:null})')), /不能认定为免费/);
@@ -263,7 +263,10 @@ assert.match(textTree(trusted), /维护数据/);
 assert.match(textTree(trusted), /2026-09-12T10:00:00Z/);
 assert.equal(trusted.children[2].children[0].href, 'https://example.com/info');
 assert.equal(trusted.children[2].children[0].rel, 'noopener noreferrer');
-assert.match(textTree(run('trustNode({data_status:"constructor"})')), /待核验/);
+assert.doesNotMatch(textTree(run('trustNode({data_status:"constructor"})')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+for (const record of ['{}','{data_status:"pending"}','{updated_at:"invalid",sources:[]}']) {
+  assert.doesNotMatch(textTree(run('trustNode('+record+')')), /回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
+}
 
 // N9：故事卡片不能覆盖关面板后的滚动恢复；三个关闭入口必须等价。
 context.window.innerWidth=1920; context.window.innerHeight=1080;
@@ -332,7 +335,7 @@ const copyFailures=[];
 const copyCheck=(name,fn)=>{try{fn();}catch(e){copyFailures.push(name+': '+e.message);}};
 copyCheck('C01',()=>{
  assert.match(textTree(run('trustNode({})')),/文献出处尚未核验/);
- assert.match(textTree(run('metaNode({generation:{kind:"nuwax"}})')),/来源.*待核验/);
+ assert.doesNotMatch(textTree(run('metaNode({generation:{kind:"nuwax"}})')),/回答 · 待核验|更新时间 · 待核验|来源 · 待核验/);
  const source={sources:[{title:'真实出处',source_url:'https://example.org/paper',source_level:'B'}]};context.copySource=source;
  assert.doesNotMatch(textTree(run('trustNode(copySource)')),/文献出处尚未核验/);
  const unsafe=run('trustNode({sources:[{title:"PDF",source_url:"javascript:alert(1)"}]})');
