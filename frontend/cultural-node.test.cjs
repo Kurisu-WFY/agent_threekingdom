@@ -15,13 +15,13 @@ vm.runInNewContext(fs.readFileSync(__dirname+'/cultural-node.js','utf8'),{window
 const api=window.CulturalNode,text=n=>n.textContent+n.children.map(text).join(' '),click=id=>get(id).handlers.click();
 api.open({place,chapter,story,index:1,back:'map',exact:false,point:null});
 assert.equal(views.at(-1),'node');assert.match(get('#node-context').textContent,/第二幕/);assert.match(get('#node-coordinate').textContent,/坐标待核验/);
-assert.match(text(get('#node-reading-content')),/当前资料中未找到可靠记载/);assert.ok(!text(get('#node-reading-content')).includes('未经核验的文字'));
+assert.doesNotMatch(text(get('#node-reading-content')),/资料待补充|未经核验的文字/);assert.equal(get('#node-reading').hidden,true);
 assert.match(text(get('#node-metadata')),/C 级可信度不足/);assert.equal(get('#node-add-route').disabled,true);
 get('#node-view').scrollTop=260;api.changeMode('亲子故事版');assert.equal(get('#node-view').scrollTop,260);assert.equal(scrolls.at(-1),270);assert.equal(state.current,1);assert.equal(state.completed.size,1);assert.equal(state.mode,'亲子故事版');assert.match(text(get('#node-reading-content')),/可以和孩子聊聊/);
-api.changeMode('学术探索版');assert.match(text(get('#node-reading-content')),/编纂背景/);assert.equal(get('#node-view').scrollTop,260);assert.equal(get('#node-reading-content').style.minHeight,'');
+api.changeMode('学术探索版');assert.doesNotMatch(text(get('#node-reading-content')),/编纂背景|资料待补充/);assert.equal(get('#node-view').scrollTop,260);assert.equal(get('#node-reading-content').style.minHeight,'');
 state.mode='亲子故事版';window.StoryProgress.save(story);assert.equal(api.getMode(),'亲子故事版');assert.equal(get('#node-view').scrollTop,260);api.changeMode('学术探索版');
 click('#node-ask');assert.match(asks.at(-1).q,/测试关楼/);assert.match(asks.at(-1).q,/合理推断/);assert.match(asks.at(-1).q,/学术探索版/);assert.equal(state.current,1);assert.match(asks.at(-1).o.displayText,/测试关楼/);assert.ok(!asks.at(-1).o.displayText.includes('必须分段'));
-click('#node-compare');assert.ok(get('#node-comparison-title').focused);assert.ok(get('#node-comparison-title').scrolled);
+click('#node-compare');assert.equal(get('#node-comparison-title').hidden,true);assert.ok(!get('#node-comparison-title').focused);
 const record=t=>({text:t,data_status:'maintained',updated_at:'2026-09-18T09:00:00+08:00',sources:[{title:'测试用来源',source_level:'A',source_url:'https://example.org/reference',data_status:'maintained'}]});
 const research={...chapter,...record(''),narrative_type:'research',story:'作者对写作方法的研究',compilation:{...record('编纂研究正文'),narrative_type:'research'},relationships:{...record('师承关系研究'),narrative_type:'research'},disputes:[{...record('作者甲的判断'),narrative_type:'research'},{...record('作者乙的判断'),narrative_type:'research'}]};
 api.open({place,chapter:research,story,index:1});
@@ -37,10 +37,10 @@ assert.match(text(get('#node-reading-content')),/合理推断 · 非史料原文
 const pendingRecord=record('不该显示的史料');pendingRecord.sources[0].data_status='pending';api.open({place,chapter:{...chapter,history:pendingRecord},story,index:1,exact:false,point:{name:'县级驻地'}});assert.ok(!text(get('#node-comparison')).includes('不该显示的史料'));
 const descendants=n=>[n,...n.children.flatMap(descendants)];
 const emptyMaterials=descendants(get('#node-comparison')).filter(n=>n.tag==='details'&&n.className?.includes('node-empty'));
-assert.equal(emptyMaterials.length,2,'U24 unverified history and literature are collapsed separately');
+assert.equal(emptyMaterials.length,0,'没有资料的正史与文学栏目不显示空占位');
 assert.ok(emptyMaterials.every(n=>!n.open),'U24 empty materials start collapsed');
-assert.match(text(get('#node-metadata')),/资料概况/,'U24 shared missing status is summarized once near the heading');
-assert.match(text(get('#node-metadata')),/正史.*文学.*实时/,'U24 evidence boundaries remain explicit');
+assert.match(text(get('#node-metadata')),/文化介绍与相关史料/);
+assert.match(text(get('#node-metadata')),/历史记载.*现代研究.*文学/);
 api.open({place,chapter:enriched,story,index:1});
 assert.ok(get('#node-comparison').children.every(n=>n.tag==='section'),'U24 reliable narrative stays visible');
 assert.equal(descendants(get('#node-reading-content')).find(n=>n.className?.split(' ').includes('node-evidence')).tag,'section','U24 supported story stays visible');
@@ -67,6 +67,15 @@ assert.match(text(get('#node-tourism')),/尚未查询所在地天气，可查询
 const ninthNodeFailures=[];
 for(const [code,fn] of [
  ['C17',()=>{api.open({place,chapter,story,index:1,exact:false,note:'坐标待核验 / 景区待定位 · 剑阁县驻地示意（关联待确认）'});const out=get('#node-coordinate').textContent;assert.match(out,/当前显示：.*剑阁县驻地示意/);assert.match(out,/待确认项：/);assert.match(out,/更新时间：/);assert.match(out,/坐标待核验 \/ 景区待定位/,'保留原始位置说明，不为去重而删核验语义');const details=get('#node-metadata').children.find(n=>n.tag==='details');assert.equal((details.children[1].textContent.match(/待核验/g)||[]).length,1,'C17 one record status; distinct source states retained');} ],
- ['C18',()=>{api.open({place,chapter,story,index:1});const literary=get('#node-comparison').children[1];assert.match(text(literary),/尚未补充可核对的文学文本\/版本出处/);assert.match(text(literary),/文学文本来源/);assert.match(text(literary),/不等于历史事实/);assert.doesNotMatch(text(literary),/未找到可靠记载|史料来源/);}]
+ ['C18',()=>{api.open({place,chapter,story,index:1});assert.equal(get('#node-comparison').children.length,0);assert.equal(get('#node-comparison-title').hidden,true);assert.equal(get('#node-differences').hidden,true);assert.equal(get('#node-disputes').hidden,true);}]
 ]){try{fn();}catch(e){ninthNodeFailures.push(code+': '+e.message);}}
 assert.equal(ninthNodeFailures.join('\n'),'','C17/C18');
+
+api.open({place:{...place,history:record('地点关联的张飞史料')},returnTo:'welcome'});
+assert.match(text(get('#node-comparison')),/地点关联的张飞史料/);
+assert.equal(get('#node-comparison-title').textContent,'史籍中的人物与事件');
+assert.equal(get('#node-compare').hidden,false);
+click('#node-compare');assert.ok(get('#node-comparison-title').focused);
+assert.equal(get('#node-differences').children.length,0);
+assert.equal(get('#node-disputes').children.length,0);
+assert.doesNotMatch(text(get('#node-view'))+text(get('#node-reading-content'))+text(get('#node-comparison')),/资料待补充|暂无有依据的推断/);

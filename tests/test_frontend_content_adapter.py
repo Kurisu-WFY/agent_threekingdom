@@ -48,3 +48,19 @@ def test_missing_index_does_not_promote_nested_content():
         assert chapter['data_status'] == 'pending'
         for record in [chapter['compilation'], chapter['relationships'], *chapter.get('disputes', [])]:
             assert record['data_status'] == 'pending' and record['sources'] == []
+
+
+def test_place_primary_sources():
+    payload = get_story_content()['data']
+    expected = {'hanhuanhouci': {714, 715}, 'jianmenguan': {794}, 'zhaohua': {753}}
+    for place in payload['places']:
+        if place['id'] not in expected:
+            continue
+        record = place['history']
+        assert record['data_status'] == 'maintained'
+        assert {s['pdf_page'] for s in record['sources']} == expected[place['id']]
+        assert all(s['source_level'] == 'A' for s in record['sources'])
+        assert 'source_file' not in str(record) and 'references' not in record
+    with patch('tools.story_content.document_catalog', return_value={}):
+        places = get_story_content()['data']['places']
+    assert all(p['history']['data_status'] == 'pending' and not p['history']['sources'] for p in places if 'history' in p)

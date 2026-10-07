@@ -1,7 +1,7 @@
 /* 文化阅读以证据为依据，不把缺失的数据编造成历史叙述。 */
 (() => {
   'use strict';
-  const $=s=>document.querySelector(s), missing='当前资料中未找到可靠记载';
+  const $=s=>document.querySelector(s);
   const modes=['大众体验版','亲子故事版','学术探索版'], readings=new Map();
   let context=null, mode=modes[0], readingKey='';
   const text=v=>typeof v==='string'&&v.trim()?v.trim():'待核验';
@@ -32,10 +32,11 @@
   }
   function recordBlock(title,record,kind){
     const usable=usableRecord(record);
-    const block=node(usable?'section':'details','node-evidence '+kind+(usable?'':' node-empty'));
-    block.append(node(usable?'h4':'summary','',title+(usable?'':' · 资料待补充')));
+    if(!usable)return null;
+    const block=node('section','node-evidence '+kind);
+    block.append(node('h4','',title));
     block.append(node('p','node-evidence-label',kind==='node-research'?'现代研究解读 · 观点归属论文作者':kind==='node-inference'?'合理推断 · 非史料原文':kind==='node-literature'?'文学表达 · 不等于历史事实':'史料记载'));
-    block.append(node('p','',usable?record.text:kind==='node-literature'?'尚未补充可核对的文学文本/版本出处':missing));
+    block.append(node('p','',record.text));
     block.append(provenance(record,kind==='node-literature'?'文学文本来源':'史料来源'));return block;
   }
   function renderReading(){
@@ -47,15 +48,17 @@
       clue.append(node('h4','','地点文化线索'),node('p','node-evidence-label','旅游研究线索 · 不独立证明史实'),node('p','',overview.text),provenance(overview,'旅游研究来源'));box.append(clue);
     }
     const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter.narrative_type)?chapter.story:''};
-    box.append(recordBlock('本章故事',narrative,chapter.narrative_type==='research'?'node-research':chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history'));
+    const storyBlock=recordBlock('本章故事',narrative,chapter.narrative_type==='research'?'node-research':chapter.narrative_type==='inference'?'node-inference':chapter.narrative_type==='literature'?'node-literature':'node-history');
+    if(storyBlock)box.append(storyBlock);
     if(text(chapter.reason)!=='待核验'||text(chapter.role)!=='待核验')box.append(node('p','','为什么值得看：'+text(chapter.reason)),node('p','','在故事里的位置：'+text(chapter.role)));
-    else box.append(emptyBlock('章节说明 · 资料待补充','章节与地点的关联、参观理由仍需资料支持。'));
-    if(mode==='学术探索版')box.append(recordBlock('编纂背景',chapter.compilation,chapter.compilation?.narrative_type==='research'?'node-research':'node-history'),recordBlock('人物关系',chapter.relationships,chapter.relationships?.narrative_type==='research'?'node-research':'node-history'));
+    if(mode==='学术探索版'){
+      [['编纂背景',chapter.compilation],['人物关系',chapter.relationships]].forEach(([title,r])=>{const block=recordBlock(title,r,r?.narrative_type==='research'?'node-research':'node-history');if(block)box.append(block);});
+    }
     if(mode==='亲子故事版')box.append(node('p','node-question','哪句话有史料依据，哪句话只是文学表达？可以和孩子聊聊。无法核实时，不替古人编台词。'));
-    const inferences=Array.isArray(chapter.inferences)?chapter.inferences:[];
+    const inferences=Array.isArray(chapter.inferences)?chapter.inferences.filter(usableRecord):[];
     if(inferences.length)box.append(node('h3','','合理推断'));
-    else box.append(emptyBlock('合理推断 · 资料待补充','暂无有依据的推断内容，不用推测填空。'));
     inferences.forEach(r=>box.append(recordBlock('合理推断',r,'node-inference')));
+    $('#node-reading').hidden=box.children.length===1;
   }
   function changeMode(next){
     if(!context||!modes.includes(next)||mode===next)return;
@@ -68,13 +71,17 @@
   }
   function comparison(){
     const chapter=context.chapter || {}, grid=$('#node-comparison');
-    grid.replaceChildren(recordBlock('正史｜《三国志》及可靠史料',chapter.history,'node-history'),recordBlock('演义｜文学表达',chapter.romance,'node-literature'));
+    const history=chapter.history || context.place?.history;
+    const blocks=[recordBlock('正史｜《三国志》及可靠史料',history,'node-history'),recordBlock('演义｜文学表达',chapter.romance,'node-literature')].filter(Boolean);
+    grid.replaceChildren(...blocks);grid.hidden=!blocks.length;
+    const title=$('#node-comparison-title');title.hidden=!blocks.length;
+    title.textContent=usableRecord(history)&&usableRecord(chapter.romance)?'正史 × 演义':usableRecord(history)?'史籍中的人物与事件':'文学阅读';
+    $('#node-compare').hidden=!blocks.length;
     const difference=$('#node-differences');
-    const hasDifference=usableRecord(chapter.history)&&usableRecord(chapter.romance)&&usableRecord(chapter.differences);
-    difference.replaceChildren(hasDifference?recordBlock('两条叙事的差异',chapter.differences,'node-history'):emptyBlock('两条叙事的差异 · 资料待补充','当前资料不足，无法核验具体差异；文学情节不能作为历史事实。'));
-    if(!hasDifference&&sources(chapter.differences).length)difference.children[0].append(provenance(chapter.differences));
-    const disputes=$('#node-disputes'),opinions=Array.isArray(chapter.disputes)?chapter.disputes:[];
-    disputes.replaceChildren(...(opinions.length?[node('h3','',opinions.length>1?'存在不同说法':'学术争议资料')]:[emptyBlock('学术争议 · 资料待补充','当前资料中未找到可靠记载；不能据此断言不存在争议。')]));
+    const hasDifference=usableRecord(history)&&usableRecord(chapter.romance)&&usableRecord(chapter.differences);
+    difference.replaceChildren(...(hasDifference?[recordBlock('两条叙事的差异',chapter.differences,'node-history')]:[]));difference.hidden=!hasDifference;
+    const disputes=$('#node-disputes'),opinions=Array.isArray(chapter.disputes)?chapter.disputes.filter(usableRecord):[];
+    disputes.replaceChildren(...(opinions.length?[node('h3','',opinions.length>1?'存在不同说法':'学术争议资料')]:[]));disputes.hidden=!opinions.length;
     opinions.forEach((r,i)=>disputes.append(recordBlock('说法 '+(i+1),r,r.narrative_type==='research'?'node-research':'node-history')));
   }
   function tourism(){
@@ -103,12 +110,11 @@
     $('#node-visual').replaceChildren(window.SGTStoryUI.icon(place.building));
     $('#node-title').textContent=place.name;
     $('#node-context').textContent='城市：'+(place.city ? place.city+'（城市信息尚未核验）' : '城市信息待确认')+' · 故事：'+(story?.title || '待关联')+' · '+(chapter?'第 '+(context.index+1)+' 幕 / '+chapter.name:'章节待关联');
-    $('#node-people').textContent=chapter?.people?.length||chapter?.events?.length?'本章人物：'+list(chapter?.people)+'；本章事件：'+list(chapter?.events):'本章人物与事件资料待补充。';
+    $('#node-people').textContent=[chapter?.people?.length?'本章人物：'+list(chapter.people):'',chapter?.events?.length?'本章事件：'+list(chapter.events):''].filter(Boolean).join('；');
+    $('#node-people').hidden=!$('#node-people').textContent;
     const locationNote=context.note || '地点待定位，不猜景区位置。';
     $('#node-coordinate').textContent='当前显示：'+(context.exact?'有来源的景区坐标':locationNote)+'；待确认项：景区入口与道路导航；资料状态：坐标待核验；更新时间：'+(dated(place)?updated(place):'未提供');
-    const narrative={...chapter,text:['record','inference','literature','research'].includes(chapter?.narrative_type)?chapter.story:''};
-    const absent=[['本章故事',narrative],['正史',chapter?.history],['文学',chapter?.romance]].filter(([,r])=>!usableRecord(r)).map(([label])=>label);
-    $('#node-metadata').replaceChildren(node('p','node-material-summary',absent.length?'资料概况：'+absent.join('、')+'尚缺可靠材料，缺资料的部分已收起，展开后可以查看核验说明。':'资料概况：已有来源的正文在下方，可以逐项核对出处。'),node('p','map-note','正史以可靠史料为据；文学不等于历史事实；合理推断须有依据；实时出行信息单独查询核验。'));
+    $('#node-metadata').replaceChildren(node('p','node-material-summary','阅读本地点的文化介绍与相关史料，可展开来源查看文献。'),node('p','map-note','历史记载、现代研究与文学表达分别呈现；出行信息在活动计划中查询。'));
     if(sources(chapter).length)$('#node-metadata').append(provenance(chapter));
     $('#node-reading-content').style.minHeight='';renderReading();comparison();tourism();
     $('#node-add-route').disabled=!context.point;
@@ -129,7 +135,7 @@
     window.SGTJourney.ask('【故事章节讲解】文化节点：'+context.place.name+'；故事：'+(context.story?.title||'待关联')+'；章节：'+(context.chapter?.name||'待关联')+'；讲解模式：'+mode+'。请围绕同一地点与本章，'+(mode==='大众体验版'?'简洁说明这里是什么、为什么值得看。':mode==='亲子故事版'?'用孩子能理解的问题讲同一史实，不虚构古人对话。':'说明编纂背景、人物关系、不同观点与出处。')+'必须分段标明“史料记载”“文学表达”“合理推断”。C级来源不能支撑史实；无可靠资料明确说“当前资料中未找到可靠记载”。存在不同说法时并列来源，不编造引文。',{displayText:"请陈寿讲解"+context.place.name+"（"+window.SGTStoryUI.modeLabel(mode)+"）"});
     $('#node-feedback').textContent='已发给陈寿。回答或草稿在当前对话里，资料仍需核验。';
   });
-  $('#node-compare').addEventListener('click',()=>{$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
+  $('#node-compare').addEventListener('click',()=>{if($('#node-comparison-title').hidden)return;$('#node-comparison-title').focus({preventScroll:true});$('#node-comparison-title').scrollIntoView({block:'start',behavior:'instant'});});
   $('#node-add-route').addEventListener('click',()=>{if(!context?.point)return;$('#node-feedback').textContent=window.TravelMap.addStoryPlace(context.point)?'已加入路线；'+(context.exact?'景区入口仍待核验。':'仅县级驻地示意，不是景区入口。'):'该位置已在当前路线中。';});
   $('#node-view').addEventListener('scroll',()=>{if(context&&!$('#node-view').hidden)readings.set(readingKey,{top:$('#node-view').scrollTop,mode,height:$('#node-reading-content').scrollHeight});});
   window.StoryProgress?.subscribe?.(story=>{if(context?.story?.id===story.id)changeMode(window.StoryProgress.get(story).mode);});

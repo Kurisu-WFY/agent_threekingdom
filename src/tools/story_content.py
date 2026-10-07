@@ -8,6 +8,7 @@ from pathlib import Path
 from san_guo_core.settings import get_settings
 
 CONTENT = Path(__file__).resolve().parents[2] / 'data/content/chenshou-book-history.json'
+CULTURE = CONTENT.with_name('place-culture.json')
 
 
 def document_catalog():
@@ -49,6 +50,7 @@ def _catalog(path, modified, content_modified):
 
 def get_story_content():
     payload = json.loads(CONTENT.read_text(encoding='utf-8'))
+    cultures = json.loads(CULTURE.read_text(encoding='utf-8'))
     payload.pop('supplemental_documents', None)
     documents = document_catalog()
     all_sources = []
@@ -77,7 +79,10 @@ def get_story_content():
             for record in chapter.get(field, []):
                 resolve(record)
     for place in payload['places']:
+        place.update(cultures.get(place['id'], {}))
         if isinstance(place.get('overview'), dict):
             resolve(place['overview'])
+        if isinstance(place.get('history'), dict):
+            resolve(place['history'])
     payload['story']['sources'] = all_sources
     return {'status': 'ok', 'data': payload, 'message': '现代研究阅读章节；不是古代行走路线。'}
